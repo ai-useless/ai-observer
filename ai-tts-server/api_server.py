@@ -30,7 +30,11 @@ load_voice_time = time.time()  # 记录加载音色时间
 print("加载音色时间：{:.6f} 秒".format(load_voice_time-start_time))
 
 # 初始化模型，默认使用CPU
-model = KModel(repo_id='hexgrad/Kokoro-82M-v1.1-zh').to('cpu').eval()
+model = KModel(
+  repo_id='hexgrad/Kokoro-82M-v1.1-zh',
+  model='ckpts/kokoro-v1.1-zh/kokoro-v1_1-zh.pth',  # 本地模型路径
+  config='ckpts/kokoro-v1.1-zh/config.json',
+).to('cpu').eval()
 
 local_model_time = time.time()  # 记录加载模型时间
 print("加载模型时间：{:.6f} 秒".format(local_model_time-load_voice_time))
