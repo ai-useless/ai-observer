@@ -27,8 +27,8 @@ export interface Seminar {
 
 export interface Participator {
   id?: number
-  sessionId: number
+  seminarId: number
   role: Role
   simulatorId: number
-  modelId: string
+  modelId: number
 }
