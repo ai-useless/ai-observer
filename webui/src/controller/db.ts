@@ -1,10 +1,16 @@
 import Dexie, { Table } from 'dexie'
 import { dbModel } from 'src/model'
 
-export const dbKline = new Dexie('KLineDatabase') as Dexie & {
-  chatSessions: Table<dbModel.ChatSession, string>
+export const dbSeminar = new Dexie('SeminarDatabase') as Dexie & {
+  participators: Table<dbModel.Participator, 'id'>,
+  models: Table<dbModel.Model, 'id'>,
+  simulators: Table<dbModel.Simulator, 'id'>,
+  sessions: Table<dbModel.Session, 'id'>
 }
 
-dbKline.version(1).stores({
-  chatSessions: 'session_id'
+dbSeminar.version(1).stores({
+  participators: '++id, sessionId, role, simulatorId, modelId',
+  models: '++id, name, endpoint, apiKey, vendor, logo',
+  simulators: '++id, name, avatar',
+  sessions: '++id, uid, topic'
 })

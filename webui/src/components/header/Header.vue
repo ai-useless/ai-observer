@@ -2,7 +2,7 @@
   <div class='row items-center'>
     <div class='cursor-pointer' @click='onLogoClick'>
       <q-img
-        :src='selectedIcon'
+        :src='aiObserverLogo'
         height='36px'
         width='240px'
         fit='contain'
@@ -10,56 +10,48 @@
       />
     </div>
     <q-space />
-    <q-tabs
-      v-model='tab'
-      class='text-black horizontal-inner-x-margin-right'
-      narrow-indicator
-      dense indicator-color='red-6'
-    >
-      <q-tab name='chat' label='chat' />
-    </q-tabs>
+    <q-btn flat dense rounded class='bg-grey-4'>
+      <q-icon name='bi-three-dots-vertical' size='24px' color='grey-6' />
+      <q-menu>
+        <q-list dense>
+          <q-item clickable class='menu-item row items-center'>
+            <q-icon name='bi-gear' color='grey' size='16px' />
+            <div style='margin-left: 16px;'>
+              Round table
+            </div>
+          </q-item>
+          <q-separator />
+          <q-item clickable class='menu-item row items-center'>
+            <q-icon name='bi-slash-circle' color='grey' size='16px' />
+            <div style='margin-left: 16px;'>
+              Stop session
+            </div>
+          </q-item>
+        </q-list>
+      </q-menu>
+    </q-btn>
   </div>
 </template>
 
 <script setup lang='ts'>
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-import { lineraMemeLogo } from 'src/assets'
+import { aiObserverLogo } from 'src/assets'
 
-const route = useRoute()
 const router = useRouter()
-const path = computed(() => route.path)
-
-
-const path2tab = () => {
-  if (path.value.includes('chat')) return 'chat'
-}
-
-const tab = computed({
-  get: () => path2tab(),
-  set: (v: string) => {
-    void router.push({ path: '/' + v })
-  }
-})
-const selectedIcon = ref(lineraMemeLogo)
-
-const goHome = () => {
-  if (window.location.hostname.endsWith('linerameme.fun')) {
-    selectedIcon.value = lineraMemeLogo
-    void router.push({ path: window.location.pathname === '/' ? '/chat' : window.location.pathname })
-  }
-}
 
 const onLogoClick = () => {
-  goHome()
+  void router.push({ path: '/seminar' })
 }
 
 onMounted(() => {
-  goHome()
+  void router.push({ path: '/seminar' })
 })
 
 </script>
 
 <style scoped lang='sass'>
+.menu-item
+  width: 148px
 </style>

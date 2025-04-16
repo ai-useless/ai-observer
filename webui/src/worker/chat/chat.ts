@@ -7,9 +7,7 @@ import {
   LoadPointsPayload
 } from './runner'
 
-type ChatResponseType =
-  | FetchedPointsPayload
-  | LoadedPointsPayload
+type ChatResponseType = FetchedPointsPayload | LoadedPointsPayload
 export type ListenerFunc = (payload: ChatResponseType) => void
 
 export class ChatWorker {
@@ -43,9 +41,7 @@ export class ChatWorker {
 
   public static send = (
     type: ChatEventType,
-    payload?:
-      | FetchPointsPayload
-      | LoadPointsPayload
+    payload?: FetchPointsPayload | LoadPointsPayload
   ) => {
     ChatWorker.getChatWorker()._worker?.postMessage({
       type,

@@ -6,7 +6,6 @@ import {
   createWebHistory
 } from 'vue-router'
 import routes from './routes'
-import { loginInterceptor } from '../utils'
 
 /*
  * If not building with SSR mode, you can
@@ -33,10 +32,6 @@ export default route(function (/* { store, ssrContext } */) {
     history: createHistory(
       process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE
     )
-  })
-
-  router.beforeEach((to, _, next) => {
-    loginInterceptor('/signin', to, next)
   })
 
   return router

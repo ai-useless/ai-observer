@@ -1,15 +1,34 @@
-import { _hex } from '../../utils'
-import { keccak } from 'hash-wasm'
-import { MsgData } from '../../localstore/chat/types'
-
-export const ownerFromPublicKey = async (publicKey: string) => {
-  const publicKeyBytes = _hex.toBytes(publicKey)
-  const typeNameBytes = new TextEncoder().encode('Ed25519PublicKey::')
-  const bytes = new Uint8Array([...typeNameBytes, ...publicKeyBytes])
-  return await keccak(bytes, 256)
+export interface Model {
+  id?: number
+  name: string
+  endpoint: string
+  apiKey?: string
+  vendor: string
+  logo: string
 }
 
-export interface ChatSession {
-  session_id: string
-  data: MsgData[]
+export enum Role {
+  HOST = 'Host',
+  GUEST = 'Guest',
+  AUDIENCE = 'Audience'
+}
+
+export interface Simulator {
+  id?: number
+  name: string
+  avatar: string
+}
+
+export interface Session {
+  id?: number
+  uid: string
+  topic: string
+}
+
+export interface Participator {
+  id?: number
+  sessionId: number
+  role: Role
+  simulatorId: number
+  modelId: string
 }
