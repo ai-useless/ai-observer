@@ -38,7 +38,7 @@
       <q-btn
         rounded
         flat
-        label='Big Countries Batter'
+        label='Big Countries Battle'
         no-caps
         class='text-grey-7 border'
         style='margin-left: 8px;'
