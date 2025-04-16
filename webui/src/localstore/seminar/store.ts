@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useSeminarStore = defineStore('seminar', {
   state: () => ({
-    topic: ''
+    uid: undefined as unknown as string
   }),
   actions: {},
   getters: {}
@@ -11,11 +11,11 @@ export const useSeminarStore = defineStore('seminar', {
 const seminar = useSeminarStore()
 
 export class Seminar {
-  static topic = () => {
-    return seminar.topic
+  static seminar = () => {
+    return seminar.uid
   }
 
-  static setTopic = (v: string) => {
-    seminar.topic = v
+  static setSeminar = (v: string) => {
+    seminar.uid = v
   }
 }
