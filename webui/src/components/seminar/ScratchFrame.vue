@@ -1,7 +1,7 @@
 <template>
   <div class='text-center'>
     <h3 class='text-grey-9'>
-      What would you like to know ?
+      What would you like to dig ?
     </h3>
     <q-input
       rounded
