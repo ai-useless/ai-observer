@@ -19,7 +19,7 @@ export interface Simulator {
   avatar: string
 }
 
-export interface Session {
+export interface Seminar {
   id?: number
   uid: string
   topic: string

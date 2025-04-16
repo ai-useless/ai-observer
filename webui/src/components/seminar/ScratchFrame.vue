@@ -9,8 +9,8 @@
       v-model='topic'
       placeholder='Key in any topic you are interesting in'
       type='textarea'
-      style='width: 800px;'
-      @keyup.enter='onEnter'
+      style='width: 800px; font-size: 20px;'
+      @keyup.enter.stop='onEnter'
     />
     <div style='margin-top: 24px;'>
       <q-btn
@@ -49,13 +49,20 @@
 </template>
 
 <script setup lang='ts'>
-import { seminar } from 'src/localstore'
-import { ref } from 'vue'
+import { dbBridge } from 'src/bridge'
+import { seminar, setting } from 'src/localstore'
+import { ref, watch } from 'vue'
 
 const topic = ref('')
 
-const onEnter = () => {
-  seminar.Seminar.setTopic(topic.value)
+watch(topic, () => {
+  topic.value = topic.value.replace('\n', '')
+})
+
+const onEnter = async () => {
+  const _uid = await dbBridge._Seminar.create(topic.value)
+  seminar.Seminar.setSeminar(_uid)
+  setting.Setting.setInScratch(false)
 }
 
 </script>
