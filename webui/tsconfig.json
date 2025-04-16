@@ -1,0 +1,33 @@
+{
+  // "extends": ["@quasar/app-vite/tsconfig-preset", "@tsconfig/node20/tsconfig.json"],
+  "extends": "@quasar/app-vite/tsconfig-preset",
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": ".",
+    "incremental": true,
+    "tsBuildInfoFile": "node_modules/.cache/typescript/tsconfig.tsbuildinfo",
+    "useUnknownInCatchVariables": true,
+    "target": "ES2022",
+    "plugins": [
+      {
+        "name": "ts-lit-plugin",
+        "strict": true
+      }
+    ],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noImplicitAny": false,
+    "lib": ["es2020", "dom", "WebWorker", "ES6"],
+    "module": "ES2022"
+  },
+  "esModuleInterop": true,
+  "exclude": [
+    "./dist",
+    "./.quasar",
+    "./node_modules",
+    "./src-capacitor",
+    "./src-cordova",
+    "./quasar.config.*.temporary.compiled*",
+    "./wasm"
+  ]
+}
