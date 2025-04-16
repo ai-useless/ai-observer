@@ -3,7 +3,6 @@ import axios from 'axios'
 import { AIMessage, MsgData, SendMessage, SessionMsg } from 'src/localstore/chat/types'
 import { dbBridge } from 'src/bridge'
 import { getCurrentFormattedDate } from 'src/utils/timestamp'
-import { data } from 'autoprefixer'
 import { ChatSession } from 'src/bridge/db'
 
 export enum ChatEventType {
@@ -113,7 +112,7 @@ export class ChatRunner {
         session_id: session_id,
         data: [msgData]
       } as ChatSession
-      
+
       // 存储到indexdb
       // ChatRunner.bulkStorePoints(session_id, msg)
       await dbBridge.ChatSession.bulkPut(session_id, [msgData])
