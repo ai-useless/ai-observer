@@ -11,8 +11,8 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
-        path: '/chat',
-        component: () => import('pages/ChatPage.vue'),
+        path: '/seminar',
+        component: () => import('pages/SeminarPage.vue'),
         meta: {
           NeedLogined: false
         }

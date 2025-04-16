@@ -1,6 +1,11 @@
 import { constants } from 'src/constant'
 import axios from 'axios'
-import { AIMessage, MsgData, SendMessage, SessionMsg } from 'src/localstore/chat/types'
+import {
+  AIMessage,
+  MsgData,
+  SendMessage,
+  SessionMsg
+} from 'src/localstore/seminar/types'
 import { dbBridge } from 'src/bridge'
 import { getCurrentFormattedDate } from 'src/utils/timestamp'
 import { ChatSession } from 'src/bridge/db'
@@ -55,21 +60,12 @@ export interface ChatEvent {
 
 export class ChatRunner {
   // 存储到indexdb
-  static storePoints = async (
-    sessionId: string,
-    msg: MsgData
-  ) => {
-    await dbBridge.ChatSession.bulkPut(
-      sessionId,
-      [msg]
-    )
+  static storePoints = async (sessionId: string, msg: MsgData) => {
+    await dbBridge.ChatSession.bulkPut(sessionId, [msg])
   }
 
   // 存储到indexdb
-  static bulkStorePoints = (
-    sessionId: string,
-    msg: MsgData
-  ) => {
+  static bulkStorePoints = (sessionId: string, msg: MsgData) => {
     void ChatRunner.storePoints(sessionId, msg)
   }
 
@@ -77,19 +73,17 @@ export class ChatRunner {
   static handleFetchPoints = async (payload: FetchPointsPayload) => {
     const { session_id, participant_id, ai, messages } = payload
 
-    const url = constants.formalizeSchema(
-      `${constants.AI_CHAT_HTTP_URL}`
-    )
+    const url = constants.formalizeSchema(`${constants.AI_CHAT_HTTP_URL}`)
 
     try {
       // 用户内容存储到indexdb
-      const userMsg = messages[messages.length-1].content
+      const userMsg = messages[messages.length - 1].content
       const userMsgData = {
         date_time: getCurrentFormattedDate(),
         participant_id: participant_id,
         content: userMsg,
-        isThinking:false,
-        isSpeaking:false
+        isThinking: false,
+        isSpeaking: false
       } as MsgData
       await dbBridge.ChatSession.bulkPut(session_id, [userMsgData])
 
@@ -97,7 +91,7 @@ export class ChatRunner {
       const res = await axios.post(url, {
         ai: ai,
         messages: messages
-      });
+      })
       // const timestamp = new Date().getTime();
       const dateTime = getCurrentFormattedDate()
       const resp = res.data as AIMessage
@@ -105,8 +99,8 @@ export class ChatRunner {
         date_time: dateTime,
         participant_id: participant_id,
         content: resp.content,
-        isThinking:false,
-        isSpeaking:false
+        isThinking: false,
+        isSpeaking: false
       } as MsgData
       const chatSession = {
         session_id: session_id,
@@ -143,10 +137,7 @@ export class ChatRunner {
   static handleLoadPoints = async (payload: LoadPointsPayload) => {
     const { offset, limit } = payload
     try {
-      const msgs = await dbBridge.ChatSession.getChatSessions(
-        offset,
-        limit
-      )
+      const msgs = await dbBridge.ChatSession.getChatSessions(offset, limit)
 
       self.postMessage({
         type: ChatEventType.LOADED_POINTS,
