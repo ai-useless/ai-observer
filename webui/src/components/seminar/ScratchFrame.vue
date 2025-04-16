@@ -10,6 +10,7 @@
       placeholder='Key in any topic you are interesting in'
       type='textarea'
       style='width: 800px;'
+      @keyup.enter='onEnter'
     />
     <div style='margin-top: 24px;'>
       <q-btn
@@ -48,9 +49,14 @@
 </template>
 
 <script setup lang='ts'>
+import { seminar } from 'src/localstore'
 import { ref } from 'vue'
 
 const topic = ref('')
+
+const onEnter = () => {
+  seminar.Seminar.setTopic(topic.value)
+}
 
 </script>
 

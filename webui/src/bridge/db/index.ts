@@ -1,1 +1,1 @@
-export * from './chatSession'
+export * from './model'
