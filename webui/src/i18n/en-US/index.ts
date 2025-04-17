@@ -10,6 +10,8 @@ export default {
   MSG_JIU_TOU_NIAO: 'Jiu touniao',
   MSG_BEFORE_DAYS: 'before { VALUE } days',
   MSG_BEFORE_SECONDS: 'before { VALUE } seconds',
+  MSG_BEFORE_MINUTES: 'before { VALUE } minutes',
+  MSG_BEFORE_HOURS: 'before { VALUE } hours',
   MSG_JUST_NOW: 'just now',
   MSG_DISCUSS_WITH_THEM: 'Discuss with them'
 }
