@@ -37,8 +37,13 @@
           bg-color='grey-2'
         >
           <template #name>
-            <div style='padding-bottom: 4px;'>
-              {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+            <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
+              <div>
+                {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+              </div>
+              <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
+              <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
+              <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
             </div>
           </template>
           <div>
