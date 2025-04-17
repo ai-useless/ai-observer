@@ -2,7 +2,7 @@
 // so you can safely delete all default props below
 
 export default {
-  MSG_INITIAL_TIP: '一个会观察世界的人工智能将会给碳基社会带来什么影响？',
+  MSG_INITIAL_TIP: '一个会观察世界的人工智能将给碳基社群带来什么影响？',
   MSG_LUXUN: 'Lu xun',
   MSG_HUN_ER_HU: 'Hun erhu',
   MSG_ZHU_TOU_SAN: 'Zhu tousan',
