@@ -4,7 +4,10 @@ export interface Model {
   endpoint: string
   apiKey?: string
   vendor: string
-  logo: string
+  author: string
+  authorLogo: string
+  modelLogo: string
+  vendorLogo: string
 }
 
 export enum Role {
@@ -17,6 +20,8 @@ export interface Simulator {
   id?: number
   name: string
   avatar: string
+  personality: string
+  host: boolean
 }
 
 export interface Seminar {
@@ -27,7 +32,7 @@ export interface Seminar {
 
 export interface Participator {
   id?: number
-  seminarId: number
+  seminarUid: string
   role: Role
   simulatorId: number
   modelId: number

@@ -53,7 +53,13 @@ import { dbBridge } from 'src/bridge'
 import { seminar, setting } from 'src/localstore'
 import { ref, watch } from 'vue'
 
-const topic = ref('')
+import { useI18n } from 'vue-i18n'
+
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const { t } = useI18n({ useScope: 'global' })
+
+// TODO: random initial topic
+const topic = ref(t('MSG_INITIAL_TIP'))
 
 watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
