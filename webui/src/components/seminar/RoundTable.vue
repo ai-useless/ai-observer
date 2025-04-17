@@ -8,7 +8,8 @@
       :disable='inScratch'
     >
       <q-fab-action color='grey-4' v-for='(simulator, index) in simulators' :key='index'>
-        <SimulatorCard :simulator='simulator' :small='true' :avatar-only='true' />
+        <simulator-card :simulator='simulator.simulator' :small='true' :avatar-only='true' />
+        <q-spinner-rings v-if='seminar.Seminar.thinking(simulator.participatorId)' color='red-4' />
       </q-fab-action>
       <template #icon>
         <q-icon :name='inScratch ? "bi-hourglass-split" : "bi-chevron-up"' size='16px' />
@@ -37,7 +38,18 @@ const label = computed(() => inScratch.value ? 'Preparing ...' : 'Expand')
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
-const simulators = ref([] as dbModel.Simulator[])
+const _simulators = ref([] as dbModel.Simulator[])
+
+interface _Simulator {
+  participatorId: number
+  simulator: dbModel.Simulator
+}
+const simulators = computed(() => _simulators.value.map((el) => {
+  return {
+    simulator: el,
+    participatorId: participators.value.find((_el) => _el.simulatorId === el.id)?.id
+  } as _Simulator
+}))
 
 const participatorIds = computed(() => participators.value.map((el) => el.simulatorId))
 
@@ -51,7 +63,7 @@ watch(_seminar, async () => {
 })
 
 watch(participators, async () => {
-  simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
+  _simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
 })
 
 onMounted(async () => {

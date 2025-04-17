@@ -23,7 +23,8 @@
         style='margin-top: 16px; font-size: 20px'
         class='text-center text-grey-8'
       >
-        Host is preparing scripts...
+        <q-spinner-facebook class='text-red-4' size='128px' />
+        <div>Host is preparing scripts...</div>
       </div>
       <div v-else style='margin-top: 16px'>
         <q-chat-message
@@ -108,28 +109,36 @@ watch(participators, async () => {
 
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 
+const onMessage = async (participatorId: number, message: string) => {
+  seminar.Seminar.stopThink(participatorId)
+
+  const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
+  const timestamp = timestamp2HumanReadable(Date.now())
+
+  messages.value.push({
+    message,
+    participator,
+    simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
+    model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
+    timestamp: Date.now(),
+    datetime: t(timestamp.msg, { VALUE: timestamp.value })
+  })
+
+  messages.value = messages.value.map((el) => {
+    const timestamp = timestamp2HumanReadable(el.timestamp)
+    return { ...el, datetime: t(timestamp.msg, { VALUE: timestamp.value }) }
+  })
+}
+
+const onThinking = (participatorId: number) => {
+  seminar.Seminar.startThink(participatorId)
+}
+
 onMounted(async () => {
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
 
-  eSeminar.value = new entityBridge.ESeminar(_seminar.value, async (participatorId: number, message: string) => {
-    const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
-    const timestamp = timestamp2HumanReadable(Date.now())
-
-    messages.value.push({
-      message,
-      participator,
-      simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
-      model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
-      timestamp: Date.now(),
-      datetime: t(timestamp.msg, { VALUE: timestamp.value })
-    })
-
-    messages.value = messages.value.map((el) => {
-      const timestamp = timestamp2HumanReadable(el.timestamp)
-      return { ...el, datetime: t(timestamp.msg, { VALUE: timestamp.value }) }
-    })
-  })
+  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking)
   await eSeminar.value.start()
 })
 
