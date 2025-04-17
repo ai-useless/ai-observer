@@ -1,12 +1,16 @@
 <template>
   <div class='row items-center' style='padding-bottom: 16px;'>
-    <RoundTable />
+    <div style='width: 240px;'>
+      <RoundTable />
+    </div>
     <q-space />
     <TopicInput v-if='!inScratch' />
     <q-space />
-    <q-avatar class='cursor-pointer' size='24px'>
-      <q-img :src='githubLogo' />
-    </q-avatar>
+    <div style='width: 240px;' class='text-right'>
+      <q-avatar class='cursor-pointer' size='24px'>
+        <q-img :src='githubLogo' />
+      </q-avatar>
+    </div>
   </div>
 </template>
 

@@ -32,3 +32,12 @@ export interface Participator {
   simulatorId: number
   modelId: number
 }
+
+export interface Message {
+  id?: number
+  seminarId: number
+  participatorId: number
+  timestamp: number
+  prompt: string
+  content: string
+}
