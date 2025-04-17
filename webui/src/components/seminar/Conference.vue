@@ -95,6 +95,7 @@ const waitMessages = ref([] as Message[])
 const typingMessage = ref(undefined as unknown as Message)
 const typingIndex = ref(0)
 const typingTicker = ref(-1)
+const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 
 const typing = () => {
   if (!typingMessage.value && !waitMessages.value.length) return
@@ -106,7 +107,10 @@ const typing = () => {
     return
   }
 
-  if (!waitMessages.value.length) return
+  if (!waitMessages.value.length) {
+    void eSeminar.value.nextGuests()
+    return
+  }
 
   typingMessage.value = waitMessages.value[0]
   typingIndex.value = 0
@@ -130,8 +134,6 @@ watch(_seminar, async () => {
 watch(participators, async () => {
   simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
 })
-
-const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 
 const onMessage = async (participatorId: number, message: string) => {
   seminar.Seminar.stopThink(participatorId)
