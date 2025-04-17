@@ -1,4 +1,4 @@
-import { notify } from 'src/localstore'
+import { notify } from 'src/localstores'
 import { copyToClipboard } from 'quasar'
 
 const _notify = notify.useNotificationStore()

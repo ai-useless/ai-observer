@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang='ts'>
-import { setting } from 'src/localstore'
+import { setting } from 'src/localstores'
 import { computed } from 'vue'
 
 import ScratchFrame from './ScratchFrame.vue'

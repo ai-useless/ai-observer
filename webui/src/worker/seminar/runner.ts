@@ -1,4 +1,4 @@
-import { SendMessage } from '../../localstore/seminar'
+import { SendMessage } from '../../localstores/seminar'
 import axios from 'axios'
 import { constants } from 'src/constant'
 import { dbBridge } from 'src/bridge'

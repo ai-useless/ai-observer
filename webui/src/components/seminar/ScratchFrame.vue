@@ -50,7 +50,7 @@
 
 <script setup lang='ts'>
 import { dbBridge } from 'src/bridge'
-import { seminar, setting } from 'src/localstore'
+import { seminar, setting } from 'src/localstores'
 import { ref, watch } from 'vue'
 
 import { useI18n } from 'vue-i18n'

@@ -18,7 +18,7 @@
 
 <script setup lang='ts'>
 import { onMounted } from 'vue'
-import { notify } from 'src/localstore'
+import { notify } from 'src/localstores'
 
 import Header from 'src/components/header/Header.vue'
 import Footer from 'src/components/footer/Footer.vue'

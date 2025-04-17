@@ -24,14 +24,15 @@
 
 <script setup lang='ts'>
 import { dbBridge } from 'src/bridge'
-import { seminar } from 'src/localstore'
+import { seminar } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 
 import SimulatorCard from './SimulatorCard.vue'
 
 import { seminarWorker } from 'src/worker'
-import { SendMessage } from '../../localstore/seminar'
+import { SendMessage } from '../../localstores/seminar'
+import { Platform } from 'quasar'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -71,7 +72,7 @@ const onStartConference = () => {
   seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
     seminarId: seminarId,
     participatorId: participatorId,
-    prompts: prompts,
+    prompts: prompts
   })
 }
 
@@ -81,6 +82,7 @@ const onChatRequest = (payload: seminarWorker.ChatResponsePayload) => {
 }
 
 onMounted(async () => {
+  console.log(Platform.is)
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
   console.log('_seminar.value: ', _seminar.value)
