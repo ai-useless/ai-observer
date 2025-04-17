@@ -14,8 +14,13 @@
 
 <script setup lang='ts'>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const topic = ref('')
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const { t } = useI18n({ useScope: 'global' })
+
+// TODO: random initial topic
+const topic = ref(t('MSG_INITIAL_TIP'))
 
 // TODO: detect if it's a valid topic
 

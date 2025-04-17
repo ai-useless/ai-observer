@@ -1,13 +1,40 @@
 import { dbSeminar } from 'src/controller'
 
 export class _Model {
-  static create = async (name: string, endpoint: string, apiKey: string | undefined, vendor: string, logo: string) => {
+  static #models = [{
+    name: 'deepseek-ai/DeepSeek-V3-0324',
+    endpoint: 'https://llm.chutes.ai/v1/chat/completions',
+    apiKey: 'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
+    vendor: 'Chutes',
+    author: 'High-Flyer',
+    authorLogo: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
+    modelLogo: 'https://cdn.deepseek.com/logo.png?x-image-process=image%2Fresize%2Cw_1920',
+    vendorLogo: 'https://cdn.rayonlabs.ai/chutes/hash/37.webp'
+  }]
+
+  static initialize =async () => {
+    try {
+      await dbSeminar.models.bulkPut(_Model.#models)
+    } catch {
+      // DO NOTHING
+    }
+  }
+
+  static create = async (name: string, endpoint: string, apiKey: string | undefined, vendor: string, author: string, authorLogo: string, modelLogo: string, vendorLogo: string) => {
     return await dbSeminar.models.add({
       name,
       endpoint,
       apiKey,
       vendor,
-      logo
+      author,
+      authorLogo,
+      modelLogo,
+      vendorLogo
     })
+  }
+
+  static randomPeek = async () => {
+    const index = Math.floor(Math.random() * await dbSeminar.models.count())
+    return await dbSeminar.models.get({ id: index })
   }
 }
