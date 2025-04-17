@@ -1,1 +1,1 @@
-export * as chatWorker from './chat'
+export * as seminarWorker from './seminar'
