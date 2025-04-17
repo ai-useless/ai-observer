@@ -1,5 +1,5 @@
 <template>
-  <div class='row items-center' style='padding-bottom: 16px;'>
+  <div class='row items-center' style='padding: 8px 0;'>
     <div style='width: 240px;'>
       <RoundTable />
     </div>
