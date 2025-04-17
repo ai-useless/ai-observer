@@ -82,6 +82,7 @@ const guestIds = computed(() => participators.value.filter((el) => el.role === d
 const guests = computed(() => simulators.value.filter((el) => guestIds.value.includes(el.id as number)))
 
 interface Message {
+  round: number
   message: string
   participator: dbModel.Participator
   simulator: dbModel.Simulator
@@ -95,6 +96,8 @@ const waitMessages = ref([] as Message[])
 const typingMessage = ref(undefined as unknown as Message)
 const typingIndex = ref(0)
 const typingTicker = ref(-1)
+const lastRound = ref(0)
+const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 
 const typing = () => {
@@ -107,14 +110,16 @@ const typing = () => {
     return
   }
 
-  if (!waitMessages.value.length) {
-    void eSeminar.value.nextGuests()
-    return
-  }
+  if (!waitMessages.value.length) return
 
   typingMessage.value = waitMessages.value[0]
   typingIndex.value = 0
   waitMessages.value = waitMessages.value.slice(1)
+
+  if (typingMessage.value.round === lastRound.value && !requesting.value) {
+    void eSeminar.value.nextGuests()
+    requesting.value = true
+  }
 
   displayMessages.value.push({
     ...typingMessage.value,
@@ -135,13 +140,17 @@ watch(participators, async () => {
   simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
 })
 
-const onMessage = async (participatorId: number, message: string) => {
+const onMessage = async (participatorId: number, message: string, round: number) => {
   seminar.Seminar.stopThink(participatorId)
 
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
+  lastRound.value = round
+  requesting.value = false
+
   waitMessages.value.push({
+    round,
     message,
     participator,
     simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
