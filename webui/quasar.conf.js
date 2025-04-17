@@ -75,44 +75,11 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      proxy: {
-        '/api/ams': {
-          target: 'https://testnet-archimedes.respeer.ai',
-          pathRewrite: {
-            '^/api/ams': '/api/ams'
-          },
-          secure: false,
-          changeOrigin: true
-        },
-        '/api/kline': {
-          target: 'https://testnet-archimedes.lineraswap.fun',
-          pathRewrite: {
-            '^/api/kline': '/api/kline'
-          },
-          secure: false,
-          changeOrigin: true
-        },
-        '/api/blobs': {
-          target: 'https://testnet-archimedes.blobgateway.com',
-          pathRewrite: {
-            '^/api/blobs': '/api/blobs'
-          },
-          secure: false,
-          changeOrigin: true
-        },
-        '/api/swap': {
-          target: 'https://testnet-archimedes.lineraswap.fun',
-          pathRewrite: {
-            '^/api/swap': '/api/swap'
-          },
-          secure: false,
-          changeOrigin: true
-        }
-      },
+      proxy: {},
 
       https: false,
-      port: 8080,
-      open: true, // opens browser window automatically
+      // port: 8080,
+      open: false, // opens browser window automatically
       historyApiFallback: true
     },
 
@@ -177,40 +144,14 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: 'Linera Meme',
-        short_name: 'Linera Meme',
-        description: 'Real-time & reactive applications on Linera',
+        name: 'AI Observer',
+        short_name: 'AI Observer',
+        description: 'Round table seminar of AIs',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
         theme_color: '#027be3',
-        icons: [
-          {
-            src: 'icons/icon-128x128.png',
-            sizes: '128x128',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-256x256.png',
-            sizes: '256x256',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-384x384.png',
-            sizes: '384x384',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
+        icons: []
       }
     },
 
@@ -242,7 +183,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'webui-template'
+        appId: 'ai-observer'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

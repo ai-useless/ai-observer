@@ -42,7 +42,7 @@
 <script setup lang='ts'>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { seminar } from 'src/localstore'
+import { seminar } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { dbBridge } from 'src/bridge'
 

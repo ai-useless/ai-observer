@@ -16,7 +16,7 @@
 
 <script setup lang='ts'>
 import { computed } from 'vue'
-import { setting } from 'src/localstore'
+import { setting } from 'src/localstores'
 
 import RoundTable from '../seminar/RoundTable.vue'
 import TopicInput from '../seminar/TopicInput.vue'

@@ -25,7 +25,7 @@
 
 <script setup lang='ts'>
 import { computed, onMounted, ref, watch } from 'vue'
-import { setting, seminar } from 'src/localstore'
+import { setting, seminar } from 'src/localstores'
 import { dbBridge } from 'src/bridge'
 import { dbModel } from 'src/model'
 
