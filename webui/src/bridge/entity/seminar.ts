@@ -44,4 +44,16 @@ export class ESeminar {
   stop = () => {
     seminarWorker.SeminarWorker.off(seminarWorker.SeminarEventType.CHAT_RESPONSE, this.onChatResponse)
   }
+
+  nextGuests = () => {
+    // TODO
+  }
+
+  hostRequest = () => {
+    // TODO
+  }
+
+  userRequest = () => {
+    // TODO
+  }
 }
