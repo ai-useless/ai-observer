@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang='ts'>
-import { dbBridge } from 'src/bridge'
+import { dbBridge, entityBridge } from 'src/bridge'
 import { seminar } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
@@ -56,19 +56,6 @@ watch(participators, async () => {
   simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
 })
 
-const onStartConference = () => {
-  if (!topic.value) return
-
-  const seminarId = _seminar.value.id || 1
-  const participatorId = 1
-
-  seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
-    seminarId,
-    participatorId,
-    prompts: [topic.value]
-  })
-}
-
 const onChatRequest = (payload: seminarWorker.ChatResponsePayload) => {
   const _response = payload.response
   console.log('_response: ', _response)
@@ -77,9 +64,9 @@ const onChatRequest = (payload: seminarWorker.ChatResponsePayload) => {
 onMounted(async () => {
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
-  console.log('_seminar.value: ', _seminar.value)
+
   seminarWorker.SeminarWorker.on(seminarWorker.SeminarEventType.CHAT_RESPONSE, onChatRequest as seminarWorker.ListenerFunc)
-  onStartConference()
+  await new entityBridge.ESeminar(_seminar.value).start()
 })
 
 onBeforeUnmount(() => {

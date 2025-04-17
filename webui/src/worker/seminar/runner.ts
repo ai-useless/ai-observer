@@ -43,23 +43,31 @@ export class SeminarRunner {
     )
   }
 
+  static requestParticipatorChat = async (participatorId: number, prompts: string[]) => {
+    const participator = await dbBridge._Participator.participator(participatorId)
+    if (!participator) return
+
+    const model = await dbBridge._Model.model(participator.modelId)
+    if (!model) return
+
+    const resp = await axios.post(model.endpoint || constants.FALLBACK_API, {
+      ai: 'AI1',
+      messages: prompts.map((el) => {
+        return {
+          role: 'user',
+          content: el
+        }
+      })
+    })
+    return (resp.data as Record<string, string>).content
+  }
+
   static handleChatRequest = async (payload: ChatRequestPayload) => {
     const { seminarId, participatorId, prompts } = payload
-    console.log('seminarId: ', seminarId)
-    console.log('participatorId: ', participatorId)
-    console.log('prompts: ', prompts)
-    try {
-      const res = await axios.post(constants.AI_CHAT_HTTP_URL, {
-        ai: 'AI1',
-        messages: prompts.map((el) => {
-          return {
-            role: 'user',
-            content: el
-          }
-        })
-      })
 
-      const response = (res.data as Record<string, string>).content
+    try {
+      const response = await SeminarRunner.requestParticipatorChat(participatorId, prompts)
+      if (!response) return
 
       await SeminarRunner.bulkStoreResponse(seminarId, participatorId, prompts[prompts.length - 1], response)
 
