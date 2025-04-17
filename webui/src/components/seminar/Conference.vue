@@ -22,11 +22,17 @@
         <q-chat-message
           v-for='(message, index) in messages'
           :key='index'
-          :name='$t(message.simulator.name) + " | " + message.participator.role'
+          :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
           :avatar='message.simulator.avatar'
           :stamp='message.timestamp'
           :text='[message.message]'
-        />
+        >
+          <div>
+            <q-markdown>
+              {{ message.message }}
+            </q-markdown>
+          </div>
+        </q-chat-message>
       </div>
     </div>
     <q-space />
@@ -38,8 +44,13 @@ import { dbBridge, entityBridge } from 'src/bridge'
 import { seminar } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
+import { QMarkdown } from '@quasar/quasar-ui-qmarkdown'
+import { timestamp2HumanReadable } from 'src/utils/timestamp'
+import { useI18n } from 'vue-i18n'
 
 import SimulatorCard from './SimulatorCard.vue'
+
+const { t } = useI18n({ useScope: 'global' })
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -83,13 +94,14 @@ onMounted(async () => {
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, async (participatorId: number, message: string) => {
     const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
+    const timestamp = timestamp2HumanReadable(Date.now())
 
     messages.value.push({
       message,
       participator,
       simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
       model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
-      timestamp: new Date().toLocaleString()
+      timestamp: t(timestamp.msg, timestamp.value)
     })
   })
   await eSeminar.value.start()
