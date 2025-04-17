@@ -37,4 +37,8 @@ export class _Model {
     const index = Math.floor(Math.random() * await dbSeminar.models.count())
     return await dbSeminar.models.get({ id: index })
   }
+
+  static model = async (id: number) => {
+    return await dbSeminar.models.get({ id: id })
+  }
 }

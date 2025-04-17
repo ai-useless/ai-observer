@@ -27,7 +27,6 @@ export class SeminarWorker {
   }
 
   public static getSeminarWorker = () => {
-    console.log('test getSeminarWorker')
     if (SeminarWorker._instance) return SeminarWorker._instance
     SeminarWorker._instance = new SeminarWorker()
     return SeminarWorker._instance
@@ -37,9 +36,6 @@ export class SeminarWorker {
     type: SeminarEventType,
     payload?: ChatRequestPayload
   ) => {
-    console.log('test send')
-    console.log('test type: ', type)
-    console.log('test payload: ', payload)
     SeminarWorker.getSeminarWorker()._worker?.postMessage({
       type,
       payload

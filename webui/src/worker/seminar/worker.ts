@@ -5,7 +5,6 @@ console.trace = () => {
 }
 
 self.onmessage = async (message: MessageEvent) => {
-  console.log('test onmessage: ', message)
   const event = message.data as SeminarEvent
   switch (event.type) {
     case SeminarEventType.CHAT_REQUEST:

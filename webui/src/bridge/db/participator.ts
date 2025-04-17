@@ -18,4 +18,8 @@ export class _Participator {
   static createParticipators = async (participators: dbModel.Participator[]) => {
     await dbSeminar.participators.bulkAdd(participators)
   }
+
+  static participator = async (id: number) => {
+    return await dbSeminar.participators.get({ id: id })
+  }
 }
