@@ -7,5 +7,8 @@ export default {
   MSG_HUN_ER_HU: 'Hun erhu',
   MSG_ZHU_TOU_SAN: 'Zhu tousan',
   MSG_AN_RUO_SU: 'An ruosu',
-  MSG_JIU_TOU_NIAO: 'Jiu touniao'
+  MSG_JIU_TOU_NIAO: 'Jiu touniao',
+  MSG_BEFORE_DAYS: 'before { VALUE } days',
+  MSG_BEFORE_SECONDS: 'before { VALUE } seconds',
+  MSG_JUST_NOW: 'just now'
 }

@@ -18,7 +18,14 @@
         </div>
       </div>
       <q-separator style='margin-top: 16px' />
-      <div style='margin-top: 16px'>
+      <div
+        v-if='!messages.length'
+        style='margin-top: 16px; font-size: 20px'
+        class='text-center text-grey-8'
+      >
+        Host is preparing scripts...
+      </div>
+      <div v-else style='margin-top: 16px'>
         <q-chat-message
           v-for='(message, index) in messages'
           :key='index'
@@ -26,7 +33,14 @@
           :avatar='message.simulator.avatar'
           :stamp='message.timestamp'
           :text='[message.message]'
+          text-color='grey-9'
+          bg-color='grey-2'
         >
+          <template #name>
+            <div style='padding-bottom: 4px;'>
+              {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+            </div>
+          </template>
           <div>
             <q-markdown>
               {{ message.message }}
@@ -101,7 +115,7 @@ onMounted(async () => {
       participator,
       simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
       model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
-      timestamp: t(timestamp.msg, timestamp.value)
+      timestamp: t(timestamp.msg, { VALUE: timestamp.value })
     })
   })
   await eSeminar.value.start()

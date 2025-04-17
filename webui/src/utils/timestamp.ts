@@ -1,6 +1,14 @@
 export const timestamp2HumanReadable = (timestamp: number) => {
   const now = Date.now() / 1000
-  const timestampSec = timestamp / 1000000
+  const timestampSec = timestamp / 1000
+
+  if (now - timestampSec < 10) {
+    return {
+      msg: 'MSG_JUST_NOW',
+      value: 0
+    }
+  }
+
   if (now - timestampSec < 60) {
     return {
       msg: 'MSG_BEFORE_SECONDS',
