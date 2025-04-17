@@ -35,10 +35,10 @@ export class _Model {
 
   static randomPeek = async () => {
     const index = Math.floor(Math.random() * await dbSeminar.models.count())
-    return await dbSeminar.models.get({ id: index })
+    return (await dbSeminar.models.toArray())[index]
   }
 
   static model = async (id: number) => {
-    return await dbSeminar.models.get({ id: id })
+    return await dbSeminar.models.filter((op) => op.id === id).first()
   }
 }

@@ -17,6 +17,17 @@
           />
         </div>
       </div>
+      <q-separator style='margin-top: 16px' />
+      <div style='margin-top: 16px'>
+        <q-chat-message
+          v-for='(message, index) in messages'
+          :key='index'
+          :name='$t(message.simulator.name) + " | " + message.participator.role'
+          :avatar='message.simulator.avatar'
+          :stamp='message.timestamp'
+          :text='[message.message]'
+        />
+      </div>
     </div>
     <q-space />
   </div>
@@ -30,8 +41,6 @@ import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 
 import SimulatorCard from './SimulatorCard.vue'
 
-import { seminarWorker } from 'src/worker'
-
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
@@ -42,6 +51,16 @@ const host = computed(() => simulators.value.find((el) => el.id === participator
 const participatorIds = computed(() => participators.value.map((el) => el.simulatorId))
 const guestIds = computed(() => participators.value.filter((el) => el.role === dbModel.Role.GUEST).map((el) => el.simulatorId))
 const guests = computed(() => simulators.value.filter((el) => guestIds.value.includes(el.id as number)))
+
+interface Message {
+  message: string
+  participator: dbModel.Participator
+  simulator: dbModel.Simulator
+  model: dbModel.Model
+  timestamp: string
+}
+
+const messages = ref([] as Message[])
 
 watch(_uid, async () => {
   if (!_uid.value) return
@@ -56,21 +75,28 @@ watch(participators, async () => {
   simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
 })
 
-const onChatRequest = (payload: seminarWorker.ChatResponsePayload) => {
-  const _response = payload.response
-  console.log('_response: ', _response)
-}
+const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 
 onMounted(async () => {
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
 
-  seminarWorker.SeminarWorker.on(seminarWorker.SeminarEventType.CHAT_RESPONSE, onChatRequest as seminarWorker.ListenerFunc)
-  await new entityBridge.ESeminar(_seminar.value).start()
+  eSeminar.value = new entityBridge.ESeminar(_seminar.value, async (participatorId: number, message: string) => {
+    const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
+
+    messages.value.push({
+      message,
+      participator,
+      simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
+      model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
+      timestamp: new Date().toLocaleString()
+    })
+  })
+  await eSeminar.value.start()
 })
 
 onBeforeUnmount(() => {
-  seminarWorker.SeminarWorker.off(seminarWorker.SeminarEventType.CHAT_RESPONSE, onChatRequest as seminarWorker.ListenerFunc)
+  eSeminar.value?.stop()
 })
 </script>
 
