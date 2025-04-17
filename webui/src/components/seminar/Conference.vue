@@ -31,7 +31,7 @@
           :key='index'
           :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
           :avatar='message.simulator.avatar'
-          :stamp='message.timestamp'
+          :stamp='message.datetime'
           :text='[message.message]'
           text-color='grey-9'
           bg-color='grey-2'
@@ -87,7 +87,8 @@ interface Message {
   participator: dbModel.Participator
   simulator: dbModel.Simulator
   model: dbModel.Model
-  timestamp: string
+  datetime: string
+  timestamp: number
 }
 
 const messages = ref([] as Message[])
@@ -120,7 +121,13 @@ onMounted(async () => {
       participator,
       simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
       model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
-      timestamp: t(timestamp.msg, { VALUE: timestamp.value })
+      timestamp: Date.now(),
+      datetime: t(timestamp.msg, { VALUE: timestamp.value })
+    })
+
+    messages.value = messages.value.map((el) => {
+      const timestamp = timestamp2HumanReadable(el.timestamp)
+      return { ...el, datetime: t(timestamp.msg, { VALUE: timestamp.value }) }
     })
   })
   await eSeminar.value.start()

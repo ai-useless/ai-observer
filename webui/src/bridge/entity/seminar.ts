@@ -24,6 +24,8 @@ export class ESeminar {
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
     void this.#onMessage(message.participatorId, message.payload)
+
+    void this.nextGuests()
   }
 
   start = async () => {
@@ -45,8 +47,17 @@ export class ESeminar {
     seminarWorker.SeminarWorker.off(seminarWorker.SeminarEventType.CHAT_RESPONSE, this.onChatResponse)
   }
 
-  nextGuests = () => {
-    // TODO
+  nextGuests = async () => {
+    const participators = await this.participators()
+    const { id, topic } = this.#seminar
+
+    participators.forEach((el) => {
+      seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
+        seminarId: id as number,
+        participatorId: el.id as number,
+        prompts: [topic]
+      })
+    })
   }
 
   hostRequest = () => {
