@@ -55,4 +55,8 @@ export class _Simulator {
     const index = Math.floor(Math.random() * simulators.length)
     return simulators[index]
   }
+
+  static simulator = async (id: number) => {
+    return await dbSeminar.simulators.filter((op) => op.id === id).first()
+  }
 }

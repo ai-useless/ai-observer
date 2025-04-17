@@ -18,7 +18,7 @@ export interface ChatRequestPayload {
 export type ChatResponsePayload = {
   seminarId: number
   participatorId: number
-  response: string
+  payload: string
 }
 
 export interface SeminarEvent {
@@ -50,7 +50,7 @@ export class SeminarRunner {
     const model = await dbBridge._Model.model(participator.modelId)
     if (!model) return
 
-    const resp = await axios.post(model.endpoint || constants.FALLBACK_API, {
+    const resp = await axios.post(/* model.endpoint || */ constants.FALLBACK_API, {
       ai: 'AI1',
       messages: prompts.map((el) => {
         return {
@@ -76,7 +76,7 @@ export class SeminarRunner {
         payload: {
           seminarId,
           participatorId,
-          response
+          payload: response
         }
       })
     } catch (e) {
@@ -85,6 +85,5 @@ export class SeminarRunner {
         payload: e
       })
     }
-    console.log(payload)
   }
 }
