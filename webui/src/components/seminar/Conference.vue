@@ -19,7 +19,7 @@
       </div>
       <q-separator style='margin-top: 16px' />
       <div
-        v-if='!messages.length'
+        v-if='!displayMessages.length'
         style='margin-top: 16px; font-size: 20px'
         class='text-center text-grey-8'
       >
@@ -28,7 +28,7 @@
       </div>
       <div v-else style='margin-top: 16px'>
         <q-chat-message
-          v-for='(message, index) in messages'
+          v-for='(message, index) in displayMessages'
           :key='index'
           :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
           :avatar='message.simulator.avatar'
@@ -47,11 +47,9 @@
               <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
             </div>
           </template>
-          <div>
-            <q-markdown>
-              {{ message.message }}
-            </q-markdown>
-          </div>
+          <q-markdown :key='message.message'>
+            {{ message.message }}
+          </q-markdown>
         </q-chat-message>
       </div>
     </div>
@@ -92,7 +90,33 @@ interface Message {
   timestamp: number
 }
 
-const messages = ref([] as Message[])
+const displayMessages = ref([] as Message[])
+const waitMessages = ref([] as Message[])
+const typingMessage = ref(undefined as unknown as Message)
+const typingIndex = ref(0)
+const typingTicker = ref(-1)
+
+const typing = () => {
+  if (!typingMessage.value && !waitMessages.value.length) return
+
+  // If we have a message in typing, finish it
+  if (typingMessage.value && typingIndex.value < typingMessage.value.message.length) {
+    displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value)
+    typingIndex.value += 1
+    return
+  }
+
+  if (!waitMessages.value.length) return
+
+  typingMessage.value = waitMessages.value[0]
+  typingIndex.value = 0
+  waitMessages.value = waitMessages.value.slice(1)
+
+  displayMessages.value.push({
+    ...typingMessage.value,
+    message: ''
+  })
+}
 
 watch(_uid, async () => {
   if (!_uid.value) return
@@ -115,7 +139,7 @@ const onMessage = async (participatorId: number, message: string) => {
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
-  messages.value.push({
+  waitMessages.value.push({
     message,
     participator,
     simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
@@ -124,7 +148,7 @@ const onMessage = async (participatorId: number, message: string) => {
     datetime: t(timestamp.msg, { VALUE: timestamp.value })
   })
 
-  messages.value = messages.value.map((el) => {
+  waitMessages.value = waitMessages.value.map((el) => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
     return { ...el, datetime: t(timestamp.msg, { VALUE: timestamp.value }) }
   })
@@ -140,10 +164,13 @@ onMounted(async () => {
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking)
   await eSeminar.value.start()
+
+  typingTicker.value = window.setInterval(typing, 100)
 })
 
 onBeforeUnmount(() => {
   eSeminar.value?.stop()
+  if (typingTicker.value) window.clearInterval(typingTicker.value)
 })
 </script>
 
