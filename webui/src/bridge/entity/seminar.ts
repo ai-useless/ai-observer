@@ -9,7 +9,6 @@ export class ESeminar {
   #seminar = undefined as unknown as dbModel.Seminar
   #onMessage = undefined as unknown as MessageFunc
   #onThinking = undefined as unknown as ThinkingFunc
-  #round = 0
 
   constructor(seminar: dbModel.Seminar, onMessage: MessageFunc, onThinking: ThinkingFunc) {
     this.#seminar = seminar
@@ -28,11 +27,6 @@ export class ESeminar {
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
     void this.#onMessage(message.participatorId, message.payload)
-
-    if (this.#round === 0) {
-      void this.nextGuests()
-      this.#round = 1
-    }
   }
 
   start = async () => {
