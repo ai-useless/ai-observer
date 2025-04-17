@@ -1,4 +1,3 @@
-import { SendMessage } from '../../localstores/seminar'
 import axios from 'axios'
 import { constants } from 'src/constant'
 import { dbBridge } from 'src/bridge'
@@ -13,7 +12,7 @@ export enum SeminarEventType {
 export interface ChatRequestPayload {
   seminarId: number
   participatorId: number
-  prompts: SendMessage[]
+  prompts: string[]
 }
 
 export type ChatResponsePayload = {
@@ -52,12 +51,17 @@ export class SeminarRunner {
     try {
       const res = await axios.post(constants.AI_CHAT_HTTP_URL, {
         ai: 'AI1',
-        messages: prompts
+        messages: prompts.map((el) => {
+          return {
+            role: 'user',
+            content: el
+          }
+        })
       })
 
-      const response = res.data as SendMessage
+      const response = (res.data as Record<string, string>).content
 
-      SeminarRunner.bulkStoreResponse(seminarId, participatorId, prompts[prompts.length-1].content, response.content)
+      await SeminarRunner.bulkStoreResponse(seminarId, participatorId, prompts[prompts.length - 1], response)
 
       self.postMessage({
         type: SeminarEventType.CHAT_RESPONSE,

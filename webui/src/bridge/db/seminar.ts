@@ -1,4 +1,4 @@
-import { uid } from 'quasar'
+import { v4 as uuidv4 } from 'uuid'
 import { dbSeminar } from 'src/controller'
 import { _Model } from './model'
 import { _Simulator } from './simulator'
@@ -7,7 +7,7 @@ import { _Participator } from './participator'
 
 export class _Seminar {
   static create = async (topic: string) => {
-    const _uid = uid()
+    const _uid = uuidv4()
     const count = Math.ceil(Math.random() * 5 + 5)
     const participators = [] as dbModel.Participator[]
 
