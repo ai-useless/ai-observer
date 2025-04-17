@@ -26,9 +26,12 @@
 import { dbBridge } from 'src/bridge'
 import { seminar } from 'src/localstore'
 import { dbModel } from 'src/model'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 
 import SimulatorCard from './SimulatorCard.vue'
+
+import { seminarWorker } from 'src/worker'
+import { SendMessage } from '../../localstore/seminar'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -54,11 +57,40 @@ watch(participators, async () => {
   simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
 })
 
+const onStartConference = () => {
+  console.log('topic.value: ', topic.value)
+  if (!topic.value) return
+
+  const seminarId = _seminar.value.id || 1
+  const participatorId = 1
+  const prompts = [{
+    role: 'user',
+    content: topic.value
+  } as SendMessage]
+  console.log('-----seminarId: ', seminarId)
+  seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
+    seminarId: seminarId,
+    participatorId: participatorId,
+    prompts: prompts,
+  })
+}
+
+const onChatRequest = (payload: seminarWorker.ChatResponsePayload) => {
+  const _response = payload.response
+  console.log('_response: ', _response)
+}
+
 onMounted(async () => {
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
+  console.log('_seminar.value: ', _seminar.value)
+  seminarWorker.SeminarWorker.on(seminarWorker.SeminarEventType.CHAT_RESPONSE, onChatRequest as seminarWorker.ListenerFunc)
+  onStartConference()
 })
 
+onBeforeUnmount(() => {
+  seminarWorker.SeminarWorker.off(seminarWorker.SeminarEventType.CHAT_RESPONSE, onChatRequest as seminarWorker.ListenerFunc)
+})
 </script>
 
 <style scoped lang='sass'>
