@@ -66,7 +66,10 @@ export class ESeminar {
       this.#round += 1
     }
     // Start topic round
-    if (this.#subRound === 0) void this.startNextSubTopic()
+    if (this.#subRound === 0) {
+      void this.startNextSubTopic()
+      this.#subRound += 1
+    }
     if (this.#subRound === 5) {
       void this.concludeSubTopic()
       if (this.#onGoingSubTopic === this.#subTopics.length - 1)
