@@ -145,6 +145,11 @@ const typing = () => {
   window.clearInterval(typingTicker.value)
   typingTicker.value = window.setInterval(typing, typingInterval.value)
 
+  displayMessages.value.forEach((el) => {
+    const timestamp = timestamp2HumanReadable(el.timestamp)
+    el.datetime = t(timestamp.msg, { VALUE: timestamp.value })
+  })
+
   if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
     void eSeminar.value.nextGuests()
     requesting.value = true
@@ -215,10 +220,6 @@ const onMessage = async (participatorId: number, message: string, round: number,
     datetime: t(timestamp.msg, { VALUE: timestamp.value }),
     audio,
     duration
-  })
-  displayMessages.value.forEach((el) => {
-    const timestamp = timestamp2HumanReadable(el.timestamp)
-    el.datetime = t(timestamp.msg, { VALUE: timestamp.value })
   })
 
   waitMessages.value = waitMessages.value.map((el) => {
