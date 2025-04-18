@@ -2,15 +2,19 @@ import { dbModel } from 'src/model'
 import { seminarWorker } from 'src/worker'
 import { dbBridge } from '..'
 
-type MessageFunc = (participatorId: number, message: string) => void | Promise<void>
+type MessageFunc = (participatorId: number, message: string, round: number) => void | Promise<void>
+type ThinkingFunc = (participatorId: number) => void
 
 export class ESeminar {
   #seminar = undefined as unknown as dbModel.Seminar
   #onMessage = undefined as unknown as MessageFunc
+  #onThinking = undefined as unknown as ThinkingFunc
+  #round = 0
 
-  constructor(seminar: dbModel.Seminar, onMessage: MessageFunc) {
+  constructor(seminar: dbModel.Seminar, onMessage: MessageFunc, onThinking: ThinkingFunc) {
     this.#seminar = seminar
     this.#onMessage = onMessage
+    this.#onThinking = onThinking
   }
 
   participators = async () => {
@@ -23,9 +27,7 @@ export class ESeminar {
 
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
-    void this.#onMessage(message.participatorId, message.payload)
-
-    void this.nextGuests()
+    void this.#onMessage(message.participatorId, message.payload, this.#round)
   }
 
   start = async () => {
@@ -48,10 +50,14 @@ export class ESeminar {
   }
 
   nextGuests = async () => {
+    this.#round += 1
+
     const participators = await this.participators()
     const { id, topic } = this.#seminar
 
     participators.forEach((el) => {
+      this.#onThinking(el.id as number)
+
       seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
         seminarId: id as number,
         participatorId: el.id as number,
