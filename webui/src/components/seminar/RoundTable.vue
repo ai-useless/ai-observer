@@ -7,9 +7,10 @@
       padding='8px 16px'
       :disable='inScratch'
     >
-      <q-fab-action color='grey-4' v-for='(simulator, index) in simulators' :key='index'>
-        <simulator-card :simulator='simulator.simulator' :small='true' :avatar-only='true' />
-        <q-spinner-rings v-if='seminar.Seminar.thinking(simulator.participatorId)' color='red-4' />
+      <q-fab-action flat dense v-for='(simulator, index) in simulators' :key='index'>
+        <simulator-card v-if='simulator.simulator' :simulator='simulator.simulator' :small='true' :avatar-only='true' />
+        <q-spinner-rings v-if='seminar.Seminar.thinking(simulator.participatorId)' color='red-4' style='margin-left: 8px;' />
+        <q-spinner-dots v-if='seminar.Seminar.speaking(simulator.participatorId)' color='red-4' style='margin-left: 8px;' />
       </q-fab-action>
       <template #icon>
         <q-icon :name='inScratch ? "bi-hourglass-split" : "bi-chevron-up"' size='16px' />
@@ -27,7 +28,7 @@
 <script setup lang='ts'>
 import { computed, onMounted, ref, watch } from 'vue'
 import { setting, seminar } from 'src/localstores'
-import { dbBridge } from 'src/bridge'
+import { dbBridge, entityBridge } from 'src/bridge'
 import { dbModel } from 'src/model'
 
 import SimulatorCard from './SimulatorCard.vue'
@@ -38,20 +39,7 @@ const label = computed(() => inScratch.value ? 'Preparing ...' : 'Expand')
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
-const _simulators = ref([] as dbModel.Simulator[])
-
-interface _Simulator {
-  participatorId: number
-  simulator: dbModel.Simulator
-}
-const simulators = computed(() => _simulators.value.map((el) => {
-  return {
-    simulator: el,
-    participatorId: participators.value.find((_el) => _el.simulatorId === el.id)?.id
-  } as _Simulator
-}))
-
-const participatorIds = computed(() => participators.value.map((el) => el.simulatorId))
+const simulators = ref([] as entityBridge.PSimulator[])
 
 watch(_uid, async () => {
   if (!_uid.value) return
@@ -63,7 +51,7 @@ watch(_seminar, async () => {
 })
 
 watch(participators, async () => {
-  _simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
+  simulators.value = await entityBridge.EParticipator.simulators(participators.value)
 })
 
 onMounted(async () => {
@@ -72,3 +60,11 @@ onMounted(async () => {
 })
 
 </script>
+
+<style scoped lang='sass'>
+.q-fab__actions-up
+  left: 20px
+
+.q-fab__actions .q-btn
+  margin: 0
+</style>

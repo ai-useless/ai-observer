@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 export const useSeminarStore = defineStore('seminar', {
   state: () => ({
     uid: undefined as unknown as string,
-    participatorsInThinking: new Map<number, boolean>()
+    participatorsInThinking: new Map<number, boolean>(),
+    participatorInSpeaking: undefined as unknown as number
   }),
   actions: {},
   getters: {}
@@ -30,5 +31,13 @@ export class Seminar {
 
   static thinking = (participatorId: number) => {
     return seminar.participatorsInThinking.has(participatorId)
+  }
+
+  static speak = (participatorId: number) => {
+    seminar.participatorInSpeaking = participatorId
+  }
+
+  static speaking = (participatorId: number) => {
+    return seminar.participatorInSpeaking === participatorId
   }
 }
