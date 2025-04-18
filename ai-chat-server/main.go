@@ -126,21 +126,21 @@ func getResponseHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("cur aiName: ", request.AIName)
 	var aiModel AIModelAPI
 	switch request.AIName {
-	case AI0.AIName:
+	case AI0.Model:
 		aiModel = AI0
-	case AI1.AIName:
+	case AI1.Model:
 		aiModel = AI1
-	case AI2.AIName:
+	case AI2.Model:
 		aiModel = AI2
-	case AI3.AIName:
+	case AI3.Model:
 		aiModel = AI3
-	case AI4.AIName:
+	case AI4.Model:
 		aiModel = AI4
-	case AI5.AIName:
+	case AI5.Model:
 		aiModel = AI5
-	case AI6.AIName:
+	case AI6.Model:
 		aiModel = AI6
-	case AI7.AIName:
+	case AI7.Model:
 		aiModel = AI7
 	default:
 		err := fmt.Errorf("Invalid AIName: %s", request.AIName)
