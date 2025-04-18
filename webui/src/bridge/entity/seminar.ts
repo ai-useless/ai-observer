@@ -2,7 +2,11 @@ import { dbModel } from 'src/model'
 import { seminarWorker } from 'src/worker'
 import { dbBridge } from '..'
 
-type MessageFunc = (participatorId: number, message: string, round: number) => void | Promise<void>
+type MessageFunc = (
+  participatorId: number,
+  message: string,
+  round: number
+) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
 
@@ -20,7 +24,12 @@ export class ESeminar {
 
   #totalRounds = 5
 
-  constructor(seminar: dbModel.Seminar, onMessage: MessageFunc, onThinking: ThinkingFunc, onOutline: OutlineFunc) {
+  constructor(
+    seminar: dbModel.Seminar,
+    onMessage: MessageFunc,
+    onThinking: ThinkingFunc,
+    onOutline: OutlineFunc
+  ) {
     this.#seminar = seminar
     this.#onMessage = onMessage
     this.#onThinking = onThinking
@@ -32,12 +41,18 @@ export class ESeminar {
   }
 
   host = async () => {
-    return (await this.participators()).find((el) => el.role === dbModel.Role.HOST)
+    return (await this.participators()).find(
+      (el) => el.role === dbModel.Role.HOST
+    )
   }
 
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
-    void this.#onMessage(message.participatorId, message.payload.text, this.#round)
+    void this.#onMessage(
+      message.participatorId,
+      message.payload.text,
+      this.#round
+    )
 
     // Outline round
     if (this.#round === 0) {
@@ -50,7 +65,8 @@ export class ESeminar {
     if (this.#subRound === 0) void this.startNextSubTopic()
     if (this.#subRound === 5) {
       void this.concludeSubTopic()
-      if (this.#onGoingSubTopic === this.#subTopics.length - 1) void this.concludeTopic()
+      if (this.#onGoingSubTopic === this.#subTopics.length - 1)
+        void this.concludeTopic()
     }
   }
 
@@ -60,16 +76,22 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
 
-    seminarWorker.SeminarWorker.on(seminarWorker.SeminarEventType.CHAT_RESPONSE, this.onChatResponse)
+    seminarWorker.SeminarWorker.on(
+      seminarWorker.SeminarEventType.CHAT_RESPONSE,
+      this.onChatResponse
+    )
 
-    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
-      seminarId: id as number,
-      participatorId: host.id as number,
-      intent: seminarWorker.Intent.OUTLINE,
-      prompts: {
-        rounds: this.#totalRounds
+    seminarWorker.SeminarWorker.send(
+      seminarWorker.SeminarEventType.CHAT_REQUEST,
+      {
+        seminarId: id as number,
+        participatorId: host.id as number,
+        intent: seminarWorker.Intent.OUTLINE,
+        prompts: {
+          rounds: this.#totalRounds
+        }
       }
-    })
+    )
   }
 
   startTopic = async () => {
@@ -78,14 +100,17 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
 
-    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
-      seminarId: id as number,
-      participatorId: host.id as number,
-      intent: seminarWorker.Intent.START_TOPIC,
-      prompts: {
-        topicMaterial: this.#topicMaterial
+    seminarWorker.SeminarWorker.send(
+      seminarWorker.SeminarEventType.CHAT_REQUEST,
+      {
+        seminarId: id as number,
+        participatorId: host.id as number,
+        intent: seminarWorker.Intent.START_TOPIC,
+        prompts: {
+          topicMaterial: this.#topicMaterial
+        }
       }
-    })
+    )
   }
 
   startNextSubTopic = async () => {
@@ -94,15 +119,18 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
 
-    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
-      seminarId: id as number,
-      participatorId: host.id as number,
-      intent: seminarWorker.Intent.START_SUBTOPIC,
-      prompts: {
-        topicMaterial: this.#topicMaterial,
-        subTopic: this.#subTopics[this.#onGoingSubTopic]
+    seminarWorker.SeminarWorker.send(
+      seminarWorker.SeminarEventType.CHAT_REQUEST,
+      {
+        seminarId: id as number,
+        participatorId: host.id as number,
+        intent: seminarWorker.Intent.START_SUBTOPIC,
+        prompts: {
+          topicMaterial: this.#topicMaterial,
+          subTopic: this.#subTopics[this.#onGoingSubTopic]
+        }
       }
-    })
+    )
   }
 
   concludeSubTopic = async () => {
@@ -113,14 +141,17 @@ export class ESeminar {
 
     this.#subRound = 0
 
-    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
-      seminarId: id as number,
-      participatorId: host.id as number,
-      intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
-      prompts: {
-        subTopic: this.#subTopics[this.#onGoingSubTopic]
+    seminarWorker.SeminarWorker.send(
+      seminarWorker.SeminarEventType.CHAT_REQUEST,
+      {
+        seminarId: id as number,
+        participatorId: host.id as number,
+        intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
+        prompts: {
+          subTopic: this.#subTopics[this.#onGoingSubTopic]
+        }
       }
-    })
+    )
 
     this.#onGoingSubTopic += 1
   }
@@ -131,18 +162,24 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
 
-    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
-      seminarId: id as number,
-      participatorId: host.id as number,
-      intent: seminarWorker.Intent.CONCLUDE,
-      prompts: {
-        topicMaterial: this.#topicMaterial
+    seminarWorker.SeminarWorker.send(
+      seminarWorker.SeminarEventType.CHAT_REQUEST,
+      {
+        seminarId: id as number,
+        participatorId: host.id as number,
+        intent: seminarWorker.Intent.CONCLUDE,
+        prompts: {
+          topicMaterial: this.#topicMaterial
+        }
       }
-    })
+    )
   }
 
   stop = () => {
-    seminarWorker.SeminarWorker.off(seminarWorker.SeminarEventType.CHAT_RESPONSE, this.onChatResponse)
+    seminarWorker.SeminarWorker.off(
+      seminarWorker.SeminarEventType.CHAT_RESPONSE,
+      this.onChatResponse
+    )
   }
 
   nextGuests = async () => {
@@ -155,21 +192,26 @@ export class ESeminar {
     const guests = Math.ceil(Math.random() * participators.length)
     const speakers = [] as dbModel.Participator[]
     for (let i = 0; i < guests; i++) {
-      speakers.push(participators[Math.floor(Math.random() * participators.length)])
+      speakers.push(
+        participators[Math.floor(Math.random() * participators.length)]
+      )
     }
 
     speakers.forEach((el) => {
       this.#onThinking(el.id as number)
 
-      seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
-        seminarId: id as number,
-        participatorId: el.id as number,
-        intent: seminarWorker.Intent.DISCUSS,
-        prompts: {
-          subTopic: topic,
-          hostMessage: topic
+      seminarWorker.SeminarWorker.send(
+        seminarWorker.SeminarEventType.CHAT_REQUEST,
+        {
+          seminarId: id as number,
+          participatorId: el.id as number,
+          intent: seminarWorker.Intent.DISCUSS,
+          prompts: {
+            subTopic: topic,
+            hostMessage: topic
+          }
         }
-      })
+      )
     })
   }
 

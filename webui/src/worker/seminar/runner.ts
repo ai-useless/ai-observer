@@ -40,7 +40,13 @@ export interface DiscussPrompts extends BasePrompts {
   hostMessage: string
 }
 
-export type Prompts = OutlinePrompts | DiscussPrompts |StartTopicPrompts |StartSubTopicPrompts | ConcludeSubTopicPrompts | ConcludeTopicPrompts
+export type Prompts =
+  | OutlinePrompts
+  | DiscussPrompts
+  | StartTopicPrompts
+  | StartSubTopicPrompts
+  | ConcludeSubTopicPrompts
+  | ConcludeTopicPrompts
 
 export interface ChatRequestPayload {
   seminarId: number
@@ -53,16 +59,14 @@ export type ChatResponsePayload = {
   seminarId: number
   participatorId: number
   payload: {
-    json: Record<string, unknown>,
+    json: Record<string, unknown>
     text: string
   }
 }
 
 export interface SeminarEvent {
   type: SeminarEventType
-  payload:
-    | ChatRequestPayload
-    | ChatResponsePayload
+  payload: ChatRequestPayload | ChatResponsePayload
 }
 
 export class SeminarRunner {
@@ -72,72 +76,114 @@ export class SeminarRunner {
     prompt: string,
     response: string
   ) => {
-    await dbBridge._Message.create(
-      seminarId,
-      participatorId,
-      prompt,
-      response
-    )
+    await dbBridge._Message.create(seminarId, participatorId, prompt, response)
   }
 
-  static prompt = async (topic: string, participatorId: number, intent: Intent, prompts: Prompts) => {
-    const participator = await dbBridge._Participator.participator(participatorId)
+  static prompt = async (
+    topic: string,
+    participatorId: number,
+    intent: Intent,
+    prompts: Prompts
+  ) => {
+    const participator =
+      await dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = await dbBridge._Simulator.simulator(participator?.simulatorId)
+    const simulator = await dbBridge._Simulator.simulator(
+      participator?.simulatorId
+    )
     if (!simulator) return
 
     switch (intent) {
-      case Intent.OUTLINE:
-      {
+      case Intent.OUTLINE: {
         const _prompts = prompts as OutlinePrompts
         return Prompt.prompt(intent, topic, _prompts.rounds)
       }
-      case Intent.START_TOPIC:
-      {
+      case Intent.START_TOPIC: {
         const _prompts = prompts as StartTopicPrompts
-        return Prompt.prompt(intent, simulator.personality, _prompts.topicMaterial, 100)
+        return Prompt.prompt(
+          intent,
+          simulator.personality,
+          _prompts.topicMaterial,
+          100
+        )
       }
-      case Intent.START_SUBTOPIC:
-      {
+      case Intent.START_SUBTOPIC: {
         const _prompts = prompts as StartSubTopicPrompts
-        return Prompt.prompt(intent, topic, simulator.personality, _prompts.topicMaterial, _prompts.subTopic, 100)
+        return Prompt.prompt(
+          intent,
+          topic,
+          simulator.personality,
+          _prompts.topicMaterial,
+          _prompts.subTopic,
+          100
+        )
       }
-      case Intent.CONCLUDE_SUBTOPIC:
-      {
+      case Intent.CONCLUDE_SUBTOPIC: {
         const _prompts = prompts as ConcludeSubTopicPrompts
-        return Prompt.prompt(intent, topic, simulator.personality, _prompts.subTopic, 100)
+        return Prompt.prompt(
+          intent,
+          topic,
+          simulator.personality,
+          _prompts.subTopic,
+          100
+        )
       }
-      case Intent.CONCLUDE:
-      {
+      case Intent.CONCLUDE: {
         const _prompts = prompts as ConcludeTopicPrompts
-        return Prompt.prompt(intent, topic, simulator.personality, _prompts.topicMaterial, 100)
+        return Prompt.prompt(
+          intent,
+          topic,
+          simulator.personality,
+          _prompts.topicMaterial,
+          100
+        )
       }
-      case Intent.DISCUSS:
-      {
+      case Intent.DISCUSS: {
         const _prompts = prompts as DiscussPrompts
-        return Prompt.prompt(intent, topic, _prompts.subTopic, simulator.personality, _prompts.hostMessage, 100)
+        return Prompt.prompt(
+          intent,
+          topic,
+          _prompts.subTopic,
+          simulator.personality,
+          _prompts.hostMessage,
+          100
+        )
       }
     }
   }
 
-  static requestParticipatorChat = async (topic: string, participatorId: number, intent: Intent, prompts: Prompts) => {
-    const participator = await dbBridge._Participator.participator(participatorId)
+  static requestParticipatorChat = async (
+    topic: string,
+    participatorId: number,
+    intent: Intent,
+    prompts: Prompts
+  ) => {
+    const participator =
+      await dbBridge._Participator.participator(participatorId)
     if (!participator) return
 
     const model = await dbBridge._Model.model(participator.modelId)
     if (!model) return
 
-    const prompt = await SeminarRunner.prompt(topic, participatorId, intent, prompts)
+    const prompt = await SeminarRunner.prompt(
+      topic,
+      participatorId,
+      intent,
+      prompts
+    )
 
-    const resp = await axios.post(/* model.endpoint || */ constants.FALLBACK_API, {
-      ai: 'AI1',
-      messages: [prompt, ...(prompts.historyMessages || [])].map((el) => {
-        return {
-          role: 'user',
-          content: el
-        }
-      })
-    })
+    const resp = await axios.post(
+      /* model.endpoint || */ constants.FALLBACK_API,
+      {
+        ai: 'AI1',
+        messages: [prompt, ...(prompts.historyMessages || [])].map((el) => {
+          return {
+            role: 'user',
+            content: el
+          }
+        })
+      }
+    )
     return (resp.data as Record<string, string>).content
   }
 
@@ -148,13 +194,27 @@ export class SeminarRunner {
     if (!seminar) return
 
     try {
-      const response = await SeminarRunner.requestParticipatorChat(seminar?.topic, participatorId, intent, prompts)
+      const response = await SeminarRunner.requestParticipatorChat(
+        seminar?.topic,
+        participatorId,
+        intent,
+        prompts
+      )
       if (!response) return
 
-      const json = Prompt.postProcess(intent, response) as Record<string, string>
+      const json = Prompt.postProcess(intent, response) as Record<
+        string,
+        string
+      >
       if (json) json.topic = seminar.topic
 
-      await SeminarRunner.bulkStoreResponse(seminarId, participatorId, prompts.historyMessages?.[prompts.historyMessages.length - 1] || seminar.topic, response)
+      await SeminarRunner.bulkStoreResponse(
+        seminarId,
+        participatorId,
+        prompts.historyMessages?.[prompts.historyMessages.length - 1] ||
+          seminar.topic,
+        response
+      )
 
       self.postMessage({
         type: SeminarEventType.CHAT_RESPONSE,

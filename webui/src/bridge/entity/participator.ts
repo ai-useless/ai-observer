@@ -9,7 +9,9 @@ export interface PSimulator {
 
 export class EParticipator {
   static simulators = async (participators: dbModel.Participator[]) => {
-    const simulators = await _Simulator.simulators(participators.map((el) => el.simulatorId))
+    const simulators = await _Simulator.simulators(
+      participators.map((el) => el.simulatorId)
+    )
     return participators.map((el) => {
       return {
         participatorId: el.id,
