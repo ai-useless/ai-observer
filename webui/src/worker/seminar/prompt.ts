@@ -18,7 +18,7 @@ export const Prompts = new Map<Intent, IntentFunc>([
     ) => `请你就“${topic}”这个主题，拆解出${rounds || 5}个递进层次的小主题，要求只输出主题和主题
           相关素材（格式如下：本期主题：xxxxx,(1).xxxxx，素材：xxxx；(2).xxxxxxx，素材：xxxxxxx）,
           要求: 1) 行首不要有空格 2) 分级资料按照2个空格缩进 3) 要html格式，不要返回markdown
-          4) 一级标题用20号字加粗，二级标题用16号字加粗，普通内容不加粗，行高1.5em`) as IntentFunc
+          4) 一级标题用16号字加粗，二级标题用14号字加粗，普通内容不加粗，行高1.5em`) as IntentFunc
   ],
   [
     Intent.DISCUSS,
@@ -32,7 +32,7 @@ export const Prompts = new Map<Intent, IntentFunc>([
           主持人对你说的话为："${hostMessage}"，请你作为嘉宾，用你的人设发表你对该小主题的看法，要求：1) 只把发言内容
           输出出来，不允许有表情，标签，换行符和提示 2) 发言时间≤${speakDuration}秒，小于100字 3) 发言内容符合自己的人设和主观
           4) 人物情绪普遍理性客观中立，但带有各自社群特征 5) 不要包含分析过程 6) 行首不要有空格 7) 分级资料按照2个空格缩进
-          8) 要html格式，不要返回markdown 9) 把连续多个空格合并成一个  10) 一级标题用20号字加粗，二级标题用16号字加粗，普通内容不加粗，行高1.5em`) as IntentFunc
+          8) 要html格式，不要返回markdown 9) 把连续多个空格合并成一个 10) 行高1.5em`) as IntentFunc
   ],
   [
     Intent.START_TOPIC,
