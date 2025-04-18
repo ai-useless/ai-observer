@@ -7,11 +7,12 @@ export enum SeminarEventType {
   CHAT_REQUEST = 'ChatRequest',
   CHAT_RESPONSE = 'ChatResponse',
 
-  Error = 'Error'
+  ERROR = 'Error'
 }
 
 export interface BasePrompts {
   historyMessages?: string[]
+  generateAudio?: boolean
 }
 
 export interface OutlinePrompts extends BasePrompts {
@@ -69,6 +70,12 @@ export type ChatResponsePayload = {
 export interface SeminarEvent {
   type: SeminarEventType
   payload: ChatRequestPayload | ChatResponsePayload
+}
+
+export type ErrorResponsePayload = {
+  error: string
+  type: SeminarEventType
+  payload: ChatRequestPayload
 }
 
 export class SeminarRunner {
@@ -189,6 +196,14 @@ export class SeminarRunner {
       }
     )
 
+    if (!prompts.generateAudio) {
+      return {
+        text: (resp.data as Record<string, string>).content,
+        audio: '',
+        duration: 0
+      }
+    }
+
     const speechContent = (resp.data as Record<string, string>).content
     const audioResp = await axios.post(
       /* model.endpoint || */ constants.AUDIO_API,
@@ -241,13 +256,20 @@ export class SeminarRunner {
         payload: {
           seminarId,
           participatorId,
-          payload: response
+          payload: {
+            ...response,
+            json
+          }
         }
       })
     } catch (e) {
       self.postMessage({
-        type: SeminarEventType.Error,
-        payload: e
+        type: SeminarEventType.ERROR,
+        payload: {
+          error: JSON.stringify(e),
+          type: SeminarEventType.CHAT_REQUEST,
+          payload
+        }
       })
     }
   }

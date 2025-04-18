@@ -112,11 +112,20 @@ const displayMessages = ref([] as Message[])
 const waitMessages = ref([] as Message[])
 const typingMessage = ref(undefined as unknown as Message)
 const typingIndex = ref(0)
-const typingTicker = ref(-1)
 const lastRound = ref(0)
 const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 const outline = ref(undefined as unknown as Record<string, unknown>)
+
+const typingInterval = ref(80)
+const typingTicker = ref(-1)
+
+const calculateTypingInterval = () => {
+  if (typingMessage.value.audio?.length) {
+    const interval = Math.ceil(typingMessage.value?.duration * 1000 / typingMessage.value.message?.length)
+    typingInterval.value = interval
+  }
+}
 
 const typing = () => {
   if (!typingMessage.value && !waitMessages.value.length) return
@@ -135,6 +144,10 @@ const typing = () => {
   waitMessages.value = waitMessages.value.slice(1)
   seminar.Seminar.speak(typingMessage.value.participator.id as number)
 
+  calculateTypingInterval()
+  window.clearInterval(typingTicker.value)
+  typingTicker.value = window.setInterval(typing, typingInterval.value)
+
   if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
     void eSeminar.value.nextGuests()
     requesting.value = true
@@ -146,7 +159,7 @@ const typing = () => {
   })
 }
 
-const audioPlay = async (base64Data: string) => {
+const playAudio = async (base64Data: string) => {
   try {
     const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
 
@@ -181,8 +194,9 @@ watch(participators, async () => {
 })
 
 watch(typingMessage, () => {
+  if (!typingMessage.value.audio?.length) return
   const audio = typingMessage.value.audio
-  void audioPlay(audio)
+  void playAudio(audio)
 })
 
 const onMessage = async (participatorId: number, message: string, round: number, audio: string, duration: number) => {
