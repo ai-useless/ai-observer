@@ -81,6 +81,19 @@ export class ESeminar {
     }
   }
 
+  onError = (error: seminarWorker.ErrorResponsePayload) => {
+    const { id } = this.#seminar
+    
+    setTimeout(() => {
+      this.host().then((host) => {
+        seminarWorker.SeminarWorker.send(
+          seminarWorker.SeminarEventType.CHAT_REQUEST,
+          error.payload
+        )
+      })
+    }, 1000)
+  }
+
   shouldNext = () => {
     // User can only speak after round 2
     return this.#round > 1 && this.#subRound > 0
@@ -94,7 +107,11 @@ export class ESeminar {
 
     seminarWorker.SeminarWorker.on(
       seminarWorker.SeminarEventType.CHAT_RESPONSE,
-      this.onChatResponse
+      this.onChatResponse as seminarWorker.ListenerFunc
+    )
+    seminarWorker.SeminarWorker.on(
+      seminarWorker.SeminarEventType.ERROR,
+      this.onError as seminarWorker.ListenerFunc
     )
 
     seminarWorker.SeminarWorker.send(
@@ -125,7 +142,8 @@ export class ESeminar {
         participatorId: host.id as number,
         intent: seminarWorker.Intent.START_TOPIC,
         prompts: {
-          topicMaterial: this.#topicMaterial
+          topicMaterial: this.#topicMaterial,
+          generateAudio: true
         }
       }
     )
@@ -146,7 +164,8 @@ export class ESeminar {
         intent: seminarWorker.Intent.START_SUBTOPIC,
         prompts: {
           topicMaterial: this.#topicMaterial,
-          subTopic: this.#subTopics[this.#onGoingSubTopic]
+          subTopic: this.#subTopics[this.#onGoingSubTopic],
+          generateAudio: true
         }
       }
     )
@@ -167,7 +186,8 @@ export class ESeminar {
         participatorId: host.id as number,
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
         prompts: {
-          subTopic: this.#subTopics[this.#onGoingSubTopic]
+          subTopic: this.#subTopics[this.#onGoingSubTopic],
+          generateAudio: true
         }
       }
     )
@@ -188,7 +208,8 @@ export class ESeminar {
         participatorId: host.id as number,
         intent: seminarWorker.Intent.CONCLUDE,
         prompts: {
-          topicMaterial: this.#topicMaterial
+          topicMaterial: this.#topicMaterial,
+          generateAudio: true
         }
       }
     )
@@ -197,7 +218,11 @@ export class ESeminar {
   stop = () => {
     seminarWorker.SeminarWorker.off(
       seminarWorker.SeminarEventType.CHAT_RESPONSE,
-      this.onChatResponse
+      this.onChatResponse as seminarWorker.ListenerFunc
+    )
+    seminarWorker.SeminarWorker.off(
+      seminarWorker.SeminarEventType.ERROR,
+      this.onError as seminarWorker.ListenerFunc
     )
   }
 
@@ -227,7 +252,8 @@ export class ESeminar {
           intent: seminarWorker.Intent.DISCUSS,
           prompts: {
             subTopic: topic,
-            hostMessage: topic
+            hostMessage: topic,
+            generateAudio: true
           }
         }
       )

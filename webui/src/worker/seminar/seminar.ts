@@ -1,11 +1,12 @@
 import {
   ChatRequestPayload,
   ChatResponsePayload,
+  ErrorResponsePayload,
   SeminarEvent,
   SeminarEventType
 } from './runner'
 
-type SeminarResponseType = ChatResponsePayload
+type SeminarResponseType = ChatResponsePayload | ErrorResponsePayload
 export type ListenerFunc = (payload: SeminarResponseType) => void
 
 export class SeminarWorker {
