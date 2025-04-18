@@ -6,12 +6,12 @@
         {{ topic }}
       </div>
       <div class='row'>
-        <simulator-card v-if='host' :simulator='host' :small='false' />
+        <simulator-card v-if='host' :simulator='host.simulator' :small='false' />
         <div class='flex justify-end items-end' style='margin-left: 24px;'>
           <simulator-card
             :style='{marginLeft: index === 0 ? "0" : "16px"}'
             v-for='(guest, index) in guests'
-            :simulator='guest'
+            :simulator='guest.simulator'
             :small='true'
             :key='index'
           />
@@ -73,13 +73,11 @@ const { t } = useI18n({ useScope: 'global' })
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
-const simulators = ref([] as dbModel.Simulator[])
+const simulators = ref([] as entityBridge.PSimulator[])
 
 const topic = computed(() => _seminar.value?.topic)
-const host = computed(() => simulators.value.find((el) => el.id === participators.value.find((el) => el.role === dbModel.Role.HOST)?.simulatorId))
-const participatorIds = computed(() => participators.value.map((el) => el.simulatorId))
-const guestIds = computed(() => participators.value.filter((el) => el.role === dbModel.Role.GUEST).map((el) => el.simulatorId))
-const guests = computed(() => simulators.value.filter((el) => guestIds.value.includes(el.id as number)))
+const host = computed(() => simulators.value.find((el) => el.participatorId === participators.value.find((el) => el.role === dbModel.Role.HOST)?.id))
+const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
 interface Message {
   round: number
@@ -115,6 +113,7 @@ const typing = () => {
   typingMessage.value = waitMessages.value[0]
   typingIndex.value = 0
   waitMessages.value = waitMessages.value.slice(1)
+  seminar.Seminar.speak(typingMessage.value.participator.id as number)
 
   if (typingMessage.value.round === lastRound.value && !requesting.value) {
     void eSeminar.value.nextGuests()
@@ -137,7 +136,7 @@ watch(_seminar, async () => {
 })
 
 watch(participators, async () => {
-  simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
+  simulators.value = await entityBridge.EParticipator.simulators(participators.value)
 })
 
 const onMessage = async (participatorId: number, message: string, round: number) => {

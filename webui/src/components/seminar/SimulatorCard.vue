@@ -1,8 +1,14 @@
 <template>
   <div class='text-center'>
-    <q-avatar :size='small ? "32px" : "64px"'>
-      <q-img :src='simulator.avatar' />
-    </q-avatar>
+    <div class='row'>
+      <q-space />
+      <div class='avatar' :style='{ width: small ? "52px" : "68px" }'>
+        <q-avatar :size='small ? "48px" : "64px"'>
+          <q-img :src='simulator.avatar' />
+        </q-avatar>
+      </div>
+      <q-space />
+    </div>
     <div v-if='!avatarOnly' class='text-grey-8'>
       {{ $t(simulator.name) }}
     </div>
@@ -25,3 +31,10 @@ const small = toRef(props, 'small')
 const avatarOnly = toRef(props, 'avatarOnly')
 
 </script>
+
+<style scope lang='sass'>
+.avatar
+  border: 1px solid $red-4
+  padding: 1px
+  border-radius: 50%
+</style>
