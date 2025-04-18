@@ -33,6 +33,8 @@
         ref='chatBox'
         :bar-style='{ width: "2px" }'
         :thumb-style='{ width: "2px" }'
+        @mouseenter='autoScroll = false'
+        @mouseleave='autoScroll = true'
       >
         <div style='margin-top: 16px;'>
           <q-chat-message
@@ -88,6 +90,7 @@ const simulators = ref([] as entityBridge.PSimulator[])
 const chatBox = ref<QScrollArea>()
 const chatBoxHeight = ref(0)
 const showTitle = ref(true)
+const autoScroll = ref(true)
 
 const topic = computed(() => _seminar.value?.topic)
 const host = computed(() => simulators.value.find((el) => el.participatorId === participators.value.find((el) => el.role === dbModel.Role.HOST)?.id))
@@ -237,7 +240,7 @@ const onOutline = (json: Record<string, unknown>) => {
 }
 
 const onChatBoxResize = (size: { height: number }) => {
-  chatBox.value?.setScrollPosition('vertical', size.height, 300)
+  if (autoScroll.value) chatBox.value?.setScrollPosition('vertical', size.height, 300)
   showTitle.value = size.height < chatBoxHeight.value - 84 - 89 - 60
 }
 
