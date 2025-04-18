@@ -6,9 +6,16 @@
       direction='up'
       padding='8px 16px'
       :disable='inScratch'
+      v-model='expand'
     >
       <q-fab-action flat dense v-for='(simulator, index) in simulators' :key='index'>
-        <simulator-card v-if='simulator.simulator' :simulator='simulator.simulator' :small='true' :avatar-only='true' />
+        <simulator-card
+          v-if='simulator.simulator'
+          :simulator='simulator.simulator'
+          :small='true'
+          :avatar-only='true'
+          :is-host='simulator.isHost'
+        />
         <q-spinner-rings v-if='seminar.Seminar.thinking(simulator.participatorId)' color='red-4' style='margin-left: 8px;' />
         <q-spinner-dots v-if='seminar.Seminar.speaking(simulator.participatorId)' color='red-4' style='margin-left: 8px;' />
       </q-fab-action>
@@ -40,6 +47,7 @@ const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
+const expand = ref(true)
 
 watch(_uid, async () => {
   if (!_uid.value) return
