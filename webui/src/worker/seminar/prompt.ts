@@ -19,7 +19,20 @@ export class Prompt {
     return Prompts.get(intent)?.(..._args)
   }
 
-  static outline = (content: string) => {
-    console.log(content)
+  static postProcess = (intent: Intent, content: string): Record<string, unknown> | undefined => {
+    const json = {
+      titles: [] as string[]
+    } as Record<string, string[]>
+
+    if (intent === Intent.OUTLINE) {
+      const lines = content.split('\n')
+      for (const line of lines) {
+        if (/^\(\d\)/i.test(line)) {
+          json.titles.push(line.split(', 素材')[0])
+        }
+      }
+      return json
+    }
+    return undefined
   }
 }

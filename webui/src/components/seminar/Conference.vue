@@ -63,6 +63,7 @@
         </div>
       </q-scroll-area>
     </div>
+    <Outline v-if='outline' :json='outline' style='margin-left: 16px;' :active-index='0' />
     <q-space />
   </div>
 </template>
@@ -78,6 +79,7 @@ import { useI18n } from 'vue-i18n'
 import { QScrollArea } from 'quasar'
 
 import SimulatorCard from './SimulatorCard.vue'
+import Outline from './Outline.vue'
 
 const { t } = useI18n({ useScope: 'global' })
 
@@ -112,6 +114,7 @@ const typingTicker = ref(-1)
 const lastRound = ref(0)
 const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
+const outline = ref(undefined as unknown as Record<string, unknown>)
 
 const typing = () => {
   if (!typingMessage.value && !waitMessages.value.length) return
@@ -183,6 +186,10 @@ const onThinking = (participatorId: number) => {
   seminar.Seminar.startThink(participatorId)
 }
 
+const onOutline = (json: Record<string, unknown>) => {
+  outline.value = json
+}
+
 const onChatBoxResize = (size: { height: number }) => {
   chatBox.value?.setScrollPosition('vertical', size.height, 300)
   showTitle.value = size.height < chatBoxHeight.value - 84 - 89 - 60
@@ -194,7 +201,7 @@ onMounted(async () => {
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
-  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking)
+  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline)
   await eSeminar.value.start()
 
   typingTicker.value = window.setInterval(typing, 80)

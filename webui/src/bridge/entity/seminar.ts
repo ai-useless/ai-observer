@@ -4,17 +4,20 @@ import { dbBridge } from '..'
 
 type MessageFunc = (participatorId: number, message: string, round: number) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
+type OutlineFunc = (json: Record<string, unknown>) => void
 
 export class ESeminar {
   #seminar = undefined as unknown as dbModel.Seminar
   #onMessage = undefined as unknown as MessageFunc
   #onThinking = undefined as unknown as ThinkingFunc
+  #onOutline = undefined as unknown as OutlineFunc
   #round = 0
 
-  constructor(seminar: dbModel.Seminar, onMessage: MessageFunc, onThinking: ThinkingFunc) {
+  constructor(seminar: dbModel.Seminar, onMessage: MessageFunc, onThinking: ThinkingFunc, onOutline: OutlineFunc) {
     this.#seminar = seminar
     this.#onMessage = onMessage
     this.#onThinking = onThinking
+    this.#onOutline = onOutline
   }
 
   participators = async () => {
@@ -27,7 +30,9 @@ export class ESeminar {
 
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
-    void this.#onMessage(message.participatorId, message.payload, this.#round)
+    void this.#onMessage(message.participatorId, message.payload.text, this.#round)
+
+    if (!this.#round) this.#onOutline(message.payload.json)
   }
 
   start = async () => {
@@ -46,7 +51,6 @@ export class ESeminar {
         rounds: 5
       }
     })
-    // TODO: parse host message and outline
   }
 
   stop = () => {
