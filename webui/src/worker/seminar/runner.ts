@@ -87,12 +87,17 @@ export class SeminarRunner {
     audio: string,
     duration: number
   ) => {
-    await dbBridge._Message.create(seminarId, participatorId, prompt, content, audio, duration)
+    await dbBridge._Message.create(
+      seminarId,
+      participatorId,
+      prompt,
+      content,
+      audio,
+      duration
+    )
   }
 
-  static speakerVoice = async (
-    participatorId: number
-  ) => {
+  static speakerVoice = async (participatorId: number) => {
     const participator =
       await dbBridge._Participator.participator(participatorId)
     if (!participator) return
@@ -129,6 +134,17 @@ export class SeminarRunner {
           intent,
           simulator.personality,
           _prompts.topicMaterial,
+          100
+        )
+      }
+      case Intent.START_FIRST_SUBTOPIC: {
+        const _prompts = prompts as StartSubTopicPrompts
+        return Prompt.prompt(
+          intent,
+          topic,
+          simulator.personality,
+          _prompts.topicMaterial,
+          _prompts.subTopic,
           100
         )
       }

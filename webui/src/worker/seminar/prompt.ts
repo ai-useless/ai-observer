@@ -2,6 +2,7 @@ export enum Intent {
   OUTLINE = 'Outline',
   DISCUSS = 'Discuss',
   START_TOPIC = 'StartTopic',
+  START_FIRST_SUBTOPIC = 'StartFirstTopic',
   START_SUBTOPIC = 'StartSubTopic',
   CONCLUDE_SUBTOPIC = 'ConcludeSubTopic',
   CONCLUDE = 'Conclude'
@@ -46,6 +47,20 @@ export const Prompts = new Map<Intent, IntentFunc>([
           8) 把连续多个空格合并成一个 9) 一级标题用20号字加粗，二级标题用16号字加粗，普通内容不加粗，行高1.5em 10) 根据语义需要分段`) as IntentFunc
   ],
   [
+    Intent.START_FIRST_SUBTOPIC,
+    ((
+      topic: string,
+      personality: string,
+      topicMaterial: string,
+      subTopic: string,
+      speakDuration: number
+    ) => `你的人设是${personality}，今天讨论的主题为："${topic}",
+          本期节目的主要内容为${topicMaterial}, 现在进入今天的第一个主题主题${subTopic}，以“那么我们进从${subTopic}开始”结束，要求：
+          1) 直接输出发言内容，不允许有表情，标签，换行符和提示 2) 发言时间≤${speakDuration}秒，小于100字 3) 人物情绪普遍理性客观中立，但带有各自社群特征
+          4) 不要包含分析过程 5) 行首不要有空格 6) 分级资料按照2个空格缩进 7) 要html格式，不要返回markdown 8) 把连续多个空格合并成一个
+          9) 一级标题用20号字加粗，二级标题用16号字加粗，普通内容不加粗，行高1.5em 10) 根据语义需要分段`) as IntentFunc
+  ],
+  [
     Intent.START_SUBTOPIC,
     ((
       topic: string,
@@ -54,7 +69,7 @@ export const Prompts = new Map<Intent, IntentFunc>([
       subTopic: string,
       speakDuration: number
     ) => `你的人设是${personality}，今天讨论的主题为："${topic}",
-          本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段阶段，以“那么我们进入下一个讨论主题”结束，要求：
+          本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段，以“那么我们进入下一个讨论主题”结束，要求：
           1) 直接输出发言内容，不允许有表情，标签，换行符和提示 2) 发言时间≤${speakDuration}秒，小于100字 3) 人物情绪普遍理性客观中立，但带有各自社群特征
           4) 不要包含分析过程 5) 行首不要有空格 6) 分级资料按照2个空格缩进 7) 要html格式，不要返回markdown 8) 把连续多个空格合并成一个
           9) 一级标题用20号字加粗，二级标题用16号字加粗，普通内容不加粗，行高1.5em 10) 根据语义需要分段`) as IntentFunc

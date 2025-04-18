@@ -83,14 +83,16 @@ export class ESeminar {
 
   onError = (error: seminarWorker.ErrorResponsePayload) => {
     setTimeout(() => {
-      this.host().then(() => {
-        seminarWorker.SeminarWorker.send(
-          seminarWorker.SeminarEventType.CHAT_REQUEST,
-          error.payload
-        )
-      }).catch(() => {
-        // DO NOTHING
-      })
+      this.host()
+        .then(() => {
+          seminarWorker.SeminarWorker.send(
+            seminarWorker.SeminarEventType.CHAT_REQUEST,
+            error.payload
+          )
+        })
+        .catch(() => {
+          // DO NOTHING
+        })
     }, 1000)
   }
 
@@ -161,7 +163,10 @@ export class ESeminar {
       {
         seminarId: id as number,
         participatorId: host.id as number,
-        intent: seminarWorker.Intent.START_SUBTOPIC,
+        intent:
+          this.#onGoingSubTopic === 0
+            ? seminarWorker.Intent.START_FIRST_SUBTOPIC
+            : seminarWorker.Intent.START_SUBTOPIC,
         prompts: {
           topicMaterial: this.#topicMaterial,
           subTopic: this.#subTopics[this.#onGoingSubTopic],
