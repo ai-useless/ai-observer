@@ -16,13 +16,13 @@ export class ESeminar {
   #onThinking = undefined as unknown as ThinkingFunc
   #onOutline = undefined as unknown as OutlineFunc
 
-  #round = 0
   #onGoingSubTopic = 0
-  #subRound = 0
   #topicMaterial = undefined as unknown as string
   #subTopics = [] as string[]
 
   #totalRounds = 5
+  #subRound = 0
+  #round = 0
 
   constructor(
     seminar: dbModel.Seminar,
@@ -66,7 +66,7 @@ export class ESeminar {
       this.#round += 1
     }
     // Start topic round
-    if (this.#subRound === 0) {
+    if (this.#round > 1 && this.#subRound === 0) {
       void this.startNextSubTopic()
       this.#subRound += 1
     }
@@ -79,7 +79,7 @@ export class ESeminar {
 
   shouldNext = () => {
     // User can only speak after round 2
-    return this.#round > 1
+    return this.#round > 1 && this.#subRound > 0
   }
 
   start = async () => {
@@ -132,6 +132,7 @@ export class ESeminar {
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
+    if (!this.#subTopics.length) return
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
