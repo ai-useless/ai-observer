@@ -1,7 +1,7 @@
 <template>
   <div class='row'>
     <q-space />
-    <div style='width: 100%; max-width: 800px;'>
+    <div style='width: 100%; max-width: 960px;'>
       <div class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0;'>
         {{ topic }}
       </div>
