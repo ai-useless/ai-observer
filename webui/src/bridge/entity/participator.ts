@@ -4,6 +4,7 @@ import { _Simulator } from '../db'
 export interface PSimulator {
   participatorId: number
   simulator: dbModel.Simulator
+  isHost: boolean
 }
 
 export class EParticipator {
@@ -12,7 +13,8 @@ export class EParticipator {
     return participators.map((el) => {
       return {
         participatorId: el.id,
-        simulator: simulators.find((_el) => el.simulatorId === _el.id)
+        simulator: simulators.find((_el) => el.simulatorId === _el.id),
+        isHost: el.role === dbModel.Role.HOST
       } as PSimulator
     })
   }

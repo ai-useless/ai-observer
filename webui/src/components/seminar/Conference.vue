@@ -1,12 +1,12 @@
 <template>
   <div class='row'>
     <q-space />
-    <div style='width: 100%; max-width: 960px;'>
+    <div style='width: 100%; max-width: 960px; max-height: 100%;'>
       <div class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0;'>
         {{ topic }}
       </div>
       <div class='row'>
-        <simulator-card v-if='host' :simulator='host.simulator' :small='false' />
+        <simulator-card v-if='host' :simulator='host.simulator' :small='false' :is-host='true' />
         <div class='flex justify-end items-end' style='margin-left: 24px;'>
           <simulator-card
             :style='{marginLeft: index === 0 ? "0" : "16px"}'
@@ -14,6 +14,7 @@
             :simulator='guest.simulator'
             :small='true'
             :key='index'
+            :is-host='false'
           />
         </div>
       </div>
@@ -26,32 +27,41 @@
         <q-spinner-facebook class='text-red-4' size='128px' />
         <div>Host is preparing scripts...</div>
       </div>
-      <div v-else style='margin-top: 16px'>
-        <q-chat-message
-          v-for='(message, index) in displayMessages'
-          :key='index'
-          :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
-          :avatar='message.simulator.avatar'
-          :stamp='message.datetime'
-          :text='[message.message]'
-          text-color='grey-9'
-          bg-color='grey-2'
-        >
-          <template #name>
-            <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
-              <div>
-                {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+      <q-scroll-area
+        v-else
+        :style='{ height: chatBoxHeight + "px" }'
+        ref='chatBox'
+        :bar-style='{ width: "2px" }'
+        :thumb-style='{ width: "2px" }'
+      >
+        <div style='margin-top: 16px;'>
+          <q-chat-message
+            v-for='(message, index) in displayMessages'
+            :key='index'
+            :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
+            :avatar='message.simulator.avatar'
+            :stamp='message.datetime'
+            :text='[message.message]'
+            text-color='grey-9'
+            bg-color='grey-2'
+          >
+            <template #name>
+              <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
+                <div>
+                  {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+                </div>
+                <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
+                <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
+                <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
               </div>
-              <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-              <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-              <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-            </div>
-          </template>
-          <q-markdown :key='message.message'>
-            {{ message.message }}
-          </q-markdown>
-        </q-chat-message>
-      </div>
+            </template>
+            <q-markdown :key='message.message'>
+              {{ message.message }}
+            </q-markdown>
+          </q-chat-message>
+          <q-resize-observer @resize='onChatBoxResize' />
+        </div>
+      </q-scroll-area>
     </div>
     <q-space />
   </div>
@@ -65,6 +75,7 @@ import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { QMarkdown } from '@quasar/quasar-ui-qmarkdown'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { useI18n } from 'vue-i18n'
+import { QScrollArea } from 'quasar'
 
 import SimulatorCard from './SimulatorCard.vue'
 
@@ -74,6 +85,9 @@ const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
+
+const chatBox = ref<QScrollArea>()
+const chatBoxHeight = ref(0)
 
 const topic = computed(() => _seminar.value?.topic)
 const host = computed(() => simulators.value.find((el) => el.participatorId === participators.value.find((el) => el.role === dbModel.Role.HOST)?.id))
@@ -168,14 +182,20 @@ const onThinking = (participatorId: number) => {
   seminar.Seminar.startThink(participatorId)
 }
 
+const onChatBoxResize = (size: { height: number }) => {
+  chatBox.value?.setScrollPosition('vertical', size.height, 300)
+}
+
 onMounted(async () => {
+  chatBoxHeight.value = window.innerHeight - 50 - 84 - 89 - 60
+
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking)
   await eSeminar.value.start()
 
-  typingTicker.value = window.setInterval(typing, 100)
+  typingTicker.value = window.setInterval(typing, 10)
 })
 
 onBeforeUnmount(() => {
