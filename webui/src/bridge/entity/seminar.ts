@@ -48,6 +48,9 @@ export class ESeminar {
 
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
+
+    if (this.#round === 1) this.#round += 1
+
     void this.#onMessage(
       message.participatorId,
       message.payload.text,
@@ -60,6 +63,7 @@ export class ESeminar {
       this.#topicMaterial = message.payload.text
       this.#subTopics = message.payload.json.titles as string[]
       void this.startTopic()
+      this.#round += 1
     }
     // Start topic round
     if (this.#subRound === 0) void this.startNextSubTopic()
@@ -68,6 +72,11 @@ export class ESeminar {
       if (this.#onGoingSubTopic === this.#subTopics.length - 1)
         void this.concludeTopic()
     }
+  }
+
+  shouldNext = () => {
+    // User can only speak after round 2
+    return this.#round > 1
   }
 
   start = async () => {
