@@ -1643,10 +1643,9 @@
   resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-apollo/-/quasar-app-extension-apollo-2.2.4.tgz#020de1ae2532913d68a559f6464d85f030ceedad"
   integrity sha512-G7FXNi5fnMeBNDU3A9762mRjmI1Ycv1WWOW0vySCbRLpunsN0W2GAijTQsBGAGTVZnRd8/yroYZOIG7EsIXPBg==
 
-"@quasar/quasar-app-extension-qmarkdown@^2.0.0-beta.10":
+"@quasar/quasar-app-extension-qmarkdown@^2.0.0-beta.10", "@quasar/quasar-app-extension-qmarkdown@https://registry.npmmirror.com/@quasar/quasar-app-extension-qmarkdown/-/quasar-app-extension-qmarkdown-2.0.0-beta.10.tgz#dba04cb04c6fe5cb2a7fe9f367f73a7f0c843dd1":
   version "2.0.0-beta.10"
-  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-qmarkdown/-/quasar-app-extension-qmarkdown-2.0.0-beta.10.tgz#dba04cb04c6fe5cb2a7fe9f367f73a7f0c843dd1"
-  integrity sha512-D/2/oxMiNM19D7p1xAkWG5ptW3IzXmLwGtmtqbDJ0gmtzYvkqQxzimdst9uUyZs6G3jmMQSdCN6mJ/iZcyw38g==
+  resolved "https://registry.npmmirror.com/@quasar/quasar-app-extension-qmarkdown/-/quasar-app-extension-qmarkdown-2.0.0-beta.10.tgz#dba04cb04c6fe5cb2a7fe9f367f73a7f0c843dd1"
   dependencies:
     "@quasar/quasar-ui-qmarkdown" "^2.0.0-beta.10"
     front-matter "^4.0.2"

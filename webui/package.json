@@ -103,6 +103,7 @@
     "yarn": ">= 1.21.1"
   },
   "resolutions": {
-    "@metamask/rpc-errors": "^6.2.1"
+    "@metamask/rpc-errors": "^6.2.1",
+    "@quasar/quasar-app-extension-qmarkdown": "https://registry.npmmirror.com/@quasar/quasar-app-extension-qmarkdown/-/quasar-app-extension-qmarkdown-2.0.0-beta.10.tgz#dba04cb04c6fe5cb2a7fe9f367f73a7f0c843dd1"
   }
 }
