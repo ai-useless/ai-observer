@@ -5,21 +5,18 @@ export class _Message {
     seminarId: number,
     participatorId: number,
     prompt: string,
-    content: string
+    content: string,
+    audio: string,
+    duration: number
   ) => {
     await dbSeminar.messages.add({
       seminarId,
       participatorId,
       prompt,
       content,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      audio: audio,
+      duration
     })
-  }
-
-  static participators = async (seminarId: number) => {
-    return await dbSeminar.participators
-      .where('seminarId')
-      .equals(seminarId)
-      .toArray()
   }
 }

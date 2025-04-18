@@ -6,13 +6,15 @@ export class _Participator {
     seminarUid: string,
     role: dbModel.Role,
     simulatorId: number,
-    modelId: number
+    modelId: number,
+    speakerVoice: string
   ) => {
     await dbSeminar.participators.add({
       seminarUid,
       role,
       simulatorId,
-      modelId
+      modelId,
+      speakerVoice
     })
   }
 

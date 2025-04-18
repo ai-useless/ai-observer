@@ -18,7 +18,8 @@ export class _Seminar {
         seminarUid: _uid,
         role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
         simulatorId: simulator?.id || 0,
-        modelId: model?.id || 0
+        modelId: model?.id || 0,
+        speakerVoice: 'zm_031'
       })
     }
 
