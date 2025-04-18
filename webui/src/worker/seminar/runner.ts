@@ -175,7 +175,7 @@ export class SeminarRunner {
     const resp = await axios.post(
       /* model.endpoint || */ constants.FALLBACK_API,
       {
-        ai: 'deepseek-ai/DeepSeek-V3-0324',
+        ai: model.name,
         messages: [prompt, ...(prompts.historyMessages || [])].map((el) => {
           return {
             role: 'user',
