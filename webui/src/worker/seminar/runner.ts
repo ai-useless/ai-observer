@@ -18,23 +18,42 @@ export interface OutlinePrompts extends BasePrompts {
   rounds: number
 }
 
+export interface StartTopicPrompts extends BasePrompts {
+  topicMaterial: string
+}
+
+export interface StartSubTopicPrompts extends BasePrompts {
+  topicMaterial: string
+  subTopic: string
+}
+
+export interface ConcludeSubTopicPrompts extends BasePrompts {
+  subTopic: string
+}
+
+export interface ConcludeTopicPrompts extends BasePrompts {
+  topicMaterial: string
+}
+
 export interface DiscussPrompts extends BasePrompts {
   subTopic: string
   hostMessage: string
 }
 
+export type Prompts = OutlinePrompts | DiscussPrompts |StartTopicPrompts |StartSubTopicPrompts | ConcludeSubTopicPrompts | ConcludeTopicPrompts
+
 export interface ChatRequestPayload {
   seminarId: number
   participatorId: number
   intent: Intent
-  prompts: OutlinePrompts | DiscussPrompts
+  prompts: Prompts
 }
 
 export type ChatResponsePayload = {
   seminarId: number
   participatorId: number
   payload: {
-    json: Record<string, string>,
+    json: Record<string, unknown>,
     text: string
   }
 }
@@ -61,26 +80,47 @@ export class SeminarRunner {
     )
   }
 
-  static prompt = async (topic: string, participatorId: number, intent: Intent, prompts: OutlinePrompts | DiscussPrompts) => {
+  static prompt = async (topic: string, participatorId: number, intent: Intent, prompts: Prompts) => {
+    const participator = await dbBridge._Participator.participator(participatorId)
+    if (!participator) return
+    const simulator = await dbBridge._Simulator.simulator(participator?.simulatorId)
+    if (!simulator) return
+
     switch (intent) {
       case Intent.OUTLINE:
       {
         const _prompts = prompts as OutlinePrompts
         return Prompt.prompt(intent, topic, _prompts.rounds)
       }
+      case Intent.START_TOPIC:
+      {
+        const _prompts = prompts as StartTopicPrompts
+        return Prompt.prompt(intent, simulator.personality, _prompts.topicMaterial, 100)
+      }
+      case Intent.START_SUBTOPIC:
+      {
+        const _prompts = prompts as StartSubTopicPrompts
+        return Prompt.prompt(intent, topic, simulator.personality, _prompts.topicMaterial, _prompts.subTopic, 100)
+      }
+      case Intent.CONCLUDE_SUBTOPIC:
+      {
+        const _prompts = prompts as ConcludeSubTopicPrompts
+        return Prompt.prompt(intent, topic, simulator.personality, _prompts.subTopic, 100)
+      }
+      case Intent.CONCLUDE:
+      {
+        const _prompts = prompts as ConcludeTopicPrompts
+        return Prompt.prompt(intent, topic, simulator.personality, _prompts.topicMaterial, 100)
+      }
       case Intent.DISCUSS:
       {
         const _prompts = prompts as DiscussPrompts
-        const participator = await dbBridge._Participator.participator(participatorId)
-        if (!participator) return
-        const simulator = await dbBridge._Simulator.simulator(participator?.simulatorId)
-        if (!simulator) return
         return Prompt.prompt(intent, topic, _prompts.subTopic, simulator.personality, _prompts.hostMessage, 100)
       }
     }
   }
 
-  static requestParticipatorChat = async (topic: string, participatorId: number, intent: Intent, prompts: OutlinePrompts | DiscussPrompts) => {
+  static requestParticipatorChat = async (topic: string, participatorId: number, intent: Intent, prompts: Prompts) => {
     const participator = await dbBridge._Participator.participator(participatorId)
     if (!participator) return
 
