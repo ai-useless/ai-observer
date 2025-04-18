@@ -55,9 +55,7 @@
                 <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
               </div>
             </template>
-            <q-markdown :key='message.message'>
-              {{ message.message }}
-            </q-markdown>
+            <div v-html='message.message' />
           </q-chat-message>
           <q-resize-observer @resize='onChatBoxResize' />
         </div>
@@ -73,7 +71,6 @@ import { dbBridge, entityBridge } from 'src/bridge'
 import { seminar } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
-import { QMarkdown } from '@quasar/quasar-ui-qmarkdown'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { useI18n } from 'vue-i18n'
 import { QScrollArea } from 'quasar'
@@ -262,4 +259,9 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang='sass'>
+::v-deep .q-markdown
+  pre
+    white-space: pre-wrap
+    word-wrap: break-word
+    background: none
 </style>
