@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 )
 
@@ -202,8 +203,13 @@ func getAIResponse(aiModel AIModelAPI, messages []ChatMessage) (string, error) {
 
 func processContent(content string) string {
 	// 处理<think>标签
-	content = strings.ReplaceAll(content, "<think>", "<div class='think'>")
-	content = strings.ReplaceAll(content, "</think>", "</div>")
+	// content = strings.ReplaceAll(content, "<think>", "<div class='think'>")
+	// content = strings.ReplaceAll(content, "</think>", "</div>")
+	re := regexp.MustCompile(`<reasoning>[\s\S]*?</reasoning>`)
+	content = re.ReplaceAllString(content, "")
+	think := regexp.MustCompile(`<think>[\s\S]*?</think>`)
+	content = think.ReplaceAllString(content, "")
+
 	return content
 }
 
