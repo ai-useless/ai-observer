@@ -48,7 +48,7 @@ export const Prompts = new Map<Intent, IntentFunc>([
       subTopic: string,
       speakDuration: number
     ) => `你的人设是${personality}，今天讨论的主题为："${topic}",
-                                       本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段阶段，以“那么我们进入下一个讨论主体”结束，要求：
+                                       本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段阶段，以“那么我们进入下一个讨论主题”结束，要求：
                                        1)直接输出发言内容，不允许有表情，标签，换行符和提示 2) 发言时间≤${speakDuration}秒，小于100字 3) 人物情绪普遍理性客观中立，但带有各自社群特征`) as IntentFunc
   ],
   [
