@@ -101,6 +101,8 @@ export class ESeminar {
         }
       }
     )
+
+    this.#onThinking(host.id as number)
   }
 
   startTopic = async () => {
