@@ -184,7 +184,7 @@ export class SeminarRunner {
         })
       }
     )
-    return (resp.data as Record<string, string>).content
+    return (resp.data as Record<string, string>).content.replace(' ', '')
   }
 
   static handleChatRequest = async (payload: ChatRequestPayload) => {
