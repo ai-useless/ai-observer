@@ -2,10 +2,10 @@
   <div class='row'>
     <q-space />
     <div style='width: 100%; max-width: 960px; max-height: 100%;'>
-      <div class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0;'>
+      <div v-if='showTitle' class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
         {{ topic }}
       </div>
-      <div class='row'>
+      <div v-if='showTitle' class='row' style='transition: 500ms;'>
         <simulator-card v-if='host' :simulator='host.simulator' :small='false' :is-host='true' />
         <div class='flex justify-end items-end' style='margin-left: 24px;'>
           <simulator-card
@@ -88,6 +88,7 @@ const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBox = ref<QScrollArea>()
 const chatBoxHeight = ref(0)
+const showTitle = ref(true)
 
 const topic = computed(() => _seminar.value?.topic)
 const host = computed(() => simulators.value.find((el) => el.participatorId === participators.value.find((el) => el.role === dbModel.Role.HOST)?.id))
@@ -184,10 +185,11 @@ const onThinking = (participatorId: number) => {
 
 const onChatBoxResize = (size: { height: number }) => {
   chatBox.value?.setScrollPosition('vertical', size.height, 300)
+  showTitle.value = size.height < chatBoxHeight.value - 84 - 89 - 60
 }
 
 onMounted(async () => {
-  chatBoxHeight.value = window.innerHeight - 50 - 84 - 89 - 60
+  chatBoxHeight.value = window.innerHeight - 106
 
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
