@@ -2,9 +2,7 @@
   <div style='max-width: 280px'>
     <div style='margin-top: 16px;'>
       <div v-for='(title, index) in titles' :key='title' :class='["cursor-pointer", index === activeIndex ? "text-grey-9 text-bold" : "text-grey-8"]' style='margin-left: 24px; margin-top: 8px;'>
-        <q-markdown>
-          {{ title }}
-        </q-markdown>
+        <div v-html='title' />
       </div>
     </div>
   </div>
@@ -12,7 +10,6 @@
 
 <script setup lang='ts'>
 import { computed, toRef } from 'vue'
-import { QMarkdown } from '@quasar/quasar-ui-qmarkdown'
 
 interface Props {
   json: Record<string, unknown>

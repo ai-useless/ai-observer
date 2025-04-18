@@ -20,8 +20,7 @@
     "serve:test:coverage": "quasar serve test/jest/coverage/lcov-report/ --port 8788",
     "concurrently:dev:jest": "concurrently \"quasar dev\" \"jest --watch\"",
     "prettier:check": "prettier --check \"**/*.{js,json,md,ts,yml}\"",
-    "prettier:write": "prettier --write \"**/*.{js,json,md,ts,yml}\"",
-    "install:qmarkdown": "quasar ext add @quasar/qmarkdown@next"
+    "prettier:write": "prettier --write \"**/*.{js,json,md,ts,yml}\""
   },
   "pre-commit": [
     "lint",
@@ -65,7 +64,6 @@
     "@pinia/testing": "^0.0.9",
     "@quasar/app-vite": "^1.11.0",
     "@quasar/quasar-app-extension-apollo": "^2.0.0-beta.5",
-    "@quasar/quasar-app-extension-qmarkdown": "^2.0.0-beta.10",
     "@types/jest": "^27.4.1",
     "@types/node": "^20.14.0",
     "@typescript-eslint/eslint-plugin": "^5.10.0",
@@ -103,7 +101,6 @@
     "yarn": ">= 1.21.1"
   },
   "resolutions": {
-    "@metamask/rpc-errors": "^6.2.1",
-    "@quasar/quasar-app-extension-qmarkdown": "https://registry.npmmirror.com/@quasar/quasar-app-extension-qmarkdown/-/quasar-app-extension-qmarkdown-2.0.0-beta.10.tgz#dba04cb04c6fe5cb2a7fe9f367f73a7f0c843dd1"
+    "@metamask/rpc-errors": "^6.2.1"
   }
 }

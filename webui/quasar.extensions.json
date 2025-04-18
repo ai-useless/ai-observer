@@ -1,6 +1,5 @@
 {
   "@quasar/apollo": {
     "typescript": true
-  },
-  "@quasar/qmarkdown": {}
+  }
 }
