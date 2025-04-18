@@ -19,15 +19,16 @@
       </div>
       <q-separator style='margin-top: 16px' />
       <div
-        v-if='!messages.length'
+        v-if='!displayMessages.length'
         style='margin-top: 16px; font-size: 20px'
         class='text-center text-grey-8'
       >
-        Host is preparing scripts...
+        <q-spinner-facebook class='text-red-4' size='128px' />
+        <div>Host is preparing scripts...</div>
       </div>
       <div v-else style='margin-top: 16px'>
         <q-chat-message
-          v-for='(message, index) in messages'
+          v-for='(message, index) in displayMessages'
           :key='index'
           :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
           :avatar='message.simulator.avatar'
@@ -46,11 +47,9 @@
               <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
             </div>
           </template>
-          <div>
-            <q-markdown>
-              {{ message.message }}
-            </q-markdown>
-          </div>
+          <q-markdown :key='message.message'>
+            {{ message.message }}
+          </q-markdown>
         </q-chat-message>
       </div>
     </div>
@@ -83,6 +82,7 @@ const guestIds = computed(() => participators.value.filter((el) => el.role === d
 const guests = computed(() => simulators.value.filter((el) => guestIds.value.includes(el.id as number)))
 
 interface Message {
+  round: number
   message: string
   participator: dbModel.Participator
   simulator: dbModel.Simulator
@@ -91,7 +91,41 @@ interface Message {
   timestamp: number
 }
 
-const messages = ref([] as Message[])
+const displayMessages = ref([] as Message[])
+const waitMessages = ref([] as Message[])
+const typingMessage = ref(undefined as unknown as Message)
+const typingIndex = ref(0)
+const typingTicker = ref(-1)
+const lastRound = ref(0)
+const requesting = ref(false)
+const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
+
+const typing = () => {
+  if (!typingMessage.value && !waitMessages.value.length) return
+
+  // If we have a message in typing, finish it
+  if (typingMessage.value && typingIndex.value < typingMessage.value.message.length) {
+    displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value)
+    typingIndex.value += 1
+    return
+  }
+
+  if (!waitMessages.value.length) return
+
+  typingMessage.value = waitMessages.value[0]
+  typingIndex.value = 0
+  waitMessages.value = waitMessages.value.slice(1)
+
+  if (typingMessage.value.round === lastRound.value && !requesting.value) {
+    void eSeminar.value.nextGuests()
+    requesting.value = true
+  }
+
+  displayMessages.value.push({
+    ...typingMessage.value,
+    message: ''
+  })
+}
 
 watch(_uid, async () => {
   if (!_uid.value) return
@@ -106,35 +140,48 @@ watch(participators, async () => {
   simulators.value = await dbBridge._Simulator.simulators(participatorIds.value)
 })
 
-const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
+const onMessage = async (participatorId: number, message: string, round: number) => {
+  seminar.Seminar.stopThink(participatorId)
+
+  const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
+  const timestamp = timestamp2HumanReadable(Date.now())
+
+  lastRound.value = round
+  requesting.value = false
+
+  waitMessages.value.push({
+    round,
+    message,
+    participator,
+    simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
+    model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
+    timestamp: Date.now(),
+    datetime: t(timestamp.msg, { VALUE: timestamp.value })
+  })
+
+  waitMessages.value = waitMessages.value.map((el) => {
+    const timestamp = timestamp2HumanReadable(el.timestamp)
+    return { ...el, datetime: t(timestamp.msg, { VALUE: timestamp.value }) }
+  })
+}
+
+const onThinking = (participatorId: number) => {
+  seminar.Seminar.startThink(participatorId)
+}
 
 onMounted(async () => {
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
 
-  eSeminar.value = new entityBridge.ESeminar(_seminar.value, async (participatorId: number, message: string) => {
-    const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
-    const timestamp = timestamp2HumanReadable(Date.now())
-
-    messages.value.push({
-      message,
-      participator,
-      simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
-      model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
-      timestamp: Date.now(),
-      datetime: t(timestamp.msg, { VALUE: timestamp.value })
-    })
-
-    messages.value = messages.value.map((el) => {
-      const timestamp = timestamp2HumanReadable(el.timestamp)
-      return { ...el, datetime: t(timestamp.msg, { VALUE: timestamp.value }) }
-    })
-  })
+  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking)
   await eSeminar.value.start()
+
+  typingTicker.value = window.setInterval(typing, 100)
 })
 
 onBeforeUnmount(() => {
   eSeminar.value?.stop()
+  if (typingTicker.value) window.clearInterval(typingTicker.value)
 })
 </script>
 
