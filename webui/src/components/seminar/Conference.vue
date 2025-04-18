@@ -197,7 +197,7 @@ onMounted(async () => {
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking)
   await eSeminar.value.start()
 
-  typingTicker.value = window.setInterval(typing, 10)
+  typingTicker.value = window.setInterval(typing, 80)
 })
 
 onBeforeUnmount(() => {

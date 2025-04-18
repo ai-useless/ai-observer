@@ -1,5 +1,7 @@
 import { dbSeminar } from 'src/controller'
 
+import { chutesLogo } from 'src/assets'
+
 export class _Model {
   static #models = [{
     name: 'deepseek-ai/DeepSeek-V3-0324',
@@ -8,8 +10,8 @@ export class _Model {
     vendor: 'Chutes',
     author: 'High-Flyer',
     authorLogo: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
-    modelLogo: 'https://cdn.deepseek.com/logo.png?x-image-process=image%2Fresize%2Cw_1920',
-    vendorLogo: 'https://cdn.rayonlabs.ai/chutes/hash/37.webp'
+    modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp',
+    vendorLogo: chutesLogo
   }]
 
   static initialize =async () => {
