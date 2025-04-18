@@ -36,6 +36,7 @@ export interface Participator {
   role: Role
   simulatorId: number
   modelId: number
+  speakerVoice: string
 }
 
 export interface Message {
@@ -45,4 +46,6 @@ export interface Message {
   timestamp: number
   prompt: string
   content: string
+  audio: string
+  duration: number
 }

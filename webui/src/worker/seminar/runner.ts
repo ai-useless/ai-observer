@@ -61,6 +61,8 @@ export type ChatResponsePayload = {
   payload: {
     json: Record<string, unknown>
     text: string
+    audio: string
+    duration: number
   }
 }
 
@@ -70,13 +72,15 @@ export interface SeminarEvent {
 }
 
 export class SeminarRunner {
-  static bulkStoreResponse = async (
+  static saveMessage = async (
     seminarId: number,
     participatorId: number,
     prompt: string,
-    response: string
+    content: string,
+    audio: string,
+    duration: number
   ) => {
-    await dbBridge._Message.create(seminarId, participatorId, prompt, response)
+    await dbBridge._Message.create(seminarId, participatorId, prompt, content, audio, duration)
   }
 
   static prompt = async (
@@ -184,7 +188,21 @@ export class SeminarRunner {
         })
       }
     )
-    return (resp.data as Record<string, string>).content
+
+    const speechContent = (resp.data as Record<string, string>).content
+    const audioResp = await axios.post(
+      /* model.endpoint || */ constants.AUDIO_API,
+      {
+        text: speechContent,
+        speakerVoice: participator.speakerVoice,
+        speed: 1.1
+      }
+    )
+    return {
+      text: (resp.data as Record<string, string>).content,
+      audio: (audioResp.data as Record<string, string>).data,
+      duration: (audioResp.data as Record<string, number>).duration
+    }
   }
 
   static handleChatRequest = async (payload: ChatRequestPayload) => {
@@ -202,18 +220,20 @@ export class SeminarRunner {
       )
       if (!response) return
 
-      const json = Prompt.postProcess(intent, response) as Record<
+      const json = Prompt.postProcess(intent, response.text) as Record<
         string,
         string
       >
       if (json) json.topic = seminar.topic
 
-      await SeminarRunner.bulkStoreResponse(
+      await SeminarRunner.saveMessage(
         seminarId,
         participatorId,
         prompts.historyMessages?.[prompts.historyMessages.length - 1] ||
           seminar.topic,
-        response
+        response.text,
+        response.audio,
+        response.duration
       )
 
       self.postMessage({
@@ -221,10 +241,7 @@ export class SeminarRunner {
         payload: {
           seminarId,
           participatorId,
-          payload: {
-            json,
-            text: response
-          }
+          payload: response
         }
       })
     } catch (e) {

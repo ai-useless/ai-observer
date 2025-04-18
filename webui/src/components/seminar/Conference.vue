@@ -104,6 +104,8 @@ interface Message {
   model: dbModel.Model
   datetime: string
   timestamp: number
+  audio: string
+  duration: number
 }
 
 const displayMessages = ref([] as Message[])
@@ -144,6 +146,27 @@ const typing = () => {
   })
 }
 
+const audioPlay = async (base64Data: string) => {
+  try {
+    const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
+
+    const byteCharacters = atob(cleanBase64)
+    const byteArrays = new Uint8Array(byteCharacters.length)
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteArrays[i] = byteCharacters.charCodeAt(i)
+    }
+    const blob = new Blob([byteArrays], { type: 'audio/mpeg' })
+    const audioUrl = URL.createObjectURL(blob)
+    const audio = new Audio(audioUrl)
+    const playPromise = audio.play()
+    if (playPromise !== undefined) {
+      await playPromise
+    }
+  } catch (error) {
+    console.error('load audio failed:', error)
+  }
+}
+
 watch(_uid, async () => {
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
@@ -157,7 +180,12 @@ watch(participators, async () => {
   simulators.value = await entityBridge.EParticipator.simulators(participators.value)
 })
 
-const onMessage = async (participatorId: number, message: string, round: number) => {
+watch(typingMessage, () => {
+  const audio = typingMessage.value.audio
+  void audioPlay(audio)
+})
+
+const onMessage = async (participatorId: number, message: string, round: number, audio: string, duration: number) => {
   seminar.Seminar.stopThink(participatorId)
 
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
@@ -173,7 +201,9 @@ const onMessage = async (participatorId: number, message: string, round: number)
     simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
     model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
     timestamp: Date.now(),
-    datetime: t(timestamp.msg, { VALUE: timestamp.value })
+    datetime: t(timestamp.msg, { VALUE: timestamp.value }),
+    audio,
+    duration
   })
 
   waitMessages.value = waitMessages.value.map((el) => {

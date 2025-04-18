@@ -5,7 +5,9 @@ import { dbBridge } from '..'
 type MessageFunc = (
   participatorId: number,
   message: string,
-  round: number
+  round: number,
+  audio: string,
+  duration: number
 ) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
@@ -51,7 +53,9 @@ export class ESeminar {
     void this.#onMessage(
       message.participatorId,
       message.payload.text,
-      this.#round
+      this.#round,
+      message.payload.audio,
+      message.payload.duration
     )
 
     // Outline round
