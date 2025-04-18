@@ -1,4 +1,9 @@
-import { ChatRequestPayload, SeminarEvent, SeminarEventType, SeminarRunner } from './runner'
+import {
+  ChatRequestPayload,
+  SeminarEvent,
+  SeminarEventType,
+  SeminarRunner
+} from './runner'
 
 console.trace = () => {
   // DO NOTHING

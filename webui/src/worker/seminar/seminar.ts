@@ -1,4 +1,9 @@
-import { ChatRequestPayload, ChatResponsePayload, SeminarEvent, SeminarEventType } from './runner'
+import {
+  ChatRequestPayload,
+  ChatResponsePayload,
+  SeminarEvent,
+  SeminarEventType
+} from './runner'
 
 type SeminarResponseType = ChatResponsePayload
 export type ListenerFunc = (payload: SeminarResponseType) => void

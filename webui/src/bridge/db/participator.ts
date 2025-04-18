@@ -2,7 +2,12 @@ import { dbSeminar } from 'src/controller'
 import { dbModel } from 'src/model'
 
 export class _Participator {
-  static create = async (seminarUid: string, role: dbModel.Role, simulatorId: number, modelId: number) => {
+  static create = async (
+    seminarUid: string,
+    role: dbModel.Role,
+    simulatorId: number,
+    modelId: number
+  ) => {
     await dbSeminar.participators.add({
       seminarUid,
       role,
@@ -12,10 +17,15 @@ export class _Participator {
   }
 
   static participators = async (seminarUid: string) => {
-    return await dbSeminar.participators.where('seminarUid').equals(seminarUid).toArray()
+    return await dbSeminar.participators
+      .where('seminarUid')
+      .equals(seminarUid)
+      .toArray()
   }
 
-  static createParticipators = async (participators: dbModel.Participator[]) => {
+  static createParticipators = async (
+    participators: dbModel.Participator[]
+  ) => {
     await dbSeminar.participators.bulkAdd(participators)
   }
 

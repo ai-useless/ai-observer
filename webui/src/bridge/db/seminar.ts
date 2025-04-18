@@ -22,21 +22,28 @@ export class _Seminar {
       })
     }
 
-    await dbSeminar.transaction('rw', dbSeminar.seminars, dbSeminar.participators, async () => {
-      await _Participator.createParticipators(participators)
-      await dbSeminar.seminars.add({
-        uid: _uid,
-        topic: topic
-      })
-    })
+    await dbSeminar.transaction(
+      'rw',
+      dbSeminar.seminars,
+      dbSeminar.participators,
+      async () => {
+        await _Participator.createParticipators(participators)
+        await dbSeminar.seminars.add({
+          uid: _uid,
+          topic: topic
+        })
+      }
+    )
     return _uid
   }
 
   static seminar = async (_uid?: string, id?: number) => {
-    return await dbSeminar.seminars.filter((op) => {
-      if (_uid !== undefined) return op.uid === _uid
-      if (id !== undefined) return op.id === id
-      return false
-    }).first()
+    return await dbSeminar.seminars
+      .filter((op) => {
+        if (_uid !== undefined) return op.uid === _uid
+        if (id !== undefined) return op.id === id
+        return false
+      })
+      .first()
   }
 }

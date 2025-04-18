@@ -1,7 +1,12 @@
 import { dbSeminar } from 'src/controller'
 
 export class _Message {
-  static create = async (seminarId: number, participatorId: number, prompt: string, content: string) => {
+  static create = async (
+    seminarId: number,
+    participatorId: number,
+    prompt: string,
+    content: string
+  ) => {
     await dbSeminar.messages.add({
       seminarId,
       participatorId,
@@ -12,6 +17,9 @@ export class _Message {
   }
 
   static participators = async (seminarId: number) => {
-    return await dbSeminar.participators.where('seminarId').equals(seminarId).toArray()
+    return await dbSeminar.participators
+      .where('seminarId')
+      .equals(seminarId)
+      .toArray()
   }
 }
