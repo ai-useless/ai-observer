@@ -7,31 +7,36 @@ export class _Simulator {
       name: 'MSG_HUN_ER_HU',
       avatar: luxunAvatar,
       personality: 'MSG_CYNICISM',
-      host: true
+      host: true,
+      speakerVoice: 'zm_031'
     },
     {
       name: 'MSG_ZHU_TOU_SAN',
       avatar: luxunAvatar,
       personality: 'MSG_CYNICISM',
-      host: false
+      host: false,
+      speakerVoice: 'zm_010'
     },
     {
       name: 'MSG_AN_RUO_SU',
       avatar: luxunAvatar,
       personality: 'MSG_CYNICISM',
-      host: false
+      host: false,
+      speakerVoice: 'zm_012'
     },
     {
       name: 'MSG_JIU_TOU_NIAO',
       avatar: luxunAvatar,
       personality: 'MSG_CYNICISM',
-      host: false
+      host: false,
+      speakerVoice: 'zf_027'
     },
     {
       name: 'MSG_LUXUN',
       avatar: luxunAvatar,
       personality: 'MSG_CYNICISM',
-      host: false
+      host: false,
+      speakerVoice: 'zf_044'
     }
   ]
 
@@ -47,13 +52,15 @@ export class _Simulator {
     name: string,
     avatar: string,
     personality: string,
-    host: boolean
+    host: boolean,
+    speakerVoice: string
   ) => {
     await dbSeminar.simulators.add({
       name,
       avatar,
       personality,
-      host
+      host,
+      speakerVoice
     })
   }
 

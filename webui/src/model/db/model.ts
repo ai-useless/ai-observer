@@ -23,6 +23,7 @@ export interface Simulator {
   avatar: string
   personality: string
   host: boolean
+  speakerVoice: string
 }
 
 export interface Seminar {
@@ -37,7 +38,6 @@ export interface Participator {
   role: Role
   simulatorId: number
   modelId: number
-  speakerVoice: string
 }
 
 export interface Message {
