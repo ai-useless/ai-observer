@@ -154,6 +154,12 @@ export class ESeminar {
     const participators = await this.participators()
     const { id, topic } = this.#seminar
 
+    const guests = Math.ceil(Math.random() * participators.length)
+    const speakers = [] as dbModel.Participator[]
+    for (let i = 0; i < guests; i++) {
+      speakers.push(participators[Math.floor(Math.random() * participators.length)])
+    }
+
     participators.forEach((el) => {
       this.#onThinking(el.id as number)
 
