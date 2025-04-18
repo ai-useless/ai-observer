@@ -55,7 +55,7 @@
                 <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
               </div>
             </template>
-            <div v-html='message.message' />
+            <div v-html='message.message' style='line-height: 1.5em;' />
           </q-chat-message>
           <q-resize-observer @resize='onChatBoxResize' />
         </div>
