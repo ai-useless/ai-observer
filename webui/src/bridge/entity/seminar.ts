@@ -82,14 +82,14 @@ export class ESeminar {
   }
 
   onError = (error: seminarWorker.ErrorResponsePayload) => {
-    const { id } = this.#seminar
-    
     setTimeout(() => {
-      this.host().then((host) => {
+      this.host().then(() => {
         seminarWorker.SeminarWorker.send(
           seminarWorker.SeminarEventType.CHAT_REQUEST,
           error.payload
         )
+      }).catch(() => {
+        // DO NOTHING
       })
     }, 1000)
   }
