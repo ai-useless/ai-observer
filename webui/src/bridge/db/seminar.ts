@@ -12,7 +12,7 @@ export class _Seminar {
     const participators = [] as dbModel.Participator[]
 
     for (let i = 0; i < count; i++) {
-      const model = await _Model.randomPeek()
+      const model = await _Model.randomPeek(i === 0 ? true : undefined)
       const simulator = await _Simulator.randomPeek(i === 0 ? true : undefined)
       participators.push({
         seminarUid: _uid,
