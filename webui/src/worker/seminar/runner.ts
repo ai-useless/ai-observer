@@ -33,7 +33,10 @@ export interface ChatRequestPayload {
 export type ChatResponsePayload = {
   seminarId: number
   participatorId: number
-  payload: string
+  payload: {
+    json: Record<string, string>,
+    text: string
+  }
 }
 
 export interface SeminarEvent {
@@ -108,6 +111,9 @@ export class SeminarRunner {
       const response = await SeminarRunner.requestParticipatorChat(seminar?.topic, participatorId, intent, prompts)
       if (!response) return
 
+      const json = Prompt.postProcess(intent, response) as Record<string, string>
+      if (json) json.topic = seminar.topic
+
       await SeminarRunner.bulkStoreResponse(seminarId, participatorId, prompts.historyMessages?.[prompts.historyMessages.length - 1] || seminar.topic, response)
 
       self.postMessage({
@@ -115,7 +121,10 @@ export class SeminarRunner {
         payload: {
           seminarId,
           participatorId,
-          payload: response
+          payload: {
+            json,
+            text: response
+          }
         }
       })
     } catch (e) {
