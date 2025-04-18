@@ -90,6 +90,20 @@ export class SeminarRunner {
     await dbBridge._Message.create(seminarId, participatorId, prompt, content, audio, duration)
   }
 
+  static speakerVoice = async (
+    participatorId: number
+  ) => {
+    const participator =
+      await dbBridge._Participator.participator(participatorId)
+    if (!participator) return
+    const simulator = await dbBridge._Simulator.simulator(
+      participator?.simulatorId
+    )
+    if (!simulator) return
+
+    return simulator.speakerVoice
+  }
+
   static prompt = async (
     topic: string,
     participatorId: number,
@@ -205,11 +219,12 @@ export class SeminarRunner {
     }
 
     const speechContent = (resp.data as Record<string, string>).content
+    const _speakerVoice = await SeminarRunner.speakerVoice(participatorId)
     const audioResp = await axios.post(
       /* model.endpoint || */ constants.AUDIO_API,
       {
         text: speechContent,
-        speakerVoice: participator.speakerVoice,
+        speakerVoice: _speakerVoice,
         speed: 1.1
       }
     )

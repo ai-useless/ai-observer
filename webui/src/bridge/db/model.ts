@@ -76,16 +76,6 @@ export class _Model {
       modelLogo: 'https://logos.chutes.ai/logos/f35448ce-464f-4224-9971-61e957414576.webp',
       vendorLogo: chutesLogo,
       hostModel: false
-    }, {
-      name: 'deepseek-ai/DeepSeek-V3-Base',
-      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
-      apiKey: '***REMOVED***',
-      vendor: 'Chutes',
-      author: 'High-Flyer',
-      authorLogo: 'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
-      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp',
-      vendorLogo: chutesLogo,
-      hostModel: true
     }
   ]
 
