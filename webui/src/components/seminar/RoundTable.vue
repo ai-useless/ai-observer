@@ -51,7 +51,7 @@ const expand = ref(true)
 
 watch(_uid, async () => {
   if (!_uid.value) return
-  _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
+  _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 })
 
 watch(_seminar, async () => {
@@ -64,7 +64,7 @@ watch(participators, async () => {
 
 onMounted(async () => {
   if (!_uid.value) return
-  _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
+  _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 })
 
 </script>

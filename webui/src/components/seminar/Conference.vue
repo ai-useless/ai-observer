@@ -143,7 +143,7 @@ const typing = () => {
 
 watch(_uid, async () => {
   if (!_uid.value) return
-  _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
+  _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 })
 
 watch(_seminar, async () => {
@@ -192,7 +192,7 @@ onMounted(async () => {
   chatBoxHeight.value = window.innerHeight - 106
 
   if (!_uid.value) return
-  _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
+  _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking)
   await eSeminar.value.start()

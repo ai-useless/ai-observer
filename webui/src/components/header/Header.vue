@@ -54,7 +54,7 @@ const _seminar = ref(undefined as unknown as dbModel.Seminar)
 
 watch(_uid, async () => {
   if (!_uid.value) return
-  _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
+  _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 })
 
 const onLogoClick = () => {
@@ -66,7 +66,7 @@ onMounted(async () => {
   await dbBridge._Simulator.initialize()
 
   if (_uid.value) {
-    _seminar.value = await dbBridge._Seminar.get(_uid.value) as dbModel.Seminar
+    _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
   }
   void router.push({ path: '/seminar' })
 })
