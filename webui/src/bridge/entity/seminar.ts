@@ -11,7 +11,14 @@ export class ESeminar {
   #onMessage = undefined as unknown as MessageFunc
   #onThinking = undefined as unknown as ThinkingFunc
   #onOutline = undefined as unknown as OutlineFunc
+
   #round = 0
+  #onGoingSubTopic = 0
+  #subRound = 0
+  #topicMaterial = undefined as unknown as string
+  #subTopics = [] as string[]
+
+  #totalRounds = 5
 
   constructor(seminar: dbModel.Seminar, onMessage: MessageFunc, onThinking: ThinkingFunc, onOutline: OutlineFunc) {
     this.#seminar = seminar
@@ -32,7 +39,19 @@ export class ESeminar {
     if (message.seminarId !== this.#seminar.id) return
     void this.#onMessage(message.participatorId, message.payload.text, this.#round)
 
-    if (!this.#round) this.#onOutline(message.payload.json)
+    // Outline round
+    if (this.#round === 0) {
+      this.#onOutline(message.payload.json)
+      this.#topicMaterial = message.payload.text
+      this.#subTopics = message.payload.json.titles as string[]
+      void this.startTopic()
+    }
+    // Start topic round
+    if (this.#subRound === 0) void this.startNextSubTopic()
+    if (this.#subRound === 5) {
+      void this.concludeSubTopic()
+      if (this.#onGoingSubTopic === this.#subTopics.length - 1) void this.concludeTopic()
+    }
   }
 
   start = async () => {
@@ -48,7 +67,78 @@ export class ESeminar {
       participatorId: host.id as number,
       intent: seminarWorker.Intent.OUTLINE,
       prompts: {
-        rounds: 5
+        rounds: this.#totalRounds
+      }
+    })
+  }
+
+  startTopic = async () => {
+    const { id } = this.#seminar
+    const host = await this.host()
+
+    if (!host) throw new Error('Invalid host')
+
+    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
+      seminarId: id as number,
+      participatorId: host.id as number,
+      intent: seminarWorker.Intent.START_TOPIC,
+      prompts: {
+        topicMaterial: this.#topicMaterial
+      }
+    })
+  }
+
+  startNextSubTopic = async () => {
+    const { id } = this.#seminar
+    const host = await this.host()
+
+    if (!host) throw new Error('Invalid host')
+
+    this.#subRound = 0
+
+    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
+      seminarId: id as number,
+      participatorId: host.id as number,
+      intent: seminarWorker.Intent.START_SUBTOPIC,
+      prompts: {
+        topicMaterial: this.#topicMaterial,
+        subTopic: this.#subTopics[this.#onGoingSubTopic]
+      }
+    })
+  }
+
+  concludeSubTopic = async () => {
+    const { id } = this.#seminar
+    const host = await this.host()
+
+    if (!host) throw new Error('Invalid host')
+
+    this.#subRound = 0
+
+    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
+      seminarId: id as number,
+      participatorId: host.id as number,
+      intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
+      prompts: {
+        subTopic: this.#subTopics[this.#onGoingSubTopic]
+      }
+    })
+
+    this.#onGoingSubTopic += 1
+  }
+
+  concludeTopic = async () => {
+    const { id } = this.#seminar
+    const host = await this.host()
+
+    if (!host) throw new Error('Invalid host')
+
+    seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
+      seminarId: id as number,
+      participatorId: host.id as number,
+      intent: seminarWorker.Intent.CONCLUDE,
+      prompts: {
+        topicMaterial: this.#topicMaterial
       }
     })
   }
@@ -59,6 +149,7 @@ export class ESeminar {
 
   nextGuests = async () => {
     this.#round += 1
+    this.#subRound += 1
 
     const participators = await this.participators()
     const { id, topic } = this.#seminar
