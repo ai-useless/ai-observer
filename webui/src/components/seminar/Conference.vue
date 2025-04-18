@@ -135,7 +135,7 @@ const typing = () => {
   waitMessages.value = waitMessages.value.slice(1)
   seminar.Seminar.speak(typingMessage.value.participator.id as number)
 
-  if (typingMessage.value.round === lastRound.value && !requesting.value) {
+  if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
     void eSeminar.value.nextGuests()
     requesting.value = true
   }

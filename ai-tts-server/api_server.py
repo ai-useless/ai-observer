@@ -199,7 +199,8 @@ async def generate_audio(params: TTSParams):
                     "data": f"data:audio/wav;base64,{audio_data}",
                     "metadata": {
                         "text_length": len(params.text),
-                        "speaker_id": params.speaker_id
+                        "speaker_id": params.speaker_id,
+                        "duration": len(final_audio) / 24000
                     }
                 }
         else:

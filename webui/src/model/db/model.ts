@@ -8,6 +8,7 @@ export interface Model {
   authorLogo: string
   modelLogo: string
   vendorLogo: string
+  hostModel: boolean
 }
 
 export enum Role {
