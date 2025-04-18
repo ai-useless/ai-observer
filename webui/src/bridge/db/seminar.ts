@@ -32,7 +32,11 @@ export class _Seminar {
     return _uid
   }
 
-  static get = async (_uid: string) => {
-    return await dbSeminar.seminars.where('uid').equals(_uid).first()
+  static seminar = async (_uid?: string, id?: number) => {
+    return await dbSeminar.seminars.filter((op) => {
+      if (_uid !== undefined) return op.uid === _uid
+      if (id !== undefined) return op.id === id
+      return false
+    }).first()
   }
 }

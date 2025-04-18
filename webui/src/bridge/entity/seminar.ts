@@ -31,7 +31,7 @@ export class ESeminar {
   }
 
   start = async () => {
-    const { id, topic } = this.#seminar
+    const { id } = this.#seminar
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
@@ -41,8 +41,12 @@ export class ESeminar {
     seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
       seminarId: id as number,
       participatorId: host.id as number,
-      prompts: [topic]
+      intent: seminarWorker.Intent.OUTLINE,
+      prompts: {
+        rounds: 5
+      }
     })
+    // TODO: parse host message and outline
   }
 
   stop = () => {
@@ -61,7 +65,11 @@ export class ESeminar {
       seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
         seminarId: id as number,
         participatorId: el.id as number,
-        prompts: [topic]
+        intent: seminarWorker.Intent.DISCUSS,
+        prompts: {
+          subTopic: topic,
+          hostMessage: topic
+        }
       })
     })
   }
