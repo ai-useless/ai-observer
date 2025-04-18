@@ -94,8 +94,6 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
 
-    this.#subRound = 0
-
     seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
       seminarId: id as number,
       participatorId: host.id as number,
