@@ -205,6 +205,10 @@ const onMessage = async (participatorId: number, message: string, round: number,
     audio,
     duration
   })
+  displayMessages.value.forEach((el) => {
+    const timestamp = timestamp2HumanReadable(el.timestamp)
+    el.datetime = t(timestamp.msg, { VALUE: timestamp.value })
+  })
 
   waitMessages.value = waitMessages.value.map((el) => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
