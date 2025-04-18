@@ -158,7 +158,7 @@ export class ESeminar {
       speakers.push(participators[Math.floor(Math.random() * participators.length)])
     }
 
-    participators.forEach((el) => {
+    speakers.forEach((el) => {
       this.#onThinking(el.id as number)
 
       seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
