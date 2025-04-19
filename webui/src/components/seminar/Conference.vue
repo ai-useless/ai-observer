@@ -112,7 +112,7 @@ interface Message {
   audio: string
   duration: number
   subTopicTitle: boolean
-  subTopic?: string
+  subTopic: string
 }
 
 const displayMessages = ref([] as Message[])
@@ -123,7 +123,7 @@ const lastRound = ref(0)
 const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 const outline = ref(undefined as unknown as Record<string, unknown>)
-const activeTopic = ref(undefined as unknown as string)
+const activeTopic = ref('')
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
@@ -153,17 +153,14 @@ const typing = () => {
   typingIndex.value = 0
   waitMessages.value = waitMessages.value.slice(1)
 
-  if (!typingMessage.value.subTopicTitle) {
-    seminar.Seminar.speak(typingMessage.value.participator.id as number)
-  } else {
-    while (typingMessage.value?.subTopicTitle) {
-      displayMessages.value.push(typingMessage.value)
-      typingMessage.value = waitMessages.value[0]
-      waitMessages.value = waitMessages.value.slice(1)
-    }
+  seminar.Seminar.speak(typingMessage.value.participator.id as number)
+  if (typingMessage.value?.subTopic !== activeTopic.value) {
+    displayMessages.value.push({
+      ...typingMessage.value,
+      subTopicTitle: true
+    })
+    activeTopic.value = typingMessage.value?.subTopic
   }
-
-  if (!typingMessage.value) return
 
   if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
     void eSeminar.value.nextGuests()
@@ -225,7 +222,7 @@ watch(typingMessage, () => {
   void playAudio(audio)
 })
 
-const onMessage = async (participatorId: number, message: string, round: number, audio: string, duration: number) => {
+const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string, duration: number) => {
   seminar.Seminar.stopThink(participatorId)
 
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
@@ -244,7 +241,8 @@ const onMessage = async (participatorId: number, message: string, round: number,
     datetime: t(timestamp.msg, { VALUE: timestamp.value }),
     audio,
     duration,
-    subTopicTitle: false
+    subTopicTitle: false,
+    subTopic
   })
 
   waitMessages.value = waitMessages.value.map((el) => {
@@ -283,30 +281,13 @@ const historyMessages = (): Map<number, string[]> => {
   return messages
 }
 
-const onSubTopicStart = (subTopic: string) => {
-  activeTopic.value = subTopic
-  waitMessages.value.push({
-    round: lastRound.value,
-    message: subTopic,
-    participator: undefined as unknown as dbModel.Participator,
-    simulator: undefined as unknown as dbModel.Simulator,
-    model: undefined as unknown as dbModel.Model,
-    timestamp: 0,
-    datetime: undefined as unknown as string,
-    audio: undefined as unknown as string,
-    duration: 0,
-    subTopicTitle: true,
-    subTopic
-  })
-}
-
 onMounted(async () => {
   chatBoxHeight.value = window.innerHeight - 106
 
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
-  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages, onSubTopicStart)
+  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
   await eSeminar.value.start()
 
   typingTicker.value = window.setInterval(typing, 40)
