@@ -53,13 +53,36 @@ import { dbBridge } from 'src/bridge'
 import { seminar, setting } from 'src/localstores'
 import { ref, watch } from 'vue'
 
-import { useI18n } from 'vue-i18n'
-
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const { t } = useI18n({ useScope: 'global' })
+const initialTopics = [
+  '房产新政与房价调控',
+  '富士康“九连跳”事件',
+  '唐骏“学历门”诚信危机',
+  '个税调整与两会热点',
+  '移民潮及技术精英移民现象',
+  '曹操墓真伪考古争议',
+  '东莞扫黄行动',
+  '吴英案死刑争议',
+  '中美关系走向及台海军售争议',
+  '朝韩军事冲突可能性与中美博弈',
+  '钓鱼岛争端及中日关系',
+  '美乌再谈判局势',
+  '美国政府“关门”及其影响',
+  '奥巴马亚洲行意图分析',
+  '日本武器出口政策',
+  '印度新政对中印关系影响',
+  '人民币汇率改革与国际压力',
+  '央行降息与经济新常态',
+  '股市走势与金融危机影响',
+  '延迟退休政策',
+  '制造业发展与转型',
+  '电影票房现象（如《哪吒》）与文化重构',
+  'AI技术发展与全球权力格局',
+  '社交网络的社会影响',
+  '洋奶粉安全信任问题'
+]
 
 // TODO: random initial topic
-const topic = ref(t('MSG_INITIAL_TIP_' + Math.floor(Math.random() * 9).toString()))
+const topic = ref(initialTopics[Math.floor(Math.random() * 9)])
 
 watch(topic, () => {
   topic.value = topic.value.replace('\n', '')

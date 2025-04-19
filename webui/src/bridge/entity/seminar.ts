@@ -70,13 +70,16 @@ export class ESeminar {
     }
     // Start topic round
     if (intent === seminarWorker.Intent.START_TOPIC || intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC) {
+      console.log('Conclude topic', subTopic)
       void this.startNextSubTopic()
       this.#subRound += 1
     }
     if (intent === seminarWorker.Intent.START_FIRST_SUBTOPIC || intent === seminarWorker.Intent.START_SUBTOPIC) {
+      console.log('Start topic', this.#subRound, subTopic)
       this.#canNext = true
     }
     if (this.#subRound === this.#subRounds && intent === seminarWorker.Intent.DISCUSS) {
+      console.log('Round done', this.#subRound, subTopic)
       this.#canNext = false
       void this.concludeSubTopic()
       if (this.#subTopics[this.#subTopics.length - 1] === subTopic)
