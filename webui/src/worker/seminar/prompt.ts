@@ -5,7 +5,8 @@ export enum Intent {
   START_FIRST_SUBTOPIC = 'StartFirstTopic',
   START_SUBTOPIC = 'StartSubTopic',
   CONCLUDE_SUBTOPIC = 'ConcludeSubTopic',
-  CONCLUDE = 'Conclude'
+  CONCLUDE = 'Conclude',
+  OUTLINE_SUBTOPICS = 'OutlineSubTopics'
 }
 
 enum PromptType {
@@ -39,7 +40,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.HTML_STYLE,
     (() =>
-      ') 如果只有一段文字，不要加粗，一级标题用16号字加粗，二级标题用14号字加粗，普通内容不加粗，行高1.5em') as RequirementFunc
+      ') 不要默认加粗第一段文字，没有标题不要加粗，一级标题用16号字加粗，二级标题用14号字加粗，普通内容不加粗，行高1.5em') as RequirementFunc
   ],
   [PromptType.SEGMENT, (() => ') 根据语义需要分段') as RequirementFunc],
   [
@@ -54,7 +55,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.PERSONALITY,
-    (() => ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例') as RequirementFunc
+    (() =>
+      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例') as RequirementFunc
   ],
   [
     PromptType.EMOTION,
@@ -67,11 +69,13 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.DONT_START_WITH_TOPIC,
-    (() => ') 不要生硬的用主题开头，用谈话的形式，不要用写文章的形式') as RequirementFunc
+    (() =>
+      ') 不要生硬的用主题开头，用谈话的形式，不要用写文章的形式') as RequirementFunc
   ],
   [
     PromptType.AS_HOST,
-    (() => ') 作为主持人，你主要是串联调和嘉宾发言和叙述资料，以及串联讨论环节') as RequirementFunc
+    (() =>
+      ') 作为主持人，你主要是串联调和嘉宾发言和叙述资料，以及串联讨论环节') as RequirementFunc
   ]
 ])
 
@@ -276,6 +280,11 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       speakDuration: number
     ) => `作为主持人，你的人设是${personality}，现在是节目的最后，本期节目的主要内容为：${topicMaterial}，
           请你对本期内容进行总结陈词，需达成：${intentRequirements(Intent.CONCLUDE, speakDuration, 300)}`) as IntentFunc
+  ],
+  [
+    Intent.OUTLINE_SUBTOPICS,
+    ((topicMaterial: string) =>
+      `提取${topicMaterial}中的小标题分为4行原始文字返回，不要包含素材和主标题`) as IntentFunc
   ]
 ])
 
