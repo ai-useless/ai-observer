@@ -12,6 +12,7 @@ type MessageFunc = (
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
 type HistoryMessagesFunc = () => Map<number, string[]>
+type SubTopicStartFunc = (subTopic: string) => void
 
 export class ESeminar {
   #seminar = undefined as unknown as dbModel.Seminar
@@ -19,12 +20,13 @@ export class ESeminar {
   #onThinking = undefined as unknown as ThinkingFunc
   #onOutline = undefined as unknown as OutlineFunc
   #historyMessages = undefined as unknown as HistoryMessagesFunc
+  #subTopicStart = undefined as unknown as SubTopicStartFunc
 
   #onGoingSubTopic = 0
   #topicMaterial = undefined as unknown as string
   #subTopics = [] as string[]
 
-  #totalRounds = 5
+  #totalRounds = 8
   #subRound = 0
   #round = 0
 
@@ -33,13 +35,15 @@ export class ESeminar {
     onMessage: MessageFunc,
     onThinking: ThinkingFunc,
     onOutline: OutlineFunc,
-    historyMessages: HistoryMessagesFunc
+    historyMessages: HistoryMessagesFunc,
+    subTopicStart: SubTopicStartFunc
   ) {
     this.#seminar = seminar
     this.#onMessage = onMessage
     this.#onThinking = onThinking
     this.#onOutline = onOutline
     this.#historyMessages = historyMessages
+    this.#subTopicStart = subTopicStart
   }
 
   participators = async () => {
@@ -55,7 +59,11 @@ export class ESeminar {
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
 
-    if (this.#round === 1) this.#round += 1
+    // 0: Separate topics
+    // 1: Start topic
+    // 2: Start first topic
+
+    if (this.#round === 1 || this.#round === 2) this.#round += 1
 
     void this.#onMessage(
       message.participatorId,
@@ -74,7 +82,7 @@ export class ESeminar {
       this.#round += 1
     }
     // Start topic round
-    if (this.#round > 1 && this.#subRound === 0) {
+    if (this.#round >= 2 && this.#subRound === 0) {
       void this.startNextSubTopic()
       this.#subRound += 1
     }
@@ -102,7 +110,7 @@ export class ESeminar {
 
   shouldNext = () => {
     // User can only speak after round 2
-    return this.#round > 1 && this.#subRound > 0
+    return this.#round > 2 && this.#subRound > 0
   }
 
   start = async () => {
@@ -161,6 +169,8 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
     if (!this.#subTopics.length) return
+
+    this.#subTopicStart(this.#subTopics[this.#onGoingSubTopic])
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,

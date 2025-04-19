@@ -254,7 +254,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     ((
       topic: string,
       rounds: number
-    ) => `作为主持人，请你就“${topic}”这个主题，拆解出${rounds || 5}个递进层次的小主题，要求只输出主题和主题
+    ) => `作为主持人，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题，要求只输出主题和主题
           相关素材（格式如下：本期主题：xxxxx 换行 (1).xxxxx 换行 素材：xxxx 换行 (2).xxxxxxx 换行 素材：xxxxxxx）,
           要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
   ],
@@ -269,7 +269,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       historyMessages: string[]
     ) => `作为嘉宾，你的人设是${personality}，本期节目讨论的主题为${topic}, 本轮讨论的小主题为${subTopic}，本期节目
           主持人对本轮主题的开场为："${hostMessage}"，请你分析讨论内容并发表观点，记住，你不是主持人，不要重复问题，
-          只需要和其他嘉宾观点讨论和发表自己的观点即可，可以认同或者反对其他嘉宾的观点，但是不要重复其他嘉宾的观点，不要重复自己的人设。
+          只需要和其他嘉宾观点讨论和发表自己的观点即可，可以认同或者反对其他嘉宾的观点，但是不要重复其他嘉宾的观点，
+          不要重复自己的人设，回复中不要包含类似作为嘉宾的语言。
           要求: ${intentRequirements(Intent.DISCUSS, speakDuration, 100, historyMessages)}`) as IntentFunc
   ],
   [
@@ -279,7 +280,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topicMaterial: string,
       speakDuration: number
     ) => `作为主持人，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}，
-          请你就主要内容做一个简单的开场，要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
+          请你就主要内容做一个简单的开场，不需要邀请嘉宾发言，要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
     Intent.START_FIRST_SUBTOPIC,
@@ -330,7 +331,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.OUTLINE_SUBTOPICS,
     ((topicMaterial: string) =>
-      `提取${topicMaterial}中的小标题分为4行原始文字返回，不要包含素材和主标题`) as IntentFunc
+      `提取${topicMaterial}中的小标题分为每个标题单独一行的纯文本返回，不要包含素材和主标题`) as IntentFunc
   ]
 ])
 
