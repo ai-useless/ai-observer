@@ -91,7 +91,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.WITH_EVENT,
-    (() => ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标') as RequirementFunc
+    (() => ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标，鼠标hover后显示链接') as RequirementFunc
   ]
 ])
 
@@ -238,7 +238,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topic: string,
       rounds: number
     ) => `作为主持人，请你就“${topic}”这个主题，拆解出${rounds || 5}个递进层次的小主题，要求只输出主题和主题
-          相关素材（格式如下：本期主题：xxxxx,(1).xxxxx，素材：xxxx；(2).xxxxxxx，素材：xxxxxxx）,
+          相关素材（格式如下：本期主题：xxxxx 换行 (1).xxxxx 换行 素材：xxxx 换行 (2).xxxxxxx 换行 素材：xxxxxxx）,
           要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
   ],
   [
