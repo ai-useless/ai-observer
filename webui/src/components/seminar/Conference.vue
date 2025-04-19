@@ -37,28 +37,33 @@
         @mouseleave='autoScroll = true'
       >
         <div style='margin-top: 16px;'>
-          <q-chat-message
-            v-for='(message, index) in displayMessages'
-            :key='index'
-            :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
-            :avatar='message.simulator.avatar'
-            :stamp='message.datetime'
-            :text='[message.message]'
-            text-color='grey-9'
-            bg-color='grey-2'
-          >
-            <template #name>
-              <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
-                <div>
-                  {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+          <div v-for='(message, index) in displayMessages' :key='index'>
+            <q-chat-message
+              v-if='!message.subTopicTitle'
+              :key='index'
+              :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
+              :avatar='message.simulator.avatar'
+              :stamp='message.datetime'
+              :text='[message.message]'
+              text-color='grey-9'
+              bg-color='grey-2'
+            >
+              <template #name>
+                <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
+                  <div>
+                    {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+                  </div>
+                  <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
+                  <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
+                  <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
                 </div>
-                <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-              </div>
-            </template>
-            <div v-html='message.message' style='line-height: 1.5em;' />
-          </q-chat-message>
+              </template>
+              <div v-html='message.message' style='line-height: 1.5em;' />
+            </q-chat-message>
+            <div v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 64px 0'>
+              {{ message.subTopic }}
+            </div>
+          </div>
           <q-resize-observer @resize='onChatBoxResize' />
         </div>
       </q-scroll-area>
@@ -106,6 +111,8 @@ interface Message {
   timestamp: number
   audio: string
   duration: number
+  subTopicTitle: boolean
+  subTopic?: string
 }
 
 const displayMessages = ref([] as Message[])
@@ -144,7 +151,9 @@ const typing = () => {
   typingMessage.value = waitMessages.value[0]
   typingIndex.value = 0
   waitMessages.value = waitMessages.value.slice(1)
-  seminar.Seminar.speak(typingMessage.value.participator.id as number)
+  if (!typingMessage.value.subTopicTitle) {
+    seminar.Seminar.speak(typingMessage.value.participator.id as number)
+  }
 
   calculateTypingInterval()
   window.clearInterval(typingTicker.value)
@@ -155,7 +164,7 @@ const typing = () => {
     el.datetime = t(timestamp.msg, { VALUE: timestamp.value })
   })
 
-  if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
+  if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext() && !typingMessage.value.subTopicTitle) {
     void eSeminar.value.nextGuests()
     requesting.value = true
   }
@@ -224,7 +233,8 @@ const onMessage = async (participatorId: number, message: string, round: number,
     timestamp: Date.now(),
     datetime: t(timestamp.msg, { VALUE: timestamp.value }),
     audio,
-    duration
+    duration,
+    subTopicTitle: false
   })
 
   waitMessages.value = waitMessages.value.map((el) => {
@@ -263,13 +273,29 @@ const historyMessages = (): Map<number, string[]> => {
   return messages
 }
 
+const onSubTopicStart = (subTopic: string) => {
+  waitMessages.value.push({
+    round: lastRound.value,
+    message: subTopic,
+    participator: undefined as unknown as dbModel.Participator,
+    simulator: undefined as unknown as dbModel.Simulator,
+    model: undefined as unknown as dbModel.Model,
+    timestamp: 0,
+    datetime: undefined as unknown as string,
+    audio: undefined as unknown as string,
+    duration: 0,
+    subTopicTitle: true,
+    subTopic
+  })
+}
+
 onMounted(async () => {
   chatBoxHeight.value = window.innerHeight - 106
 
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
-  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
+  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages, onSubTopicStart)
   await eSeminar.value.start()
 
   typingTicker.value = window.setInterval(typing, 40)

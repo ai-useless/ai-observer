@@ -240,6 +240,7 @@ export class SeminarRunner {
       }
     )
 
+    prompts.generateAudio = false
     if (!prompts.generateAudio) {
       return {
         text: (textResp.data as Record<string, string>).content,
