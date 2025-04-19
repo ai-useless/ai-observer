@@ -29,7 +29,7 @@ export class ESeminar {
   #totalTopics = 8
   #subRound = 0
   // At least 2 for sub topic start
-  #subRounds = 2
+  #subRounds = 6
   #round = 0
 
   constructor(
