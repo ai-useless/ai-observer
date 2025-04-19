@@ -182,8 +182,6 @@ export class ESeminar {
     if (!host) throw new Error('Invalid host')
     if (!this.#subTopics.length) return
 
-    console.log(this.#subTopics)
-
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
