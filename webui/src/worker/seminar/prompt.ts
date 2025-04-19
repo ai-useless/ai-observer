@@ -20,7 +20,8 @@ enum PromptType {
   EMOTION,
   NO_ANALYSIS,
   MERGE_SPACES,
-  DONT_START_WITH_TOPIC
+  DONT_START_WITH_TOPIC,
+  AS_HOST
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -67,6 +68,10 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.DONT_START_WITH_TOPIC,
     (() => ') 不要生硬的用主题开头，用谈话的形式，不要用写文章的形式') as RequirementFunc
+  ],
+  [
+    PromptType.AS_HOST,
+    (() => ') 作为主持人，你主要是串联调和嘉宾发言和叙述资料，以及串联讨论环节') as RequirementFunc
   ]
 ])
 
@@ -82,7 +87,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.SEGMENT,
       PromptType.NO_HEAD_SPACE,
-      PromptType.MERGE_SPACES
+      PromptType.MERGE_SPACES,
+      PromptType.AS_HOST
     ]
   ],
   [
@@ -106,14 +112,14 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     [
       PromptType.NO_EMOJI,
       PromptType.DURATION,
-      PromptType.PERSONALITY,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
       PromptType.IDENT_2_SPACE,
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.AS_HOST
     ]
   ],
   [
@@ -121,7 +127,6 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     [
       PromptType.NO_EMOJI,
       PromptType.DURATION,
-      PromptType.PERSONALITY,
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
@@ -129,7 +134,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.AS_HOST
     ]
   ],
   [
@@ -137,7 +143,6 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     [
       PromptType.NO_EMOJI,
       PromptType.DURATION,
-      PromptType.PERSONALITY,
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
@@ -145,7 +150,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.AS_HOST
     ]
   ],
   [
@@ -153,7 +159,6 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     [
       PromptType.NO_EMOJI,
       PromptType.DURATION,
-      PromptType.PERSONALITY,
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
@@ -161,7 +166,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.AS_HOST
     ]
   ],
   [
@@ -169,7 +175,6 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     [
       PromptType.NO_EMOJI,
       PromptType.DURATION,
-      PromptType.PERSONALITY,
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
@@ -177,7 +182,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.AS_HOST
     ]
   ]
 ])
