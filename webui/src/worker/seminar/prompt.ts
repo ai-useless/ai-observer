@@ -357,6 +357,7 @@ export class Prompt {
     if (intent === Intent.OUTLINE) {
       const lines = content.split('\n')
       for (const line of lines) {
+        if (!line.replace(' ', '').length) continue
         json.titles.push(line)
       }
       return json
