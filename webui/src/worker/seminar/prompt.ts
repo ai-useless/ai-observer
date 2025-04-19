@@ -84,26 +84,29 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.DONT_DESCRIBE_PERSONALITY,
-    (() =>
-      ') 不要描述自己的人设') as RequirementFunc
+    (() => ') 不要描述自己的人设') as RequirementFunc
   ],
   [
     PromptType.NO_VIRTUAL_WORDS,
-    (() => ') 禁止使用用主题开头的语句，禁止使用类似于深远影响的虚拟词汇') as RequirementFunc
+    (() =>
+      ') 禁止使用用主题开头的语句，禁止使用类似于深远影响的虚拟词汇') as RequirementFunc
   ],
   [
     PromptType.WITH_EVENT,
-    (() => ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标，鼠标hover后显示链接') as RequirementFunc
+    (() =>
+      ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标，鼠标hover后显示链接') as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_ANALYSIS,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ((speakDuration: number, letters: number, historyMessages: string[]) => `) 你前面的嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。如果有必要，分析他们的观点并发表自己的观点`) as RequirementFunc
+    ((speakDuration: number, letters: number, historyMessages: string[]) =>
+      `) 你前面的嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。如果有必要，分析他们的观点并发表自己的观点`) as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_CONCLUSION,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ((speakDuration: number, letters: number, historyMessages: string[]) => `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
+    ((speakDuration: number, letters: number, historyMessages: string[]) =>
+      `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
   ]
 ])
 
