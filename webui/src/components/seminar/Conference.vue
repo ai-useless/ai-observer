@@ -244,13 +244,30 @@ const onChatBoxResize = (size: { height: number }) => {
   showTitle.value = size.height < chatBoxHeight.value - 84 - 89 - 60
 }
 
+const historyMessages = (): Map<number, string[]> => {
+  const messages = new Map<number, string[]>()
+
+  displayMessages.value.forEach((el) => {
+    const _messages = messages.get(el.round) || []
+    _messages.push(el.message)
+    messages.set(el.round, _messages)
+  })
+  waitMessages.value.forEach((el) => {
+    const _messages = messages.get(el.round) || []
+    _messages.push(el.message)
+    messages.set(el.round, _messages)
+  })
+
+  return messages
+}
+
 onMounted(async () => {
   chatBoxHeight.value = window.innerHeight - 106
 
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
-  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline)
+  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
   await eSeminar.value.start()
 
   typingTicker.value = window.setInterval(typing, 40)

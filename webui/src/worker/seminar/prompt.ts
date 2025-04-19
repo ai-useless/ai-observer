@@ -25,7 +25,9 @@ enum PromptType {
   AS_HOST,
   DONT_DESCRIBE_PERSONALITY,
   NO_VIRTUAL_WORDS,
-  WITH_EVENT
+  WITH_EVENT,
+  WITH_HISTORY_ANALYSIS,
+  WITH_HISTORY_CONCLUSION
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -92,6 +94,16 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.WITH_EVENT,
     (() => ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标，鼠标hover后显示链接') as RequirementFunc
+  ],
+  [
+    PromptType.WITH_HISTORY_ANALYSIS,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ((speakDuration: number, letters: number, historyMessages: string[]) => `) 你前面的嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。如果有必要，分析他们的观点并发表自己的观点`) as RequirementFunc
+  ],
+  [
+    PromptType.WITH_HISTORY_CONCLUSION,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    ((speakDuration: number, letters: number, historyMessages: string[]) => `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
   ]
 ])
 
@@ -128,7 +140,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.DONT_DESCRIBE_PERSONALITY,
       PromptType.NO_VIRTUAL_WORDS,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITH_HISTORY_ANALYSIS
     ]
   ],
   [
@@ -195,7 +208,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITH_HISTORY_CONCLUSION
     ]
   ],
   [
@@ -248,10 +262,11 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       subTopic: string,
       personality: string,
       hostMessage: string,
-      speakDuration: number
+      speakDuration: number,
+      historyMessages: string[]
     ) => `你的人设是${personality}，本期节目讨论的主题为${topic}, 本轮讨论的小主题为${subTopic}，本期节目
-          主持人对你说的话为："${hostMessage}"，请你作为嘉宾，用你的人设发表你对该小主题的看法
-          要求: ${intentRequirements(Intent.DISCUSS, speakDuration, 100)}`) as IntentFunc
+          主持人对本轮主题的开场为："${hostMessage}"，请你作为嘉宾，用你的人设发表你对该小主题的看法
+          要求: ${intentRequirements(Intent.DISCUSS, speakDuration, 100, historyMessages)}`) as IntentFunc
   ],
   [
     Intent.START_TOPIC,
@@ -292,19 +307,21 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topic: string,
       personality: string,
       subTopic: string,
-      speakDuration: number
+      speakDuration: number,
+      historyMessages: string[]
     ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",之前你已经对主题进行过开场
           现在进入小主题讨论阶段，本轮主要讨论的是${subTopic}这个小主题，请就这个小主题拓展和开场，并且结尾要抛出问题让嘉宾来讨论，
-          以“下面有请嘉宾发言”结束，要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
+          以“下面有请嘉宾发言”结束，要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300, historyMessages)}`) as IntentFunc
   ],
   [
     Intent.CONCLUDE,
     ((
       personality: string,
       topicMaterial: string,
-      speakDuration: number
+      speakDuration: number,
+      historyMessages: string[]
     ) => `作为主持人，你的人设是${personality}，现在是节目的最后，本期节目的主要内容为：${topicMaterial}，
-          请你对本期内容进行总结陈词，需达成：${intentRequirements(Intent.CONCLUDE, speakDuration, 300)}`) as IntentFunc
+          请你对本期内容进行总结陈词，需达成：${intentRequirements(Intent.CONCLUDE, speakDuration, 300, historyMessages)}`) as IntentFunc
   ],
   [
     Intent.OUTLINE_SUBTOPICS,
@@ -314,7 +331,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
 ])
 
 export class Prompt {
-  static prompt = (intent: Intent, ...args: (string | number)[]) => {
+  static prompt = (intent: Intent, ...args: (string | number | string[])[]) => {
     const _args = [...args]
     return IntentPrompt.get(intent)?.(..._args)
   }

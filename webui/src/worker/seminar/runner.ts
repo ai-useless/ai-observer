@@ -30,15 +30,18 @@ export interface StartSubTopicPrompts extends BasePrompts {
 
 export interface ConcludeSubTopicPrompts extends BasePrompts {
   subTopic: string
+  historyMessages: string[]
 }
 
 export interface ConcludeTopicPrompts extends BasePrompts {
   topicMaterial: string
+  historyMessages: string[]
 }
 
 export interface DiscussPrompts extends BasePrompts {
   subTopic: string
   hostMessage: string
+  historyMessages: string[]
 }
 
 export interface OutlineSubTopicsPrompts extends BasePrompts {
@@ -170,7 +173,8 @@ export class SeminarRunner {
           topic,
           simulator.personality,
           _prompts.subTopic,
-          100
+          100,
+          _prompts.historyMessages
         )
       }
       case Intent.CONCLUDE: {
@@ -180,7 +184,8 @@ export class SeminarRunner {
           topic,
           simulator.personality,
           _prompts.topicMaterial,
-          100
+          100,
+          _prompts.historyMessages
         )
       }
       case Intent.DISCUSS: {
@@ -191,7 +196,8 @@ export class SeminarRunner {
           _prompts.subTopic,
           simulator.personality,
           _prompts.hostMessage,
-          100
+          100,
+          _prompts.historyMessages
         )
       }
       case Intent.OUTLINE_SUBTOPICS: {
