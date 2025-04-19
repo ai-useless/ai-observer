@@ -213,7 +213,7 @@ export class SeminarRunner {
       prompts
     )
 
-    const resp = await axios.post(
+    const textResp = await axios.post(
       /* model.endpoint || */ constants.FALLBACK_API,
       {
         ai: model.name,
@@ -228,26 +228,34 @@ export class SeminarRunner {
 
     if (!prompts.generateAudio) {
       return {
-        text: (resp.data as Record<string, string>).content,
+        text: (textResp.data as Record<string, string>).content,
         audio: '',
         duration: 0
       }
     }
 
-    const speechContent = (resp.data as Record<string, string>).content
-    const _speakerVoice = await SeminarRunner.speakerVoice(participatorId)
-    const audioResp = await axios.post(
-      /* model.endpoint || */ constants.AUDIO_API,
-      {
-        text: speechContent,
-        speakerVoice: _speakerVoice,
-        speed: 1.1
+    try {
+      const speechContent = (textResp.data as Record<string, string>).content
+      const speakerVoice = await SeminarRunner.speakerVoice(participatorId)
+      const audioResp = await axios.post(
+        /* model.endpoint || */ constants.AUDIO_API,
+        {
+          text: speechContent,
+          speakerVoice,
+          speed: 1.1
+        }
+      )
+      return {
+        text: (textResp.data as Record<string, string>).content,
+        audio: (audioResp.data as Record<string, string>).data,
+        duration: (audioResp.data as Record<string, number>).duration
       }
-    )
-    return {
-      text: (resp.data as Record<string, string>).content,
-      audio: (audioResp.data as Record<string, string>).data,
-      duration: (audioResp.data as Record<string, number>).duration
+    } catch {
+      return {
+        text: (textResp.data as Record<string, string>).content,
+        audio: '',
+        duration: 0
+      }
     }
   }
 
