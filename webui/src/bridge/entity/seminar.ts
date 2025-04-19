@@ -11,12 +11,14 @@ type MessageFunc = (
 ) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
+type HistoryMessagesFunc = () => Map<number, string[]>
 
 export class ESeminar {
   #seminar = undefined as unknown as dbModel.Seminar
   #onMessage = undefined as unknown as MessageFunc
   #onThinking = undefined as unknown as ThinkingFunc
   #onOutline = undefined as unknown as OutlineFunc
+  #historyMessages = undefined as unknown as HistoryMessagesFunc
 
   #onGoingSubTopic = 0
   #topicMaterial = undefined as unknown as string
@@ -30,12 +32,14 @@ export class ESeminar {
     seminar: dbModel.Seminar,
     onMessage: MessageFunc,
     onThinking: ThinkingFunc,
-    onOutline: OutlineFunc
+    onOutline: OutlineFunc,
+    historyMessages: HistoryMessagesFunc
   ) {
     this.#seminar = seminar
     this.#onMessage = onMessage
     this.#onThinking = onThinking
     this.#onOutline = onOutline
+    this.#historyMessages = historyMessages
   }
 
   participators = async () => {
@@ -184,6 +188,8 @@ export class ESeminar {
 
     this.#subRound = 0
 
+    const historyMessages = this.#historyMessages().get(this.#onGoingSubTopic) || []
+
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
@@ -192,7 +198,8 @@ export class ESeminar {
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
         prompts: {
           subTopic: this.#subTopics[this.#onGoingSubTopic],
-          generateAudio: true
+          generateAudio: true,
+          historyMessages
         }
       }
     )
@@ -206,6 +213,9 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
 
+    const historyMessages = [] as string[]
+    this.#historyMessages().forEach((messages) => historyMessages.push(...messages))
+
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
@@ -214,7 +224,8 @@ export class ESeminar {
         intent: seminarWorker.Intent.CONCLUDE,
         prompts: {
           topicMaterial: this.#topicMaterial,
-          generateAudio: true
+          generateAudio: true,
+          historyMessages
         }
       }
     )
@@ -238,6 +249,8 @@ export class ESeminar {
     const participators = await this.participators()
     const { id, topic } = this.#seminar
 
+    const historyMessages = this.#historyMessages().get(this.#onGoingSubTopic) || []
+
     const guests = Math.ceil(Math.random() * participators.length)
     const speakers = [] as dbModel.Participator[]
     for (let i = 0; i < guests; i++) {
@@ -258,7 +271,8 @@ export class ESeminar {
           prompts: {
             subTopic: topic,
             hostMessage: topic,
-            generateAudio: true
+            generateAudio: true,
+            historyMessages
           }
         }
       )
