@@ -110,7 +110,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
       `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
   ],
   [
-    PromptType.WITH_HUMAN_WORDS, (() => '用人的语言说话，不要说车轱辘话') as RequirementFunc
+    PromptType.WITH_HUMAN_WORDS, (() => ') 用人的语言说话，不要说车轱辘话') as RequirementFunc
   ]
 ])
 
@@ -310,18 +310,19 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       historyMessages: string[]
     ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",
           本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段，
-          以“那么我们进入下一个讨论主题”结束，要求：${intentRequirements(Intent.START_SUBTOPIC, speakDuration, 300, historyMessages)}`) as IntentFunc
+          以“那么我们进入下一个讨论主题”结束，要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300, historyMessages)}`) as IntentFunc
   ],
   [
     Intent.START_SUBTOPIC,
     ((
       topic: string,
       personality: string,
+      topicMaterial: string,
       subTopic: string,
       speakDuration: number
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",之前你已经对主题进行过开场
+    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场
           现在进入小主题讨论阶段，本轮主要讨论的是${subTopic}这个小主题，请就这个小主题拓展和开场，并且结尾要抛出问题让嘉宾来讨论，
-          以“下面有请嘉宾发言”结束，要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
+          以“下面有请嘉宾发言”结束，要求：${intentRequirements(Intent.START_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
     Intent.CONCLUDE,
