@@ -28,7 +28,7 @@ export class ESeminar {
   #totalTopics = 8
   #subRound = 0
   // At least 2 for sub topic start
-  #subRounds = 6
+  #subRounds = 2
   #round = 0
   #canNext = false
 
@@ -97,6 +97,8 @@ export class ESeminar {
   }
 
   onError = (error: seminarWorker.ErrorResponsePayload) => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.log(`Failed request: [${JSON.stringify(error)}]`)
     setTimeout(() => {
       this.host()
         .then(() => {
@@ -173,6 +175,8 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
     if (!this.#subTopics.length) return
+
+    console.log(this.#subTopics)
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
