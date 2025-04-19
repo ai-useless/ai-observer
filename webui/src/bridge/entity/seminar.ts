@@ -69,14 +69,23 @@ export class ESeminar {
       void this.startTopic()
     }
     // Start topic round
-    if (intent === seminarWorker.Intent.START_TOPIC || intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC) {
+    if (
+      intent === seminarWorker.Intent.START_TOPIC ||
+      intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC
+    ) {
       void this.startNextSubTopic()
       this.#subRound += 1
     }
-    if (intent === seminarWorker.Intent.START_FIRST_SUBTOPIC || intent === seminarWorker.Intent.START_SUBTOPIC) {
+    if (
+      intent === seminarWorker.Intent.START_FIRST_SUBTOPIC ||
+      intent === seminarWorker.Intent.START_SUBTOPIC
+    ) {
       this.#canNext = true
     }
-    if (this.#subRound === this.#subRounds && intent === seminarWorker.Intent.DISCUSS) {
+    if (
+      this.#subRound === this.#subRounds &&
+      intent === seminarWorker.Intent.DISCUSS
+    ) {
       this.#canNext = false
       void this.concludeSubTopic()
       if (this.#subTopics[this.#subTopics.length - 1] === subTopic)
