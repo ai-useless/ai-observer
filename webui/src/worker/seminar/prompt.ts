@@ -53,7 +53,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.PERSONALITY,
-    (() => ') 发言内容符合自己的人设，观点明确，事实充分') as RequirementFunc
+    (() => ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例') as RequirementFunc
   ],
   [
     PromptType.EMOTION,
