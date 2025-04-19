@@ -28,7 +28,7 @@ export class ESeminar {
   #totalTopics = 8
   #subRound = 0
   // At least 2 for sub topic start
-  #subRounds = 2
+  #subRounds = 6
   #round = 0
   #canNext = false
 
@@ -70,16 +70,13 @@ export class ESeminar {
     }
     // Start topic round
     if (intent === seminarWorker.Intent.START_TOPIC || intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC) {
-      console.log('Conclude topic', subTopic)
       void this.startNextSubTopic()
       this.#subRound += 1
     }
     if (intent === seminarWorker.Intent.START_FIRST_SUBTOPIC || intent === seminarWorker.Intent.START_SUBTOPIC) {
-      console.log('Start topic', this.#subRound, subTopic)
       this.#canNext = true
     }
     if (this.#subRound === this.#subRounds && intent === seminarWorker.Intent.DISCUSS) {
-      console.log('Round done', this.#subRound, subTopic)
       this.#canNext = false
       void this.concludeSubTopic()
       if (this.#subTopics[this.#subTopics.length - 1] === subTopic)
@@ -98,7 +95,7 @@ export class ESeminar {
 
   onError = (error: seminarWorker.ErrorResponsePayload) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.log(`Failed request: [${JSON.stringify(error)}]`)
+    console.log(`Failed request [${error.payload.intent}}]: ${error.error}`)
     setTimeout(() => {
       this.host()
         .then(() => {
@@ -215,6 +212,7 @@ export class ESeminar {
         participatorId: host.id as number,
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
         prompts: {
+          topicMaterial: this.#topicMaterial,
           generateAudio: true,
           historyMessages
         }

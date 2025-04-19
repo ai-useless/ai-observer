@@ -28,6 +28,7 @@ export interface StartSubTopicPrompts extends BasePrompts {
 }
 
 export interface ConcludeSubTopicPrompts extends BasePrompts {
+  topicMaterial: string
   historyMessages: string[]
 }
 
@@ -173,6 +174,7 @@ export class SeminarRunner {
           intent,
           topic,
           simulator.personality,
+          _prompts.topicMaterial,
           subTopic,
           100,
           _prompts.historyMessages
@@ -182,7 +184,6 @@ export class SeminarRunner {
         const _prompts = prompts as ConcludeTopicPrompts
         return Prompt.prompt(
           intent,
-          topic,
           simulator.personality,
           _prompts.topicMaterial,
           100,
