@@ -132,8 +132,10 @@ const typing = () => {
 
   // If we have a message in typing, finish it
   if (typingMessage.value && typingIndex.value < typingMessage.value.message.length) {
-    displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value)
-    typingIndex.value += 1
+    const matches = typingMessage.value.message.slice(typingIndex.value).match(/<[^>]+>/) || []
+    const appendLen = matches[0]?.length || 1
+    displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value + appendLen)
+    typingIndex.value += appendLen
     return
   }
 

@@ -149,7 +149,7 @@ export class ESeminar {
         intent: seminarWorker.Intent.START_TOPIC,
         prompts: {
           topicMaterial: this.#topicMaterial,
-          generateAudio: true
+          generateAudio: false
         }
       }
     )
@@ -174,7 +174,7 @@ export class ESeminar {
         prompts: {
           topicMaterial: this.#topicMaterial,
           subTopic: this.#subTopics[this.#onGoingSubTopic],
-          generateAudio: true
+          generateAudio: false
         }
       }
     )
@@ -199,7 +199,7 @@ export class ESeminar {
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
         prompts: {
           subTopic: this.#subTopics[this.#onGoingSubTopic],
-          generateAudio: true,
+          generateAudio: false,
           historyMessages
         }
       }
@@ -227,7 +227,7 @@ export class ESeminar {
         intent: seminarWorker.Intent.CONCLUDE,
         prompts: {
           topicMaterial: this.#topicMaterial,
-          generateAudio: true,
+          generateAudio: false,
           historyMessages
         }
       }
@@ -275,7 +275,7 @@ export class ESeminar {
           prompts: {
             subTopic: topic,
             hostMessage: topic,
-            generateAudio: true,
+            generateAudio: false,
             historyMessages
           }
         }
