@@ -59,7 +59,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n({ useScope: 'global' })
 
 // TODO: random initial topic
-const topic = ref(t('MSG_INITIAL_TIP'))
+const topic = ref(t('MSG_INITIAL_TIP_' + Math.floor(Math.random() * 9).toString()))
 
 watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
