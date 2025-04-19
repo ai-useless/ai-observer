@@ -20,7 +20,8 @@ enum PromptType {
   EMOTION,
   NO_ANALYSIS,
   MERGE_SPACES,
-  DONT_START_WITH_TOPIC
+  DONT_START_WITH_TOPIC,
+  NO_BOLD_WITH_SINGLE_SEGMENT
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -67,6 +68,10 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.DONT_START_WITH_TOPIC,
     (() => ') 不要生硬的用主题开头') as RequirementFunc
+  ],
+  [
+    PromptType.NO_BOLD_WITH_SINGLE_SEGMENT,
+    (() => ') 如果只有一段文字，不要加粗') as RequirementFunc
   ]
 ])
 
@@ -98,7 +103,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.NO_BOLD_WITH_SINGLE_SEGMENT
     ]
   ],
   [
@@ -114,7 +120,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.NO_BOLD_WITH_SINGLE_SEGMENT
     ]
   ],
   [
@@ -130,7 +137,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.NO_BOLD_WITH_SINGLE_SEGMENT
     ]
   ],
   [
@@ -146,7 +154,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.NO_BOLD_WITH_SINGLE_SEGMENT
     ]
   ],
   [
@@ -162,7 +171,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.NO_BOLD_WITH_SINGLE_SEGMENT
     ]
   ],
   [
@@ -178,7 +188,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.NO_BOLD_WITH_SINGLE_SEGMENT
     ]
   ]
 ])
