@@ -284,7 +284,7 @@ export class SeminarRunner {
       }
     )
     if (!_response) return
-    return Prompt.postProcess(intent, response)
+    return Prompt.postProcess(intent, _response.text)
   }
 
   static handleChatRequest = async (payload: ChatRequestPayload) => {
