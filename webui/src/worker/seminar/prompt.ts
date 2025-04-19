@@ -27,7 +27,8 @@ enum PromptType {
   NO_VIRTUAL_WORDS,
   WITH_EVENT,
   WITH_HISTORY_ANALYSIS,
-  WITH_HISTORY_CONCLUSION
+  WITH_HISTORY_CONCLUSION,
+  WITH_HUMAN_WORDS
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -107,6 +108,9 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ((speakDuration: number, letters: number, historyMessages: string[]) =>
       `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
+  ],
+  [
+    PromptType.WITH_HUMAN_WORDS, (() => '用人的语言说话，不要说车轱辘话') as RequirementFunc
   ]
 ])
 
@@ -144,7 +148,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_DESCRIBE_PERSONALITY,
       PromptType.NO_VIRTUAL_WORDS,
       PromptType.WITH_EVENT,
-      PromptType.WITH_HISTORY_ANALYSIS
+      PromptType.WITH_HISTORY_ANALYSIS,
+      PromptType.WITH_HUMAN_WORDS
     ]
   ],
   [
@@ -295,7 +300,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
           要求：${intentRequirements(Intent.START_FIRST_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
-    Intent.START_SUBTOPIC,
+    Intent.CONCLUDE_SUBTOPIC,
     ((
       topic: string,
       personality: string,
@@ -307,7 +312,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
           以“那么我们进入下一个讨论主题”结束，要求：${intentRequirements(Intent.START_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
-    Intent.CONCLUDE_SUBTOPIC,
+    Intent.START_SUBTOPIC,
     ((
       topic: string,
       personality: string,
