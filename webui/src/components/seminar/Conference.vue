@@ -231,6 +231,10 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   lastRound.value = round
   requesting.value = false
 
+  // Discard topic after conclude
+  const messages = [...waitMessages.value, ...displayMessages.value]
+  if (messages.length && messages[messages.length - 1].subTopic !== subTopic && messages.findIndex((el) => el.subTopic === subTopic) >= 0) return
+
   waitMessages.value.push({
     round,
     message,
