@@ -68,7 +68,7 @@
         </div>
       </q-scroll-area>
     </div>
-    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 160px;' :active-topic='activeTopic' />
+    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 160px;' :active-topic='activeTopic || ""' />
     <q-space />
   </div>
 </template>
