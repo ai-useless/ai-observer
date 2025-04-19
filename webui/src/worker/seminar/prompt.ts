@@ -22,7 +22,8 @@ enum PromptType {
   NO_ANALYSIS,
   MERGE_SPACES,
   DONT_START_WITH_TOPIC,
-  AS_HOST
+  AS_HOST,
+  DONT_DESCRIBE_PERSONALITY
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -70,12 +71,17 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.DONT_START_WITH_TOPIC,
     (() =>
-      ') 不要生硬的用主题开头，用谈话的形式，不要用写文章的形式') as RequirementFunc
+      ') 不要生硬的重复主题，用谈话的形式，不要用写文章的形式') as RequirementFunc
   ],
   [
     PromptType.AS_HOST,
     (() =>
       ') 作为主持人，你主要是串联调和嘉宾发言和叙述资料，以及串联讨论环节') as RequirementFunc
+  ],
+  [
+    PromptType.DONT_DESCRIBE_PERSONALITY,
+    (() =>
+      ') 不要描述自己的人设') as RequirementFunc
   ]
 ])
 
@@ -108,7 +114,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
-      PromptType.DONT_START_WITH_TOPIC
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.DONT_DESCRIBE_PERSONALITY
     ]
   ],
   [
@@ -305,9 +312,7 @@ export class Prompt {
     if (intent === Intent.OUTLINE) {
       const lines = content.split('\n')
       for (const line of lines) {
-        if (/>\(*\d+\)*/i.test(line)) {
-          json.titles.push(line)
-        }
+        json.titles.push(line)
       }
       return json
     }
