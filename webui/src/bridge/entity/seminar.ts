@@ -3,6 +3,7 @@ import { seminarWorker } from 'src/worker'
 import { dbBridge } from '..'
 
 type MessageFunc = (
+  subTopic: string,
   participatorId: number,
   message: string,
   round: number,
@@ -12,7 +13,6 @@ type MessageFunc = (
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
 type HistoryMessagesFunc = () => Map<number, string[]>
-type SubTopicStartFunc = (subTopic: string) => void
 
 export class ESeminar {
   #seminar = undefined as unknown as dbModel.Seminar
@@ -20,7 +20,6 @@ export class ESeminar {
   #onThinking = undefined as unknown as ThinkingFunc
   #onOutline = undefined as unknown as OutlineFunc
   #historyMessages = undefined as unknown as HistoryMessagesFunc
-  #subTopicStart = undefined as unknown as SubTopicStartFunc
 
   #onGoingSubTopic = 0
   #topicMaterial = undefined as unknown as string
@@ -37,15 +36,13 @@ export class ESeminar {
     onMessage: MessageFunc,
     onThinking: ThinkingFunc,
     onOutline: OutlineFunc,
-    historyMessages: HistoryMessagesFunc,
-    subTopicStart: SubTopicStartFunc
+    historyMessages: HistoryMessagesFunc
   ) {
     this.#seminar = seminar
     this.#onMessage = onMessage
     this.#onThinking = onThinking
     this.#onOutline = onOutline
     this.#historyMessages = historyMessages
-    this.#subTopicStart = subTopicStart
   }
 
   participators = async () => {
@@ -67,10 +64,8 @@ export class ESeminar {
 
     if (this.#round === 1 || this.#round === 2) this.#round += 1
 
-    if (message.isSubTopicStart)
-      this.#subTopicStart(this.#subTopics[this.#onGoingSubTopic])
-
     void this.#onMessage(
+      message.subTopic,
       message.participatorId,
       message.payload.text,
       this.#round,
@@ -137,6 +132,7 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
+        subTopic: undefined as unknown as string,
         participatorId: host.id as number,
         intent: seminarWorker.Intent.OUTLINE,
         prompts: {
@@ -158,6 +154,7 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
+        subTopic: undefined as unknown as string,
         participatorId: host.id as number,
         intent: seminarWorker.Intent.START_TOPIC,
         prompts: {
@@ -179,6 +176,7 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
+        subTopic: this.#subTopics[this.#onGoingSubTopic],
         participatorId: host.id as number,
         intent:
           this.#onGoingSubTopic === 0
@@ -186,7 +184,6 @@ export class ESeminar {
             : seminarWorker.Intent.START_SUBTOPIC,
         prompts: {
           topicMaterial: this.#topicMaterial,
-          subTopic: this.#subTopics[this.#onGoingSubTopic],
           generateAudio: true
         }
       }
@@ -208,10 +205,10 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
+        subTopic: this.#subTopics[this.#onGoingSubTopic],
         participatorId: host.id as number,
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
         prompts: {
-          subTopic: this.#subTopics[this.#onGoingSubTopic],
           generateAudio: true,
           historyMessages
         }
@@ -236,6 +233,7 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
+        subTopic: this.#subTopics[this.#onGoingSubTopic],
         participatorId: host.id as number,
         intent: seminarWorker.Intent.CONCLUDE,
         prompts: {
@@ -283,10 +281,10 @@ export class ESeminar {
         seminarWorker.SeminarEventType.CHAT_REQUEST,
         {
           seminarId: id as number,
+          subTopic: this.#subTopics[this.#onGoingSubTopic],
           participatorId: el.id as number,
           intent: seminarWorker.Intent.DISCUSS,
           prompts: {
-            subTopic: topic,
             hostMessage: topic,
             generateAudio: true,
             historyMessages

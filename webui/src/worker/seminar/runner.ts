@@ -25,11 +25,9 @@ export interface StartTopicPrompts extends BasePrompts {
 
 export interface StartSubTopicPrompts extends BasePrompts {
   topicMaterial: string
-  subTopic: string
 }
 
 export interface ConcludeSubTopicPrompts extends BasePrompts {
-  subTopic: string
   historyMessages: string[]
 }
 
@@ -39,7 +37,6 @@ export interface ConcludeTopicPrompts extends BasePrompts {
 }
 
 export interface DiscussPrompts extends BasePrompts {
-  subTopic: string
   hostMessage: string
   historyMessages: string[]
 }
@@ -58,6 +55,7 @@ export type Prompts =
 
 export interface ChatRequestPayload {
   seminarId: number
+  subTopic: string
   participatorId: number
   intent: Intent
   prompts: Prompts
@@ -66,7 +64,7 @@ export interface ChatRequestPayload {
 export type ChatResponsePayload = {
   seminarId: number
   participatorId: number
-  isSubTopicStart: boolean
+  subTopic: string
   payload: {
     json: Record<string, unknown>
     text: string
@@ -119,6 +117,7 @@ export class SeminarRunner {
 
   static prompt = async (
     topic: string,
+    subTopic: string,
     participatorId: number,
     intent: Intent,
     prompts: Prompts
@@ -152,7 +151,7 @@ export class SeminarRunner {
           topic,
           simulator.personality,
           _prompts.topicMaterial,
-          _prompts.subTopic,
+          subTopic,
           100
         )
       }
@@ -163,7 +162,7 @@ export class SeminarRunner {
           topic,
           simulator.personality,
           _prompts.topicMaterial,
-          _prompts.subTopic,
+          subTopic,
           100
         )
       }
@@ -173,7 +172,7 @@ export class SeminarRunner {
           intent,
           topic,
           simulator.personality,
-          _prompts.subTopic,
+          subTopic,
           100,
           _prompts.historyMessages
         )
@@ -194,7 +193,7 @@ export class SeminarRunner {
         return Prompt.prompt(
           intent,
           topic,
-          _prompts.subTopic,
+          subTopic,
           simulator.personality,
           _prompts.hostMessage,
           100,
@@ -210,6 +209,7 @@ export class SeminarRunner {
 
   static requestParticipatorChat = async (
     topic: string,
+    subTopic: string,
     participatorId: number,
     intent: Intent,
     prompts: Prompts
@@ -223,6 +223,7 @@ export class SeminarRunner {
 
     const prompt = await SeminarRunner.prompt(
       topic,
+      subTopic,
       participatorId,
       intent,
       prompts
@@ -277,6 +278,7 @@ export class SeminarRunner {
 
   static postProcess = async (
     topic: string,
+    subTopic: string,
     participatorId: number,
     intent: Intent,
     response: string
@@ -285,6 +287,7 @@ export class SeminarRunner {
 
     const _response = await SeminarRunner.requestParticipatorChat(
       topic,
+      subTopic,
       participatorId,
       Intent.OUTLINE_SUBTOPICS,
       {
@@ -296,7 +299,7 @@ export class SeminarRunner {
   }
 
   static handleChatRequest = async (payload: ChatRequestPayload) => {
-    const { seminarId, participatorId, intent, prompts } = payload
+    const { seminarId, participatorId, intent, prompts, subTopic } = payload
 
     const seminar = await dbBridge._Seminar.seminar(undefined, seminarId)
     if (!seminar) return
@@ -304,6 +307,7 @@ export class SeminarRunner {
     try {
       const response = await SeminarRunner.requestParticipatorChat(
         seminar?.topic,
+        subTopic,
         participatorId,
         intent,
         prompts
@@ -312,6 +316,7 @@ export class SeminarRunner {
 
       const json = await SeminarRunner.postProcess(
         seminar?.topic,
+        subTopic,
         participatorId,
         intent,
         response.text
@@ -332,10 +337,8 @@ export class SeminarRunner {
         type: SeminarEventType.CHAT_RESPONSE,
         payload: {
           seminarId,
+          subTopic,
           participatorId,
-          isSubTopicStart:
-            intent === Intent.START_FIRST_SUBTOPIC ||
-            intent === Intent.START_SUBTOPIC,
           payload: {
             ...response,
             json
