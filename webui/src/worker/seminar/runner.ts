@@ -66,6 +66,7 @@ export interface ChatRequestPayload {
 export type ChatResponsePayload = {
   seminarId: number
   participatorId: number
+  isSubTopicStart: boolean
   payload: {
     json: Record<string, unknown>
     text: string
@@ -332,6 +333,9 @@ export class SeminarRunner {
         payload: {
           seminarId,
           participatorId,
+          isSubTopicStart:
+            intent === Intent.START_FIRST_SUBTOPIC ||
+            intent === Intent.START_SUBTOPIC,
           payload: {
             ...response,
             json
