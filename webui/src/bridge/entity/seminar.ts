@@ -188,7 +188,8 @@ export class ESeminar {
 
     this.#subRound = 0
 
-    const historyMessages = this.#historyMessages().get(this.#onGoingSubTopic) || []
+    const historyMessages =
+      this.#historyMessages().get(this.#onGoingSubTopic) || []
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
@@ -214,7 +215,9 @@ export class ESeminar {
     if (!host) throw new Error('Invalid host')
 
     const historyMessages = [] as string[]
-    this.#historyMessages().forEach((messages) => historyMessages.push(...messages))
+    this.#historyMessages().forEach((messages) =>
+      historyMessages.push(...messages)
+    )
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
@@ -249,7 +252,8 @@ export class ESeminar {
     const participators = await this.participators()
     const { id, topic } = this.#seminar
 
-    const historyMessages = this.#historyMessages().get(this.#onGoingSubTopic) || []
+    const historyMessages =
+      this.#historyMessages().get(this.#onGoingSubTopic) || []
 
     const guests = Math.ceil(Math.random() * participators.length)
     const speakers = [] as dbModel.Participator[]
