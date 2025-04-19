@@ -231,7 +231,7 @@ export class SeminarRunner {
       /* model.endpoint || */ constants.FALLBACK_API,
       {
         ai: model.name,
-        messages: [prompt, ...(prompts.historyMessages || [])].map((el) => {
+        messages: [...(prompts.historyMessages || []), prompt].map((el) => {
           return {
             role: 'user',
             content: el
