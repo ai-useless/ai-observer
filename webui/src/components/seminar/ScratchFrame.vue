@@ -82,7 +82,7 @@ const initialTopics = [
 ]
 
 // TODO: random initial topic
-const topic = ref(initialTopics[Math.floor(Math.random() * 9)])
+const topic = ref(initialTopics[Math.floor(Math.random() * initialTopics.length)])
 
 watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
