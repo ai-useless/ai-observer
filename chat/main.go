@@ -37,75 +37,24 @@ type AIModelAPI struct {
 }
 
 var (
-	AI0 = AIModelAPI{
-		AIName:    "AI0",
-		Model:     "deepseek-ai/DeepSeek-V3-0324",
-		APIURL:    "https://llm.chutes.ai/v1/chat/completions",
-		UseAPIKey: true,
-		APIKey:    "cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1",
-	}
-	AI1 = AIModelAPI{
-		AIName:    "AI1",
-		Model:     "chutesai/Mistral-Small-3.1-24B-Instruct-2503",
-		APIURL:    "https://llm.chutes.ai/v1/chat/completions",
-		UseAPIKey: true,
-		APIKey:    "cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1",
-	}
-	AI2 = AIModelAPI{
-		AIName:    "AI2",
-		Model:     "cognitivecomputations/Dolphin3.0-Mistral-24B",
-		APIURL:    "https://llm.chutes.ai/v1/chat/completions",
-		UseAPIKey: true,
-		APIKey:    "cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1",
-	}
-	AI3 = AIModelAPI{
-		AIName:    "AI3",
-		Model:     "cognitivecomputations/Dolphin3.0-R1-Mistral-24B",
-		APIURL:    "https://llm.chutes.ai/v1/chat/completions",
-		UseAPIKey: true,
-		APIKey:    "cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1",
-	}
-	AI4 = AIModelAPI{
-		AIName:    "AI4",
-		Model:     "Qwen/Qwen2.5-VL-32B-Instruct",
-		APIURL:    "https://llm.chutes.ai/v1/chat/completions",
-		UseAPIKey: true,
-		APIKey:    "cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1",
-	}
-	AI5 = AIModelAPI{
-		AIName:    "AI5",
-		Model:     "open-r1/OlympicCoder-32B",
-		APIURL:    "https://llm.chutes.ai/v1/chat/completions",
-		UseAPIKey: true,
-		APIKey:    "cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1",
-	}
-	AI6 = AIModelAPI{
-		AIName:    "AI6",
-		Model:     "RekaAI/reka-flash-3",
-		APIURL:    "https://llm.chutes.ai/v1/chat/completions",
-		UseAPIKey: true,
-		APIKey:    "cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1",
-	}
-	AI7 = AIModelAPI{
-		AIName:    "AI7",
-		Model:     "deepseek-ai/DeepSeek-V3-Base",
-		APIURL:    "https://llm.chutes.ai/v1/chat/completions",
-		UseAPIKey: true,
-		APIKey:    "cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1",
-	}
+	APIURL = "https://llm.chutes.ai/v1/chat/completions"
+	APIKey = "cpk_69adda47d49b4d51b3c6ae01f5449cdd.b167f56b3e8d5ffa88bf5cc6513bb6f4.1VTnR4OGz56pv1GlHG5OVDMdTrvSpLI5"
+	// Model example
+	// Model = "deepseek-ai/DeepSeek-V3-0324"
+	// Model = "chutesai/Mistral-Small-3.1-24B-Instruct-2503"
+	// Model = "cognitivecomputations/Dolphin3.0-Mistral-24B"
+	// Model = "cognitivecomputations/Dolphin3.0-R1-Mistral-24B"
+	// Model = "Qwen/Qwen2.5-VL-32B-Instruct"
+	// Model = "open-r1/OlympicCoder-32B"
+	// Model = "RekaAI/reka-flash-3"
+	// Model = "deepseek-ai/DeepSeek-V3-Base"
 )
 
 func main() {
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/get-response", getResponseHandler)
 	// 添加CORS支持
 	http.HandleFunc("/api/get-response", corsMiddleware(getResponseHandler))
 	log.Println("Server started on :8091")
 	log.Fatal(http.ListenAndServe(":8091", nil))
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "index.html")
 }
 
 func getResponseHandler(w http.ResponseWriter, r *http.Request) {
@@ -125,32 +74,9 @@ func getResponseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("cur aiName: ", request.AIName)
-	var aiModel AIModelAPI
-	switch request.AIName {
-	case AI0.Model:
-		aiModel = AI0
-	case AI1.Model:
-		aiModel = AI1
-	case AI2.Model:
-		aiModel = AI2
-	case AI3.Model:
-		aiModel = AI3
-	case AI4.Model:
-		aiModel = AI4
-	case AI5.Model:
-		aiModel = AI5
-	case AI6.Model:
-		aiModel = AI6
-	case AI7.Model:
-		aiModel = AI7
-	default:
-		err := fmt.Errorf("Invalid AIName: %s", request.AIName)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	// fmt.Println("request.Messages: ", request.Messages)
-	response, err := getAIResponse(aiModel, request.Messages)
+	response, err := getAIResponse(request.AIName, request.Messages)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -162,26 +88,20 @@ func getResponseHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func getAIResponse(aiModel AIModelAPI, messages []ChatMessage) (string, error) {
-	apiKey := aiModel.APIKey
-	model := aiModel.Model
-	apiURL := aiModel.APIURL
-	useAPIKey := aiModel.UseAPIKey
+func getAIResponse(aiModel string, messages []ChatMessage) (string, error) {
 	reqBody, _ := json.Marshal(ChatRequest{
-		Model:    model,
+		Model:    aiModel,
 		Messages: messages,
 	})
 
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", apiURL, strings.NewReader(string(reqBody)))
+	req, err := http.NewRequest("POST", APIURL, strings.NewReader(string(reqBody)))
 	if err != nil {
 		fmt.Println("req err: ", err)
 		return "", err
 	}
 
-	if useAPIKey {
-		req.Header.Set("Authorization", "Bearer "+apiKey)
-	}
+	req.Header.Set("Authorization", "Bearer "+APIKey)
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
