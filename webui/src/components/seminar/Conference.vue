@@ -68,7 +68,7 @@
         </div>
       </q-scroll-area>
     </div>
-    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 160px;' :active-index='0' />
+    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 160px;' :active-topic='activeTopic' />
     <q-space />
   </div>
 </template>
@@ -123,6 +123,7 @@ const lastRound = ref(0)
 const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 const outline = ref(undefined as unknown as Record<string, unknown>)
+const activeTopic = ref(undefined as unknown as string)
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
@@ -283,6 +284,7 @@ const historyMessages = (): Map<number, string[]> => {
 }
 
 const onSubTopicStart = (subTopic: string) => {
+  activeTopic.value = subTopic
   waitMessages.value.push({
     round: lastRound.value,
     message: subTopic,

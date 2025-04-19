@@ -270,7 +270,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     ) => `作为嘉宾，你的人设是${personality}，本期节目讨论的主题为${topic}, 本轮讨论的小主题为${subTopic}，本期节目
           主持人对本轮主题的开场为："${hostMessage}"，请你分析讨论内容并发表观点，记住，你不是主持人，不要重复问题，
           只需要和其他嘉宾观点讨论和发表自己的观点即可，可以认同或者反对其他嘉宾的观点，但是不要重复其他嘉宾的观点，
-          不要重复自己的人设，回复中不要包含类似作为嘉宾的语言。
+          不要重复自己的人设，回复中不要包含作为嘉宾这样的语言。回复中减少或不要使用过渡句，直接表明观点。
           要求: ${intentRequirements(Intent.DISCUSS, speakDuration, 100, historyMessages)}`) as IntentFunc
   ],
   [
