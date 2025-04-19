@@ -65,6 +65,7 @@ export type ChatResponsePayload = {
   seminarId: number
   participatorId: number
   subTopic: string
+  intent: Intent
   payload: {
     json: Record<string, unknown>
     text: string
@@ -338,6 +339,7 @@ export class SeminarRunner {
         payload: {
           seminarId,
           subTopic,
+          intent,
           participatorId,
           payload: {
             ...response,

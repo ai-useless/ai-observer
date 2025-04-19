@@ -30,6 +30,7 @@ export class ESeminar {
   // At least 2 for sub topic start
   #subRounds = 6
   #round = 0
+  #canNext = false
 
   constructor(
     seminar: dbModel.Seminar,
@@ -58,39 +59,38 @@ export class ESeminar {
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
 
-    // 0: Separate topics
-    // 1: Start topic
-    // 2: Start first topic
-
-    if (this.#round === 1 || this.#round === 2) this.#round += 1
-
-    void this.#onMessage(
-      message.subTopic,
-      message.participatorId,
-      message.payload.text,
-      this.#round,
-      message.payload.audio,
-      message.payload.duration
-    )
+    const { intent, subTopic, participatorId, payload } = message
 
     // Outline round
-    if (this.#round === 0) {
+    if (intent === seminarWorker.Intent.OUTLINE) {
       this.#onOutline(message.payload.json)
       this.#topicMaterial = message.payload.text
       this.#subTopics = message.payload.json.titles as string[]
       void this.startTopic()
-      this.#round += 1
     }
     // Start topic round
-    if (this.#round >= 2 && this.#subRound === 0) {
+    if (intent === seminarWorker.Intent.START_TOPIC || intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC) {
       void this.startNextSubTopic()
       this.#subRound += 1
     }
-    if (this.#subRound === this.#subRounds) {
+    if (intent === seminarWorker.Intent.START_FIRST_SUBTOPIC || intent === seminarWorker.Intent.START_SUBTOPIC) {
+      this.#canNext = true
+    }
+    if (this.#subRound === this.#subRounds && intent === seminarWorker.Intent.DISCUSS) {
+      this.#canNext = false
       void this.concludeSubTopic()
-      if (this.#onGoingSubTopic === this.#subTopics.length - 1)
+      if (this.#subTopics[this.#subTopics.length - 1] === subTopic)
         void this.concludeTopic()
     }
+
+    void this.#onMessage(
+      subTopic,
+      participatorId,
+      payload.text,
+      this.#round,
+      payload.audio,
+      payload.duration
+    )
   }
 
   onError = (error: seminarWorker.ErrorResponsePayload) => {
@@ -109,8 +109,7 @@ export class ESeminar {
   }
 
   shouldNext = () => {
-    // User can only speak after round 2
-    return this.#round > 2 && this.#subRound > 0
+    return this.#canNext
   }
 
   start = async () => {
