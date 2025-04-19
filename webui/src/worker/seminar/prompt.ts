@@ -23,7 +23,9 @@ enum PromptType {
   MERGE_SPACES,
   DONT_START_WITH_TOPIC,
   AS_HOST,
-  DONT_DESCRIBE_PERSONALITY
+  DONT_DESCRIBE_PERSONALITY,
+  NO_VIRTUAL_WORDS,
+  WITH_EVENT
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -57,7 +59,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.PERSONALITY,
     (() =>
-      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例') as RequirementFunc
+      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例，包含具体事例链接') as RequirementFunc
   ],
   [
     PromptType.EMOTION,
@@ -82,6 +84,14 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     PromptType.DONT_DESCRIBE_PERSONALITY,
     (() =>
       ') 不要描述自己的人设') as RequirementFunc
+  ],
+  [
+    PromptType.NO_VIRTUAL_WORDS,
+    (() => ') 禁止使用用主题开头的语句，禁止使用类似于深远影响的虚拟词汇') as RequirementFunc
+  ],
+  [
+    PromptType.WITH_EVENT,
+    (() => ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标') as RequirementFunc
   ]
 ])
 
@@ -98,7 +108,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.SEGMENT,
       PromptType.NO_HEAD_SPACE,
       PromptType.MERGE_SPACES,
-      PromptType.AS_HOST
+      PromptType.AS_HOST,
+      PromptType.WITH_EVENT
     ]
   ],
   [
@@ -115,7 +126,9 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
-      PromptType.DONT_DESCRIBE_PERSONALITY
+      PromptType.DONT_DESCRIBE_PERSONALITY,
+      PromptType.NO_VIRTUAL_WORDS,
+      PromptType.WITH_EVENT
     ]
   ],
   [
@@ -130,7 +143,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
-      PromptType.AS_HOST
+      PromptType.AS_HOST,
+      PromptType.WITH_EVENT
     ]
   ],
   [
@@ -146,7 +160,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
-      PromptType.AS_HOST
+      PromptType.AS_HOST,
+      PromptType.WITH_EVENT
     ]
   ],
   [
@@ -162,7 +177,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
-      PromptType.AS_HOST
+      PromptType.AS_HOST,
+      PromptType.WITH_EVENT
     ]
   ],
   [
@@ -178,7 +194,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
-      PromptType.AS_HOST
+      PromptType.AS_HOST,
+      PromptType.WITH_EVENT
     ]
   ],
   [
@@ -194,7 +211,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.MERGE_SPACES,
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
-      PromptType.AS_HOST
+      PromptType.AS_HOST,
+      PromptType.WITH_EVENT
     ]
   ]
 ])
