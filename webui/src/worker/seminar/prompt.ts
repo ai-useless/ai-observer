@@ -110,7 +110,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
       `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
   ],
   [
-    PromptType.WITH_HUMAN_WORDS, (() => ') 用人的语言说话，不要说车轱辘话') as RequirementFunc
+    PromptType.WITH_HUMAN_WORDS,
+    (() => ') 用人的语言说话，不要说车轱辘话') as RequirementFunc
   ]
 ])
 
