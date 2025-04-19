@@ -41,6 +41,10 @@ export interface DiscussPrompts extends BasePrompts {
   hostMessage: string
 }
 
+export interface OutlineSubTopicsPrompts extends BasePrompts {
+  topicMaterial: string
+}
+
 export type Prompts =
   | OutlinePrompts
   | DiscussPrompts
@@ -190,6 +194,10 @@ export class SeminarRunner {
           100
         )
       }
+      case Intent.OUTLINE_SUBTOPICS: {
+        const _prompts = prompts as OutlineSubTopicsPrompts
+        return Prompt.prompt(intent, _prompts.topicMaterial)
+      }
     }
   }
 
@@ -259,6 +267,26 @@ export class SeminarRunner {
     }
   }
 
+  static postProcess = async (
+    topic: string,
+    participatorId: number,
+    intent: Intent,
+    response: string
+  ) => {
+    if (intent !== Intent.OUTLINE) return
+
+    const _response = await SeminarRunner.requestParticipatorChat(
+      topic,
+      participatorId,
+      Intent.OUTLINE_SUBTOPICS,
+      {
+        topicMaterial: response
+      }
+    )
+    if (!_response) return
+    return Prompt.postProcess(intent, response)
+  }
+
   static handleChatRequest = async (payload: ChatRequestPayload) => {
     const { seminarId, participatorId, intent, prompts } = payload
 
@@ -274,10 +302,12 @@ export class SeminarRunner {
       )
       if (!response) return
 
-      const json = Prompt.postProcess(intent, response.text) as Record<
-        string,
-        string
-      >
+      const json = await SeminarRunner.postProcess(
+        seminar?.topic,
+        participatorId,
+        intent,
+        response.text
+      )
       if (json) json.topic = seminar.topic
 
       await SeminarRunner.saveMessage(
