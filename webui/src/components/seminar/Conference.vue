@@ -162,7 +162,6 @@ const typing = () => {
     activeTopic.value = typingMessage.value?.subTopic
   }
 
-  console.log(typingMessage.value.round, lastRound.value, requesting.value, eSeminar.value.shouldNext())
   if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
     void eSeminar.value.nextGuests()
     requesting.value = true
