@@ -94,7 +94,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.WITH_EVENT,
     (() =>
-      ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标，鼠标hover后显示链接') as RequirementFunc
+      ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标，鼠标hover后显示链接，该上标可以点击跳转') as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_ANALYSIS,
