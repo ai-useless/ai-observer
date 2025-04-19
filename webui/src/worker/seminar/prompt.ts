@@ -67,7 +67,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.DONT_START_WITH_TOPIC,
-    (() => ') 不要生硬的用主题开头') as RequirementFunc
+    (() => ') 不要生硬的用主题开头，用谈话的形式，不要用写文章的形式') as RequirementFunc
   ],
   [
     PromptType.NO_BOLD_WITH_SINGLE_SEGMENT,
@@ -113,7 +113,6 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.NO_EMOJI,
       PromptType.DURATION,
       PromptType.PERSONALITY,
-      PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
       PromptType.IDENT_2_SPACE,
@@ -236,7 +235,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       speakDuration: number
-    ) => `你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}，
+    ) => `作为主持人，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}，
           请你就主要内容做一个简单的开场，要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
@@ -247,7 +246,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topicMaterial: string,
       subTopic: string,
       speakDuration: number
-    ) => `你的人设是${personality}，今天讨论的主题为："${topic}",
+    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",
           本期节目的主要内容为${topicMaterial}, 现在进入今天的第一个主题主题${subTopic}，以“那么我们进从${subTopic}开始”结束
           要求：${intentRequirements(Intent.START_FIRST_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
@@ -259,7 +258,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topicMaterial: string,
       subTopic: string,
       speakDuration: number
-    ) => `你的人设是${personality}，今天讨论的主题为："${topic}",
+    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",
           本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段，
           以“那么我们进入下一个讨论主题”结束，要求：${intentRequirements(Intent.START_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
@@ -270,7 +269,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       subTopic: string,
       speakDuration: number
-    ) => `你的人设是${personality}，今天讨论的主题为："${topic}",之前你已经对主题进行过开场
+    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",之前你已经对主题进行过开场
           现在进入小主题讨论阶段，本轮主要讨论的是${subTopic}这个小主题，请就这个小主题拓展和开场，并且结尾要抛出问题让嘉宾来讨论，
           以“下面有请嘉宾发言”结束，要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
@@ -280,7 +279,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       speakDuration: number
-    ) => `你的人设是${personality}，现在是节目的最后，本期节目的主要内容为：${topicMaterial}，
+    ) => `作为主持人，你的人设是${personality}，现在是节目的最后，本期节目的主要内容为：${topicMaterial}，
           请你对本期内容进行总结陈词，需达成：${intentRequirements(Intent.CONCLUDE, speakDuration, 300)}`) as IntentFunc
   ]
 ])
