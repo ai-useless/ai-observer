@@ -151,8 +151,22 @@ const typing = () => {
   typingMessage.value = waitMessages.value[0]
   typingIndex.value = 0
   waitMessages.value = waitMessages.value.slice(1)
+
   if (!typingMessage.value.subTopicTitle) {
     seminar.Seminar.speak(typingMessage.value.participator.id as number)
+  } else {
+    while (typingMessage.value?.subTopicTitle) {
+      displayMessages.value.push(typingMessage.value)
+      typingMessage.value = waitMessages.value[0]
+      waitMessages.value = waitMessages.value.slice(1)
+    }
+  }
+
+  if (!typingMessage.value) return
+
+  if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
+    void eSeminar.value.nextGuests()
+    requesting.value = true
   }
 
   calculateTypingInterval()
@@ -163,11 +177,6 @@ const typing = () => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
     el.datetime = t(timestamp.msg, { VALUE: timestamp.value })
   })
-
-  if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext() && !typingMessage.value.subTopicTitle) {
-    void eSeminar.value.nextGuests()
-    requesting.value = true
-  }
 
   displayMessages.value.push({
     ...typingMessage.value,

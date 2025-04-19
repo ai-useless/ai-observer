@@ -26,8 +26,10 @@ export class ESeminar {
   #topicMaterial = undefined as unknown as string
   #subTopics = [] as string[]
 
-  #totalRounds = 8
+  #totalTopics = 8
   #subRound = 0
+  // At least 2 for sub topic start
+  #subRounds = 2
   #round = 0
 
   constructor(
@@ -65,6 +67,9 @@ export class ESeminar {
 
     if (this.#round === 1 || this.#round === 2) this.#round += 1
 
+    if (message.isSubTopicStart)
+      this.#subTopicStart(this.#subTopics[this.#onGoingSubTopic])
+
     void this.#onMessage(
       message.participatorId,
       message.payload.text,
@@ -86,7 +91,7 @@ export class ESeminar {
       void this.startNextSubTopic()
       this.#subRound += 1
     }
-    if (this.#subRound === 5) {
+    if (this.#subRound === this.#subRounds) {
       void this.concludeSubTopic()
       if (this.#onGoingSubTopic === this.#subTopics.length - 1)
         void this.concludeTopic()
@@ -135,7 +140,7 @@ export class ESeminar {
         participatorId: host.id as number,
         intent: seminarWorker.Intent.OUTLINE,
         prompts: {
-          rounds: this.#totalRounds
+          rounds: this.#totalTopics
         }
       }
     )
@@ -169,8 +174,6 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
     if (!this.#subTopics.length) return
-
-    this.#subTopicStart(this.#subTopics[this.#onGoingSubTopic])
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
