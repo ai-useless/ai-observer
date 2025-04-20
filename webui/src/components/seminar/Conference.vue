@@ -168,9 +168,18 @@ const typing = () => {
     requesting.value = true
   }
 
-  calculateTypingInterval()
-  window.clearInterval(typingTicker.value)
-  typingTicker.value = window.setInterval(typing, typingInterval.value)
+  if (typingMessage.value.audio?.length) {
+    window.clearInterval(typingTicker.value)
+    playAudio(typingMessage.value.audio).then((duration) => {
+      if (duration > 0) typingMessage.value.duration = duration
+      calculateTypingInterval()
+      typingTicker.value = window.setInterval(typing, typingInterval.value)
+    }).catch((e) => {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      console.log(`Failed play audio: ${e}`)
+      typingTicker.value = window.setInterval(typing, typingInterval.value)
+    })
+  }
 
   displayMessages.value.forEach((el) => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
@@ -184,24 +193,18 @@ const typing = () => {
 }
 
 const playAudio = async (base64Data: string) => {
-  try {
-    const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
+  const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
 
-    const byteCharacters = atob(cleanBase64)
-    const byteArrays = new Uint8Array(byteCharacters.length)
-    for (let i = 0; i < byteCharacters.length; i++) {
-      byteArrays[i] = byteCharacters.charCodeAt(i)
-    }
-    const blob = new Blob([byteArrays], { type: 'audio/mpeg' })
-    const audioUrl = URL.createObjectURL(blob)
-    const audio = new Audio(audioUrl)
-    const playPromise = audio.play()
-    if (playPromise !== undefined) {
-      await playPromise
-    }
-  } catch (error) {
-    console.error('load audio failed:', error)
+  const byteCharacters = atob(cleanBase64)
+  const byteArrays = new Uint8Array(byteCharacters.length)
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteArrays[i] = byteCharacters.charCodeAt(i)
   }
+  const blob = new Blob([byteArrays], { type: 'audio/mpeg' })
+  const audioUrl = URL.createObjectURL(blob)
+  const audio = new Audio(audioUrl)
+  await audio.play()
+  return audio.duration
 }
 
 watch(_uid, async () => {

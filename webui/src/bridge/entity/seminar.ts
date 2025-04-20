@@ -74,9 +74,7 @@ export class ESeminar {
       intent === seminarWorker.Intent.START_TOPIC ||
       intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC
     ) {
-      if (
-        this.#subTopics[this.#subTopics.length - 1] === subTopic
-      ) {
+      if (this.#subTopics[this.#subTopics.length - 1] === subTopic) {
         if (intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC) {
           this.#canNext = false
           void this.concludeTopic()
