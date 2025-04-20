@@ -163,7 +163,7 @@ const typing = () => {
   }
 
   if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
-    void eSeminar.value.nextGuests()
+    void eSeminar.value.nextGuests(waitMessages.value[0]?.subTopic || typingMessage.value.subTopic)
     requesting.value = true
   }
 
@@ -268,18 +268,18 @@ const onChatBoxResize = (size: { height: number }) => {
   showTitle.value = size.height < chatBoxHeight.value - 84 - 89 - 60
 }
 
-const historyMessages = (): Map<number, string[]> => {
-  const messages = new Map<number, string[]>()
+const historyMessages = (): Map<string, string[]> => {
+  const messages = new Map<string, string[]>()
 
   displayMessages.value.forEach((el) => {
-    const _messages = messages.get(el.round) || []
+    const _messages = messages.get(el.subTopic) || []
     _messages.push(el.message)
-    messages.set(el.round, _messages)
+    messages.set(el.subTopic, _messages)
   })
   waitMessages.value.forEach((el) => {
-    const _messages = messages.get(el.round) || []
+    const _messages = messages.get(el.subTopic) || []
     _messages.push(el.message)
-    messages.set(el.round, _messages)
+    messages.set(el.subTopic, _messages)
   })
 
   return messages

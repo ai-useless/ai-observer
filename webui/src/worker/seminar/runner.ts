@@ -59,6 +59,8 @@ export interface ChatRequestPayload {
   subTopic: string
   participatorId: number
   intent: Intent
+  round: number
+  subRound: number
   prompts: Prompts
 }
 
@@ -67,6 +69,8 @@ export type ChatResponsePayload = {
   participatorId: number
   subTopic: string
   intent: Intent
+  round: number
+  subRound: number
   payload: {
     json: Record<string, unknown>
     text: string
@@ -301,7 +305,7 @@ export class SeminarRunner {
   }
 
   static handleChatRequest = async (payload: ChatRequestPayload) => {
-    const { seminarId, participatorId, intent, prompts, subTopic } = payload
+    const { seminarId, participatorId, intent, prompts, subTopic, round, subRound } = payload
 
     const seminar = await dbBridge._Seminar.seminar(undefined, seminarId)
     if (!seminar) return
@@ -342,6 +346,8 @@ export class SeminarRunner {
           subTopic,
           intent,
           participatorId,
+          round,
+          subRound,
           payload: {
             ...response,
             json

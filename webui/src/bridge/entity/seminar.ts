@@ -12,7 +12,7 @@ type MessageFunc = (
 ) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
-type HistoryMessagesFunc = () => Map<number, string[]>
+type HistoryMessagesFunc = () => Map<string, string[]>
 
 export class ESeminar {
   #seminar = undefined as unknown as dbModel.Seminar
@@ -21,9 +21,10 @@ export class ESeminar {
   #onOutline = undefined as unknown as OutlineFunc
   #historyMessages = undefined as unknown as HistoryMessagesFunc
 
-  #onGoingSubTopic = 0
   #topicMaterial = undefined as unknown as string
   #subTopics = [] as string[]
+  #concludedSubTopics = new Map<string, boolean>()
+  #concluded = false
 
   #totalTopics = 8
   #subRound = 0
@@ -59,7 +60,7 @@ export class ESeminar {
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
 
-    const { intent, subTopic, participatorId, payload } = message
+    const { intent, subTopic, participatorId, payload, round, subRound } = message
 
     // Outline round
     if (intent === seminarWorker.Intent.OUTLINE) {
@@ -73,7 +74,7 @@ export class ESeminar {
       intent === seminarWorker.Intent.START_TOPIC ||
       intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC
     ) {
-      void this.startNextSubTopic()
+      void this.startNextSubTopic(subTopic)
       this.#subRound += 1
     }
     if (
@@ -83,20 +84,25 @@ export class ESeminar {
       this.#canNext = true
     }
     if (
-      this.#subRound === this.#subRounds &&
+      subRound === this.#subRounds &&
       intent === seminarWorker.Intent.DISCUSS
     ) {
       this.#canNext = false
-      void this.concludeSubTopic()
-      if (this.#subTopics[this.#subTopics.length - 1] === subTopic)
+      if (!this.#concludedSubTopics.get(subTopic)) {
+        this.#concludedSubTopics.set(subTopic, true)
+        void this.concludeSubTopic(subTopic)
+      }
+      if (this.#subTopics[this.#subTopics.length - 1] === subTopic && !this.#concluded) {
+        this.#concluded = true
         void this.concludeTopic()
+      }
     }
 
     void this.#onMessage(
       subTopic,
       participatorId,
       payload.text,
-      this.#round,
+      round,
       payload.audio,
       payload.duration
     )
@@ -145,6 +151,8 @@ export class ESeminar {
         subTopic: undefined as unknown as string,
         participatorId: host.id as number,
         intent: seminarWorker.Intent.OUTLINE,
+        round: this.#round,
+        subRound: this.#subRound,
         prompts: {
           rounds: this.#totalTopics
         }
@@ -167,6 +175,8 @@ export class ESeminar {
         subTopic: undefined as unknown as string,
         participatorId: host.id as number,
         intent: seminarWorker.Intent.START_TOPIC,
+        round: this.#round,
+        subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: false
@@ -175,23 +185,35 @@ export class ESeminar {
     )
   }
 
-  startNextSubTopic = async () => {
+  startNextSubTopic = async (prevSubTopic?: string) => {
     const { id } = this.#seminar
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
     if (!this.#subTopics.length) return
 
+    let index = 0
+    if (prevSubTopic?.length) {
+      // Here we're not the first topic so we goto next one
+      index = this.#subTopics.findIndex((el) => !prevSubTopic || el === prevSubTopic)
+      if (index < 0 || index >= this.#subTopics.length - 1) return
+      index += 1
+    }
+
+    console.log(prevSubTopic, index, this.#subTopics[index])
+
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
-        subTopic: this.#subTopics[this.#onGoingSubTopic],
+        subTopic: this.#subTopics[index],
         participatorId: host.id as number,
         intent:
-          this.#onGoingSubTopic === 0
+          index === 0
             ? seminarWorker.Intent.START_FIRST_SUBTOPIC
             : seminarWorker.Intent.START_SUBTOPIC,
+        round: this.#round,
+        subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true
@@ -200,7 +222,7 @@ export class ESeminar {
     )
   }
 
-  concludeSubTopic = async () => {
+  concludeSubTopic = async (subTopic: string) => {
     const { id } = this.#seminar
     const host = await this.host()
 
@@ -209,15 +231,17 @@ export class ESeminar {
     this.#subRound = 0
 
     const historyMessages =
-      this.#historyMessages().get(this.#onGoingSubTopic) || []
+      this.#historyMessages().get(subTopic) || []
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
-        subTopic: this.#subTopics[this.#onGoingSubTopic],
+        subTopic,
         participatorId: host.id as number,
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
+        round: this.#round,
+        subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
@@ -225,8 +249,6 @@ export class ESeminar {
         }
       }
     )
-
-    this.#onGoingSubTopic += 1
   }
 
   concludeTopic = async () => {
@@ -244,9 +266,11 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
-        subTopic: this.#subTopics[this.#onGoingSubTopic],
+        subTopic: undefined as unknown as string,
         participatorId: host.id as number,
         intent: seminarWorker.Intent.CONCLUDE,
+        round: this.#round,
+        subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
@@ -267,7 +291,7 @@ export class ESeminar {
     )
   }
 
-  nextGuests = async () => {
+  nextGuests = async (subTopic: string) => {
     this.#round += 1
     this.#subRound += 1
 
@@ -275,7 +299,7 @@ export class ESeminar {
     const { id, topic } = this.#seminar
 
     const historyMessages =
-      this.#historyMessages().get(this.#onGoingSubTopic) || []
+      this.#historyMessages().get(subTopic) || []
 
     const guests = Math.ceil(Math.random() * participators.length)
     const speakers = [] as dbModel.Participator[]
@@ -292,9 +316,11 @@ export class ESeminar {
         seminarWorker.SeminarEventType.CHAT_REQUEST,
         {
           seminarId: id as number,
-          subTopic: this.#subTopics[this.#onGoingSubTopic],
+          subTopic,
           participatorId: el.id as number,
           intent: seminarWorker.Intent.DISCUSS,
+          round: this.#round,
+          subRound: this.#subRound,
           prompts: {
             hostMessage: topic,
             generateAudio: true,
