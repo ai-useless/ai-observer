@@ -125,6 +125,7 @@ const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 const outline = ref(undefined as unknown as Record<string, unknown>)
 const activeTopic = ref('')
 const lastTopic = ref(undefined as unknown as string)
+const audioPlayer = ref(undefined as unknown as HTMLAudioElement)
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
@@ -149,6 +150,8 @@ const typing = () => {
   }
 
   if (!waitMessages.value.length) return
+  // If audio is still playing, do nothing
+  if (audioPlayer.value && !audioPlayer.value.ended) return
 
   typingMessage.value = waitMessages.value[0]
   typingIndex.value = 0
@@ -170,8 +173,9 @@ const typing = () => {
 
   if (typingMessage.value.audio?.length) {
     window.clearInterval(typingTicker.value)
-    playAudio(typingMessage.value.audio).then((duration) => {
-      if (duration > 0) typingMessage.value.duration = duration
+    playAudio(typingMessage.value.audio).then((_audioPlayer) => {
+      if (_audioPlayer.duration > 0) typingMessage.value.duration = _audioPlayer.duration
+      audioPlayer.value = _audioPlayer
       calculateTypingInterval()
       typingTicker.value = window.setInterval(typing, typingInterval.value)
     }).catch((e) => {
@@ -202,9 +206,10 @@ const playAudio = async (base64Data: string) => {
   }
   const blob = new Blob([byteArrays], { type: 'audio/mpeg' })
   const audioUrl = URL.createObjectURL(blob)
-  const audio = new Audio(audioUrl)
-  await audio.play()
-  return audio.duration
+  const audioPlayer = new Audio(audioUrl)
+  audioPlayer.loop = false
+  await audioPlayer.play()
+  return audioPlayer
 }
 
 watch(_uid, async () => {
