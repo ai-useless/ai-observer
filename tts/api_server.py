@@ -63,7 +63,7 @@ def get_audio_data(text, voice):
 async def generate_audio(params: TTSParams):
     try:
         print("params: ", params)
-        audio_bytes = get_audio_data("test a speech, how old are you", "af")
+        audio_bytes = get_audio_data(params.text, params.speakerVoice)
         buffer = io.BytesIO(audio_bytes)
         sample_rate, audio_data = wavfile.read(buffer)
         duration = round(len(audio_data) / sample_rate, 3)  # 精确到毫秒
