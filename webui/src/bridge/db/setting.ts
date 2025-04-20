@@ -6,7 +6,7 @@ export class _Setting {
     key: dbModel.SettingKey,
     value: unknown
   ) => {
-    const setting = await _Setting.get(key)
+    const setting = await _Setting._get(key)
     if (setting) {
       setting.value = value
       await dbSeminar.settings.update(setting, setting)
@@ -17,7 +17,11 @@ export class _Setting {
     })
   }
 
+  static _get = async (key: dbModel.SettingKey) => {
+    return (await dbSeminar.settings.where('key').equals(key).first())
+  }
+
   static get = async (key: dbModel.SettingKey) => {
-    return await dbSeminar.settings.where('key').equals(key).first()
+    return (await _Setting._get(key))?.value
   }
 }
