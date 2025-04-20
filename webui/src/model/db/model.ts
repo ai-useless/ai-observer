@@ -50,3 +50,13 @@ export interface Message {
   audio: string
   duration: number
 }
+
+export enum SettingKey {
+  GENERATE_AUDIO = 'GenerateAudio'
+}
+
+export interface Setting {
+  id?: number
+  key: SettingKey
+  value: unknown
+}

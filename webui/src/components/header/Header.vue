@@ -20,7 +20,7 @@
         <q-menu>
           <q-list dense>
             <q-item clickable class='menu-item row items-center'>
-              <q-icon name='bi-gear' color='grey' size='16px' />
+              <q-icon name='bi-r-circle' color='grey' size='16px' />
               <div style='margin-left: 16px;'>
                 Round table
               </div>
@@ -31,6 +31,20 @@
               <div style='margin-left: 16px;'>
                 Stop session
               </div>
+            </q-item>
+            <q-separator />
+            <q-item clickable class='menu-item row items-center' @click='onGenerateAudioClick'>
+              <q-icon name='bi-soundwave' color='grey' size='16px' />
+              <div style='margin-left: 16px;'>
+                Generate audio
+              </div>
+              <q-icon
+                v-if='generateAudio'
+                name='bi-check2'
+                color='green-8'
+                size='16px'
+                style='margin-left: 8px;'
+              />
             </q-item>
           </q-list>
         </q-menu>
@@ -51,6 +65,7 @@ import { aiObserverLogo } from 'src/assets'
 const router = useRouter()
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
+const generateAudio = ref(false)
 
 watch(_uid, async () => {
   if (!_uid.value) return
@@ -65,15 +80,22 @@ onMounted(async () => {
   await dbBridge._Model.initialize()
   await dbBridge._Simulator.initialize()
 
+  generateAudio.value = (await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO))?.value as boolean
+
   if (_uid.value) {
     _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
   }
   void router.push({ path: '/seminar' })
 })
 
+const onGenerateAudioClick = async () => {
+  generateAudio.value = !generateAudio.value
+  await dbBridge._Setting.create(dbModel.SettingKey.GENERATE_AUDIO, generateAudio.value)
+}
+
 </script>
 
 <style scoped lang='sass'>
 .menu-item
-  width: 148px
+  width: 184px
 </style>

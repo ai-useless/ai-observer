@@ -7,6 +7,7 @@ export const dbSeminar = new Dexie('SeminarDatabase') as Dexie & {
   simulators: Table<dbModel.Simulator, 'id'>
   seminars: Table<dbModel.Seminar, 'id'>
   messages: Table<dbModel.Message, 'id'>
+  settings: Table<dbModel.Setting, 'id'>
 }
 
 dbSeminar.version(1).stores({
@@ -16,5 +17,6 @@ dbSeminar.version(1).stores({
   simulators: '++id, &name, avatar, host, speakerVoice',
   seminars: '++id, uid, topic',
   messages:
-    '++id, seminarId, participatorId, timestamp, prompt, content, audio, duration'
+    '++id, seminarId, participatorId, timestamp, prompt, content, audio, duration',
+  settings: '++id, key, value'
 })
