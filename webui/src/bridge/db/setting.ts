@@ -2,10 +2,7 @@ import { dbSeminar } from 'src/controller'
 import { dbModel } from 'src/model'
 
 export class _Setting {
-  static create = async (
-    key: dbModel.SettingKey,
-    value: unknown
-  ) => {
+  static create = async (key: dbModel.SettingKey, value: unknown) => {
     const setting = await _Setting._get(key)
     if (setting) {
       setting.value = value
@@ -13,12 +10,13 @@ export class _Setting {
       return
     }
     await dbSeminar.settings.add({
-      key, value
+      key,
+      value
     })
   }
 
   static _get = async (key: dbModel.SettingKey) => {
-    return (await dbSeminar.settings.where('key').equals(key).first())
+    return await dbSeminar.settings.where('key').equals(key).first()
   }
 
   static get = async (key: dbModel.SettingKey) => {

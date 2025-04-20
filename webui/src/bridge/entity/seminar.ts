@@ -60,7 +60,8 @@ export class ESeminar {
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
 
-    const { intent, subTopic, participatorId, payload, round, subRound } = message
+    const { intent, subTopic, participatorId, payload, round, subRound } =
+      message
 
     // Outline round
     if (intent === seminarWorker.Intent.OUTLINE) {
@@ -92,7 +93,10 @@ export class ESeminar {
         this.#concludedSubTopics.set(subTopic, true)
         void this.concludeSubTopic(subTopic)
       }
-      if (this.#subTopics[this.#subTopics.length - 1] === subTopic && !this.#concluded) {
+      if (
+        this.#subTopics[this.#subTopics.length - 1] === subTopic &&
+        !this.#concluded
+      ) {
         this.#concluded = true
         void this.concludeTopic()
       }
@@ -195,7 +199,9 @@ export class ESeminar {
     let index = 0
     if (prevSubTopic?.length) {
       // Here we're not the first topic so we goto next one
-      index = this.#subTopics.findIndex((el) => !prevSubTopic || el === prevSubTopic)
+      index = this.#subTopics.findIndex(
+        (el) => !prevSubTopic || el === prevSubTopic
+      )
       if (index < 0 || index >= this.#subTopics.length - 1) return
       index += 1
     }
@@ -228,8 +234,7 @@ export class ESeminar {
 
     this.#subRound = 0
 
-    const historyMessages =
-      this.#historyMessages().get(subTopic) || []
+    const historyMessages = this.#historyMessages().get(subTopic) || []
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
@@ -296,8 +301,7 @@ export class ESeminar {
     const participators = await this.participators()
     const { id, topic } = this.#seminar
 
-    const historyMessages =
-      this.#historyMessages().get(subTopic) || []
+    const historyMessages = this.#historyMessages().get(subTopic) || []
 
     const guests = Math.ceil(Math.random() * participators.length)
     const speakers = [] as dbModel.Participator[]
