@@ -18,7 +18,7 @@
           />
         </div>
       </div>
-      <q-separator style='margin-top: 16px' />
+      <q-separator v-if='showTitle' style='margin-top: 16px' />
       <div
         v-if='!displayMessages.length'
         style='margin-top: 16px; font-size: 20px'
@@ -124,6 +124,7 @@ const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 const outline = ref(undefined as unknown as Record<string, unknown>)
 const activeTopic = ref('')
+const lastTopic = ref(undefined as unknown as string)
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
@@ -162,8 +163,8 @@ const typing = () => {
     activeTopic.value = typingMessage.value?.subTopic
   }
 
-  if (typingMessage.value.round === lastRound.value && !requesting.value && eSeminar.value.shouldNext()) {
-    void eSeminar.value.nextGuests(waitMessages.value[0]?.subTopic || typingMessage.value.subTopic)
+  if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
+    void eSeminar.value.nextGuests(lastTopic.value || waitMessages.value[0]?.subTopic || typingMessage.value.subTopic)
     requesting.value = true
   }
 
@@ -228,12 +229,18 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
-  lastRound.value = round
   requesting.value = false
 
-  // Discard topic after conclude
-  const messages = [...waitMessages.value, ...displayMessages.value, ...(typingMessage.value ? [typingMessage.value] : [])]
-  if (messages.length && messages[messages.length - 1].subTopic !== subTopic && messages.findIndex((el) => el.subTopic === subTopic) >= 0) return
+  // Discard topic after conclude: order here is important
+  const messages = [...(typingMessage.value ? [typingMessage.value] : []), ...displayMessages.value, ...waitMessages.value]
+  if (
+    messages.length &&
+    messages[messages.length - 1]?.subTopic !== subTopic &&
+    messages.findIndex((el) => el.subTopic === subTopic) >= 0
+  ) return
+
+  lastRound.value = round
+  lastTopic.value = subTopic
 
   waitMessages.value.push({
     round,

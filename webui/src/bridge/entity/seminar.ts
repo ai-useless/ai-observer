@@ -85,11 +85,11 @@ export class ESeminar {
       this.#canNext = true
     }
     if (
-      subRound === this.#subRounds &&
+      subRound >= this.#subRounds &&
       intent === seminarWorker.Intent.DISCUSS
     ) {
-      this.#canNext = false
       if (!this.#concludedSubTopics.get(subTopic)) {
+        this.#canNext = false
         this.#concludedSubTopics.set(subTopic, true)
         void this.concludeSubTopic(subTopic)
       }
@@ -97,6 +97,7 @@ export class ESeminar {
         this.#subTopics[this.#subTopics.length - 1] === subTopic &&
         !this.#concluded
       ) {
+        this.#canNext = false
         this.#concluded = true
         void this.concludeTopic()
       }
@@ -295,21 +296,25 @@ export class ESeminar {
   }
 
   nextGuests = async (subTopic: string) => {
-    this.#round += 1
-    this.#subRound += 1
-
     const participators = await this.participators()
     const { id, topic } = this.#seminar
 
     const historyMessages = this.#historyMessages().get(subTopic) || []
 
-    const guests = Math.ceil(Math.random() * participators.length)
+    const guests = Math.max(Math.ceil(Math.random() * participators.length), 2)
     const speakers = [] as dbModel.Participator[]
+
     for (let i = 0; i < guests; i++) {
-      speakers.push(
-        participators[Math.floor(Math.random() * participators.length)]
-      )
+      let participator = undefined as unknown as dbModel.Participator
+      do {
+        participator =
+          participators[Math.floor(Math.random() * participators.length)]
+      } while (speakers.findIndex((el) => el.id === participator.id) >= 0)
+      speakers.push(participator)
     }
+
+    this.#round += 1
+    this.#subRound += 1
 
     speakers.forEach((el) => {
       this.#onThinking(el.id as number)

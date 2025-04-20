@@ -10,7 +10,7 @@
       />
     </div>
     <q-space />
-    <div v-if='_seminar' class='text-grey-8'>
+    <div v-if='_seminar' class='text-grey-8 text-bold'>
       <div>{{ _seminar.topic }}</div>
     </div>
     <q-space />
