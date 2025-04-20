@@ -249,7 +249,9 @@ export class SeminarRunner {
       }
     )
 
-    const generateAudio = await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO)
+    const generateAudio = await dbBridge._Setting.get(
+      dbModel.SettingKey.GENERATE_AUDIO
+    )
     if (!prompts.generateAudio || !generateAudio) {
       return {
         text: (textResp.data as Record<string, string>).content,
@@ -306,7 +308,15 @@ export class SeminarRunner {
   }
 
   static handleChatRequest = async (payload: ChatRequestPayload) => {
-    const { seminarId, participatorId, intent, prompts, subTopic, round, subRound } = payload
+    const {
+      seminarId,
+      participatorId,
+      intent,
+      prompts,
+      subTopic,
+      round,
+      subRound
+    } = payload
 
     const seminar = await dbBridge._Seminar.seminar(undefined, seminarId)
     if (!seminar) return
