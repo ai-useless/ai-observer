@@ -54,6 +54,7 @@ import { seminar, setting } from 'src/localstores'
 import { ref, watch } from 'vue'
 
 const initialTopics = [
+  '油条的工艺与口味以及外观',
   '房产新政与房价调控',
   '富士康“九连跳”事件',
   '唐骏“学历门”诚信危机',
