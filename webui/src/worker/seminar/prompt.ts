@@ -297,7 +297,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       subTopic: string,
       speakDuration: number
     ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",
-          本期节目的主要内容为${topicMaterial}, 现在进入今天的第一个主题主题${subTopic}，以“那么我们进从${subTopic}开始”结束
+          本期节目的主要内容为${topicMaterial}, 现在进入今天的第一个主题主题${subTopic}，以“那么我们就从${subTopic}开始”结束
           要求：${intentRequirements(Intent.START_FIRST_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
