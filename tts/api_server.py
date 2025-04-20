@@ -7,7 +7,7 @@ import base64
 from scipy.io import wavfile
 
 # API_URL="https://kikakkz-observer-tts.chutes.ai/speak"
-API_URL="https://127.0.0.1/speak"
+API_URL="https://127.0.0.1:8800/speak"
 CHUTES_API_TOKEN="cpk_69adda47d49b4d51b3c6ae01f5449cdd.b167f56b3e8d5ffa88bf5cc6513bb6f4.1VTnR4OGz56pv1GlHG5OVDMdTrvSpLI5"
 
 # 初始化FastAPI
