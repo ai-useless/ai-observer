@@ -200,8 +200,6 @@ export class ESeminar {
       index += 1
     }
 
-    console.log(prevSubTopic, index, this.#subTopics[index])
-
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {

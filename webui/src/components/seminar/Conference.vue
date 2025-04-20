@@ -149,6 +149,8 @@ const typing = () => {
 
   if (!waitMessages.value.length) return
 
+  console.log('TypingMessage', waitMessages.value.length)
+
   typingMessage.value = waitMessages.value[0]
   typingIndex.value = 0
   waitMessages.value = waitMessages.value.slice(1)
@@ -231,9 +233,13 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   lastRound.value = round
   requesting.value = false
 
+  console.log('OnMessage', subTopic)
+
   // Discard topic after conclude
   const messages = [...waitMessages.value, ...displayMessages.value]
   if (messages.length && messages[messages.length - 1].subTopic !== subTopic && messages.findIndex((el) => el.subTopic === subTopic) >= 0) return
+
+  console.log('PushMessage', subTopic)
 
   waitMessages.value.push({
     round,
