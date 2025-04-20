@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import requests
 import base64
 from scipy.io import wavfile
+import io
 
 # API_URL="https://kikakkz-observer-tts.chutes.ai/speak"
 API_URL="http://127.0.0.1:8800/speak"
@@ -72,10 +73,10 @@ async def generate_audio(params: TTSParams):
         return {
             "type": "audio/wav",
             "data": f"data:audio/wav;base64,{base64_str}",
+            "duration": duration,
             "metadata": {
                 "text_length": len(params.text),
-                "speaker_id": params.speaker_id,
-                "duration": duration * 1000
+                "speakerVoice": params.speakerVoice
             }
         }
     except Exception as e:
