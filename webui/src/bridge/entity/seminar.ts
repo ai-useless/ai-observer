@@ -179,7 +179,7 @@ export class ESeminar {
         subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
-          generateAudio: false
+          generateAudio: true
         }
       }
     )
