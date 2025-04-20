@@ -264,7 +264,7 @@ export class SeminarRunner {
       const speechContent = (textResp.data as Record<string, string>).content
       const speakerVoice = await SeminarRunner.speakerVoice(participatorId)
       const audioResp = await axios.post(
-        /* model.endpoint || */ constants.AUDIO_API,
+        /* model.endpoint || */ constants.TEXT2SPEECH_API,
         {
           text: speechContent,
           speakerVoice,
