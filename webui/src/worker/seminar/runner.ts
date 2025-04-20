@@ -2,6 +2,7 @@ import axios from 'axios'
 import { constants } from 'src/constant'
 import { dbBridge } from 'src/bridge'
 import { Intent, Prompt } from './prompt'
+import { dbModel } from 'src/model'
 
 export enum SeminarEventType {
   CHAT_REQUEST = 'ChatRequest',
@@ -248,7 +249,8 @@ export class SeminarRunner {
       }
     )
 
-    if (!prompts.generateAudio) {
+    const generateAudio = await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO)
+    if (!prompts.generateAudio || !generateAudio) {
       return {
         text: (textResp.data as Record<string, string>).content,
         audio: '',
