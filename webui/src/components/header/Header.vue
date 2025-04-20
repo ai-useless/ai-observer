@@ -80,7 +80,7 @@ onMounted(async () => {
   await dbBridge._Model.initialize()
   await dbBridge._Simulator.initialize()
 
-  generateAudio.value = (await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO))?.value as boolean
+  generateAudio.value = await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO) as boolean
 
   if (_uid.value) {
     _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
