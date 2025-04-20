@@ -24,7 +24,6 @@ export class ESeminar {
   #topicMaterial = undefined as unknown as string
   #subTopics = [] as string[]
   #concludedSubTopics = new Map<string, boolean>()
-  #concluded = false
 
   #totalTopics = 8
   #subRound = 0
@@ -75,6 +74,15 @@ export class ESeminar {
       intent === seminarWorker.Intent.START_TOPIC ||
       intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC
     ) {
+      if (
+        this.#subTopics[this.#subTopics.length - 1] === subTopic
+      ) {
+        if (intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC) {
+          this.#canNext = false
+          void this.concludeTopic()
+        }
+        return
+      }
       void this.startNextSubTopic(subTopic)
       this.#subRound += 1
     }
@@ -92,14 +100,6 @@ export class ESeminar {
         this.#canNext = false
         this.#concludedSubTopics.set(subTopic, true)
         void this.concludeSubTopic(subTopic)
-      }
-      if (
-        this.#subTopics[this.#subTopics.length - 1] === subTopic &&
-        !this.#concluded
-      ) {
-        this.#canNext = false
-        this.#concluded = true
-        void this.concludeTopic()
       }
     }
 
@@ -312,6 +312,8 @@ export class ESeminar {
       } while (speakers.findIndex((el) => el.id === participator.id) >= 0)
       speakers.push(participator)
     }
+
+    console.log('NextGuests', guests, subTopic, this.#subRound)
 
     this.#round += 1
     this.#subRound += 1
