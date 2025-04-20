@@ -25,10 +25,10 @@ export class ESeminar {
   #subTopics = [] as string[]
   #concludedSubTopics = new Map<string, boolean>()
 
-  #totalTopics = 8
+  #totalTopics = 6
   #subRound = 0
   // At least 2 for sub topic start
-  #subRounds = 6
+  #subRounds = 7
   #round = 0
   #canNext = false
 
@@ -79,10 +79,11 @@ export class ESeminar {
           this.#canNext = false
           void this.concludeTopic()
         }
-        return
+      } else {
+        this.#canNext = false
+        void this.startNextSubTopic(subTopic)
+        this.#subRound += 1
       }
-      void this.startNextSubTopic(subTopic)
-      this.#subRound += 1
     }
     if (
       intent === seminarWorker.Intent.START_FIRST_SUBTOPIC ||
@@ -268,7 +269,7 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
-        subTopic: undefined as unknown as string,
+        subTopic: this.#subTopics[this.#subTopics.length - 1],
         participatorId: host.id as number,
         intent: seminarWorker.Intent.CONCLUDE,
         round: this.#round,
@@ -310,8 +311,6 @@ export class ESeminar {
       } while (speakers.findIndex((el) => el.id === participator.id) >= 0)
       speakers.push(participator)
     }
-
-    console.log('NextGuests', guests, subTopic, this.#subRound)
 
     this.#round += 1
     this.#subRound += 1
