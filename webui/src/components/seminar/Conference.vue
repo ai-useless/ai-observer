@@ -283,7 +283,7 @@ const onChatBoxResize = (size: { height: number }) => {
 const historyMessages = (): Map<string, string[]> => {
   const messages = new Map<string, string[]>()
 
-  displayMessages.value.forEach((el) => {
+  displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
     _messages.push(el.simulator.name + ' 的观点 ' + el.message)
     messages.set(el.subTopic, _messages)
