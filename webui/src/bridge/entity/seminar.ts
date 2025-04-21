@@ -377,7 +377,7 @@ export class ESeminar {
 
     this.#round += 1
     this.#subRound += 1
-    this.#lastRoundIsHost = true
+    this.#lastRoundIsHost = false
 
     speakers.forEach((el) => {
       this.#onThinking(el.participatorId)
