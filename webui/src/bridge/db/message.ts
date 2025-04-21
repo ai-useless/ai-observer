@@ -8,7 +8,7 @@ export class _Message {
     content: string,
     audio: string
   ) => {
-    const cid = await saveAudio(audio)
+    const cid = audio.length ? await saveAudio(audio) : ''
     await dbSeminar.messages.add({
       seminarId,
       participatorId,
