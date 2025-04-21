@@ -21,7 +21,8 @@ image = (
     .run_command("pip install phonemizer scipy munch torch transformers")
     .run_command("git lfs install")
     .run_command("git clone https://huggingface.co/hexgrad/Kokoro-82M")
-    .run_command("cd Kokoro-82M; git checkout 835f1df6fd1555c41a9adf46b8b0c982ec4a37e0")
+    .run_command("git clone https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh")
+    .run_command("cd Kokoro-82M; git checkout f3ff3571791e39611d31c381e3a41a3af07b4987")
     .run_command("mv -f Kokoro-82M/* /app/")
 )
 
