@@ -139,7 +139,12 @@ export class SeminarRunner {
     switch (intent) {
       case Intent.OUTLINE: {
         const _prompts = prompts as OutlinePrompts
-        return Prompt.prompt(intent, topic, _prompts.rounds)
+        return Prompt.prompt(
+          intent,
+          topic,
+          _prompts.rounds,
+          _prompts.archetype as string
+        )
       }
       case Intent.START_TOPIC: {
         const _prompts = prompts as StartTopicPrompts
