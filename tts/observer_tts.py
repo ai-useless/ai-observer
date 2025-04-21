@@ -47,6 +47,14 @@ class VoicePack(str, Enum):
     LEWIS = "bm_lewis"
     NICOLE = "af_nicole"
     SKY = "af_sky"
+    XIAOBEI = "zf_xiaobei"
+    XIAONI = "zf_xiaoni"
+    XIAOXIAO = "zf_xiaoxiao"
+    XIAOYI = "zf_xiaoyi"
+    YUNJIAN = "zm_yunjian"
+    YUNXI = "zm_yunxi"
+    YUNXIA = "zm_yunxia"
+    YUNYANG = "zm_yunyang"
 
 
 class InputArgs(BaseModel):
