@@ -6,7 +6,8 @@ export enum Intent {
   START_SUBTOPIC = 'StartSubTopic',
   CONCLUDE_SUBTOPIC = 'ConcludeSubTopic',
   CONCLUDE = 'Conclude',
-  OUTLINE_SUBTOPICS = 'OutlineSubTopics'
+  OUTLINE_SUBTOPICS = 'OutlineSubTopics',
+  HOST_CHALLENGE = 'HostChallenge'
 }
 
 enum PromptType {
@@ -68,7 +69,11 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     PromptType.EMOTION,
     (() => ') 人物情绪普遍理性客观中立，但带有各自社群特征') as RequirementFunc
   ],
-  [PromptType.NO_ANALYSIS, (() => ') 不要包含分析过程') as RequirementFunc],
+  [
+    PromptType.NO_ANALYSIS,
+    (() =>
+      ') 不要包含分析过程，不要使用总的来说这一类的遣词造句') as RequirementFunc
+  ],
   [
     PromptType.MERGE_SPACES,
     (() => ') 把连续多个空格合并成一个') as RequirementFunc
@@ -237,6 +242,24 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT
     ]
+  ],
+  [
+    Intent.HOST_CHALLENGE,
+    [
+      PromptType.NO_EMOJI,
+      PromptType.DURATION,
+      PromptType.EMOTION,
+      PromptType.NO_ANALYSIS,
+      PromptType.NO_HEAD_SPACE,
+      PromptType.IDENT_2_SPACE,
+      PromptType.WITH_HTML,
+      PromptType.MERGE_SPACES,
+      PromptType.HTML_STYLE,
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.AS_HOST,
+      PromptType.WITH_EVENT,
+      PromptType.WITH_HISTORY_CONCLUSION
+    ]
   ]
 ])
 
@@ -350,6 +373,18 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     Intent.OUTLINE_SUBTOPICS,
     ((topicMaterial: string) =>
       `提取${topicMaterial}中的小标题分为每个标题单独一行的纯文本返回，不要包含素材和主标题`) as IntentFunc
+  ],
+  [
+    Intent.HOST_CHALLENGE,
+    ((
+      personality: string,
+      topicMaterial: string,
+      subTopic: string,
+      speakDuration: number,
+      historyMessages: string[],
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目进行中，本期节目的主要内容为：${topicMaterial}，
+          本轮讨论的主题为${subTopic}，现在你需要针对嘉宾发表的观点提出启发性的问题以供进一步讨论，要求：${intentRequirements(Intent.CONCLUDE, speakDuration, 300, historyMessages)}`) as IntentFunc
   ]
 ])
 

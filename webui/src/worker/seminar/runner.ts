@@ -40,6 +40,11 @@ export interface ConcludeTopicPrompts extends BasePrompts {
   historyMessages: string[]
 }
 
+export interface HostChallengePrompts extends BasePrompts {
+  topicMaterial: string
+  historyMessages: string[]
+}
+
 export interface DiscussPrompts extends BasePrompts {
   hostMessage: string
   historyMessages: string[]
@@ -56,6 +61,7 @@ export type Prompts =
   | StartSubTopicPrompts
   | ConcludeSubTopicPrompts
   | ConcludeTopicPrompts
+  | HostChallengePrompts
 
 export interface ChatRequestPayload {
   seminarId: number
@@ -221,6 +227,18 @@ export class SeminarRunner {
       case Intent.OUTLINE_SUBTOPICS: {
         const _prompts = prompts as OutlineSubTopicsPrompts
         return Prompt.prompt(intent, _prompts.topicMaterial)
+      }
+      case Intent.HOST_CHALLENGE: {
+        const _prompts = prompts as HostChallengePrompts
+        return Prompt.prompt(
+          intent,
+          simulator.personality,
+          _prompts.topicMaterial,
+          subTopic,
+          100,
+          _prompts.historyMessages,
+          _prompts.archetype as string
+        )
       }
     }
   }
