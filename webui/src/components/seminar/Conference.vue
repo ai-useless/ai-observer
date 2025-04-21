@@ -56,6 +56,7 @@
                   <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
                   <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
                   <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
+                  <div> | {{ message.simulator.personality }}</div>
                 </div>
               </template>
               <div v-html='message.message' style='line-height: 1.5em;' />

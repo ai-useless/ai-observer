@@ -299,9 +299,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topicMaterial: string,
       subTopic: string,
       speakDuration: number
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",
-          本期节目的主要内容为${topicMaterial}, 现在进入今天的第一个主题${subTopic}，你需要对材料做初步解读，并引导嘉宾开始讨论。
-          要求：${intentRequirements(Intent.START_FIRST_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
+    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
+          现在进入今天的第一个主题${subTopic}，你需要对材料做初步解读，并引导嘉宾开始讨论。你不应该用套路化的语言开场，
+          应该用丰富的语言形态引起参与讨论的嘉宾的兴趣。要求：${intentRequirements(Intent.START_FIRST_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
     Intent.CONCLUDE_SUBTOPIC,
@@ -312,9 +312,10 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       subTopic: string,
       speakDuration: number,
       historyMessages: string[]
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}",
-          本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段，
-          你需要总结本轮讨论并过渡到下一轮讨论，要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300, historyMessages)}`) as IntentFunc
+    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
+          之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段，
+          你需要总结本轮讨论并过渡到下一轮讨论，你不应该用套路化的语言总结，应该用丰富的语言形态达成好的总结效果。
+          要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300, historyMessages)}`) as IntentFunc
   ],
   [
     Intent.START_SUBTOPIC,
