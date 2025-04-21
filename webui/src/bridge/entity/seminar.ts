@@ -354,7 +354,7 @@ export class ESeminar {
         seminarWorker.SeminarEventType.CHAT_REQUEST,
         {
           seminarId: id as number,
-          subTopic: this.#subTopics[this.#subTopics.length - 1],
+          subTopic,
           participatorId: host.participatorId,
           intent: seminarWorker.Intent.HOST_CHALLENGE,
           round: this.#round,
