@@ -1,7 +1,7 @@
 import { dbModel } from 'src/model'
 import { seminarWorker } from 'src/worker'
 import { dbBridge } from '..'
-import { EParticipator } from './participator'
+import { EParticipator, PSimulator } from './participator'
 
 type MessageFunc = (
   subTopic: string,
@@ -31,6 +31,7 @@ export class ESeminar {
   #subRounds = 7
   #round = 0
   #canNext = false
+  #lastRoundIsHost = false
 
   constructor(
     seminar: dbModel.Seminar,
@@ -47,13 +48,13 @@ export class ESeminar {
   }
 
   participators = async () => {
-    return await dbBridge._Participator.participators(this.#seminar.uid)
+    return await EParticipator.simulators(
+      await dbBridge._Participator.participators(this.#seminar.uid)
+    )
   }
 
   host = async () => {
-    return (await this.participators()).find(
-      (el) => el.role === dbModel.Role.HOST
-    )
+    return await EParticipator.host(this.#seminar.uid)
   }
 
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
@@ -81,6 +82,7 @@ export class ESeminar {
         }
       } else {
         this.#canNext = false
+        this.#lastRoundIsHost = true
         void this.startNextSubTopic(subTopic)
         this.#subRound += 1
       }
@@ -152,17 +154,20 @@ export class ESeminar {
       {
         seminarId: id as number,
         subTopic: undefined as unknown as string,
-        participatorId: host.id as number,
+        participatorId: host.participatorId as number,
         intent: seminarWorker.Intent.OUTLINE,
         round: this.#round,
         subRound: this.#subRound,
         prompts: {
+          archetype: await dbBridge._Simulator.archetypeWithId(
+            host.simulator?.id as number
+          ),
           rounds: this.#totalTopics
         }
       }
     )
 
-    this.#onThinking(host.id as number)
+    this.#onThinking(host.participatorId as number)
   }
 
   startTopic = async () => {
@@ -179,7 +184,7 @@ export class ESeminar {
       {
         seminarId: id as number,
         subTopic: undefined as unknown as string,
-        participatorId: host.id as number,
+        participatorId: host.participatorId as number,
         intent: seminarWorker.Intent.START_TOPIC,
         round: this.#round,
         subRound: this.#subRound,
@@ -188,10 +193,15 @@ export class ESeminar {
           generateAudio: true,
           guests: simulators.map(
             (el) => el.simulator.name + ', ' + el.simulator.personality
+          ),
+          archetype: await dbBridge._Simulator.archetypeWithId(
+            host.simulator?.id as number
           )
         }
       }
     )
+
+    this.#onThinking(host.participatorId as number)
   }
 
   startNextSubTopic = async (prevSubTopic?: string) => {
@@ -216,7 +226,7 @@ export class ESeminar {
       {
         seminarId: id as number,
         subTopic: this.#subTopics[index],
-        participatorId: host.id as number,
+        participatorId: host.participatorId as number,
         intent:
           index === 0
             ? seminarWorker.Intent.START_FIRST_SUBTOPIC
@@ -225,10 +235,15 @@ export class ESeminar {
         subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
-          generateAudio: true
+          generateAudio: true,
+          archetype: await dbBridge._Simulator.archetypeWithId(
+            host.simulator?.id as number
+          )
         }
       }
     )
+
+    this.#onThinking(host.participatorId as number)
   }
 
   concludeSubTopic = async (subTopic: string) => {
@@ -246,17 +261,21 @@ export class ESeminar {
       {
         seminarId: id as number,
         subTopic,
-        participatorId: host.id as number,
+        participatorId: host.participatorId as number,
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
         round: this.#round,
         subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
-          historyMessages
+          historyMessages,
+          archetype: await dbBridge._Simulator.archetypeWithId(
+            host.simulator?.id as number
+          )
         }
       }
     )
+    this.#onThinking(host.participatorId as number)
   }
 
   concludeTopic = async () => {
@@ -275,17 +294,21 @@ export class ESeminar {
       {
         seminarId: id as number,
         subTopic: this.#subTopics[this.#subTopics.length - 1],
-        participatorId: host.id as number,
+        participatorId: host.participatorId as number,
         intent: seminarWorker.Intent.CONCLUDE,
         round: this.#round,
         subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
-          historyMessages
+          historyMessages,
+          archetype: await dbBridge._Simulator.archetypeWithId(
+            host.simulator?.id as number
+          )
         }
       }
     )
+    this.#onThinking(host.participatorId as number)
   }
 
   stop = () => {
@@ -306,36 +329,73 @@ export class ESeminar {
     const historyMessages = this.#historyMessages().get(subTopic) || []
 
     const guests = Math.max(Math.ceil(Math.random() * participators.length), 2)
-    const speakers = [] as dbModel.Participator[]
+    let speakers = [] as PSimulator[]
 
     for (let i = 0; i < guests; i++) {
-      let participator = undefined as unknown as dbModel.Participator
+      let participator = undefined as unknown as PSimulator
       do {
         participator =
           participators[Math.floor(Math.random() * participators.length)]
-      } while (speakers.findIndex((el) => el.id === participator.id) >= 0)
+      } while (
+        speakers.findIndex(
+          (el) => el.participatorId === participator.participatorId
+        ) >= 0
+      )
       speakers.push(participator)
     }
 
-    this.#round += 1
-    this.#subRound += 1
-
-    speakers.forEach((el) => {
-      this.#onThinking(el.id as number)
+    // If we have host in speaker, run host challenge and skip this round
+    const host = speakers.find((el) => el.isHost)
+    if (host && !this.#lastRoundIsHost) {
+      this.#onThinking(host.participatorId)
+      this.#lastRoundIsHost = true
 
       seminarWorker.SeminarWorker.send(
         seminarWorker.SeminarEventType.CHAT_REQUEST,
         {
           seminarId: id as number,
           subTopic,
-          participatorId: el.id as number,
+          participatorId: host.participatorId,
+          intent: seminarWorker.Intent.HOST_CHALLENGE,
+          round: this.#round,
+          subRound: this.#subRound,
+          prompts: {
+            topicMaterial: this.#topicMaterial,
+            generateAudio: true,
+            historyMessages,
+            archetype: await dbBridge._Simulator.archetypeWithId(
+              host.simulator?.id as number
+            )
+          }
+        }
+      )
+
+      return
+    }
+
+    speakers = speakers.filter((el) => !el.isHost)
+
+    this.#round += 1
+    this.#subRound += 1
+    this.#lastRoundIsHost = false
+
+    speakers.forEach((el) => {
+      this.#onThinking(el.participatorId)
+
+      seminarWorker.SeminarWorker.send(
+        seminarWorker.SeminarEventType.CHAT_REQUEST,
+        {
+          seminarId: id as number,
+          subTopic,
+          participatorId: el.participatorId,
           intent: seminarWorker.Intent.DISCUSS,
           round: this.#round,
           subRound: this.#subRound,
           prompts: {
             hostMessage: topic,
             generateAudio: true,
-            historyMessages
+            historyMessages,
+            archetype: dbBridge._Simulator.archetype(el.simulator)
           }
         }
       )

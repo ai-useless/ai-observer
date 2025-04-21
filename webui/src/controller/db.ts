@@ -15,7 +15,7 @@ dbSeminar.version(1).stores({
   participators: '++id, seminarUid, role, simulatorId, modelId',
   models:
     '++id, &name, endpoint, apiKey, vendor, author, authorLogo, modelLogo, hostModel',
-  simulators: '++id, &name, avatar, host, speakerVoice',
+  simulators: '++id, &name, avatar, host, speakerVoice, archetype, title',
   seminars: '++id, uid, topic',
   messages:
     '++id, seminarId, participatorId, timestamp, prompt, content, audioCid',

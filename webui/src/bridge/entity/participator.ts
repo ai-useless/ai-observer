@@ -1,5 +1,5 @@
 import { dbModel } from 'src/model'
-import { _Simulator } from '../db'
+import { _Participator, _Simulator } from '../db'
 
 export interface PSimulator {
   participatorId: number
@@ -19,5 +19,14 @@ export class EParticipator {
         isHost: el.role === dbModel.Role.HOST
       } as PSimulator
     })
+  }
+
+  static host = async (seminarUid: string) => {
+    const host = await _Participator.host(seminarUid)
+    return {
+      participatorId: host?.id,
+      simulator: await _Simulator.simulator(host?.simulatorId as number),
+      isHost: true
+    }
   }
 }
