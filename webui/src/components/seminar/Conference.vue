@@ -2,33 +2,7 @@
   <div class='row'>
     <q-space />
     <div style='width: 100%; max-width: 960px; max-height: 100%;'>
-      <div v-if='showTitle' class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
-        {{ topic }}
-      </div>
-      <div v-if='showTitle' class='row' style='transition: 500ms;'>
-        <simulator-card v-if='host' :simulator='host.simulator' :small='false' :is-host='true' />
-        <div class='flex justify-end items-end' style='margin-left: 24px;'>
-          <simulator-card
-            :style='{marginLeft: index === 0 ? "0" : "16px"}'
-            v-for='(guest, index) in guests'
-            :simulator='guest.simulator'
-            :small='true'
-            :key='index'
-            :is-host='false'
-          />
-        </div>
-      </div>
-      <q-separator v-if='showTitle' style='margin-top: 16px' />
-      <div
-        v-if='!displayMessages.length'
-        style='margin-top: 16px; font-size: 20px'
-        class='text-center text-grey-8'
-      >
-        <q-spinner-facebook class='text-red-4' size='128px' />
-        <div>Host is preparing scripts...</div>
-      </div>
       <q-scroll-area
-        v-else
         :style='{ height: chatBoxHeight + "px" }'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
@@ -36,7 +10,32 @@
         @mouseenter='autoScroll = false'
         @mouseleave='autoScroll = true'
       >
-        <div style='margin-top: 16px;'>
+        <div class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
+          {{ topic }}
+        </div>
+        <div class='row' style='transition: 500ms;'>
+          <simulator-card v-if='host' :simulator='host.simulator' :small='false' :is-host='true' />
+          <div class='flex justify-end items-end' style='margin-left: 24px;'>
+            <simulator-card
+              :style='{marginLeft: index === 0 ? "0" : "16px"}'
+              v-for='(guest, index) in guests'
+              :simulator='guest.simulator'
+              :small='true'
+              :key='index'
+              :is-host='false'
+            />
+          </div>
+        </div>
+        <q-separator style='margin-top: 16px' />
+        <div
+          v-if='!displayMessages.length'
+          style='margin-top: 16px; font-size: 20px'
+          class='text-center text-grey-8'
+        >
+          <q-spinner-facebook class='text-red-4' size='128px' />
+          <div>Host is preparing scripts...</div>
+        </div>
+        <div v-else style='margin-top: 16px;'>
           <div v-for='(message, index) in displayMessages' :key='index'>
             <q-chat-message
               v-if='!message.subTopicTitle'
@@ -95,7 +94,6 @@ const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBox = ref<QScrollArea>()
 const chatBoxHeight = ref(0)
-const showTitle = ref(true)
 const autoScroll = ref(true)
 
 const topic = computed(() => _seminar.value?.topic)
@@ -280,7 +278,6 @@ const onOutline = (json: Record<string, unknown>) => {
 
 const onChatBoxResize = (size: { height: number }) => {
   if (autoScroll.value) chatBox.value?.setScrollPosition('vertical', size.height, 300)
-  showTitle.value = size.height < chatBoxHeight.value - 84 - 89 - 60
 }
 
 const historyMessages = (): Map<string, string[]> => {
