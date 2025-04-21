@@ -29,6 +29,12 @@ export class _Participator {
     )
   }
 
+  static host = async (seminarUid: string) => {
+    return (await _Participator.participators(seminarUid)).find(
+      (el) => el.role === dbModel.Role.HOST
+    )
+  }
+
   static createParticipators = async (
     participators: dbModel.Participator[]
   ) => {

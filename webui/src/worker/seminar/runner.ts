@@ -12,6 +12,7 @@ export enum SeminarEventType {
 }
 
 export interface BasePrompts {
+  archetype?: string
   historyMessages?: string[]
   generateAudio?: boolean
 }
@@ -39,6 +40,11 @@ export interface ConcludeTopicPrompts extends BasePrompts {
   historyMessages: string[]
 }
 
+export interface HostChallengePrompts extends BasePrompts {
+  topicMaterial: string
+  historyMessages: string[]
+}
+
 export interface DiscussPrompts extends BasePrompts {
   hostMessage: string
   historyMessages: string[]
@@ -55,6 +61,7 @@ export type Prompts =
   | StartSubTopicPrompts
   | ConcludeSubTopicPrompts
   | ConcludeTopicPrompts
+  | HostChallengePrompts
 
 export interface ChatRequestPayload {
   seminarId: number
@@ -138,7 +145,12 @@ export class SeminarRunner {
     switch (intent) {
       case Intent.OUTLINE: {
         const _prompts = prompts as OutlinePrompts
-        return Prompt.prompt(intent, topic, _prompts.rounds)
+        return Prompt.prompt(
+          intent,
+          topic,
+          _prompts.rounds,
+          _prompts.archetype as string
+        )
       }
       case Intent.START_TOPIC: {
         const _prompts = prompts as StartTopicPrompts
@@ -147,7 +159,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           100,
-          _prompts.guests
+          _prompts.guests,
+          _prompts.archetype as string
         )
       }
       case Intent.START_FIRST_SUBTOPIC: {
@@ -158,7 +171,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           subTopic,
-          100
+          100,
+          _prompts.archetype as string
         )
       }
       case Intent.START_SUBTOPIC: {
@@ -169,7 +183,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           subTopic,
-          100
+          100,
+          _prompts.archetype as string
         )
       }
       case Intent.CONCLUDE_SUBTOPIC: {
@@ -181,7 +196,8 @@ export class SeminarRunner {
           _prompts.topicMaterial,
           subTopic,
           100,
-          _prompts.historyMessages
+          _prompts.historyMessages,
+          _prompts.archetype as string
         )
       }
       case Intent.CONCLUDE: {
@@ -191,7 +207,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           100,
-          _prompts.historyMessages
+          _prompts.historyMessages,
+          _prompts.archetype as string
         )
       }
       case Intent.DISCUSS: {
@@ -203,12 +220,25 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.hostMessage,
           100,
-          _prompts.historyMessages
+          _prompts.historyMessages,
+          _prompts.archetype as string
         )
       }
       case Intent.OUTLINE_SUBTOPICS: {
         const _prompts = prompts as OutlineSubTopicsPrompts
         return Prompt.prompt(intent, _prompts.topicMaterial)
+      }
+      case Intent.HOST_CHALLENGE: {
+        const _prompts = prompts as HostChallengePrompts
+        return Prompt.prompt(
+          intent,
+          simulator.personality,
+          _prompts.topicMaterial,
+          subTopic,
+          100,
+          _prompts.historyMessages,
+          _prompts.archetype as string
+        )
       }
     }
   }

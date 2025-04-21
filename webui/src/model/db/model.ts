@@ -24,6 +24,8 @@ export interface Simulator {
   personality: string
   host: boolean
   speakerVoice: string
+  archetype: string
+  title: string
 }
 
 export interface Seminar {

@@ -6,7 +6,8 @@ export enum Intent {
   START_SUBTOPIC = 'StartSubTopic',
   CONCLUDE_SUBTOPIC = 'ConcludeSubTopic',
   CONCLUDE = 'Conclude',
-  OUTLINE_SUBTOPICS = 'OutlineSubTopics'
+  OUTLINE_SUBTOPICS = 'OutlineSubTopics',
+  HOST_CHALLENGE = 'HostChallenge'
 }
 
 enum PromptType {
@@ -28,7 +29,8 @@ enum PromptType {
   WITH_EVENT,
   WITH_HISTORY_ANALYSIS,
   WITH_HISTORY_CONCLUSION,
-  WITH_HUMAN_WORDS
+  WITH_HUMAN_WORDS,
+  WITHOUT_ABSENT_GUESTS
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -62,13 +64,17 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.PERSONALITY,
     (() =>
-      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例，包含具体事例链接') as RequirementFunc
+      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例，包含具体事例链接。引用内容符合人物原型，不允许编造事实') as RequirementFunc
   ],
   [
     PromptType.EMOTION,
     (() => ') 人物情绪普遍理性客观中立，但带有各自社群特征') as RequirementFunc
   ],
-  [PromptType.NO_ANALYSIS, (() => ') 不要包含分析过程') as RequirementFunc],
+  [
+    PromptType.NO_ANALYSIS,
+    (() =>
+      ') 不要包含分析过程，不要使用总的来说这一类的遣词造句') as RequirementFunc
+  ],
   [
     PromptType.MERGE_SPACES,
     (() => ') 把连续多个空格合并成一个') as RequirementFunc
@@ -112,6 +118,10 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.WITH_HUMAN_WORDS,
     (() => ') 用人的语言说话，不要说车轱辘话') as RequirementFunc
+  ],
+  [
+    PromptType.WITHOUT_ABSENT_GUESTS,
+    (() => ') 如果嘉宾及其观点没有出现在本轮讨论，不要邀请他们回答，也不要将其作为在场嘉宾加以分析，但是你可以引用不在场的嘉宾的观点') as RequirementFunc
   ]
 ])
 
@@ -129,7 +139,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.NO_HEAD_SPACE,
       PromptType.MERGE_SPACES,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -150,7 +161,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.NO_VIRTUAL_WORDS,
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_ANALYSIS,
-      PromptType.WITH_HUMAN_WORDS
+      PromptType.WITH_HUMAN_WORDS,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -166,7 +178,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -183,7 +196,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -200,7 +214,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -218,7 +233,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITH_HISTORY_CONCLUSION
+      PromptType.WITH_HISTORY_CONCLUSION,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -235,7 +251,27 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
+    ]
+  ],
+  [
+    Intent.HOST_CHALLENGE,
+    [
+      PromptType.NO_EMOJI,
+      PromptType.DURATION,
+      PromptType.EMOTION,
+      PromptType.NO_ANALYSIS,
+      PromptType.NO_HEAD_SPACE,
+      PromptType.IDENT_2_SPACE,
+      PromptType.WITH_HTML,
+      PromptType.MERGE_SPACES,
+      PromptType.HTML_STYLE,
+      PromptType.DONT_START_WITH_TOPIC,
+      PromptType.AS_HOST,
+      PromptType.WITH_EVENT,
+      PromptType.WITH_HISTORY_CONCLUSION,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ]
 ])
@@ -259,8 +295,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     Intent.OUTLINE,
     ((
       topic: string,
-      rounds: number
-    ) => `作为主持人，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题，要求只输出主题和主题
+      rounds: number,
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题，要求只输出主题和主题
           相关素材（格式如下：本期主题：xxxxx (1).xxxxx 素材：xxxx (2).xxxxxxx 素材：xxxxxxx。标题和素材之间需要换行。
           要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
   ],
@@ -272,8 +309,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       hostMessage: string,
       speakDuration: number,
-      historyMessages: string[]
-    ) => `作为嘉宾，你的人设是${personality}，本期节目讨论的主题为${topic}, 本轮讨论的小主题为${subTopic}，本期节目
+      historyMessages: string[],
+      archetype: string
+    ) => `作为嘉宾，你的人物原型是${archetype}，你的人设是${personality}，本期节目讨论的主题为${topic}, 本轮讨论的小主题为${subTopic}，本期节目
           主持人对本轮主题的开场为："${hostMessage}"，请你分析讨论内容并发表观点，记住，你不是主持人，不要重复问题，
           只需要和其他嘉宾观点讨论和发表自己的观点即可，可以认同或者反对其他嘉宾的观点，但是不要重复其他嘉宾的观点，
           不要重复自己的人设，回复中不要包含作为嘉宾这样的语言。回复中减少或不要使用过渡句，直接表明观点。不要重复主持人的开场白和套话。
@@ -285,10 +323,11 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       speakDuration: number,
-      guests: string[]
-    ) => `作为主持人，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}
+      guests: string[],
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}
           到场的嘉宾有 ${guests.map((el, index) => index.toString() + ') ' + el).join('; ')}
-          你需要先对本期讨论目标和材料做简单解读，然后介绍到场嘉宾，最后过渡到第一个小主题
+          你需要先对本期讨论目标和材料做简单解读，然后介绍到场嘉宾，最后过渡到第一个小主题。你不应该直接邀请嘉宾表达观点，这个环节你只是叙述材料。
           要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
@@ -298,8 +337,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       subTopic: string,
-      speakDuration: number
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
+      speakDuration: number,
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
           现在进入今天的第一个主题${subTopic}，你需要对材料做初步解读，并引导嘉宾开始讨论。你不应该用套路化的语言开场，
           应该用丰富的语言形态引起参与讨论的嘉宾的兴趣。要求：${intentRequirements(Intent.START_FIRST_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
@@ -311,8 +351,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topicMaterial: string,
       subTopic: string,
       speakDuration: number,
-      historyMessages: string[]
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
+      historyMessages: string[],
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
           之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段，
           你需要总结本轮讨论并过渡到下一轮讨论，你不应该用套路化的语言总结，应该用丰富的语言形态达成好的总结效果。
           要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300, historyMessages)}`) as IntentFunc
@@ -324,8 +365,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       subTopic: string,
-      speakDuration: number
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场
+      speakDuration: number,
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场
           现在进入小主题讨论阶段，本轮主要讨论的是${subTopic}这个小主题，请就这个小主题拓展和开场，并且结尾引导嘉宾开始讨论，
           要求：${intentRequirements(Intent.START_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
@@ -335,14 +377,28 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       speakDuration: number,
-      historyMessages: string[]
-    ) => `作为主持人，你的人设是${personality}，现在是节目的最后，本期节目的主要内容为：${topicMaterial}，
+      historyMessages: string[],
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目的最后，本期节目的主要内容为：${topicMaterial}，
           请你对本期内容进行总结总结并感谢嘉宾和观众，要求：${intentRequirements(Intent.CONCLUDE, speakDuration, 300, historyMessages)}`) as IntentFunc
   ],
   [
     Intent.OUTLINE_SUBTOPICS,
     ((topicMaterial: string) =>
       `提取${topicMaterial}中的小标题分为每个标题单独一行的纯文本返回，不要包含素材和主标题`) as IntentFunc
+  ],
+  [
+    Intent.HOST_CHALLENGE,
+    ((
+      personality: string,
+      topicMaterial: string,
+      subTopic: string,
+      speakDuration: number,
+      historyMessages: string[],
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目进行中，本期节目的主要内容为：${topicMaterial}，
+          本轮讨论的主题为${subTopic}，现在你需要串联嘉宾发表的观点并提出启发性的问题以供进一步讨论，
+          要求：${intentRequirements(Intent.CONCLUDE, speakDuration, 300, historyMessages)}`) as IntentFunc
   ]
 ])
 

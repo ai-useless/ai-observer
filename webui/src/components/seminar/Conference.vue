@@ -40,7 +40,7 @@
             <q-chat-message
               v-if='!message.subTopicTitle'
               :key='index'
-              :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
+              :name='message.simulator.name + " | " + message.participator.role + " | " + message.model.name'
               :avatar='message.simulator.avatar'
               :stamp='message.datetime'
               :text='[message.message]'
@@ -50,7 +50,7 @@
               <template #name>
                 <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
                   <div>
-                    {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+                    {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
                   </div>
                   <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
                   <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
@@ -283,7 +283,7 @@ const onChatBoxResize = (size: { height: number }) => {
 const historyMessages = (): Map<string, string[]> => {
   const messages = new Map<string, string[]>()
 
-  displayMessages.value.forEach((el) => {
+  displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
     _messages.push(el.simulator.name + ' 的观点 ' + el.message)
     messages.set(el.subTopic, _messages)

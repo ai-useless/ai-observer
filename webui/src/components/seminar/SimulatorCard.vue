@@ -10,7 +10,7 @@
       <q-space />
     </div>
     <div v-if='!avatarOnly' class='text-grey-8'>
-      {{ $t(simulator.name) }}
+      {{ simulator.name }}
     </div>
   </div>
 </template>
