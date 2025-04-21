@@ -29,7 +29,8 @@ enum PromptType {
   WITH_EVENT,
   WITH_HISTORY_ANALYSIS,
   WITH_HISTORY_CONCLUSION,
-  WITH_HUMAN_WORDS
+  WITH_HUMAN_WORDS,
+  WITHOUT_ABSENT_GUESTS
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -117,6 +118,10 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.WITH_HUMAN_WORDS,
     (() => ') 用人的语言说话，不要说车轱辘话') as RequirementFunc
+  ],
+  [
+    PromptType.WITHOUT_ABSENT_GUESTS,
+    (() => ') 如果嘉宾及其观点没有出现在本轮讨论，不要邀请他们回答，也不要将其作为在场嘉宾加以分析，但是你可以引用不在场的嘉宾的观点') as RequirementFunc
   ]
 ])
 
@@ -134,7 +139,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.NO_HEAD_SPACE,
       PromptType.MERGE_SPACES,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -155,7 +161,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.NO_VIRTUAL_WORDS,
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_ANALYSIS,
-      PromptType.WITH_HUMAN_WORDS
+      PromptType.WITH_HUMAN_WORDS,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -171,7 +178,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -188,7 +196,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -205,7 +214,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -223,7 +233,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITH_HISTORY_CONCLUSION
+      PromptType.WITH_HISTORY_CONCLUSION,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -240,7 +251,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT
+      PromptType.WITH_EVENT,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ],
   [
@@ -258,7 +270,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITH_HISTORY_CONCLUSION
+      PromptType.WITH_HISTORY_CONCLUSION,
+      PromptType.WITHOUT_ABSENT_GUESTS
     ]
   ]
 ])
