@@ -1,7 +1,7 @@
 import { dbModel } from 'src/model'
 import { seminarWorker } from 'src/worker'
 import { dbBridge } from '..'
-import { EParticipator } from './participator'
+import { EParticipator, PSimulator } from './participator'
 
 type MessageFunc = (
   subTopic: string,
@@ -31,6 +31,7 @@ export class ESeminar {
   #subRounds = 7
   #round = 0
   #canNext = false
+  #lastRoundIsHost = false
 
   constructor(
     seminar: dbModel.Seminar,
@@ -47,7 +48,9 @@ export class ESeminar {
   }
 
   participators = async () => {
-    return await dbBridge._Participator.participators(this.#seminar.uid)
+    return await EParticipator.simulators(
+      await dbBridge._Participator.participators(this.#seminar.uid)
+    )
   }
 
   host = async () => {
@@ -79,6 +82,7 @@ export class ESeminar {
         }
       } else {
         this.#canNext = false
+        this.#lastRoundIsHost = true
         void this.startNextSubTopic(subTopic)
         this.#subRound += 1
       }
@@ -325,33 +329,65 @@ export class ESeminar {
     const historyMessages = this.#historyMessages().get(subTopic) || []
 
     const guests = Math.max(Math.ceil(Math.random() * participators.length), 2)
-    const speakers = [] as dbModel.Participator[]
+    let speakers = [] as PSimulator[]
 
     for (let i = 0; i < guests; i++) {
-      let participator = undefined as unknown as dbModel.Participator
+      let participator = undefined as unknown as PSimulator
       do {
         participator =
           participators[Math.floor(Math.random() * participators.length)]
-      } while (speakers.findIndex((el) => el.id === participator.id) >= 0)
+      } while (
+        speakers.findIndex(
+          (el) => el.participatorId === participator.participatorId
+        ) >= 0
+      )
       speakers.push(participator)
     }
 
+    // If we have host in speaker, run host challenge and skip this round
+    const host = speakers.find((el) => el.isHost)
+    if (host && !this.#lastRoundIsHost) {
+      this.#onThinking(host.participatorId)
+      this.#lastRoundIsHost = true
+
+      seminarWorker.SeminarWorker.send(
+        seminarWorker.SeminarEventType.CHAT_REQUEST,
+        {
+          seminarId: id as number,
+          subTopic: this.#subTopics[this.#subTopics.length - 1],
+          participatorId: host.participatorId,
+          intent: seminarWorker.Intent.HOST_CHALLENGE,
+          round: this.#round,
+          subRound: this.#subRound,
+          prompts: {
+            topicMaterial: this.#topicMaterial,
+            generateAudio: true,
+            historyMessages,
+            archetype: await dbBridge._Simulator.archetypeWithId(
+              host.simulator?.id as number
+            )
+          }
+        }
+      )
+
+      return
+    }
+
+    speakers = speakers.filter((el) => !el.isHost)
+
     this.#round += 1
     this.#subRound += 1
-
-    const simulators = await dbBridge._Simulator.simulators(
-      speakers.map((el) => el.simulatorId)
-    )
+    this.#lastRoundIsHost = true
 
     speakers.forEach((el) => {
-      this.#onThinking(el.id as number)
+      this.#onThinking(el.participatorId)
 
       seminarWorker.SeminarWorker.send(
         seminarWorker.SeminarEventType.CHAT_REQUEST,
         {
           seminarId: id as number,
           subTopic,
-          participatorId: el.id as number,
+          participatorId: el.participatorId,
           intent: seminarWorker.Intent.DISCUSS,
           round: this.#round,
           subRound: this.#subRound,
@@ -359,9 +395,7 @@ export class ESeminar {
             hostMessage: topic,
             generateAudio: true,
             historyMessages,
-            archetype: dbBridge._Simulator.archetype(
-              simulators.find((_el) => _el.id === el.simulatorId)
-            )
+            archetype: dbBridge._Simulator.archetype(el.simulator)
           }
         }
       )
