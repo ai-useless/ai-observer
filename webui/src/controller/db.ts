@@ -1,4 +1,5 @@
 import Dexie, { Table } from 'dexie'
+import { sha256 } from 'hash-wasm'
 import { dbModel } from 'src/model'
 
 export const dbSeminar = new Dexie('SeminarDatabase') as Dexie & {
@@ -17,6 +18,30 @@ dbSeminar.version(1).stores({
   simulators: '++id, &name, avatar, host, speakerVoice',
   seminars: '++id, uid, topic',
   messages:
-    '++id, seminarId, participatorId, timestamp, prompt, content, audio, duration',
+    '++id, seminarId, participatorId, timestamp, prompt, content, audioCid',
   settings: '++id, key, value'
 })
+
+const audioDatabase = (cid: string) => {
+  return new Dexie(`Audio-${cid}`) as Dexie & {
+    audios: Table<dbModel.Audio, 'id'>
+  }
+}
+
+export const saveAudio = async (audio: string) => {
+  const cid = await sha256(audio)
+  const database = audioDatabase(cid)
+  database.version(1).stores({
+    audios: '++id, cid, audio'
+  })
+  await database.audios.add({
+    cid,
+    audio
+  })
+  return cid
+}
+
+export const readAudio = async (cid: string) => {
+  return (await audioDatabase(cid).audios.where('cid').equals(cid).first())
+    ?.audio
+}

@@ -1,4 +1,4 @@
-import { dbSeminar } from 'src/controller'
+import { dbSeminar, saveAudio } from 'src/controller'
 
 export class _Message {
   static create = async (
@@ -6,17 +6,16 @@ export class _Message {
     participatorId: number,
     prompt: string,
     content: string,
-    audio: string,
-    duration: number
+    audio: string
   ) => {
+    const cid = await saveAudio(audio)
     await dbSeminar.messages.add({
       seminarId,
       participatorId,
       prompt,
       content,
       timestamp: Date.now(),
-      audio: audio,
-      duration
+      audioCid: cid
     })
   }
 }
