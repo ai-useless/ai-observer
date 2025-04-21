@@ -314,7 +314,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       archetype: string
     ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}
           到场的嘉宾有 ${guests.map((el, index) => index.toString() + ') ' + el).join('; ')}
-          你需要先对本期讨论目标和材料做简单解读，然后介绍到场嘉宾，最后过渡到第一个小主题
+          你需要先对本期讨论目标和材料做简单解读，然后介绍到场嘉宾，最后过渡到第一个小主题。你不应该直接邀请嘉宾表达观点，这个环节你只是叙述材料。
           要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
@@ -384,7 +384,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       historyMessages: string[],
       archetype: string
     ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目进行中，本期节目的主要内容为：${topicMaterial}，
-          本轮讨论的主题为${subTopic}，现在你需要针对嘉宾发表的观点提出启发性的问题以供进一步讨论，要求：${intentRequirements(Intent.CONCLUDE, speakDuration, 300, historyMessages)}`) as IntentFunc
+          本轮讨论的主题为${subTopic}，现在你需要串联嘉宾发表的观点并提出启发性的问题以供进一步讨论，
+          要求：${intentRequirements(Intent.CONCLUDE, speakDuration, 300, historyMessages)}`) as IntentFunc
   ]
 ])
 
