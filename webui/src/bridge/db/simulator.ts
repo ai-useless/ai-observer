@@ -6,7 +6,7 @@ export class _Simulator {
     {
       name: 'MSG_HUN_ER_HU',
       avatar: luxunAvatar,
-      personality: '客观理性的凤凰卫视一虎一席谈节目主持人',
+      personality: '客观理性的AGI智障频道AGI观点栏目主持人',
       host: true,
       speakerVoice: 'zm_031'
     },
