@@ -40,7 +40,7 @@
             <q-chat-message
               v-if='!message.subTopicTitle'
               :key='index'
-              :name='$t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name'
+              :name='message.simulator.name + " | " + message.participator.role + " | " + message.model.name'
               :avatar='message.simulator.avatar'
               :stamp='message.datetime'
               :text='[message.message]'
@@ -50,7 +50,7 @@
               <template #name>
                 <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
                   <div>
-                    {{ $t(message.simulator.name) + " | " + message.participator.role + " | " + message.model.name }}
+                    {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
                   </div>
                   <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
                   <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
