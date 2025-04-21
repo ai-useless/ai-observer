@@ -23,6 +23,12 @@ export class _Participator {
       .toArray()
   }
 
+  static guests = async (seminarUid: string) => {
+    return (await _Participator.participators(seminarUid)).filter(
+      (el) => el.role === dbModel.Role.GUEST
+    )
+  }
+
   static createParticipators = async (
     participators: dbModel.Participator[]
   ) => {
