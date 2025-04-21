@@ -53,6 +53,7 @@ def get_audio_data(text, voice):
       "text": text,
       "voice": voice
     }
+    print(f"body: {body}")
     response = requests.post(API_URL, headers=headers, json=body, stream=True)
     if response.status_code == 200:
         return response.content  # 直接获取二进制内容
@@ -63,7 +64,7 @@ def get_audio_data(text, voice):
 async def generate_audio(params: TTSParams):
     try:
         print("params: ", params)
-        audio_bytes = get_audio_data(params.text, "af")
+        audio_bytes = get_audio_data(params.text, params.speakerVoice)
         buffer = io.BytesIO(audio_bytes)
         sample_rate, audio_data = wavfile.read(buffer)
         duration = round(len(audio_data) / sample_rate, 3)  # 精确到毫秒
