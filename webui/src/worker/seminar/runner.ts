@@ -12,6 +12,7 @@ export enum SeminarEventType {
 }
 
 export interface BasePrompts {
+  archetype?: string
   historyMessages?: string[]
   generateAudio?: boolean
 }
@@ -147,7 +148,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           100,
-          _prompts.guests
+          _prompts.guests,
+          _prompts.archetype as string
         )
       }
       case Intent.START_FIRST_SUBTOPIC: {
@@ -158,7 +160,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           subTopic,
-          100
+          100,
+          _prompts.archetype as string
         )
       }
       case Intent.START_SUBTOPIC: {
@@ -169,7 +172,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           subTopic,
-          100
+          100,
+          _prompts.archetype as string
         )
       }
       case Intent.CONCLUDE_SUBTOPIC: {
@@ -181,7 +185,8 @@ export class SeminarRunner {
           _prompts.topicMaterial,
           subTopic,
           100,
-          _prompts.historyMessages
+          _prompts.historyMessages,
+          _prompts.archetype as string
         )
       }
       case Intent.CONCLUDE: {
@@ -191,7 +196,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           100,
-          _prompts.historyMessages
+          _prompts.historyMessages,
+          _prompts.archetype as string
         )
       }
       case Intent.DISCUSS: {
@@ -203,7 +209,8 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.hostMessage,
           100,
-          _prompts.historyMessages
+          _prompts.historyMessages,
+          _prompts.archetype as string
         )
       }
       case Intent.OUTLINE_SUBTOPICS: {

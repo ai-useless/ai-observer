@@ -62,7 +62,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.PERSONALITY,
     (() =>
-      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例，包含具体事例链接') as RequirementFunc
+      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例，包含具体事例链接。引用内容符合人物原型，不允许编造事实') as RequirementFunc
   ],
   [
     PromptType.EMOTION,
@@ -259,8 +259,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     Intent.OUTLINE,
     ((
       topic: string,
-      rounds: number
-    ) => `作为主持人，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题，要求只输出主题和主题
+      rounds: number,
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题，要求只输出主题和主题
           相关素材（格式如下：本期主题：xxxxx (1).xxxxx 素材：xxxx (2).xxxxxxx 素材：xxxxxxx。标题和素材之间需要换行。
           要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
   ],
@@ -272,8 +273,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       hostMessage: string,
       speakDuration: number,
-      historyMessages: string[]
-    ) => `作为嘉宾，你的人设是${personality}，本期节目讨论的主题为${topic}, 本轮讨论的小主题为${subTopic}，本期节目
+      historyMessages: string[],
+      archetype: string
+    ) => `作为嘉宾，你的人物原型是${archetype}，你的人设是${personality}，本期节目讨论的主题为${topic}, 本轮讨论的小主题为${subTopic}，本期节目
           主持人对本轮主题的开场为："${hostMessage}"，请你分析讨论内容并发表观点，记住，你不是主持人，不要重复问题，
           只需要和其他嘉宾观点讨论和发表自己的观点即可，可以认同或者反对其他嘉宾的观点，但是不要重复其他嘉宾的观点，
           不要重复自己的人设，回复中不要包含作为嘉宾这样的语言。回复中减少或不要使用过渡句，直接表明观点。不要重复主持人的开场白和套话。
@@ -285,8 +287,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       speakDuration: number,
-      guests: string[]
-    ) => `作为主持人，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}
+      guests: string[],
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}
           到场的嘉宾有 ${guests.map((el, index) => index.toString() + ') ' + el).join('; ')}
           你需要先对本期讨论目标和材料做简单解读，然后介绍到场嘉宾，最后过渡到第一个小主题
           要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
@@ -298,8 +301,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       subTopic: string,
-      speakDuration: number
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
+      speakDuration: number,
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
           现在进入今天的第一个主题${subTopic}，你需要对材料做初步解读，并引导嘉宾开始讨论。你不应该用套路化的语言开场，
           应该用丰富的语言形态引起参与讨论的嘉宾的兴趣。要求：${intentRequirements(Intent.START_FIRST_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
@@ -311,8 +315,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topicMaterial: string,
       subTopic: string,
       speakDuration: number,
-      historyMessages: string[]
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
+      historyMessages: string[],
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial},
           之前你已经对主题进行过开场并组织讨论了小主题${subTopic}, 现在进入小主题${subTopic}总结阶段，
           你需要总结本轮讨论并过渡到下一轮讨论，你不应该用套路化的语言总结，应该用丰富的语言形态达成好的总结效果。
           要求：${intentRequirements(Intent.CONCLUDE_SUBTOPIC, speakDuration, 300, historyMessages)}`) as IntentFunc
@@ -324,8 +329,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       subTopic: string,
-      speakDuration: number
-    ) => `作为主持人，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场
+      speakDuration: number,
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，今天讨论的主题为："${topic}", 本期节目的主要内容为${topicMaterial}, 之前你已经对主题进行过开场
           现在进入小主题讨论阶段，本轮主要讨论的是${subTopic}这个小主题，请就这个小主题拓展和开场，并且结尾引导嘉宾开始讨论，
           要求：${intentRequirements(Intent.START_SUBTOPIC, speakDuration, 300)}`) as IntentFunc
   ],
@@ -335,8 +341,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       personality: string,
       topicMaterial: string,
       speakDuration: number,
-      historyMessages: string[]
-    ) => `作为主持人，你的人设是${personality}，现在是节目的最后，本期节目的主要内容为：${topicMaterial}，
+      historyMessages: string[],
+      archetype: string
+    ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目的最后，本期节目的主要内容为：${topicMaterial}，
           请你对本期内容进行总结总结并感谢嘉宾和观众，要求：${intentRequirements(Intent.CONCLUDE, speakDuration, 300, historyMessages)}`) as IntentFunc
   ],
   [
