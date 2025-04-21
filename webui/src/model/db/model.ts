@@ -47,8 +47,7 @@ export interface Message {
   timestamp: number
   prompt: string
   content: string
-  audio: string
-  duration: number
+  audioCid: string
 }
 
 export enum SettingKey {
@@ -59,4 +58,10 @@ export interface Setting {
   id?: number
   key: SettingKey
   value: unknown
+}
+
+export interface Audio {
+  id?: number
+  cid: string
+  audio: string
 }
