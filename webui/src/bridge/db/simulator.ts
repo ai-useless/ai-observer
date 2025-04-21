@@ -4,35 +4,35 @@ import { dbSeminar } from 'src/controller'
 export class _Simulator {
   static #simulators = [
     {
-      name: 'MSG_HUN_ER_HU',
+      name: '渾二虎',
       avatar: luxunAvatar,
       personality: '客观理性的AGI智障频道AGI观点栏目主持人',
       host: true,
       speakerVoice: 'zm_031'
     },
     {
-      name: 'MSG_ZHU_TOU_SAN',
+      name: '猪头三',
       avatar: luxunAvatar,
       personality: '知识丰富，关心前沿科技的科技公司创始人',
       host: false,
       speakerVoice: 'zm_010'
     },
     {
-      name: 'MSG_AN_RUO_SU',
+      name: '安若素',
       avatar: luxunAvatar,
       personality: '国防大学教授，国务院特殊津贴专家',
       host: false,
       speakerVoice: 'zm_012'
     },
     {
-      name: 'MSG_JIU_TOU_NIAO',
+      name: '九头鸟',
       avatar: luxunAvatar,
       personality: '科技爱好者，民间科学家',
       host: false,
       speakerVoice: 'zf_027'
     },
     {
-      name: 'MSG_LUXUN',
+      name: '陆一讯',
       avatar: luxunAvatar,
       personality: '时事新闻媒体特约撰稿人',
       host: false,

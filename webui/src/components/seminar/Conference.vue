@@ -33,7 +33,7 @@
           class='text-center text-grey-8'
         >
           <q-spinner-facebook class='text-red-4' size='128px' />
-          <div>Host is preparing scripts...</div>
+          <div>最靠谱的AGI观点栏目主持人正在准备台本，请大家耐心等待。</div>
         </div>
         <div v-else style='margin-top: 16px;'>
           <div v-for='(message, index) in displayMessages' :key='index'>
@@ -285,7 +285,7 @@ const historyMessages = (): Map<string, string[]> => {
 
   displayMessages.value.forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(el.message)
+    _messages.push(el.simulator.name + ' 的观点 ' + el.message)
     messages.set(el.subTopic, _messages)
   })
   waitMessages.value.forEach((el) => {
