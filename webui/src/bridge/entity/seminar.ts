@@ -1,6 +1,7 @@
 import { dbModel } from 'src/model'
 import { seminarWorker } from 'src/worker'
 import { dbBridge } from '..'
+import { EParticipator } from './participator'
 
 type MessageFunc = (
   subTopic: string,
@@ -165,10 +166,13 @@ export class ESeminar {
   }
 
   startTopic = async () => {
-    const { id } = this.#seminar
+    const { id, uid } = this.#seminar
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
+
+    const participators = await dbBridge._Participator.guests(uid)
+    const simulators = await EParticipator.simulators(participators)
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
@@ -181,7 +185,10 @@ export class ESeminar {
         subRound: this.#subRound,
         prompts: {
           topicMaterial: this.#topicMaterial,
-          generateAudio: true
+          generateAudio: true,
+          guests: simulators.map(
+            (el) => el.simulator.name + ', ' + el.simulator.personality
+          )
         }
       }
     )

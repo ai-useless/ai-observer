@@ -21,6 +21,7 @@ export interface OutlinePrompts extends BasePrompts {
 }
 
 export interface StartTopicPrompts extends BasePrompts {
+  guests: string[]
   topicMaterial: string
 }
 
@@ -145,7 +146,8 @@ export class SeminarRunner {
           intent,
           simulator.personality,
           _prompts.topicMaterial,
-          100
+          100,
+          _prompts.guests
         )
       }
       case Intent.START_FIRST_SUBTOPIC: {

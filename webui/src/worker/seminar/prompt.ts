@@ -284,9 +284,12 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     ((
       personality: string,
       topicMaterial: string,
-      speakDuration: number
-    ) => `作为主持人，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}，
-          你需要对本期讨论目标和材料做简单解读，并过渡到第一个小主题，要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
+      speakDuration: number,
+      guests: string[]
+    ) => `作为主持人，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}
+          到场的嘉宾有 ${guests.map((el, index) => index.toString() + ') ' + el).join('; ')}
+          你需要先对本期讨论目标和材料做简单解读，然后介绍到场嘉宾，最后过渡到第一个小主题
+          要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [
     Intent.START_FIRST_SUBTOPIC,
