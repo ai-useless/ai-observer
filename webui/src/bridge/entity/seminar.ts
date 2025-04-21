@@ -7,8 +7,7 @@ type MessageFunc = (
   participatorId: number,
   message: string,
   round: number,
-  audio: string,
-  duration: number
+  audio: string
 ) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
@@ -107,8 +106,7 @@ export class ESeminar {
       participatorId,
       payload.text,
       round,
-      payload.audio,
-      payload.duration
+      payload.audio
     )
   }
 

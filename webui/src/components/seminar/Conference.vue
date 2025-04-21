@@ -110,7 +110,6 @@ interface Message {
   datetime: string
   timestamp: number
   audio: string
-  duration: number
   subTopicTitle: boolean
   subTopic: string
 }
@@ -130,9 +129,9 @@ const audioPlayer = ref(undefined as unknown as HTMLAudioElement)
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
-const calculateTypingInterval = () => {
+const calculateTypingInterval = (duration: number) => {
   if (typingMessage.value.audio?.length) {
-    const interval = Math.ceil(typingMessage.value?.duration * 1000 / typingMessage.value.message?.length)
+    const interval = Math.ceil(duration * 1000 / typingMessage.value.message?.length)
     typingInterval.value = interval
   }
 }
@@ -174,9 +173,8 @@ const typing = () => {
   if (typingMessage.value.audio?.length) {
     window.clearInterval(typingTicker.value)
     playAudio(typingMessage.value.audio).then((_audioPlayer) => {
-      if (_audioPlayer.duration > 0) typingMessage.value.duration = _audioPlayer.duration
       audioPlayer.value = _audioPlayer
-      calculateTypingInterval()
+      if (_audioPlayer.duration > 0) calculateTypingInterval(_audioPlayer.duration)
       typingTicker.value = window.setInterval(typing, typingInterval.value)
     }).catch((e) => {
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -231,7 +229,7 @@ watch(typingMessage, () => {
   void playAudio(audio)
 })
 
-const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string, duration: number) => {
+const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
   seminar.Seminar.stopThink(participatorId)
 
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
@@ -261,7 +259,6 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     timestamp: Date.now(),
     datetime: t(timestamp.msg, { VALUE: timestamp.value }),
     audio,
-    duration,
     subTopicTitle: false,
     subTopic
   })

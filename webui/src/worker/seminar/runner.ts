@@ -76,7 +76,6 @@ export type ChatResponsePayload = {
     json: Record<string, unknown>
     text: string
     audio: string
-    duration: number
   }
 }
 
@@ -97,16 +96,14 @@ export class SeminarRunner {
     participatorId: number,
     prompt: string,
     content: string,
-    audio: string,
-    duration: number
+    audio: string
   ) => {
     await dbBridge._Message.create(
       seminarId,
       participatorId,
       prompt,
       content,
-      audio,
-      duration
+      audio
     )
   }
 
@@ -255,8 +252,7 @@ export class SeminarRunner {
     if (!prompts.generateAudio || !generateAudio) {
       return {
         text: (textResp.data as Record<string, string>).content,
-        audio: '',
-        duration: 0
+        audio: ''
       }
     }
 
@@ -273,14 +269,12 @@ export class SeminarRunner {
       )
       return {
         text: (textResp.data as Record<string, string>).content,
-        audio: (audioResp.data as Record<string, string>).data,
-        duration: (audioResp.data as Record<string, number>).duration
+        audio: (audioResp.data as Record<string, string>).data
       }
     } catch {
       return {
         text: (textResp.data as Record<string, string>).content,
-        audio: '',
-        duration: 0
+        audio: ''
       }
     }
   }
@@ -346,8 +340,7 @@ export class SeminarRunner {
         prompts.historyMessages?.[prompts.historyMessages.length - 1] ||
           seminar.topic,
         response.text,
-        response.audio,
-        response.duration
+        response.audio
       )
 
       self.postMessage({
