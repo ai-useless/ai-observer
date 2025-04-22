@@ -36,7 +36,7 @@ chute = Chute(
     tagline="Text-to-speech with hexgrad/Kokoro-82M",
     readme="Kokoro is a frontier TTS model for its size of 82 million parameters (text in/audio out).",
     image=image,
-    node_selector=NodeSelector(gpu_count=1, min_vram_gpu_per_gpu=48),
+    node_selector=NodeSelector(gpu_count=1, min_vram_gpu_per_gpu=8),
 )
 
 
@@ -173,16 +173,16 @@ async def initialize(self):
 
     def en_callable(text):
         pipeline_result = next(KPipeline(
-            lang_code='a', 
-            repo_id='hexgrad/Kokoro-82M-v1.1-zh', 
+            lang_code='a',
+            repo_id='hexgrad/Kokoro-82M-v1.1-zh',
             model=self.model
         )(text, voice=self.en_voice))
         return pipeline_result.phonemes
 
     self.zh_pipeline = KPipeline(
-        lang_code='z', 
-        repo_id='hexgrad/Kokoro-82M-v1.1-zh', 
-        model=self.model, 
+        lang_code='z',
+        repo_id='hexgrad/Kokoro-82M-v1.1-zh',
+        model=self.model,
         en_callable=en_callable
     )
     self.voice_packs = {}
@@ -228,3 +228,4 @@ async def speak(self, args: InputArgs) -> Response:
         media_type="audio/wav",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
