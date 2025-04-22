@@ -28,7 +28,8 @@ image = (
     .run_command("cd Kokoro-82M-v1.1-zh; git checkout 01e7505bd6a7a2ac4975463114c3a7650a9f7218")
     .run_command("mv -f Kokoro-82M-v1.1-zh/* /app/")
     .run_command("pip install jieba pypinyin_dict soundfile")
-    .add("utils.py")
+    .add("utils.py", "/app/")
+    .run_command("pip install bs4")
 )
 
 chute = Chute(
@@ -201,17 +202,31 @@ async def initialize(self):
 )
 async def speak(self, args: InputArgs) -> StreamingResponse:
     import soundfile as sf
+    import torch
+    from utils import clean_html_bs, split_text_into_chunks
     """
     Generate SSE audio chunks from input text.
     """
     print(f"args.text={args.text}")
     print(f"args.voice.value={args.voice.value}")
-    print(f"self.voice_packs[args.voice.value]={self.voice_packs[args.voice.value]}")
-    generator = self.zh_pipeline(args.text, voice=self.voice_packs[args.voice.value], speed=1.1)
-    audio_data = next(generator).audio
+    # print(f"self.voice_packs[args.voice.value]={self.voice_packs[args.voice.value]}")
+    cleaned_text = clean_html_bs(args.text)
+    print(f"cleaned_text={cleaned_text}")
+    segments = []
+    text_chunks = split_text_into_chunks(cleaned_text, 128)
+    for i, chunk in enumerate(text_chunks, 1):
+        print(f"Processing the {i} chunk: {chunk}")
+        generator = self.zh_pipeline(chunk, voice=self.voice_packs[args.voice.value], speed=1.1)
+        try:
+            audio_segment = next(generator).audio
+            segments.append(audio_segment)
+        except StopIteration:
+            break
+
     buffer = BytesIO()
-    
-    sf.write(buffer, audio_data, 24000, format='WAV', subtype='PCM_16')
+    if segments:
+        final_audio = torch.cat(segments, dim=0)
+        sf.write(buffer, final_audio, 24000, format='WAV', subtype='PCM_16')
 
     buffer.seek(0)
     filename = f"{str(uuid.uuid4())}.wav"
