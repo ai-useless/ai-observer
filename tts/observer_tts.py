@@ -22,7 +22,7 @@ image = (
     .run_command("pip install phonemizer-fork")
     .run_command("pip install scipy munch torch transformers kokoro misaki==0.9.4 espeakng_loader==0.2.4")
     .run_command("pip install ordered_set pypinyin cn2an bs4 jieba pypinyin_dict soundfile")
-    .run_command("pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl")
+    .run_command("pip install --no-cache-dir spacy && python -m spacy download en_core_web_sm")
     .run_command("git lfs install")
     .run_command("git clone https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh")
     .run_command("cd Kokoro-82M-v1.1-zh; git checkout 01e7505bd6a7a2ac4975463114c3a7650a9f7218")
