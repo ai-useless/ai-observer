@@ -10,18 +10,19 @@ image = (
     Image(
         username="kikakkz",
         name="observer-tts",
-        tag="0.0.2",
+        tag="0.0.4",
         readme="## Text-to-speech using hexgrade/Kokoro-82M",
     )
     .from_base("parachutes/base-python:3.12.7")
     .set_user("root")
     .run_command("apt update")
     .apt_install(["git-lfs"])
-    .set_user("root")
+    .set_user("chutes")
     .run_command("pip install --upgrade pip")
     .run_command("pip install phonemizer-fork")
     .run_command("pip install scipy munch torch transformers kokoro misaki==0.9.4 espeakng_loader==0.2.4")
     .run_command("pip install ordered_set pypinyin cn2an bs4 jieba pypinyin_dict soundfile")
+    .run_command("pip install --no-cache-dir spacy && python -m spacy download en_core_web_sm")
     .run_command("git lfs install")
     .run_command("git clone https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh")
     .run_command("cd Kokoro-82M-v1.1-zh; git checkout 01e7505bd6a7a2ac4975463114c3a7650a9f7218")
@@ -35,7 +36,7 @@ chute = Chute(
     tagline="Text-to-speech with hexgrad/Kokoro-82M",
     readme="Kokoro is a frontier TTS model for its size of 82 million parameters (text in/audio out).",
     image=image,
-    node_selector=NodeSelector(gpu_count=1, min_vram_gpu_per_gpu=48),
+    node_selector=NodeSelector(gpu_count=1, min_vram_gpu_per_gpu=8),
 )
 
 
@@ -172,16 +173,16 @@ async def initialize(self):
 
     def en_callable(text):
         pipeline_result = next(KPipeline(
-            lang_code='a', 
-            repo_id='hexgrad/Kokoro-82M-v1.1-zh', 
+            lang_code='a',
+            repo_id='hexgrad/Kokoro-82M-v1.1-zh',
             model=self.model
         )(text, voice=self.en_voice))
         return pipeline_result.phonemes
 
     self.zh_pipeline = KPipeline(
-        lang_code='z', 
-        repo_id='hexgrad/Kokoro-82M-v1.1-zh', 
-        model=self.model, 
+        lang_code='z',
+        repo_id='hexgrad/Kokoro-82M-v1.1-zh',
+        model=self.model,
         en_callable=en_callable
     )
     self.voice_packs = {}
@@ -227,3 +228,4 @@ async def speak(self, args: InputArgs) -> StreamingResponse:
         media_type="audio/wav",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
+
