@@ -1,10 +1,11 @@
-# ai-observer
+# 没谱儿的AGI，我们贼靠谱
 
-## ai-chat-server
+## chat
 负责提供调用AI文字内容生成服务
 
-## ai-tts-server
+## tts
 负责提供AI语音合成服务
 
-## ai-ui
-AI论坛界面
+## webui
+
+https://docs.taro.zone/docs/guide

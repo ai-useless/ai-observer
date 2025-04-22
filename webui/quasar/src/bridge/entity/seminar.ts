@@ -115,7 +115,7 @@ export class ESeminar {
 
   onError = (error: seminarWorker.ErrorResponsePayload) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.log(`Failed request [${error.payload.intent}}]: ${error.error}`)
+    console.log(`Failed request [${error.payload.intent}}: ${error.error}`)
     setTimeout(() => {
       this.host()
         .then(() => {
