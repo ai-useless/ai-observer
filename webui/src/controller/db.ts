@@ -45,3 +45,29 @@ export const readAudio = async (cid: string) => {
   return (await audioDatabase(cid).audios.where('cid').equals(cid).first())
     ?.audio
 }
+
+const textDatabase = (cid: string) => {
+  return new Dexie(`Text-${cid}`) as Dexie & {
+    texts: Table<dbModel.Text, 'id'>
+  }
+}
+
+export const saveText = async (text: string) => {
+  const cid = await sha256(text)
+  const database = textDatabase(cid)
+
+  if ((await database.texts.count()) > 0) return cid
+
+  database.version(1).stores({
+    audios: '++id, cid, text'
+  })
+  await database.texts.add({
+    cid,
+    text
+  })
+  return cid
+}
+
+export const readText = async (cid: string) => {
+  return (await textDatabase(cid).texts.where('cid').equals(cid).first())?.text
+}

@@ -243,6 +243,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     messages[messages.length - 1]?.subTopic !== subTopic &&
     messages.findIndex((el) => el.subTopic === subTopic) >= 0
   ) {
+    console.log('Discard message', subTopic, message)
     return
   }
 

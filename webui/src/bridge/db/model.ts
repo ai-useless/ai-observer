@@ -31,7 +31,7 @@ export class _Model {
       hostModel: false
     },
     {
-      name: 'Qwen/Qwen2.5-VL-32B-Instruct',
+      name: 'deepseek-ai/DeepSeek-R1',
       endpoint: 'https://llm.chutes.ai/v1/chat/completions',
       apiKey:
         '***REMOVED***',
@@ -41,7 +41,20 @@ export class _Model {
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
       vendorLogo: chutesLogo,
-      hostModel: false
+      hostModel: true
+    },
+    {
+      name: 'chutesai/Llama-4-Maverick-17B-128E-Instruct-FP8',
+      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
+      apiKey:
+        '***REMOVED***',
+      vendor: 'Chutes',
+      author: 'Meta',
+      authorLogo:
+        'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
+      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
+      vendorLogo: chutesLogo,
+      hostModel: true
     }
   ]
 
