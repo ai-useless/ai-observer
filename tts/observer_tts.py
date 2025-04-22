@@ -1,7 +1,7 @@
 import uuid
 from io import BytesIO
 from enum import Enum
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 from chutes.image import Image
 from chutes.chute import Chute, NodeSelector
@@ -198,7 +198,7 @@ async def initialize(self):
     stream=False,
     output_content_type="audio/wav",
 )
-async def speak(self, args: InputArgs) -> StreamingResponse:
+async def speak(self, args: InputArgs) -> Response:
     import soundfile as sf
     import torch
     from utils import clean_html_bs, split_text_into_chunks
@@ -223,8 +223,8 @@ async def speak(self, args: InputArgs) -> StreamingResponse:
 
     buffer.seek(0)
     filename = f"{str(uuid.uuid4())}.wav"
-    return StreamingResponse(
-        buffer,
+    return Response(
+        content=buffer.getvalue(),
         media_type="audio/wav",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
