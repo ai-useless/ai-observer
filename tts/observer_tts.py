@@ -20,16 +20,13 @@ image = (
     .set_user("root")
     .run_command("pip install --upgrade pip")
     .run_command("pip install phonemizer-fork")
-    .run_command("pip install scipy munch torch transformers kokoro")
-    .run_command("pip install misaki==0.9.4 espeakng_loader==0.2.4")
-    .run_command("pip install ordered_set pypinyin cn2an")
+    .run_command("pip install scipy munch torch transformers kokoro misaki==0.9.4 espeakng_loader==0.2.4")
+    .run_command("pip install ordered_set pypinyin cn2an bs4 jieba pypinyin_dict soundfile")
     .run_command("git lfs install")
     .run_command("git clone https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh")
     .run_command("cd Kokoro-82M-v1.1-zh; git checkout 01e7505bd6a7a2ac4975463114c3a7650a9f7218")
     .run_command("mv -f Kokoro-82M-v1.1-zh/* /app/")
-    .run_command("pip install jieba pypinyin_dict soundfile")
     .add("utils.py", "/app/")
-    .run_command("pip install bs4")
 )
 
 chute = Chute(
@@ -189,8 +186,8 @@ async def initialize(self):
     )
     self.voice_packs = {}
     for voice_id in VoicePack:
-        cur_voice_path = "voices/" + voice_id.value + ".pt"
-        self.voice_packs[voice_id.value] = torch.load(cur_voice_path)
+        voice_path = "voices/" + voice_id.value + ".pt"
+        self.voice_packs[voice_id.value] = torch.load(voice_path)
         _ = self.zh_pipeline("warming up", voice=self.voice_packs[voice_id.value], speed=1.1)
 
 
@@ -207,15 +204,10 @@ async def speak(self, args: InputArgs) -> StreamingResponse:
     """
     Generate SSE audio chunks from input text.
     """
-    print(f"args.text={args.text}")
-    print(f"args.voice.value={args.voice.value}")
-    # print(f"self.voice_packs[args.voice.value]={self.voice_packs[args.voice.value]}")
     cleaned_text = clean_html_bs(args.text)
-    print(f"cleaned_text={cleaned_text}")
     segments = []
     text_chunks = split_text_into_chunks(cleaned_text, 128)
     for i, chunk in enumerate(text_chunks, 1):
-        print(f"Processing the {i} chunk: {chunk}")
         generator = self.zh_pipeline(chunk, voice=self.voice_packs[args.voice.value], speed=1.1)
         try:
             audio_segment = next(generator).audio
