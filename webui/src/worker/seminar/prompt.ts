@@ -87,7 +87,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.AS_HOST,
     (() =>
-      ') 作为主持人，你主要是串联调和嘉宾发言和叙述资料，以及串联讨论环节') as RequirementFunc
+      ') 作为主持人，你主要是串联调和嘉宾发言和叙述资料，以及串联讨论环节。你不可以点名不在场的嘉宾发言。') as RequirementFunc
   ],
   [
     PromptType.DONT_DESCRIBE_PERSONALITY,
@@ -121,7 +121,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.WITHOUT_ABSENT_GUESTS,
-    (() => ') 如果嘉宾及其观点没有出现在本轮讨论，不要邀请他们回答，也不要将其作为在场嘉宾加以分析，但是你可以引用不在场的嘉宾的观点') as RequirementFunc
+    (() =>
+      ') 如果嘉宾及其观点没有出现在本轮讨论，不要邀请他们回答，也不要将其作为在场嘉宾加以分析，但是你可以引用不在场的嘉宾的观点') as RequirementFunc
   ]
 ])
 

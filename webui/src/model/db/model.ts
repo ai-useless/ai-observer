@@ -67,3 +67,9 @@ export interface Audio {
   cid: string
   audio: string
 }
+
+export interface Text {
+  id?: number
+  cid: string
+  text: string
+}

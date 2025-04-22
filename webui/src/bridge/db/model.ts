@@ -31,7 +31,7 @@ export class _Model {
       hostModel: false
     },
     {
-      name: 'Qwen/Qwen2.5-VL-32B-Instruct',
+      name: 'deepseek-ai/DeepSeek-R1',
       endpoint: 'https://llm.chutes.ai/v1/chat/completions',
       apiKey:
         'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
@@ -41,7 +41,20 @@ export class _Model {
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
       vendorLogo: chutesLogo,
-      hostModel: false
+      hostModel: true
+    },
+    {
+      name: 'chutesai/Llama-4-Maverick-17B-128E-Instruct-FP8',
+      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
+      apiKey:
+        'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
+      vendor: 'Chutes',
+      author: 'Meta',
+      authorLogo:
+        'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
+      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
+      vendorLogo: chutesLogo,
+      hostModel: true
     }
   ]
 

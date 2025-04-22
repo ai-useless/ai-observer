@@ -1,4 +1,4 @@
-import { dbSeminar, saveAudio } from 'src/controller'
+import { dbSeminar, saveAudio, saveText } from 'src/controller'
 
 export class _Message {
   static create = async (
@@ -9,6 +9,11 @@ export class _Message {
     audio: string
   ) => {
     const cid = audio.length ? await saveAudio(audio) : ''
+
+    // If prompt and content is long, store its hash
+    if (prompt.length > 32) prompt = await saveText(prompt)
+    if (content.length > 32) content = await saveText(content)
+
     await dbSeminar.messages.add({
       seminarId,
       participatorId,
