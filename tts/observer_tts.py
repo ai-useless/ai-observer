@@ -28,6 +28,7 @@ image = (
     .run_command("cd Kokoro-82M-v1.1-zh; git checkout 01e7505bd6a7a2ac4975463114c3a7650a9f7218")
     .run_command("mv -f Kokoro-82M-v1.1-zh/* /app/")
     .run_command("pip install jieba pypinyin_dict soundfile")
+    .add("utils.py")
 )
 
 chute = Chute(
@@ -203,6 +204,9 @@ async def speak(self, args: InputArgs) -> StreamingResponse:
     """
     Generate SSE audio chunks from input text.
     """
+    print(f"args.text={args.text}")
+    print(f"args.voice.value={args.voice.value}")
+    print(f"self.voice_packs[args.voice.value]={self.voice_packs[args.voice.value]}")
     generator = self.zh_pipeline(args.text, voice=self.voice_packs[args.voice.value], speed=1.1)
     audio_data = next(generator).audio
     buffer = BytesIO()
