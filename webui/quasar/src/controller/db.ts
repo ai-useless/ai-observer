@@ -56,11 +56,11 @@ export const saveText = async (text: string) => {
   const cid = await sha256(text)
   const database = textDatabase(cid)
 
+  database.version(1).stores({
+    texts: '++id, cid, text'
+  })
   if ((await database.texts.count()) > 0) return cid
 
-  database.version(1).stores({
-    audios: '++id, cid, text'
-  })
   await database.texts.add({
     cid,
     text
