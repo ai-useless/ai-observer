@@ -1,6 +1,6 @@
 {
   "name": "agi-view",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "没谱儿的AGI运营的AGI观点栏目",
   "templateInfo": {
@@ -10,7 +10,8 @@
     "framework": "Vue3"
   },
   "scripts": {
-    "build:weapp": "taro build --type weapp",
+    "build:worker": "tsc -p tsconfig.worker.json",
+    "build:weapp": "rm -rf dist/weapp/worker && yarn build:worker && taro build --type weapp",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
     "build:tt": "taro build --type tt",
@@ -38,8 +39,6 @@
     "@tarojs/components": "4.0.12",
     "@tarojs/helper": "4.0.12",
     "@tarojs/plugin-framework-vue3": "4.0.12",
-    "@tarojs/plugin-html": "^4.0.12",
-    "@tarojs/plugin-http": "^4.0.12",
     "@tarojs/plugin-platform-alipay": "4.0.12",
     "@tarojs/plugin-platform-h5": "4.0.12",
     "@tarojs/plugin-platform-jd": "4.0.12",
@@ -50,30 +49,32 @@
     "@tarojs/runtime": "4.0.12",
     "@tarojs/shared": "4.0.12",
     "@tarojs/taro": "4.0.12",
-    "@types/uuid": "^10.0.0",
     "pinia": "^2.0.10",
-    "uuid": "^11.1.0",
+    "taro-axios": "^1.1.1",
     "vue": "^3.2.24"
   },
   "devDependencies": {
     "@babel/core": "^7.8.0",
     "@babel/plugin-proposal-class-properties": "7.14.5",
     "@tarojs/cli": "4.0.12",
-    "@tarojs/vite-runner": "4.0.12",
+    "@tarojs/taro-loader": "4.0.12",
+    "@tarojs/webpack5-runner": "4.0.12",
+    "@types/webpack-env": "^1.13.6",
     "@typescript-eslint/eslint-plugin": "^6.2.0",
     "@typescript-eslint/parser": "^6.2.0",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "@vitejs/plugin-vue-jsx": "^3.0.0",
+    "@vue/babel-plugin-jsx": "^1.0.6",
+    "@vue/compiler-sfc": "^3.0.0",
     "babel-preset-taro": "4.0.12",
+    "css-loader": "3.4.2",
     "eslint": "^8.12.0",
     "eslint-config-taro": "4.0.12",
     "eslint-plugin-vue": "^8.0.0",
     "postcss": "^8.4.18",
-    "sass": "^1.60.0",
+    "style-loader": "1.3.0",
     "stylelint": "^14.4.0",
-    "terser": "^5.16.8",
     "tsconfig-paths-webpack-plugin": "^4.0.1",
     "typescript": "^5.1.0",
-    "vite": "^4.2.0"
+    "vue-loader": "^17.0.0",
+    "webpack": "5.91.0"
   }
 }

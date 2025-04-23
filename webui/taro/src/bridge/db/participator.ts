@@ -1,7 +1,7 @@
 import { dbModel } from '../../model'
 
 export class _Participator {
-  static #participators = [] as dbModel.Participator[]
+  private static _participators = [] as dbModel.Participator[]
 
   static create = (
     seminarUid: string,
@@ -9,8 +9,8 @@ export class _Participator {
     simulatorId: number,
     modelId: number
   ) => {
-    _Participator.#participators.push({
-      id: _Participator.#participators.length,
+    _Participator._participators.push({
+      id: _Participator.participators.length,
       seminarUid,
       role,
       simulatorId,
@@ -19,7 +19,7 @@ export class _Participator {
   }
 
   static participators = (seminarUid: string) => {
-    return _Participator.#participators.filter((el) => el.seminarUid === seminarUid)
+    return _Participator._participators.filter((el) => el.seminarUid === seminarUid)
   }
 
   static guests = (seminarUid: string) => {
@@ -34,12 +34,12 @@ export class _Participator {
     participators: dbModel.Participator[]
   ) => {
     participators.forEach((participator) => {
-      participator.id = _Participator.#participators.length
-      _Participator.#participators.push(participator)
+      participator.id = _Participator._participators.length
+      _Participator._participators.push(participator)
     })
   }
 
   static participator = (id: number) => {
-    return _Participator.#participators[id]
+    return _Participator.participators[id]
   }
 }

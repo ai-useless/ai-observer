@@ -1,7 +1,7 @@
 import { dbModel } from '../../model'
 
 export class _Message {
-  static #messages = [] as dbModel.Message[]
+  private static messages = [] as dbModel.Message[]
 
   static create = (
     seminarId: number,
@@ -10,8 +10,8 @@ export class _Message {
     content: string,
     audio: string
   ) => {
-    _Message.#messages.push({
-      id: _Message.#messages.length,
+    _Message.messages.push({
+      id: _Message.messages.length,
       seminarId,
       participatorId,
       prompt,

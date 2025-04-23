@@ -22,13 +22,12 @@ const onAdd = () => {
   // counter.increment()
 }
 
-onMounted(() => {
-  seminarWorker.SeminarWorker.on(seminarWorker.SeminarEventType.CHAT_REQUEST, (payload) => {
-    console.log(111, payload)
-  })
-  seminarWorker.SeminarWorker.send(seminarWorker.SeminarEventType.CHAT_REQUEST, {
-    intent: seminarWorker.Intent.OUTLINE
+onMounted(async () => {
+  // For we app we cannot request network directly
+  const payload = await seminarWorker.SeminarRunner.handleChatRequest({
+    intent: seminarWorker.Intent.OUTLINE,
   } as seminarWorker.ChatRequestPayload)
+  console.log(111, payload)
 })
 
 </script>

@@ -15,23 +15,23 @@ type OutlineFunc = (json: Record<string, unknown>) => void
 type HistoryMessagesFunc = () => Map<string, string[]>
 
 export class ESeminar {
-  #seminar = undefined as unknown as dbModel.Seminar
-  #onMessage = undefined as unknown as MessageFunc
-  #onThinking = undefined as unknown as ThinkingFunc
-  #onOutline = undefined as unknown as OutlineFunc
-  #historyMessages = undefined as unknown as HistoryMessagesFunc
+  private seminar = undefined as unknown as dbModel.Seminar
+  private onMessage = undefined as unknown as MessageFunc
+  private onThinking = undefined as unknown as ThinkingFunc
+  private onOutline = undefined as unknown as OutlineFunc
+  private historyMessages = undefined as unknown as HistoryMessagesFunc
 
-  #topicMaterial = undefined as unknown as string
-  #subTopics = [] as string[]
-  #concludedSubTopics = new Map<string, boolean>()
+  private topicMaterial = undefined as unknown as string
+  private subTopics = [] as string[]
+  private concludedSubTopics = new Map<string, boolean>()
 
-  #totalTopics = 6
-  #subRound = 0
+  private totalTopics = 6
+  private subRound = 0
   // At least 2 for sub topic start
-  #subRounds = 7
-  #round = 0
-  #canNext = false
-  #lastRoundIsHost = false
+  private subRounds = 7
+  private round = 0
+  private canNext = false
+  private lastRoundIsHost = false
 
   constructor(
     seminar: dbModel.Seminar,
@@ -40,34 +40,34 @@ export class ESeminar {
     onOutline: OutlineFunc,
     historyMessages: HistoryMessagesFunc
   ) {
-    this.#seminar = seminar
-    this.#onMessage = onMessage
-    this.#onThinking = onThinking
-    this.#onOutline = onOutline
-    this.#historyMessages = historyMessages
+    this.seminar = seminar
+    this.onMessage = onMessage
+    this.onThinking = onThinking
+    this.onOutline = onOutline
+    this.historyMessages = historyMessages
   }
 
   participators = async () => {
     return await EParticipator.simulators(
-      await dbBridge._Participator.participators(this.#seminar.uid)
+      await dbBridge._Participator.participators(this.seminar.uid)
     )
   }
 
   host = async () => {
-    return await EParticipator.host(this.#seminar.uid)
+    return await EParticipator.host(this.seminar.uid)
   }
 
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
-    if (message.seminarId !== this.#seminar.id) return
+    if (message.seminarId !== this.seminar.id) return
 
     const { intent, subTopic, participatorId, payload, round, subRound } =
       message
 
     // Outline round
     if (intent === seminarWorker.Intent.OUTLINE) {
-      this.#onOutline(message.payload.json)
-      this.#topicMaterial = message.payload.text
-      this.#subTopics = message.payload.json.titles as string[]
+      this.onOutline(message.payload.json)
+      this.topicMaterial = message.payload.text
+      this.subTopics = message.payload.json.titles as string[]
       void this.startTopic()
     }
     // Start topic round
@@ -75,36 +75,36 @@ export class ESeminar {
       intent === seminarWorker.Intent.START_TOPIC ||
       intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC
     ) {
-      if (this.#subTopics[this.#subTopics.length - 1] === subTopic) {
+      if (this.subTopics[this.subTopics.length - 1] === subTopic) {
         if (intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC) {
-          this.#canNext = false
+          this.canNext = false
           void this.concludeTopic()
         }
       } else {
-        this.#canNext = false
-        this.#lastRoundIsHost = true
+        this.canNext = false
+        this.lastRoundIsHost = true
         void this.startNextSubTopic(subTopic)
-        this.#subRound += 1
+        this.subRound += 1
       }
     }
     if (
       intent === seminarWorker.Intent.START_FIRST_SUBTOPIC ||
       intent === seminarWorker.Intent.START_SUBTOPIC
     ) {
-      this.#canNext = true
+      this.canNext = true
     }
     if (
-      subRound >= this.#subRounds &&
+      subRound >= this.subRounds &&
       intent === seminarWorker.Intent.DISCUSS
     ) {
-      if (!this.#concludedSubTopics.get(subTopic)) {
-        this.#canNext = false
-        this.#concludedSubTopics.set(subTopic, true)
+      if (!this.concludedSubTopics.get(subTopic)) {
+        this.canNext = false
+        this.concludedSubTopics.set(subTopic, true)
         void this.concludeSubTopic(subTopic)
       }
     }
 
-    void this.#onMessage(
+    void this.onMessage(
       subTopic,
       participatorId,
       payload.text,
@@ -131,11 +131,11 @@ export class ESeminar {
   }
 
   shouldNext = () => {
-    return this.#canNext
+    return this.canNext
   }
 
   start = async () => {
-    const { id } = this.#seminar
+    const { id } = this.seminar
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
@@ -156,22 +156,22 @@ export class ESeminar {
         subTopic: undefined as unknown as string,
         participatorId: host.participatorId as number,
         intent: seminarWorker.Intent.OUTLINE,
-        round: this.#round,
-        subRound: this.#subRound,
+        round: this.round,
+        subRound: this.subRound,
         prompts: {
           archetype: await dbBridge._Simulator.archetypeWithId(
             host.simulator?.id as number
           ),
-          rounds: this.#totalTopics
+          rounds: this.totalTopics
         }
       }
     )
 
-    this.#onThinking(host.participatorId as number)
+    this.onThinking(host.participatorId as number)
   }
 
   startTopic = async () => {
-    const { id, uid } = this.#seminar
+    const { id, uid } = this.seminar
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
@@ -186,10 +186,10 @@ export class ESeminar {
         subTopic: undefined as unknown as string,
         participatorId: host.participatorId as number,
         intent: seminarWorker.Intent.START_TOPIC,
-        round: this.#round,
-        subRound: this.#subRound,
+        round: this.round,
+        subRound: this.subRound,
         prompts: {
-          topicMaterial: this.#topicMaterial,
+          topicMaterial: this.topicMaterial,
           generateAudio: true,
           guests: simulators.map(
             (el) => el.simulator.name + ', ' + el.simulator.personality
@@ -201,23 +201,23 @@ export class ESeminar {
       }
     )
 
-    this.#onThinking(host.participatorId as number)
+    this.onThinking(host.participatorId as number)
   }
 
   startNextSubTopic = async (prevSubTopic?: string) => {
-    const { id } = this.#seminar
+    const { id } = this.seminar
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
-    if (!this.#subTopics.length) return
+    if (!this.subTopics.length) return
 
     let index = 0
     if (prevSubTopic?.length) {
       // Here we're not the first topic so we goto next one
-      index = this.#subTopics.findIndex(
+      index = this.subTopics.findIndex(
         (el) => !prevSubTopic || el === prevSubTopic
       )
-      if (index < 0 || index >= this.#subTopics.length - 1) return
+      if (index < 0 || index >= this.subTopics.length - 1) return
       index += 1
     }
 
@@ -225,16 +225,16 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
-        subTopic: this.#subTopics[index],
+        subTopic: this.subTopics[index],
         participatorId: host.participatorId as number,
         intent:
           index === 0
             ? seminarWorker.Intent.START_FIRST_SUBTOPIC
             : seminarWorker.Intent.START_SUBTOPIC,
-        round: this.#round,
-        subRound: this.#subRound,
+        round: this.round,
+        subRound: this.subRound,
         prompts: {
-          topicMaterial: this.#topicMaterial,
+          topicMaterial: this.topicMaterial,
           generateAudio: true,
           archetype: await dbBridge._Simulator.archetypeWithId(
             host.simulator?.id as number
@@ -243,18 +243,18 @@ export class ESeminar {
       }
     )
 
-    this.#onThinking(host.participatorId as number)
+    this.onThinking(host.participatorId as number)
   }
 
   concludeSubTopic = async (subTopic: string) => {
-    const { id } = this.#seminar
+    const { id } = this.seminar
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
 
-    this.#subRound = 0
+    this.subRound = 0
 
-    const historyMessages = this.#historyMessages().get(subTopic) || []
+    const historyMessages = this.historyMessages().get(subTopic) || []
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
@@ -263,10 +263,10 @@ export class ESeminar {
         subTopic,
         participatorId: host.participatorId as number,
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
-        round: this.#round,
-        subRound: this.#subRound,
+        round: this.round,
+        subRound: this.subRound,
         prompts: {
-          topicMaterial: this.#topicMaterial,
+          topicMaterial: this.topicMaterial,
           generateAudio: true,
           historyMessages,
           archetype: await dbBridge._Simulator.archetypeWithId(
@@ -275,17 +275,17 @@ export class ESeminar {
         }
       }
     )
-    this.#onThinking(host.participatorId as number)
+    this.onThinking(host.participatorId as number)
   }
 
   concludeTopic = async () => {
-    const { id } = this.#seminar
+    const { id } = this.seminar
     const host = await this.host()
 
     if (!host) throw new Error('Invalid host')
 
     const historyMessages = [] as string[]
-    this.#historyMessages().forEach((messages) =>
+    this.historyMessages().forEach((messages) =>
       historyMessages.push(...messages)
     )
 
@@ -293,13 +293,13 @@ export class ESeminar {
       seminarWorker.SeminarEventType.CHAT_REQUEST,
       {
         seminarId: id as number,
-        subTopic: this.#subTopics[this.#subTopics.length - 1],
+        subTopic: this.subTopics[this.subTopics.length - 1],
         participatorId: host.participatorId as number,
         intent: seminarWorker.Intent.CONCLUDE,
-        round: this.#round,
-        subRound: this.#subRound,
+        round: this.round,
+        subRound: this.subRound,
         prompts: {
-          topicMaterial: this.#topicMaterial,
+          topicMaterial: this.topicMaterial,
           generateAudio: true,
           historyMessages,
           archetype: await dbBridge._Simulator.archetypeWithId(
@@ -308,7 +308,7 @@ export class ESeminar {
         }
       }
     )
-    this.#onThinking(host.participatorId as number)
+    this.onThinking(host.participatorId as number)
   }
 
   stop = () => {
@@ -324,9 +324,9 @@ export class ESeminar {
 
   nextGuests = async (subTopic: string) => {
     const participators = await this.participators()
-    const { id, topic } = this.#seminar
+    const { id, topic } = this.seminar
 
-    const historyMessages = this.#historyMessages().get(subTopic) || []
+    const historyMessages = this.historyMessages().get(subTopic) || []
 
     const guests = Math.max(Math.ceil(Math.random() * participators.length), 2)
     let speakers = [] as PSimulator[]
@@ -346,9 +346,9 @@ export class ESeminar {
 
     // If we have host in speaker, run host challenge and skip this round
     const host = speakers.find((el) => el.isHost)
-    if (host && !this.#lastRoundIsHost) {
-      this.#onThinking(host.participatorId)
-      this.#lastRoundIsHost = true
+    if (host && !this.lastRoundIsHost) {
+      this.onThinking(host.participatorId)
+      this.lastRoundIsHost = true
 
       seminarWorker.SeminarWorker.send(
         seminarWorker.SeminarEventType.CHAT_REQUEST,
@@ -357,10 +357,10 @@ export class ESeminar {
           subTopic,
           participatorId: host.participatorId,
           intent: seminarWorker.Intent.HOST_CHALLENGE,
-          round: this.#round,
-          subRound: this.#subRound,
+          round: this.round,
+          subRound: this.subRound,
           prompts: {
-            topicMaterial: this.#topicMaterial,
+            topicMaterial: this.topicMaterial,
             generateAudio: true,
             historyMessages,
             archetype: await dbBridge._Simulator.archetypeWithId(
@@ -375,12 +375,12 @@ export class ESeminar {
 
     speakers = speakers.filter((el) => !el.isHost)
 
-    this.#round += 1
-    this.#subRound += 1
-    this.#lastRoundIsHost = false
+    this.round += 1
+    this.subRound += 1
+    this.lastRoundIsHost = false
 
     speakers.forEach((el) => {
-      this.#onThinking(el.participatorId)
+      this.onThinking(el.participatorId)
 
       seminarWorker.SeminarWorker.send(
         seminarWorker.SeminarEventType.CHAT_REQUEST,
@@ -389,8 +389,8 @@ export class ESeminar {
           subTopic,
           participatorId: el.participatorId,
           intent: seminarWorker.Intent.DISCUSS,
-          round: this.#round,
-          subRound: this.#subRound,
+          round: this.round,
+          subRound: this.subRound,
           prompts: {
             hostMessage: topic,
             generateAudio: true,
