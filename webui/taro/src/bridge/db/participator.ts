@@ -40,6 +40,6 @@ export class _Participator {
   }
 
   static participator = (id: number) => {
-    return _Participator.participators[id]
+    return _Participator._participators[id]
   }
 }

@@ -2,13 +2,9 @@
   <View class='row'>
     <q-space />
     <View style='width: 100%; max-width: 960px; max-height: 100%;'>
-      <ScrollView
+      <View
         :style='{ height: chatBoxHeight + "px" }'
         ref='chatBox'
-        :bar-style='{ width: "2px" }'
-        :thumb-style='{ width: "2px" }'
-        @mouseenter='autoScroll = false'
-        @mouseleave='autoScroll = true'
       >
         <View class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}
@@ -66,7 +62,7 @@
           </View>
           <q-resize-observer @resize='onChatBoxResize' />
         </View>
-      </ScrollView>
+      </View>
     </View>
     <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 160px;' :active-topic='activeTopic || ""' />
     <q-space />
@@ -80,7 +76,6 @@ import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
-import { ScrollView } from '@tarojs/components'
 import { View } from '@tarojs/components'
 
 import SimulatorCard from './SimulatorCard.vue'
@@ -91,7 +86,7 @@ const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
-const chatBox = ref<typeof ScrollView>()
+const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const autoScroll = ref(true)
 
@@ -183,7 +178,7 @@ const typing = () => {
 
   displayMessages.value.forEach((el) => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
-    el.datetime = msgs[timestamp.msg](timestamp.value)
+    el.datetime = msgs.default[timestamp.msg](timestamp.value)
   })
 
   displayMessages.value.push({
@@ -256,7 +251,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
     model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
     timestamp: Date.now(),
-    datetime: msgs[timestamp.msg](timestamp.value),
+    datetime: msgs.default[timestamp.msg](timestamp.value),
     audio,
     subTopicTitle: false,
     subTopic
@@ -264,7 +259,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
 
   waitMessages.value = waitMessages.value.map((el) => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
-    return { ...el, datetime: msgs[timestamp.msg](timestamp.value) }
+    return { ...el, datetime: msgs.default[timestamp.msg](timestamp.value) }
   })
 }
 
