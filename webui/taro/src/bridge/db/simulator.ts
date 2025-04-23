@@ -49,11 +49,10 @@ export class _Simulator {
     }
   ] as dbModel.Simulator[]
 
-  static initialize = (simulators: dbModel.Simulator[]) => {
-    simulators.forEach((simulator, index) => {
+  static initialize = () => {
+    _Simulator._simulators.forEach((simulator, index) => {
       simulator.id = index
     })
-    _Simulator._simulators = simulators
   }
 
   static create = (
@@ -96,7 +95,7 @@ export class _Simulator {
     return simulator?.title + simulator?.archetype
   }
 
-  static archetypeWithId = async (simulatorId: number) => {
+  static archetypeWithId = (simulatorId: number) => {
     const simulator = _Simulator._simulators.find((el) => el.id === simulatorId)
     return _Simulator.archetype(simulator)
   }

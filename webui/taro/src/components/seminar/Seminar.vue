@@ -11,13 +11,19 @@
 
 <script setup lang='ts'>
 import { setting } from 'src/localstores'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { View } from '@tarojs/components'
+import { dbBridge } from 'src/bridge'
 
 import ScratchFrame from './ScratchFrame.vue'
 import Conference from './Conference.vue'
 
 const inScratch = computed(() => setting.Setting.inScratch())
+
+onMounted(() => {
+  dbBridge._Simulator.initialize()
+  dbBridge._Model.initialize()
+})
 
 </script>
 

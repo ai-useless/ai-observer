@@ -53,8 +53,8 @@ export class ESeminar {
     )
   }
 
-  host = async () => {
-    return await EParticipator.host(this.seminar.uid)
+  host = () => {
+    return EParticipator.host(this.seminar.uid)
   }
 
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
@@ -119,7 +119,7 @@ export class ESeminar {
 
   start = async () => {
     const { id } = this.seminar
-    const host = await this.host()
+    const host = this.host()
 
     if (!host) throw new Error('Invalid host')
 
@@ -132,7 +132,7 @@ export class ESeminar {
       round: this.round,
       subRound: this.subRound,
       prompts: {
-        archetype: await dbBridge._Simulator.archetypeWithId(
+        archetype: dbBridge._Simulator.archetypeWithId(
           host.simulator?.id as number
         ),
         rounds: this.totalTopics

@@ -127,7 +127,7 @@ export class SeminarRunner {
     return simulator.speakerVoice
   }
 
-  static prompt = async (
+  static prompt = (
     topic: string,
     subTopic: string,
     participatorId: number,
@@ -135,9 +135,9 @@ export class SeminarRunner {
     prompts: Prompts
   ) => {
     const participator =
-      await dbBridge._Participator.participator(participatorId)
+      dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = await dbBridge._Simulator.simulator(
+    const simulator = dbBridge._Simulator.simulator(
       participator?.simulatorId
     )
     if (!simulator) return
@@ -251,13 +251,13 @@ export class SeminarRunner {
     prompts: Prompts
   ) => {
     const participator =
-      await dbBridge._Participator.participator(participatorId)
+      dbBridge._Participator.participator(participatorId)
     if (!participator) return
 
-    const model = await dbBridge._Model.model(participator.modelId)
+    const model = dbBridge._Model.model(participator.modelId)
     if (!model) return
 
-    const prompt = await SeminarRunner.prompt(
+    const prompt = SeminarRunner.prompt(
       topic,
       subTopic,
       participatorId,
@@ -344,7 +344,7 @@ export class SeminarRunner {
       subRound
     } = payload
 
-    const seminar = await dbBridge._Seminar.seminar(undefined, seminarId)
+    const seminar = dbBridge._Seminar.seminar(undefined, seminarId)
     if (!seminar) return
 
     const response = await SeminarRunner.requestParticipatorChat(
