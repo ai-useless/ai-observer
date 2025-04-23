@@ -153,7 +153,9 @@ const typing = () => {
     if (!_subTopic && typingMessage.value.subTopic) {
       _subTopic = typingMessage.value.subTopic
     }
-    void eSeminar.value.nextGuests(_subTopic)
+    setTimeout(() => {
+      void eSeminar.value.nextGuests(_subTopic)
+    }, 100)
     requesting.value = true
   }
 
@@ -289,7 +291,7 @@ onMounted(async () => {
   })
 
   if (!_uid.value) return
-  _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
+  _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
   await eSeminar.value.start()
@@ -303,10 +305,5 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped lang='sass'>
-::v-deep .q-markdown
-  pre
-    white-space: pre-wrap
-    word-wrap: break-word
-    background: none
+<style lang='sass'>
 </style>
