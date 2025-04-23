@@ -18,27 +18,18 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     sourceRoot: 'src',
     outputRoot: `dist/${process.env.TARO_ENV}`,
     plugins: [],
-    defineConstants: {
-    },
+    defineConstants: {},
     babel: {
       sourceMap: true,
-      presets: [
-        ['env', { modules: false }],
-        'typescript',
-        'react'
-      ],
-      plugins: [
-        'transform-class-properties',
-        'transform-decorators-legacy'
-      ]
+      presets: [['env', { modules: false }], 'typescript', 'react'],
+      plugins: ['transform-class-properties', 'transform-decorators-legacy']
     },
     copy: {
       patterns: [
         { from: 'src/assets', to: `dist/${process.env.TARO_ENV}/assets` },
         { from: 'dist/worker/src', to: `dist/${process.env.TARO_ENV}/worker` }
       ],
-      options: {
-      }
+      options: {}
     },
     framework: 'vue3',
     compiler: {
@@ -56,9 +47,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
       postcss: {
         pxtransform: {
           enable: true,
-          config: {
-
-          }
+          config: {}
         },
         cssModules: {
           enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
@@ -105,7 +94,7 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
       appName: 'taroDemo',
       postcss: {
         cssModules: {
-          enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
+          enable: false // 默认为 false，如需使用 css modules 功能，则设为 true
         }
       }
     }

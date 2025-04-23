@@ -18,8 +18,8 @@ export class _Seminar {
       participators.push({
         seminarUid: _uid,
         role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
-        simulatorId: simulator?.id || 0,
-        modelId: model?.id || 0
+        simulatorId: simulator.id as number,
+        modelId: model.id as number
       })
     }
 
@@ -34,11 +34,10 @@ export class _Seminar {
   }
 
   static seminar = (_uid?: string, id?: number) => {
-    return _Seminar.seminars
-      .find((el) => {
-        if (_uid !== undefined) return el.uid === _uid
-        if (id !== undefined) return el.id === id
-        return false
-      })
+    return _Seminar.seminars.find((el) => {
+      if (_uid !== undefined) return el.uid === _uid
+      if (id !== undefined) return el.id === id
+      return false
+    })
   }
 }

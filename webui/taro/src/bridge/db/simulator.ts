@@ -81,7 +81,9 @@ export class _Simulator {
   }
 
   static randomPeek = (host?: boolean) => {
-    const simulators = _Simulator._simulators.filter((el) => !host || el.host === host)
+    const simulators = _Simulator._simulators.filter(
+      (el) => !host || el.host === host
+    )
     const index = Math.floor(Math.random() * simulators.length)
     return simulators[index]
   }
@@ -92,7 +94,7 @@ export class _Simulator {
 
   static archetype = (simulator?: dbModel.Simulator) => {
     if (!simulator) return '朝阳区热心群众'
-    return simulator?.title + simulator?.archetype
+    return simulator.title + simulator.archetype
   }
 
   static archetypeWithId = (simulatorId: number) => {

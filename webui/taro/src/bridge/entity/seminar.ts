@@ -47,9 +47,9 @@ export class ESeminar {
     this.historyMessages = historyMessages
   }
 
-  participators = async () => {
-    return await EParticipator.simulators(
-      await dbBridge._Participator.participators(this.seminar.uid)
+  participators = () => {
+    return EParticipator.simulators(
+      dbBridge._Participator.participators(this.seminar.uid)
     )
   }
 
@@ -67,7 +67,8 @@ export class ESeminar {
     if (intent === seminarWorker.Intent.OUTLINE) {
       this.onOutline(message.payload.json as Record<string, unknown>)
       this.topicMaterial = message.payload.text
-      this.subTopics = (message.payload.json as Record<string, unknown>).titles as string[]
+      this.subTopics = (message.payload.json as Record<string, unknown>)
+        .titles as string[]
       void this.startTopic()
     }
     // Start topic round
@@ -93,10 +94,7 @@ export class ESeminar {
     ) {
       this.canNext = true
     }
-    if (
-      subRound >= this.subRounds &&
-      intent === seminarWorker.Intent.DISCUSS
-    ) {
+    if (subRound >= this.subRounds && intent === seminarWorker.Intent.DISCUSS) {
       if (!this.concludedSubTopics.get(subTopic)) {
         this.canNext = false
         this.concludedSubTopics.set(subTopic, true)
@@ -133,7 +131,7 @@ export class ESeminar {
       subRound: this.subRound,
       prompts: {
         archetype: dbBridge._Simulator.archetypeWithId(
-          host.simulator?.id as number
+          host.simulator.id as number
         ),
         rounds: this.totalTopics
       }
@@ -143,12 +141,12 @@ export class ESeminar {
 
   startTopic = async () => {
     const { id, uid } = this.seminar
-    const host = await this.host()
+    const host = this.host()
 
     if (!host) throw new Error('Invalid host')
 
-    const participators = await dbBridge._Participator.guests(uid)
-    const simulators = await EParticipator.simulators(participators)
+    const participators = dbBridge._Participator.guests(uid)
+    const simulators = EParticipator.simulators(participators)
 
     this.onThinking(host.participatorId as number)
     const payload = await seminarWorker.SeminarRunner.handleChatRequest({
@@ -164,8 +162,8 @@ export class ESeminar {
         guests: simulators.map(
           (el) => el.simulator.name + ', ' + el.simulator.personality
         ),
-        archetype: await dbBridge._Simulator.archetypeWithId(
-          host.simulator?.id as number
+        archetype: dbBridge._Simulator.archetypeWithId(
+          host.simulator.id as number
         )
       }
     })
@@ -174,13 +172,13 @@ export class ESeminar {
 
   startNextSubTopic = async (prevSubTopic?: string) => {
     const { id } = this.seminar
-    const host = await this.host()
+    const host = this.host()
 
     if (!host) throw new Error('Invalid host')
     if (!this.subTopics.length) return
 
     let index = 0
-    if (prevSubTopic?.length) {
+    if (prevSubTopic && prevSubTopic.length) {
       // Here we're not the first topic so we goto next one
       index = this.subTopics.findIndex(
         (el) => !prevSubTopic || el === prevSubTopic
@@ -203,8 +201,8 @@ export class ESeminar {
       prompts: {
         topicMaterial: this.topicMaterial,
         generateAudio: true,
-        archetype: await dbBridge._Simulator.archetypeWithId(
-          host.simulator?.id as number
+        archetype: dbBridge._Simulator.archetypeWithId(
+          host.simulator.id as number
         )
       }
     })
@@ -234,7 +232,7 @@ export class ESeminar {
         generateAudio: true,
         historyMessages,
         archetype: await dbBridge._Simulator.archetypeWithId(
-          host.simulator?.id as number
+          host.simulator.id as number
         )
       }
     })
@@ -243,7 +241,7 @@ export class ESeminar {
 
   concludeTopic = async () => {
     const { id } = this.seminar
-    const host = await this.host()
+    const host = this.host()
 
     if (!host) throw new Error('Invalid host')
 
@@ -264,8 +262,8 @@ export class ESeminar {
         topicMaterial: this.topicMaterial,
         generateAudio: true,
         historyMessages,
-        archetype: await dbBridge._Simulator.archetypeWithId(
-          host.simulator?.id as number
+        archetype: dbBridge._Simulator.archetypeWithId(
+          host.simulator.id as number
         )
       }
     })
@@ -275,7 +273,7 @@ export class ESeminar {
   stop = () => {}
 
   nextGuests = async (subTopic: string) => {
-    const participators = await this.participators()
+    const participators = this.participators()
     const { id, topic } = this.seminar
 
     const historyMessages = this.historyMessages().get(subTopic) || []
@@ -313,8 +311,8 @@ export class ESeminar {
           topicMaterial: this.topicMaterial,
           generateAudio: true,
           historyMessages,
-          archetype: await dbBridge._Simulator.archetypeWithId(
-            host.simulator?.id as number
+          archetype: dbBridge._Simulator.archetypeWithId(
+            host.simulator.id as number
           )
         }
       })

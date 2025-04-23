@@ -23,9 +23,10 @@ export class EParticipator {
 
   static host = (seminarUid: string) => {
     const host = _Participator.host(seminarUid)
+    if (!host) return
     return {
-      participatorId: host?.id,
-      simulator: _Simulator.simulator(host?.simulatorId as number),
+      participatorId: host.id,
+      simulator: _Simulator.simulator(host.simulatorId as number),
       isHost: true
     }
   }

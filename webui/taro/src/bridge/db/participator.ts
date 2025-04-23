@@ -19,15 +19,21 @@ export class _Participator {
   }
 
   static participators = (seminarUid: string) => {
-    return _Participator._participators.filter((el) => el.seminarUid === seminarUid)
+    return _Participator._participators.filter(
+      (el) => el.seminarUid === seminarUid
+    )
   }
 
   static guests = (seminarUid: string) => {
-    return _Participator.participators(seminarUid).filter((el) => el.role = dbModel.Role.GUEST)
+    return _Participator
+      .participators(seminarUid)
+      .filter((el) => (el.role = dbModel.Role.GUEST))
   }
 
   static host = (seminarUid: string) => {
-    return _Participator.participators(seminarUid).find((el) => el.role = dbModel.Role.HOST)
+    return _Participator
+      .participators(seminarUid)
+      .find((el) => (el.role = dbModel.Role.HOST))
   }
 
   static createParticipators = async (

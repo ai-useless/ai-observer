@@ -136,5 +136,3 @@ module.exports = {
     curly: 'off'
   }
 }
-
-
