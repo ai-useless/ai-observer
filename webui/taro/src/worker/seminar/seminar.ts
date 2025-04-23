@@ -27,7 +27,9 @@ export class SeminarWorker {
 
     this._worker.onMessage((payload: Taro.Worker.OnMessageCallbackResult) => {
       const event = payload.message as SeminarEvent
-      this._listeners.get(event.type)?.forEach((f) => {
+      const listeners = this._listeners.get(event.type)
+      if (!listeners) return
+      listeners.forEach((f) => {
         f(event.payload as SeminarResponseType)
       })
     })
@@ -43,21 +45,25 @@ export class SeminarWorker {
     type: SeminarEventType,
     payload?: ChatRequestPayload
   ) => {
-    SeminarWorker.getSeminarWorker()._worker?.postMessage({
+    const worker = SeminarWorker.getSeminarWorker()._worker
+    if (!worker) return
+    worker.postMessage({
       type,
       payload
     })
   }
 
   public static on = (type: SeminarEventType, listener: ListenerFunc) => {
-    const listeners = SeminarWorker.getSeminarWorker()._listeners.get(type) || []
+    const listeners =
+      SeminarWorker.getSeminarWorker()._listeners.get(type) || []
     listeners.push(listener)
     SeminarWorker.getSeminarWorker()._listeners.set(type, listeners)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static off = (type: SeminarEventType, listener: ListenerFunc) => {
-    const listeners = SeminarWorker.getSeminarWorker()._listeners.get(type) || []
+    const listeners =
+      SeminarWorker.getSeminarWorker()._listeners.get(type) || []
     const index = listeners.findIndex((el) => el === listener)
     if (index < 0) return
     listeners.splice(index, 1)
@@ -65,6 +71,8 @@ export class SeminarWorker {
   }
 
   public static terminate = () => {
-    SeminarWorker.getSeminarWorker()._worker?.terminate()
+    const worker = SeminarWorker.getSeminarWorker()._worker
+    if (!worker) return
+    worker.terminate()
   }
 }

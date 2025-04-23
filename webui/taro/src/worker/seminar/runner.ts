@@ -116,12 +116,9 @@ export class SeminarRunner {
   }
 
   static speakerVoice = async (participatorId: number) => {
-    const participator =
-      await dbBridge._Participator.participator(participatorId)
+    const participator = dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = await dbBridge._Simulator.simulator(
-      participator?.simulatorId
-    )
+    const simulator = dbBridge._Simulator.simulator(participator.simulatorId)
     if (!simulator) return
 
     return simulator.speakerVoice
@@ -134,12 +131,9 @@ export class SeminarRunner {
     intent: Intent,
     prompts: Prompts
   ) => {
-    const participator =
-      dbBridge._Participator.participator(participatorId)
+    const participator = dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = dbBridge._Simulator.simulator(
-      participator?.simulatorId
-    )
+    const simulator = dbBridge._Simulator.simulator(participator.simulatorId)
     if (!simulator) return
 
     switch (intent) {
@@ -250,8 +244,7 @@ export class SeminarRunner {
     intent: Intent,
     prompts: Prompts
   ) => {
-    const participator =
-      dbBridge._Participator.participator(participatorId)
+    const participator = dbBridge._Participator.participator(participatorId)
     if (!participator) return
 
     const model = dbBridge._Model.model(participator.modelId)
@@ -333,7 +326,9 @@ export class SeminarRunner {
     return Prompt.postProcess(intent, _response.text)
   }
 
-  static handleChatRequest = async (payload: ChatRequestPayload): Promise<ChatResponsePayload | undefined> => {
+  static handleChatRequest = async (
+    payload: ChatRequestPayload
+  ): Promise<ChatResponsePayload | undefined> => {
     const {
       seminarId,
       participatorId,
@@ -348,7 +343,7 @@ export class SeminarRunner {
     if (!seminar) return
 
     const response = await SeminarRunner.requestParticipatorChat(
-      seminar?.topic,
+      seminar.topic,
       subTopic,
       participatorId,
       intent,
@@ -357,7 +352,7 @@ export class SeminarRunner {
     if (!response) return
 
     const json = await SeminarRunner.postProcess(
-      seminar?.topic,
+      seminar.topic,
       subTopic,
       participatorId,
       intent,
@@ -365,11 +360,16 @@ export class SeminarRunner {
     )
     if (json) json.topic = seminar.topic
 
+    let promptMessage = seminar.topic
+    if (prompts.historyMessages && prompts.historyMessages.length) {
+      promptMessage =
+        prompts.historyMessages[prompts.historyMessages.length - 1]
+    }
+
     await SeminarRunner.saveMessage(
       seminarId,
       participatorId,
-      prompts.historyMessages?.[prompts.historyMessages.length - 1] ||
-        seminar.topic,
+      promptMessage,
       response.text,
       response.audio
     )

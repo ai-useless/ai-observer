@@ -281,13 +281,16 @@ const intentRequirements = (
   intent: Intent,
   ...args: (string | number | string[])[]
 ) => {
+  const requirements = IntentRequirements.get(intent)
+  if (!requirements) throw Error('Invalid intent')
   return (
-    IntentRequirements.get(intent)
-      ?.map(
-        (el, index) =>
-          index.toString() + (Requirements.get(el)?.(...args) || '')
-      )
-      ?.join(' ') || ''
+    requirements
+      .map((el, index) => {
+        const _requirement = Requirements.get(el)
+        if (!_requirement) throw Error('Invalid requirement')
+        index.toString() + (_requirement(...args) || '')
+      })
+      .join(' ') || ''
   )
 }
 
@@ -406,7 +409,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
 export class Prompt {
   static prompt = (intent: Intent, ...args: (string | number | string[])[]) => {
     const _args = [...args]
-    return IntentPrompt.get(intent)?.(..._args)
+    const intentPrompt = IntentPrompt.get(intent)
+    if (!intentPrompt) throw Error('Invalid intent')
+    return intentPrompt(..._args)
   }
 
   static postProcess = (

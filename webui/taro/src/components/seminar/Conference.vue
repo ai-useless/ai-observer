@@ -90,8 +90,9 @@ const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const autoScroll = ref(true)
 
-const topic = computed(() => _seminar.value?.topic)
-const host = computed(() => simulators.value.find((el) => el.participatorId === participators.value.find((el) => el.role === dbModel.Role.HOST)?.id))
+const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
+const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
+const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
 interface Message {
@@ -123,8 +124,8 @@ const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
 const calculateTypingInterval = (duration: number) => {
-  if (typingMessage.value.audio?.length) {
-    const interval = Math.ceil(duration * 1000 / typingMessage.value.message?.length)
+  if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
+    const interval = Math.ceil(duration * 1000 / typingMessage.value.message.length)
     typingInterval.value = interval
   }
 }
@@ -135,7 +136,7 @@ const typing = () => {
   // If we have a message in typing, finish it
   if (typingMessage.value && typingIndex.value < typingMessage.value.message.length) {
     const matches = typingMessage.value.message.slice(typingIndex.value).match(/<[^>]+>/) || []
-    const appendLen = matches[0]?.length || 1
+    const appendLen = matches[0] ? matches[0].length : 1
     displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value + appendLen)
     typingIndex.value += appendLen
     return
@@ -150,20 +151,27 @@ const typing = () => {
   waitMessages.value = waitMessages.value.slice(1)
 
   seminar.Seminar.speak(typingMessage.value.participator.id as number)
-  if (typingMessage.value?.subTopic !== activeTopic.value) {
+  if (typingMessage.value.subTopic !== activeTopic.value) {
     displayMessages.value.push({
       ...typingMessage.value,
       subTopicTitle: true
     })
-    activeTopic.value = typingMessage.value?.subTopic
+    activeTopic.value = typingMessage.value.subTopic
   }
 
   if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
-    void eSeminar.value.nextGuests(lastTopic.value || waitMessages.value[0]?.subTopic || typingMessage.value.subTopic)
+    let _subTopic = lastTopic.value
+    if (!_subTopic && waitMessages.value[waitMessages.value.length - 1]) {
+      _subTopic = waitMessages.value[waitMessages.value.length - 1].subTopic
+    }
+    if (!_subTopic && typingMessage.value.subTopic) {
+      _subTopic = typingMessage.value.subTopic
+    }
+    void eSeminar.value.nextGuests(_subTopic)
     requesting.value = true
   }
 
-  if (typingMessage.value.audio?.length) {
+  if (typingMessage.value.audio && typingMessage.value.audio.length) {
     window.clearInterval(typingTicker.value)
     playAudio(typingMessage.value.audio).then((_audioPlayer) => {
       audioPlayer.value = _audioPlayer
@@ -217,7 +225,7 @@ watch(participators, () => {
 })
 
 watch(typingMessage, () => {
-  if (!typingMessage.value.audio?.length) return
+  if (!typingMessage.value.audio || !typingMessage.value.audio.length) return
   const audio = typingMessage.value.audio
   void playAudio(audio)
 })
@@ -225,7 +233,7 @@ watch(typingMessage, () => {
 const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
   seminar.Seminar.stopThink(participatorId)
 
-  const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
+  const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
   requesting.value = false
@@ -234,7 +242,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   const messages = [...(typingMessage.value ? [typingMessage.value] : []), ...displayMessages.value, ...waitMessages.value]
   if (
     messages.length &&
-    messages[messages.length - 1]?.subTopic !== subTopic &&
+    messages[messages.length - 1].subTopic !== subTopic &&
     messages.findIndex((el) => el.subTopic === subTopic) >= 0
   ) {
     console.log('Discard message', subTopic, message)
@@ -248,8 +256,8 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     round,
     message,
     participator,
-    simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
-    model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
+    simulator: dbBridge._Simulator.simulator(participator.simulatorId) as dbModel.Simulator,
+    model: dbBridge._Model.model(participator.modelId) as dbModel.Model,
     timestamp: Date.now(),
     datetime: msgs.default[timestamp.msg](timestamp.value),
     audio,
@@ -272,7 +280,7 @@ const onOutline = (json: Record<string, unknown>) => {
 }
 
 const onChatBoxResize = (size: { height: number }) => {
-  if (autoScroll.value) chatBox.value?.setScrollPosition('vertical', size.height, 300)
+  if (autoScroll.value && chatBox.value) chatBox.value.setScrollPosition('vertical', size.height, 300)
 }
 
 const historyMessages = (): Map<string, string[]> => {
@@ -305,7 +313,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  eSeminar.value?.stop()
+  if (eSeminar.value) eSeminar.value.stop()
   if (typingTicker.value) window.clearInterval(typingTicker.value)
 })
 </script>

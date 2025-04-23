@@ -90,9 +90,8 @@ export class _Model {
   static randomPeek = (hostModel?: boolean) => {
     const count = _Model.models.length
     const index = Math.floor(Math.random() * count)
-    return (
-      _Model.models
-        .filter((op) => hostModel === undefined || op.hostModel === hostModel)
+    return _Model.models.filter(
+      (op) => hostModel === undefined || op.hostModel === hostModel
     )[index]
   }
 

@@ -1,7 +1,5 @@
 export default {
-  pages: [
-    'pages/index/IndexPage'
-  ],
+  pages: ['pages/index/IndexPage'],
   workers: 'worker',
   window: {
     backgroundTextStyle: 'light',
