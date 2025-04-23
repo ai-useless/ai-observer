@@ -40,7 +40,9 @@
             <Image :src='message.model.modelLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
             <View> | {{ message.simulator.personality }}</View>
           </View>
-          <View v-html='message.message' style='line-height: 1.5em;' />
+          <View style='line-height: 1.5em;'>
+            {{ message.message }}
+          </View>
         </View>
         <View v-else style='font-size: 24px; margin: 64px 0; font-weight: 600;'>
           {{ message.subTopic }}
