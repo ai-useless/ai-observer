@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <View>
     <q-fab
       color='red-8'
       vertical-actions-align='left'
@@ -23,13 +23,13 @@
         <q-icon :name='inScratch ? "bi-hourglass-split" : "bi-chevron-up"' size='16px' />
       </template>
       <template #label>
-        <div class='row'>
+        <View class='row'>
           <span>{{ label }}</span>
           <q-icon name='bi-person-circle' style='margin-left: 8px;' />
-        </div>
+        </View>
       </template>
     </q-fab>
-  </div>
+  </View>
 </template>
 
 <script setup lang='ts'>
@@ -37,6 +37,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { setting, seminar } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { dbModel } from 'src/model'
+import { View } from '@tarojs/components'
 
 import SimulatorCard from './SimulatorCard.vue'
 

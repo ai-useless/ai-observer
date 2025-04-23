@@ -1,17 +1,18 @@
 <template>
-  <q-page :class='[ "flex justify-center", inScratch ? "items-center" : "" ]'>
-    <div v-if='inScratch' style='padding-bottom: 64px;'>
+  <View>
+    <View v-if='inScratch' style='padding-bottom: 64px;'>
       <ScratchFrame />
-    </div>
-    <div v-else style='width: 100%;'>
+    </View>
+    <View v-else style='width: 100%;'>
       <Conference />
-    </div>
-  </q-page>
+    </View>
+  </View>
 </template>
 
 <script setup lang='ts'>
 import { setting } from 'src/localstores'
 import { computed } from 'vue'
+import { View } from '@tarojs/components'
 
 import ScratchFrame from './ScratchFrame.vue'
 import Conference from './Conference.vue'

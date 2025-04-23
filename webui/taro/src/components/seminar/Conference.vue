@@ -1,7 +1,7 @@
 <template>
-  <div class='row'>
+  <View class='row'>
     <q-space />
-    <div style='width: 100%; max-width: 960px; max-height: 100%;'>
+    <View style='width: 100%; max-width: 960px; max-height: 100%;'>
       <ScrollView
         :style='{ height: chatBoxHeight + "px" }'
         ref='chatBox'
@@ -10,12 +10,12 @@
         @mouseenter='autoScroll = false'
         @mouseleave='autoScroll = true'
       >
-        <div class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
+        <View class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}
-        </div>
-        <div class='row' style='transition: 500ms;'>
+        </View>
+        <View class='row' style='transition: 500ms;'>
           <simulator-card v-if='host' :simulator='host.simulator' :small='false' :is-host='true' />
-          <div class='flex justify-end items-end' style='margin-left: 24px;'>
+          <View class='flex justify-end items-end' style='margin-left: 24px;'>
             <simulator-card
               :style='{marginLeft: index === 0 ? "0" : "16px"}'
               v-for='(guest, index) in guests'
@@ -24,19 +24,19 @@
               :key='index'
               :is-host='false'
             />
-          </div>
-        </div>
+          </View>
+        </View>
         <q-separator style='margin-top: 16px' />
-        <div
+        <View
           v-if='!displayMessages.length'
           style='margin-top: 16px; font-size: 20px'
           class='text-center text-grey-8'
         >
           <q-spinner-facebook class='text-red-4' size='128px' />
-          <div>最靠谱的AGI观点栏目主持人正在准备台本，请大家耐心等待。</div>
-        </div>
-        <div v-else style='margin-top: 16px;'>
-          <div v-for='(message, index) in displayMessages' :key='index'>
+          <View>最靠谱的AGI观点栏目主持人正在准备台本，请大家耐心等待。</View>
+        </View>
+        <View v-else style='margin-top: 16px;'>
+          <View v-for='(message, index) in displayMessages' :key='index'>
             <q-chat-message
               v-if='!message.subTopicTitle'
               :key='index'
@@ -48,29 +48,29 @@
               bg-color='grey-2'
             >
               <template #name>
-                <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
-                  <div>
+                <View style='padding-bottom: 4px; line-height: 24px;' class='row'>
+                  <View>
                     {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
-                  </div>
+                  </View>
                   <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
                   <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
                   <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <div> | {{ message.simulator.personality }}</div>
-                </div>
+                  <View> | {{ message.simulator.personality }}</View>
+                </View>
               </template>
-              <div v-html='message.message' style='line-height: 1.5em;' />
+              <View v-html='message.message' style='line-height: 1.5em;' />
             </q-chat-message>
-            <div v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 64px 0'>
+            <View v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 64px 0'>
               {{ message.subTopic }}
-            </div>
-          </div>
+            </View>
+          </View>
           <q-resize-observer @resize='onChatBoxResize' />
-        </div>
+        </View>
       </ScrollView>
-    </div>
+    </View>
     <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 160px;' :active-topic='activeTopic || ""' />
     <q-space />
-  </div>
+  </View>
 </template>
 
 <script setup lang='ts'>
@@ -81,6 +81,7 @@ import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
 import { ScrollView } from '@tarojs/components'
+import { View } from '@tarojs/components'
 
 import SimulatorCard from './SimulatorCard.vue'
 import Outline from './Outline.vue'
@@ -207,17 +208,17 @@ const playAudio = async (base64Data: string) => {
   return audioPlayer
 }
 
-watch(_uid, async () => {
+watch(_uid, () => {
   if (!_uid.value) return
-  _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
+  _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 })
 
-watch(_seminar, async () => {
-  participators.value = await dbBridge._Participator.participators(_seminar.value.uid)
+watch(_seminar, () => {
+  participators.value = dbBridge._Participator.participators(_seminar.value.uid)
 })
 
-watch(participators, async () => {
-  simulators.value = await entityBridge.EParticipator.simulators(participators.value)
+watch(participators, () => {
+  simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
 watch(typingMessage, () => {
