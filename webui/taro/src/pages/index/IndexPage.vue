@@ -1,10 +1,10 @@
 <template>
   <view class="index">
-    <CounterVue />
+    <Seminar />
   </view>
 </template>
 
 <script setup lang='ts'>
-import './index.scss'
-import CounterVue from '../../components/CounterVue.vue'
+import './index.sass'
+import Seminar from '../../components/seminar/Seminar.vue'
 </script>
