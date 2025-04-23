@@ -81,7 +81,7 @@ export type ChatResponsePayload = {
   round: number
   subRound: number
   payload: {
-    json: Record<string, unknown>
+    json: Record<string, unknown> | undefined
     text: string
     audio: string
   }
@@ -333,7 +333,7 @@ export class SeminarRunner {
     return Prompt.postProcess(intent, _response.text)
   }
 
-  static handleChatRequest = async (payload: ChatRequestPayload) => {
+  static handleChatRequest = async (payload: ChatRequestPayload): Promise<ChatResponsePayload | undefined> => {
     const {
       seminarId,
       participatorId,
@@ -347,71 +347,44 @@ export class SeminarRunner {
     const seminar = await dbBridge._Seminar.seminar(undefined, seminarId)
     if (!seminar) return
 
-    try {
-      const response = await SeminarRunner.requestParticipatorChat(
-        seminar?.topic,
-        subTopic,
-        participatorId,
-        intent,
-        prompts
-      )
-      if (!response) return
+    const response = await SeminarRunner.requestParticipatorChat(
+      seminar?.topic,
+      subTopic,
+      participatorId,
+      intent,
+      prompts
+    )
+    if (!response) return
 
-      const json = await SeminarRunner.postProcess(
-        seminar?.topic,
-        subTopic,
-        participatorId,
-        intent,
-        response.text
-      )
-      if (json) json.topic = seminar.topic
+    const json = await SeminarRunner.postProcess(
+      seminar?.topic,
+      subTopic,
+      participatorId,
+      intent,
+      response.text
+    )
+    if (json) json.topic = seminar.topic
 
-      await SeminarRunner.saveMessage(
-        seminarId,
-        participatorId,
-        prompts.historyMessages?.[prompts.historyMessages.length - 1] ||
-          seminar.topic,
-        response.text,
-        response.audio
-      )
+    await SeminarRunner.saveMessage(
+      seminarId,
+      participatorId,
+      prompts.historyMessages?.[prompts.historyMessages.length - 1] ||
+        seminar.topic,
+      response.text,
+      response.audio
+    )
 
-      self.postMessage({
-        type: SeminarEventType.CHAT_RESPONSE,
-        payload: {
-          seminarId,
-          subTopic,
-          intent,
-          participatorId,
-          round,
-          subRound,
-          payload: {
-            ...response,
-            json
-          }
-        }
-      })
-
-      return {
-        seminarId,
-        subTopic,
-        intent,
-        participatorId,
-        round,
-        subRound,
-        payload: {
-          ...response,
-          json
-        }
+    return {
+      seminarId,
+      subTopic,
+      intent,
+      participatorId,
+      round,
+      subRound,
+      payload: {
+        ...response,
+        json
       }
-    } catch (e) {
-      self.postMessage({
-        type: SeminarEventType.ERROR,
-        payload: {
-          error: JSON.stringify(e),
-          type: SeminarEventType.CHAT_REQUEST,
-          payload
-        }
-      })
     }
   }
 }
