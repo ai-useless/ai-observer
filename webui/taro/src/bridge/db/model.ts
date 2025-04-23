@@ -88,11 +88,12 @@ export class _Model {
   }
 
   static randomPeek = (hostModel?: boolean) => {
-    const count = _Model.models.length
-    const index = Math.floor(Math.random() * count)
-    return _Model.models.filter(
+    const models = _Model.models.filter(
       (op) => hostModel === undefined || op.hostModel === hostModel
-    )[index]
+    )
+    const count = models.length
+    const index = Math.floor(Math.random() * count)
+    return models[index]
   }
 
   static model = (id: number) => {
