@@ -1,71 +1,52 @@
 <template>
-  <View class='row'>
-    <q-space />
-    <View style='width: 100%; max-width: 960px; max-height: 100%;'>
-      <View
-        :style='{ height: chatBoxHeight + "px" }'
-        ref='chatBox'
-      >
-        <View class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
-          {{ topic }}
-        </View>
-        <View class='row' style='transition: 500ms;'>
-          <simulator-card v-if='host && host.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
-          <View class='flex justify-end items-end' style='margin-left: 24px;'>
-            <simulator-card
-              :style='{marginLeft: index === 0 ? "0" : "16px"}'
-              v-for='(guest, index) in guests'
-              :simulator='guest.simulator'
-              :small='true'
-              :key='index'
-              :is-host='false'
-            />
-          </View>
-        </View>
-        <q-separator style='margin-top: 16px' />
+  <View
+    :style='{ height: chatBoxHeight + "px", padding: "8px" }'
+    ref='chatBox'
+  >
+    <View style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
+      {{ topic }}
+    </View>
+    <View style='transition: 500ms; display: flex; justify-content: center; align-items: center;'>
+      <simulator-card v-if='host && host.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
+      <View style='margin-left: 24px; display: flex; justify-content: center; align-items: center;'>
+        <simulator-card
+          :style='{marginLeft: index === 0 ? "0" : "16px"}'
+          v-for='(guest, index) in guests'
+          :simulator='guest.simulator'
+          :small='true'
+          :key='index'
+          :is-host='false'
+        />
+      </View>
+    </View>
+    <View style='margin-top: 16px;'>
+      <View v-for='(message, index) in displayMessages' :key='index'>
         <View
-          v-if='!displayMessages.length'
-          style='margin-top: 16px; font-size: 20px'
-          class='text-center text-grey-8'
+          v-if='!message.subTopicTitle'
+          :key='index'
+          :name='message.simulator.name + " | " + message.participator.role + " | " + message.model.name'
+          :avatar='message.simulator.avatar'
+          :stamp='message.datetime'
+          :text='[message.message]'
+          text-color='grey-9'
+          bg-color='grey-2'
         >
-          <q-spinner-facebook class='text-red-4' size='128px' />
-          <View>最靠谱的AGI观点栏目主持人正在准备台本，请大家耐心等待。</View>
-        </View>
-        <View v-else style='margin-top: 16px;'>
-          <View v-for='(message, index) in displayMessages' :key='index'>
-            <q-chat-message
-              v-if='!message.subTopicTitle'
-              :key='index'
-              :name='message.simulator.name + " | " + message.participator.role + " | " + message.model.name'
-              :avatar='message.simulator.avatar'
-              :stamp='message.datetime'
-              :text='[message.message]'
-              text-color='grey-9'
-              bg-color='grey-2'
-            >
-              <template #name>
-                <View style='padding-bottom: 4px; line-height: 24px;' class='row'>
-                  <View>
-                    {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
-                  </View>
-                  <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <View> | {{ message.simulator.personality }}</View>
-                </View>
-              </template>
-              <View v-html='message.message' style='line-height: 1.5em;' />
-            </q-chat-message>
-            <View v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 64px 0'>
-              {{ message.subTopic }}
+          <View style='padding-bottom: 4px; line-height: 24px; display: flex;'>
+            <View>
+              {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
             </View>
+            <Image :src='message.model.authorLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
+            <Image :src='message.model.vendorLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
+            <Image :src='message.model.modelLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
+            <View> | {{ message.simulator.personality }}</View>
           </View>
-          <q-resize-observer @resize='onChatBoxResize' />
+          <View v-html='message.message' style='line-height: 1.5em;' />
+        </View>
+        <View v-else style='font-size: 24px; margin: 64px 0; font-weight: 600;'>
+          {{ message.subTopic }}
         </View>
       </View>
     </View>
-    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 160px;' :active-topic='activeTopic || ""' />
-    <q-space />
   </View>
 </template>
 
@@ -76,10 +57,10 @@ import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
-import { View } from '@tarojs/components'
+import { Image, View } from '@tarojs/components'
+import Taro from '@tarojs/taro'
 
 import SimulatorCard from './SimulatorCard.vue'
-import Outline from './Outline.vue'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -88,7 +69,6 @@ const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
-const autoScroll = ref(true)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -109,6 +89,7 @@ interface Message {
 }
 
 const displayMessages = ref([] as Message[])
+const messageCount = computed(() => displayMessages.value.length)
 const waitMessages = ref([] as Message[])
 const typingMessage = ref(undefined as unknown as Message)
 const typingIndex = ref(0)
@@ -122,6 +103,11 @@ const audioPlayer = ref(undefined as unknown as HTMLAudioElement)
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
+
+watch(messageCount, () => {
+  if (messageCount.value === 0) Taro.showLoading()
+  else Taro.hideLoading()
+})
 
 const calculateTypingInterval = (duration: number) => {
   if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
@@ -279,10 +265,6 @@ const onOutline = (json: Record<string, unknown>) => {
   outline.value = json
 }
 
-const onChatBoxResize = (size: { height: number }) => {
-  if (autoScroll.value && chatBox.value) chatBox.value.setScrollPosition('vertical', size.height, 300)
-}
-
 const historyMessages = (): Map<string, string[]> => {
   const messages = new Map<string, string[]>()
 
@@ -302,6 +284,9 @@ const historyMessages = (): Map<string, string[]> => {
 
 onMounted(async () => {
   chatBoxHeight.value = window.innerHeight - 106
+  Taro.showLoading({
+    title: '主持人正在准备台本'
+  })
 
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar

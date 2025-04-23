@@ -4,7 +4,8 @@ export class _Simulator {
   private static _simulators = [
     {
       name: '渾二虎',
-      avatar: '/LuxunAvatar.jpg',
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
       personality: '客观理性的AGI智障频道AGI观点栏目主持人',
       host: true,
       speakerVoice: 'zm_031',
@@ -13,7 +14,8 @@ export class _Simulator {
     },
     {
       name: '猪头三',
-      avatar: '/LuxunAvatar.jpg',
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
       personality: '知识丰富，关心前沿科技的科技公司创始人',
       host: false,
       speakerVoice: 'zm_010',
@@ -22,7 +24,8 @@ export class _Simulator {
     },
     {
       name: '安若素',
-      avatar: '/LuxunAvatar.jpg',
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
       personality: '国防大学教授，国务院特殊津贴专家',
       host: false,
       speakerVoice: 'zm_012',
@@ -31,7 +34,8 @@ export class _Simulator {
     },
     {
       name: '九头鸟',
-      avatar: '/LuxunAvatar.jpg',
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
       personality: '科技爱好者，民间科学家',
       host: false,
       speakerVoice: 'zf_027',
@@ -40,7 +44,8 @@ export class _Simulator {
     },
     {
       name: '陆一讯',
-      avatar: '/LuxunAvatar.jpg',
+      avatar:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
       personality: '时事新闻媒体特约撰稿人',
       host: false,
       speakerVoice: 'zf_044',

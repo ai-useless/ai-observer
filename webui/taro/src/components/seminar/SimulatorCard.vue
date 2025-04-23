@@ -1,13 +1,9 @@
 <template>
   <View class='text-center'>
     <View class='row'>
-      <q-space />
       <View :class='["avatar", isHost ? "avatar-host" : ""]' :style='{ width: small ? "52px" : "68px" }'>
-        <q-avatar :size='small ? "48px" : "64px"'>
-          <q-img :src='simulator.avatar' />
-        </q-avatar>
+        <Image :src='simulator.avatar' mode='aspectFill' style='width: 48px; height: 48px;' />
       </View>
-      <q-space />
     </View>
     <View v-if='!avatarOnly' class='text-grey-8'>
       {{ simulator.name }}
@@ -18,7 +14,7 @@
 <script setup lang='ts'>
 import { dbModel } from 'src/model'
 import { toRef } from 'vue'
-import { View } from '@tarojs/components'
+import { View, Image } from '@tarojs/components'
 
 interface Props {
   simulator: dbModel.Simulator
