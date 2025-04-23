@@ -1,14 +1,14 @@
-import { v4 as uuidv4 } from 'uuid'
 import { _Model } from './model'
 import { _Simulator } from './simulator'
 import { dbModel } from '../../model'
 import { _Participator } from './participator'
+import { uuid } from 'src/utils'
 
 export class _Seminar {
   private static seminars = [] as dbModel.Seminar[]
 
   static create = (topic: string) => {
-    const _uid = uuidv4()
+    const _uid = uuid.newUuid()
     const count = Math.ceil(Math.random() * 5 + 5)
     const participators = [] as dbModel.Participator[]
 

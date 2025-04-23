@@ -1,57 +1,42 @@
 <template>
-  <div class='text-center'>
-    <h3 class='text-grey-9'>
+  <View>
+    <Text style='width: 100%; display: flex; justify-content: center; align-items: center;' class='title'>
       What would you like to dig ?
-    </h3>
-    <q-input
-      rounded
-      outlined
-      v-model='topic'
-      placeholder='Key in any topic you are interesting in'
+    </Text>
+    <Input
       type='textarea'
-      style='width: 800px; font-size: 20px;'
+      :value='topic'
+      placeholder='Key in any topic you are interesting in'
+      style='width: "100%"; font-size: 20px;'
       @keyup.enter.stop='onEnter'
+      class='section-margin'
     />
-    <div style='margin-top: 24px;'>
-      <q-btn
-        rounded
-        flat
-        label='Random topic'
-        no-caps
-        class='text-grey-7 border'
-      />
-      <q-btn
-        rounded
-        flat
-        label='History topic'
-        no-caps
-        class='text-grey-7 border'
-        style='margin-left: 8px;'
-      />
-      <q-btn
-        rounded
-        flat
-        label='The World War II'
-        no-caps
-        class='text-grey-7 border'
-        style='margin-left: 8px;'
-      />
-      <q-btn
-        rounded
-        flat
-        label='Big Countries Battle'
-        no-caps
-        class='text-grey-7 border'
-        style='margin-left: 8px;'
-      />
-    </div>
-  </div>
+    <View style='margin-top: 24px;'>
+      <Button
+        class='border'
+      >
+        随便听点儿什么
+      </Button>
+      <Button
+        class='border'
+      >
+        历史
+      </Button>
+      <Button
+        class='border'
+      >
+        二战
+      </Button>
+      <!-- You must bind event to button if you place more than 4 buttons here -->
+    </View>
+  </View>
 </template>
 
 <script setup lang='ts'>
 import { dbBridge } from 'src/bridge'
 import { seminar, setting } from 'src/localstores'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+import { View, Input, Button, Text } from '@tarojs/components'
 
 const initialTopics = [
   '油条的工艺与口味以及外观',
@@ -89,11 +74,15 @@ watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
 })
 
-const onEnter = async () => {
-  const _uid = await dbBridge._Seminar.create(topic.value)
+const onEnter = () => {
+  const _uid = dbBridge._Seminar.create(topic.value)
   seminar.Seminar.setSeminar(_uid)
   setting.Setting.setInScratch(false)
 }
+
+onMounted(() => {
+  onEnter()
+})
 
 </script>
 
