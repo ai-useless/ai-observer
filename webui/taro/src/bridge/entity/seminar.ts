@@ -69,7 +69,9 @@ export class ESeminar {
       this.topicMaterial = message.payload.text
       this.subTopics = (message.payload.json as Record<string, unknown>)
         .titles as string[]
-      void this.startTopic()
+        setTimeout(() => {
+          void this.startTopic()
+        }, 100)
     }
     // Start topic round
     if (
@@ -79,12 +81,16 @@ export class ESeminar {
       if (this.subTopics[this.subTopics.length - 1] === subTopic) {
         if (intent === seminarWorker.Intent.CONCLUDE_SUBTOPIC) {
           this.canNext = false
-          void this.concludeTopic()
+          setTimeout(() => {
+            void this.concludeTopic()
+          }, 100)
         }
       } else {
         this.canNext = false
         this.lastRoundIsHost = true
-        void this.startNextSubTopic(subTopic)
+        setTimeout(() => {
+          void this.startNextSubTopic()
+        }, 100)
         this.subRound += 1
       }
     }
@@ -98,7 +104,9 @@ export class ESeminar {
       if (!this.concludedSubTopics.get(subTopic)) {
         this.canNext = false
         this.concludedSubTopics.set(subTopic, true)
-        void this.concludeSubTopic(subTopic)
+        setTimeout(() => {
+          void this.concludeSubTopic(subTopic)
+        }, 100)
       }
     }
 
