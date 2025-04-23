@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
+    "target": "ES2022",
+    "module": "ES2022",
     "removeComments": false,
     "preserveConstEnums": true,
     "moduleResolution": "node",
@@ -17,8 +17,9 @@
     "rootDir": ".",
     "jsx": "preserve",
     "allowJs": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
   },
   "include": ["./src", "./types"],
-  "compileOnSave": false
+  "compileOnSave": false,
+  "esModuleInterop": true
 }

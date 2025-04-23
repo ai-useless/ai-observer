@@ -17,7 +17,10 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
     },
     sourceRoot: 'src',
     outputRoot: `dist/${process.env.TARO_ENV}`,
-    plugins: [],
+    plugins: [
+      '@tarojs/plugin-html',
+      '@tarojs/plugin-http'
+    ],
     defineConstants: {
     },
     copy: {

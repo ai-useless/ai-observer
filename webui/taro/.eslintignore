@@ -1,0 +1,8 @@
+/dist
+/src-capacitor
+/src-cordova
+/node_modules
+.eslintrc.cjs
+babel.config.js
+/src-ssr
+/wasm

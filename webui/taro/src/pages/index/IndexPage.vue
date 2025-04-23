@@ -1,5 +1,5 @@
 <template>
-  <view class="index">
+  <view class='index'>
     <CounterVue />
   </view>
 </template>
