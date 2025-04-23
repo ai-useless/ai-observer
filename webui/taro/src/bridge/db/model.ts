@@ -1,8 +1,7 @@
 import { dbModel } from '../../model'
-import { chutesLogo } from '../../assets'
 
 export class _Model {
-  static #models = [
+  private static models = [
     {
       name: 'deepseek-ai/DeepSeek-V3-0324',
       endpoint: 'https://llm.chutes.ai/v1/chat/completions',
@@ -13,7 +12,7 @@ export class _Model {
       authorLogo:
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp',
-      vendorLogo: chutesLogo,
+      vendorLogo: '/ChutesLogo.jpg',
       hostModel: true
     },
     {
@@ -26,7 +25,7 @@ export class _Model {
       authorLogo:
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/mistral.webp',
-      vendorLogo: chutesLogo,
+      vendorLogo: '/ChutesLogo.jpg',
       hostModel: false
     },
     {
@@ -39,7 +38,7 @@ export class _Model {
       authorLogo:
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
-      vendorLogo: chutesLogo,
+      vendorLogo: '/ChutesLogo.jpg',
       hostModel: true
     },
     {
@@ -52,13 +51,13 @@ export class _Model {
       authorLogo:
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
-      vendorLogo: chutesLogo,
+      vendorLogo: '/ChutesLogo.jpg',
       hostModel: true
     }
   ] as dbModel.Model[]
 
   static initialize = () => {
-    _Model.#models.forEach((model, index) => {
+    _Model.models.forEach((model, index) => {
       model.id = index
     })
   }
@@ -74,8 +73,8 @@ export class _Model {
     vendorLogo: string,
     hostModel: boolean
   ) => {
-    return _Model.#models.push({
-      id: _Model.#models.length,
+    return _Model.models.push({
+      id: _Model.models.length,
       name,
       endpoint,
       apiKey,
@@ -89,15 +88,15 @@ export class _Model {
   }
 
   static randomPeek = (hostModel?: boolean) => {
-    const count = _Model.#models.length
+    const count = _Model.models.length
     const index = Math.floor(Math.random() * count)
     return (
-      _Model.#models
+      _Model.models
         .filter((op) => hostModel === undefined || op.hostModel === hostModel)
     )[index]
   }
 
   static model = (id: number) => {
-    return _Model.#models[id]
+    return _Model.models[id]
   }
 }

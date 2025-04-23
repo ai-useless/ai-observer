@@ -23,7 +23,7 @@ export class SeminarWorker {
   >()
 
   private constructor() {
-    this._worker = Taro.createWorker('./worker.ts')
+    this._worker = Taro.createWorker('worker/worker/seminar/worker.js')
 
     this._worker.onMessage((payload: Taro.Worker.OnMessageCallbackResult) => {
       const event = payload.message as SeminarEvent

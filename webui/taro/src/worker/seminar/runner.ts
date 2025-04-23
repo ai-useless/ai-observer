@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from 'taro-axios'
 import { constants } from '../../constant'
 import { dbBridge } from '../../bridge'
 import { Intent, Prompt } from './prompt'
@@ -390,6 +390,19 @@ export class SeminarRunner {
           }
         }
       })
+
+      return {
+        seminarId,
+        subTopic,
+        intent,
+        participatorId,
+        round,
+        subRound,
+        payload: {
+          ...response,
+          json
+        }
+      }
     } catch (e) {
       self.postMessage({
         type: SeminarEventType.ERROR,

@@ -5,7 +5,7 @@ import { dbModel } from '../../model'
 import { _Participator } from './participator'
 
 export class _Seminar {
-  static #seminars = [] as dbModel.Seminar[]
+  private static seminars = [] as dbModel.Seminar[]
 
   static create = (topic: string) => {
     const _uid = uuidv4()
@@ -24,8 +24,8 @@ export class _Seminar {
     }
 
     _Participator.createParticipators(participators)
-    _Seminar.#seminars.push({
-      id: _Seminar.#seminars.length,
+    _Seminar.seminars.push({
+      id: _Seminar.seminars.length,
       uid: _uid,
       topic: topic
     })
@@ -34,7 +34,7 @@ export class _Seminar {
   }
 
   static seminar = (_uid?: string, id?: number) => {
-    return _Seminar.#seminars
+    return _Seminar.seminars
       .find((el) => {
         if (_uid !== undefined) return el.uid === _uid
         if (id !== undefined) return el.id === id

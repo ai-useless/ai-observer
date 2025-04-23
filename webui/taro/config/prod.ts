@@ -29,4 +29,4 @@ export default {
     //     }))
     // }
   }
-} satisfies UserConfigExport<'vite'>
+} satisfies UserConfigExport<'webpack5'>

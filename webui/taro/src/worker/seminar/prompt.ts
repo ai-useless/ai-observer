@@ -106,13 +106,13 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.WITH_HISTORY_ANALYSIS,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ((speakDuration: number, letters: number, historyMessages: string[]) =>
+    ((_speakDuration: number, _letters: number, historyMessages: string[]) =>
       `) 你前面的嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。如果有必要，分析他们的观点并发表自己的观点`) as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_CONCLUSION,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ((speakDuration: number, letters: number, historyMessages: string[]) =>
+    ((_speakDuration: number, _letters: number, historyMessages: string[]) =>
       `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
   ],
   [
