@@ -10,7 +10,7 @@
           {{ topic }}
         </View>
         <View class='row' style='transition: 500ms;'>
-          <simulator-card v-if='host' :simulator='host.simulator' :small='false' :is-host='true' />
+          <simulator-card v-if='host && host.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
           <View class='flex justify-end items-end' style='margin-left: 24px;'>
             <simulator-card
               :style='{marginLeft: index === 0 ? "0" : "16px"}'

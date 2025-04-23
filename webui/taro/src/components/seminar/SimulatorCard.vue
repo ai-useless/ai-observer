@@ -1,23 +1,24 @@
 <template>
-  <div class='text-center'>
-    <div class='row'>
+  <View class='text-center'>
+    <View class='row'>
       <q-space />
-      <div :class='["avatar", isHost ? "avatar-host" : ""]' :style='{ width: small ? "52px" : "68px" }'>
+      <View :class='["avatar", isHost ? "avatar-host" : ""]' :style='{ width: small ? "52px" : "68px" }'>
         <q-avatar :size='small ? "48px" : "64px"'>
           <q-img :src='simulator.avatar' />
         </q-avatar>
-      </div>
+      </View>
       <q-space />
-    </div>
-    <div v-if='!avatarOnly' class='text-grey-8'>
+    </View>
+    <View v-if='!avatarOnly' class='text-grey-8'>
       {{ simulator.name }}
-    </div>
-  </div>
+    </View>
+  </View>
 </template>
 
 <script setup lang='ts'>
 import { dbModel } from 'src/model'
 import { toRef } from 'vue'
+import { View } from '@tarojs/components'
 
 interface Props {
   simulator: dbModel.Simulator
