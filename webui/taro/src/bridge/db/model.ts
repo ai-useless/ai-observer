@@ -91,8 +91,7 @@ export class _Model {
     const models = _Model.models.filter(
       (op) => hostModel === undefined || op.hostModel === hostModel
     )
-    const count = models.length
-    const index = Math.floor(Math.random() * count)
+    const index = Math.floor(Math.random() * models.length)
     return models[index]
   }
 
