@@ -337,7 +337,9 @@ const onThinking = (participatorId: number) => {
 }
 
 const onOutline = (json: Record<string, unknown>) => {
-  console.log(json)
+  Taro.setNavigationBarTitle({
+    title: json.topic as string
+  })
   outline.value = json
 }
 
