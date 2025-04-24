@@ -51,7 +51,7 @@
     "@tarojs/runtime": "4.0.12",
     "@tarojs/shared": "4.0.12",
     "@tarojs/taro": "4.0.12",
-    "hash-wasm": "^4.12.0",
+    "crypto-js": "^4.2.0",
     "pinia": "^2.0.10",
     "prettier": "^3.5.3",
     "taro-axios": "^1.1.1",
