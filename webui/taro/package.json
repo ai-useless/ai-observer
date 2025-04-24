@@ -41,6 +41,7 @@
     "@tarojs/components": "4.0.12",
     "@tarojs/helper": "4.0.12",
     "@tarojs/plugin-framework-vue3": "4.0.12",
+    "@tarojs/plugin-html": "^4.0.12",
     "@tarojs/plugin-platform-alipay": "4.0.12",
     "@tarojs/plugin-platform-h5": "4.0.12",
     "@tarojs/plugin-platform-jd": "4.0.12",

@@ -288,7 +288,7 @@ const intentRequirements = (
       .map((el, index) => {
         const _requirement = Requirements.get(el)
         if (!_requirement) throw Error('Invalid requirement')
-        index.toString() + (_requirement(...args) || '')
+        return index.toString() + (_requirement(...args) || '')
       })
       .join(' ') || ''
   )

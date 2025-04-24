@@ -40,7 +40,7 @@
             <Image :src='message.model.modelLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
             <View> | {{ message.simulator.personality }}</View>
           </View>
-          <View style='line-height: 1.5em;'>
+          <View style='line-height: 1.5em;' :key='message.message'>
             {{ message.message }}
           </View>
         </View>
@@ -107,6 +107,7 @@ const lastTopic = ref(undefined as unknown as string)
 class AudioPlayer {
   context: Taro.InnerAudioContext
   ended: boolean
+  playing: boolean
   duration: number
 }
 
@@ -173,12 +174,17 @@ const typing = () => {
   }
 
   if (typingMessage.value.audio && typingMessage.value.audio.length) {
-    audioPlayer.value = playAudio(typingMessage.value.audio) as AudioPlayer
-    if (audioPlayer.value && audioPlayer.value.duration > 0) {
-      window.clearInterval(typingTicker.value)
-      calculateTypingInterval(audioPlayer.value.duration)
+    window.clearInterval(typingTicker.value)
+    playAudio(typingMessage.value.audio).then((player: AudioPlayer) => {
+      if (player && player.duration > 0) {
+        calculateTypingInterval(player.duration)
+        audioPlayer.value = player
+        typingTicker.value = window.setInterval(typing, typingInterval.value)
+      }
+    }).catch((e) => {
+      console.log(`Failed play audio: ${e}`)
       typingTicker.value = window.setInterval(typing, typingInterval.value)
-    }
+    })
   }
 
   displayMessages.value.forEach((el) => {
@@ -192,7 +198,7 @@ const typing = () => {
   })
 }
 
-const playAudio = (base64Data: string) => {
+const playAudio = (base64Data: string): Promise<AudioPlayer | undefined> => {
   const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
   const fileCid = CryptoJS.SHA256(cleanBase64).toString()
   const filePath = `${Taro.env.USER_DATA_PATH}/${fileCid}.mp3`
@@ -201,8 +207,7 @@ const playAudio = (base64Data: string) => {
   try {
     fs.writeFileSync(filePath, cleanBase64)
   } catch(e) {
-    console.log(`Failed write file: ${e}`)
-    return undefined
+    return Promise.reject(`Failed write file: ${e}`)
   }
   const context = Taro.createInnerAudioContext()
   context.src = filePath
@@ -217,15 +222,20 @@ const playAudio = (base64Data: string) => {
     fs.removeSavedFile({filePath})
     player.ended = true
   })
-  context.onError((e) => {
-    console.log(`Failed play audio: ${JSON.stringify(e)}`)
-    fs.removeSavedFile({filePath})
-    player.ended = true
+
+  return new Promise((resolve, reject) => {
+    context.onError((e) => {
+      fs.removeSavedFile({filePath})
+      player.ended = true
+      reject(`Failed play audio: ${JSON.stringify(e)}`)
+    })
+    context.onCanplay(() => {
+      context.play()
+      player.playing = true
+      player.duration = context.duration
+      resolve(player)
+    })
   })
-
-  context.play()
-
-  return player
 }
 
 watch(_uid, () => {
@@ -328,5 +338,5 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style lang='sass'>
+<style>
 </style>
