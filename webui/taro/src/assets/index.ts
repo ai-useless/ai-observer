@@ -1,3 +1,3 @@
-import aiObserverLogo from './AIObserverLogo.png'
+import arrowClockwise from './ArrowClockwise.svg'
 
-export { aiObserverLogo }
+export { arrowClockwise }
