@@ -61,6 +61,7 @@ import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
 import { Image, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { sha256 } from 'hash-wasm'
 
 import SimulatorCard from './SimulatorCard.vue'
 
@@ -101,14 +102,25 @@ const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 const outline = ref(undefined as unknown as Record<string, unknown>)
 const activeTopic = ref('')
 const lastTopic = ref(undefined as unknown as string)
-const audioPlayer = ref(undefined as unknown as HTMLAudioElement)
+
+class AudioPlayer {
+  context: Taro.InnerAudioContext
+  ended: boolean
+  duration: number
+}
+
+const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
 watch(messageCount, () => {
-  if (messageCount.value === 0) Taro.showLoading()
-  else Taro.hideLoading()
+  try {
+    if (messageCount.value === 0) Taro.showLoading()
+    else Taro.hideLoading()
+  } catch {
+    // DO NOTHING
+  }
 })
 
 const calculateTypingInterval = (duration: number) => {
@@ -162,16 +174,12 @@ const typing = () => {
   }
 
   if (typingMessage.value.audio && typingMessage.value.audio.length) {
-    window.clearInterval(typingTicker.value)
-    playAudio(typingMessage.value.audio).then((_audioPlayer) => {
-      audioPlayer.value = _audioPlayer
-      if (_audioPlayer.duration > 0) calculateTypingInterval(_audioPlayer.duration)
+    audioPlayer.value = playAudio(typingMessage.value.audio) as AudioPlayer
+    if (audioPlayer.value && audioPlayer.value.duration > 0) {
+      window.clearInterval(typingTicker.value)
+      calculateTypingInterval(audioPlayer.value.duration)
       typingTicker.value = window.setInterval(typing, typingInterval.value)
-    }).catch((e) => {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      console.log(`Failed play audio: ${e}`)
-      typingTicker.value = window.setInterval(typing, typingInterval.value)
-    })
+    }
   }
 
   displayMessages.value.forEach((el) => {
@@ -185,20 +193,40 @@ const typing = () => {
   })
 }
 
-const playAudio = async (base64Data: string) => {
+const playAudio = (base64Data: string) => {
   const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
+  const fileCid = sha256(cleanBase64)
+  const filePath = `${Taro.env.USER_DATA_PATH}/${fileCid}.mp3`
+  const fs = Taro.getFileSystemManager()
 
-  const byteCharacters = atob(cleanBase64)
-  const byteArrays = new Uint8Array(byteCharacters.length)
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteArrays[i] = byteCharacters.charCodeAt(i)
+  try {
+    fs.writeFileSync(filePath, cleanBase64)
+  } catch(e) {
+    console.log(`Failed write file: ${e}`)
+    return undefined
   }
-  const blob = new Blob([byteArrays], { type: 'audio/mpeg' })
-  const audioUrl = URL.createObjectURL(blob)
-  const audioPlayer = new Audio(audioUrl)
-  audioPlayer.loop = false
-  await audioPlayer.play()
-  return audioPlayer
+  const context = Taro.createInnerAudioContext()
+  context.src = filePath
+
+  const player = {
+    context: context,
+    ended: false,
+    duration: context.duration
+  } as AudioPlayer
+
+  context.onEnded(() => {
+    fs.removeSavedFile({filePath})
+    player.ended = true
+  })
+  context.onError((e) => {
+    console.log(`Failed play audio: ${e}`)
+    fs.removeSavedFile({filePath})
+    player.ended = true
+  })
+
+  context.play()
+
+  return player
 }
 
 watch(_uid, () => {
@@ -212,12 +240,6 @@ watch(_seminar, () => {
 
 watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
-})
-
-watch(typingMessage, () => {
-  if (!typingMessage.value.audio || !typingMessage.value.audio.length) return
-  const audio = typingMessage.value.audio
-  void playAudio(audio)
 })
 
 const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
