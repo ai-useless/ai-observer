@@ -5,6 +5,9 @@
     </View>
     <View v-else style='width: 100%;'>
       <Conference />
+      <View style='display: flex; flex-direction: row-reverse; margin-top: -32px;'>
+        <Switcher style='position: absolute;' />
+      </View>
     </View>
   </View>
 </template>
@@ -17,6 +20,7 @@ import { dbBridge } from 'src/bridge'
 
 import ScratchFrame from './ScratchFrame.vue'
 import Conference from './Conference.vue'
+import Switcher from './Switcher.vue'
 
 const inScratch = computed(() => setting.Setting.inScratch())
 const initialized = ref(false)
