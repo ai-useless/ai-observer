@@ -11,7 +11,7 @@
         {{ topic }}
       </View>
       <View style='transition: 500ms'>
-        <View v-if='host && host.simulator' style='display: flex; font-size: 14px;'>
+        <View v-if='host && host.simulator' style='font-size: 14px;'>
           <View style='width: 64px'>
             主持人：
           </View>
@@ -19,7 +19,7 @@
             {{ host.simulator.name }}
           </View>
         </View>
-        <View style='display: flex; font-size: 14px;'>
+        <View style='font-size: 14px;'>
           <View style='width: 64px'>
             嘉宾：
           </View>
@@ -37,6 +37,7 @@
           </View>
         </View>
       </View>
+      <Outline :json='outline' :active-topic='activeTopic || ""' />
       <View style='margin-top: 16px;'>
         <View v-for='(message, index) in displayMessages' :key='index' :id='messageViewId(index === displayMessages.length - 1 ? typingMessage : message)'>
           <View
@@ -63,7 +64,7 @@
                 {{ message.model.name }}
               </View>
             </View>
-            <rich-text :nodes='message.message' user-select style='font-size: 14px;' />
+            <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px;' />
           </View>
           <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600;'>
             {{ message.subTopic }}
@@ -85,7 +86,7 @@ import { Image, View, ScrollView, RichText } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import CryptoJS from 'crypto-js'
 
-import SimulatorCard from './SimulatorCard.vue'
+import Outline from './Outline.vue'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -127,7 +128,9 @@ const typingIndex = ref(0)
 const lastRound = ref(0)
 const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
-const outline = ref(undefined as unknown as Record<string, unknown>)
+const outline = ref({
+  titles: []
+} as unknown as Record<string, unknown>)
 const activeTopic = ref('')
 const lastTopic = ref(undefined as unknown as string)
 
@@ -334,6 +337,7 @@ const onThinking = (participatorId: number) => {
 }
 
 const onOutline = (json: Record<string, unknown>) => {
+  console.log(json)
   outline.value = json
 }
 
