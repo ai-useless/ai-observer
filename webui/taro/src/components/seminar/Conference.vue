@@ -61,7 +61,7 @@ import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
 import { Image, View } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { sha256 } from 'hash-wasm'
+import CryptoJS from 'crypto-js'
 
 import SimulatorCard from './SimulatorCard.vue'
 
@@ -195,7 +195,7 @@ const typing = () => {
 
 const playAudio = (base64Data: string) => {
   const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
-  const fileCid = sha256(cleanBase64)
+  const fileCid = CryptoJS.SHA256(cleanBase64).toString()
   const filePath = `${Taro.env.USER_DATA_PATH}/${fileCid}.mp3`
   const fs = Taro.getFileSystemManager()
 
@@ -219,7 +219,7 @@ const playAudio = (base64Data: string) => {
     player.ended = true
   })
   context.onError((e) => {
-    console.log(`Failed play audio: ${e}`)
+    console.log(`Failed play audio: ${JSON.stringify(e)}`)
     fs.removeSavedFile({filePath})
     player.ended = true
   })
