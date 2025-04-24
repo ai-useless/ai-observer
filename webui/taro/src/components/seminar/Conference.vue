@@ -7,23 +7,23 @@
       ref='chatBox'
       :scroll-into-view='scrollIntoView'
     >
-      <View style='font-size: 24px; font-weight: 600; padding: 0 0 16px 0; transition: 500ms;'>
+      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray;'>
         {{ topic }}
       </View>
       <View style='transition: 500ms'>
-        <View v-if='host && host.simulator' style='display: flex;'>
+        <View v-if='host && host.simulator' style='display: flex; font-size: 14px;'>
           <View style='width: 64px'>
             主持人：
           </View>
-          <View style='color: blue; font-size: 14px;'>
+          <View style='color: blue'>
             {{ host.simulator.name }}
           </View>
         </View>
-        <View style='display: flex;'>
+        <View style='display: flex; font-size: 14px;'>
           <View style='width: 64px'>
             嘉宾：
           </View>
-          <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: blue; font-size: 14px;'>
+          <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: blue'>
             <Text
               style='margin-right: 16px;'
               v-for='(guest, index) in guests'
