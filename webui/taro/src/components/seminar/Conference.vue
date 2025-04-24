@@ -1,54 +1,57 @@
 <template>
-  <View
-    :style='{ height: chatBoxHeight + "px", padding: "8px" }'
-    ref='chatBox'
-  >
-    <View style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
-      {{ topic }}
-    </View>
-    <View style='transition: 500ms; display: flex; justify-content: center; align-items: center;'>
-      <simulator-card v-if='host && host.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
-      <View style='margin-left: 24px; display: flex; justify-content: center; align-items: center;'>
-        <simulator-card
-          :style='{marginLeft: index === 0 ? "0" : "16px"}'
-          v-for='(guest, index) in guests'
-          :simulator='guest.simulator'
-          :small='true'
-          :key='index'
-          :is-host='false'
-        />
+  <View style='padding: 8px'>
+    <scroll-view
+      :scroll-y='true'
+      :scroll-with-animation='true'
+      :style='{ height: chatBoxHeight + "px" }'
+      ref='chatBox'
+      :scroll-into-view='scrollIntoView'
+    >
+      <View style='font-size: 24px; font-weight: 600; padding: 0 0 16px 0; transition: 500ms;'>
+        {{ topic }}
       </View>
-    </View>
-    <View style='margin-top: 16px;'>
-      <View v-for='(message, index) in displayMessages' :key='index'>
-        <View
-          v-if='!message.subTopicTitle'
-          :key='index'
-          :name='message.simulator.name + " | " + message.participator.role + " | " + message.model.name'
-          :avatar='message.simulator.avatar'
-          :stamp='message.datetime'
-          :text='[message.message]'
-          text-color='grey-9'
-          bg-color='grey-2'
-        >
-          <View style='padding-bottom: 4px; line-height: 24px; display: flex;'>
-            <View>
-              {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
+      <View style='transition: 500ms; display: flex; justify-content: center; align-items: center;'>
+        <simulator-card v-if='host && host.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
+        <View style='margin-left: 24px; display: flex; justify-content: center; align-items: center;'>
+          <simulator-card
+            :style='{marginLeft: index === 0 ? "0" : "16px"}'
+            v-for='(guest, index) in guests'
+            :simulator='guest.simulator'
+            :small='true'
+            :key='index'
+            :is-host='false'
+          />
+        </View>
+      </View>
+      <View style='margin-top: 16px;'>
+        <View v-for='(message, index) in displayMessages' :key='index' :id='messageViewId(index === displayMessages.length - 1 ? typingMessage : message)'>
+          <View
+            v-if='!message.subTopicTitle'
+            :key='index'
+            :name='message.simulator.name + " | " + message.participator.role + " | " + message.model.name'
+            :avatar='message.simulator.avatar'
+            :stamp='message.datetime'
+            :text='[message.message]'
+            text-color='grey-9'
+            bg-color='grey-2'
+          >
+            <View style='padding-bottom: 4px; line-height: 24px; display: flex;'>
+              <View>
+                {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
+              </View>
+              <Image :src='message.model.authorLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
+              <Image :src='message.model.vendorLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
+              <Image :src='message.model.modelLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
+              <View> | {{ message.simulator.personality }}</View>
             </View>
-            <Image :src='message.model.authorLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
-            <Image :src='message.model.vendorLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
-            <Image :src='message.model.modelLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
-            <View> | {{ message.simulator.personality }}</View>
+            <rich-text :nodes='message.message' user-select />
           </View>
-          <View style='line-height: 1.5em;' :key='message.message'>
-            {{ message.message }}
+          <View v-else style='font-size: 24px; margin: 64px 0; font-weight: 600;'>
+            {{ message.subTopic }}
           </View>
-        </View>
-        <View v-else style='font-size: 24px; margin: 64px 0; font-weight: 600;'>
-          {{ message.subTopic }}
         </View>
       </View>
-    </View>
+    </scroll-view>
   </View>
 </template>
 
@@ -59,7 +62,7 @@ import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
-import { Image, View } from '@tarojs/components'
+import { Image, View, ScrollView, RichText } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import CryptoJS from 'crypto-js'
 
@@ -72,6 +75,7 @@ const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
+const scrollIntoView = ref('')
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -89,6 +93,10 @@ interface Message {
   audio: string
   subTopicTitle: boolean
   subTopic: string
+}
+
+const messageViewId = (message: Message) => {
+  return 'a' + CryptoJS.SHA256(message.message).toString()
 }
 
 const displayMessages = ref([] as Message[])
@@ -130,6 +138,14 @@ const calculateTypingInterval = (duration: number) => {
   }
 }
 
+const scrollToBottom = () => {
+  scrollIntoView.value = ''
+  setTimeout(() => {
+    console.log('ScrollTo', messageViewId(typingMessage.value))
+    scrollIntoView.value = messageViewId(typingMessage.value)
+  }, 100)
+}
+
 const typing = () => {
   if (!typingMessage.value && !waitMessages.value.length) return
 
@@ -139,6 +155,7 @@ const typing = () => {
     const appendLen = matches[0] ? matches[0].length : 1
     displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value + appendLen)
     typingIndex.value += appendLen
+    scrollToBottom()
     return
   }
 
@@ -196,6 +213,8 @@ const typing = () => {
     ...typingMessage.value,
     message: ''
   })
+
+  scrollToBottom()
 }
 
 const playAudio = (base64Data: string): Promise<AudioPlayer | undefined> => {
