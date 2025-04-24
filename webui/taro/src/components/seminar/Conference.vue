@@ -92,6 +92,7 @@ interface Message {
 }
 
 const displayMessages = ref([] as Message[])
+const loading = ref(true)
 const messageCount = computed(() => displayMessages.value.length)
 const waitMessages = ref([] as Message[])
 const typingMessage = ref(undefined as unknown as Message)
@@ -115,11 +116,9 @@ const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
 watch(messageCount, () => {
-  try {
-    if (messageCount.value === 0) Taro.showLoading()
-    else Taro.hideLoading()
-  } catch {
-    // DO NOTHING
+  if (messageCount.value && loading.value) {
+    Taro.hideLoading()
+    loading.value = false
   }
 })
 
