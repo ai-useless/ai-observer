@@ -54,7 +54,7 @@
               <View style='display: flex;'>
                 <Image :src='message.simulator.avatar' mode='widthFix' style='width: 24px; border-radius: 50%;' />
                 <View style='color: blue; font-weight: 600; margin-left: 8px;'>{{ message.simulator.name }}</View>
-                <View style='margin-left: 4px;'>{{ message.participator.role }}</View>
+                <View style='margin-left: 4px;'>{{ message.participator.role === dbModel.Role.HOST ? '主持人' : '嘉宾' }}</View>
                 <Image :src='message.model.authorLogo' mode='widthFix' style='margin-left: 8px; width: 24px;' />
                 <Image :src='message.model.vendorLogo' mode='widthFix' style='margin-left: 8px; width: 24px;' />
                 <Image :src='message.model.modelLogo' mode='widthFix' style='margin-left: 8px; width: 24px;' />
