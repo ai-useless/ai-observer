@@ -2,7 +2,7 @@ import { dbModel } from '../../model'
 
 export class _Setting {
   private static setting = new Map<dbModel.SettingKey, unknown>([
-    [ dbModel.SettingKey.GENERATE_AUDIO, true ]
+    [dbModel.SettingKey.GENERATE_AUDIO, true]
   ])
 
   static create = (key: dbModel.SettingKey, value: unknown) => {
