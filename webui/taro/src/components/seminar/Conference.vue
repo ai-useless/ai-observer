@@ -10,17 +10,31 @@
       <View style='font-size: 24px; font-weight: 600; padding: 0 0 16px 0; transition: 500ms;'>
         {{ topic }}
       </View>
-      <View style='transition: 500ms; display: flex; justify-content: center; align-items: center;'>
-        <simulator-card v-if='host && host.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
-        <View style='margin-left: 24px; display: flex; justify-content: center; align-items: center;'>
-          <simulator-card
-            :style='{marginLeft: index === 0 ? "0" : "16px"}'
-            v-for='(guest, index) in guests'
-            :simulator='guest.simulator'
-            :small='true'
-            :key='index'
-            :is-host='false'
-          />
+      <View style='transition: 500ms'>
+        <View v-if='host && host.simulator' style='display: flex;'>
+          <View style='width: 64px'>
+            主持人：
+          </View>
+          <View style='color: blue; font-size: 14px;'>
+            {{ host.simulator.name }}
+          </View>
+        </View>
+        <View style='display: flex;'>
+          <View style='width: 64px'>
+            嘉宾：
+          </View>
+          <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: blue; font-size: 14px;'>
+            <Text
+              style='margin-right: 16px;'
+              v-for='(guest, index) in guests'
+              :simulator='guest.simulator'
+              :small='true'
+              :key='index'
+              :is-host='false'
+            >
+              {{ guest.simulator.name }}
+            </Text>
+          </View>
         </View>
       </View>
       <View style='margin-top: 16px;'>
@@ -35,18 +49,23 @@
             text-color='grey-9'
             bg-color='grey-2'
           >
-            <View style='padding-bottom: 4px; line-height: 24px; display: flex;'>
-              <View>
-                {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
+            <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px;'>
+              <View style='display: flex;'>
+                <Image :src='message.simulator.avatar' mode='widthFix' style='width: 24px; border-radius: 50%;' />
+                <View style='color: blue; font-weight: 600; margin-left: 8px;'>{{ message.simulator.name }}</View>
+                <View style='margin-left: 4px;'>{{ message.participator.role }}</View>
+                <Image :src='message.model.authorLogo' mode='widthFix' style='margin-left: 8px; width: 24px;' />
+                <Image :src='message.model.vendorLogo' mode='widthFix' style='margin-left: 8px; width: 24px;' />
+                <Image :src='message.model.modelLogo' mode='widthFix' style='margin-left: 8px; width: 24px;' />
               </View>
-              <Image :src='message.model.authorLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
-              <Image :src='message.model.vendorLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
-              <Image :src='message.model.modelLogo' mode='aspectFill' style='margin-left: 8px; width: 24px; height: 24px;' />
-              <View> | {{ message.simulator.personality }}</View>
+              <View style='font-size: 12px; color: gray;'>{{ message.simulator.personality }}</View>
+              <View style='font-size: 12px; color: gray;'>
+                {{ message.model.name }}
+              </View>
             </View>
-            <rich-text :nodes='message.message' user-select />
+            <rich-text :nodes='message.message' user-select style='font-size: 14px;' />
           </View>
-          <View v-else style='font-size: 24px; margin: 64px 0; font-weight: 600;'>
+          <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600;'>
             {{ message.subTopic }}
           </View>
         </View>
@@ -141,7 +160,6 @@ const calculateTypingInterval = (duration: number) => {
 const scrollToBottom = () => {
   scrollIntoView.value = ''
   setTimeout(() => {
-    console.log('ScrollTo', messageViewId(typingMessage.value))
     scrollIntoView.value = messageViewId(typingMessage.value)
   }, 100)
 }

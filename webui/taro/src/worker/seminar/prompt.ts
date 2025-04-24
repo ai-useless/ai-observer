@@ -48,7 +48,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.HTML_STYLE,
     (() =>
-      ') 不要默认加粗第一段文字，没有标题不要加粗，一级标题用16号字加粗，二级标题用14号字加粗，普通内容不加粗，行高1.5em') as RequirementFunc
+      ') 不要默认加粗第一段文字，没有标题不要加粗，一级标题用14px字加粗，二级标题用12px字加粗，普通内容不加粗，字号为12px，行高1.5em') as RequirementFunc
   ],
   [PromptType.SEGMENT, (() => ') 根据语义需要分段') as RequirementFunc],
   [

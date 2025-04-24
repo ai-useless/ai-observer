@@ -69,9 +69,9 @@ export class ESeminar {
       this.topicMaterial = message.payload.text
       this.subTopics = (message.payload.json as Record<string, unknown>)
         .titles as string[]
-        setTimeout(() => {
-          void this.startTopic()
-        }, 100)
+      setTimeout(() => {
+        void this.startTopic()
+      }, 100)
     }
     // Start topic round
     if (

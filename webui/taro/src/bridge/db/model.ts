@@ -12,7 +12,8 @@ export class _Model {
       authorLogo:
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp',
-      vendorLogo: '/ChutesLogo.jpg',
+      vendorLogo:
+        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
       hostModel: true
     },
     {
@@ -25,7 +26,8 @@ export class _Model {
       authorLogo:
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/mistral.webp',
-      vendorLogo: '/ChutesLogo.jpg',
+      vendorLogo:
+        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
       hostModel: false
     },
     {
@@ -38,7 +40,8 @@ export class _Model {
       authorLogo:
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
-      vendorLogo: '/ChutesLogo.jpg',
+      vendorLogo:
+        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
       hostModel: true
     },
     {
@@ -51,7 +54,8 @@ export class _Model {
       authorLogo:
         'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
       modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
-      vendorLogo: '/ChutesLogo.jpg',
+      vendorLogo:
+        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
       hostModel: true
     }
   ] as dbModel.Model[]
