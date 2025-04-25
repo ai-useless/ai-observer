@@ -7,8 +7,8 @@ import base64
 from scipy.io import wavfile
 import io
 
-# API_URL="https://kikakkz-observer-tts.chutes.ai/speak"
-API_URL="http://127.0.0.1:8800/speak"
+API_URL="https://kikakkz-observer-tts.chutes.ai/speak"
+# API_URL="http://127.0.0.1:8800/speak"
 CHUTES_API_TOKEN="cpk_69adda47d49b4d51b3c6ae01f5449cdd.b167f56b3e8d5ffa88bf5cc6513bb6f4.1VTnR4OGz56pv1GlHG5OVDMdTrvSpLI5"
 
 # Init FastAPI
@@ -46,9 +46,9 @@ class TTSParams(BaseModel):
 
 def get_audio_data(text, voice):
     headers = {
-		"Authorization": "Bearer " + CHUTES_API_TOKEN,
+                "Authorization": "Bearer " + CHUTES_API_TOKEN,
         "Content-Type": "application/json"
-	}
+        }
     body = {
       "text": text,
       "voice": voice
@@ -66,7 +66,7 @@ async def generate_audio(params: TTSParams):
         buffer = io.BytesIO(audio_bytes)
         sample_rate, audio_data = wavfile.read(buffer)
         duration = round(len(audio_data) / sample_rate, 3)
-        
+
         base64_str = base64.b64encode(audio_bytes).decode('utf-8')
         return {
             "type": "audio/wav",
