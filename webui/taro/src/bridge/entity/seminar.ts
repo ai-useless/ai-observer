@@ -280,11 +280,41 @@ export class ESeminar {
 
   stop = () => {}
 
+  guestRequest = (subTopic: string, participatorId: number) => {
+    const { id } = this.seminar
+    const historyMessages = this.historyMessages().get(subTopic) || []
+
+    const participator = dbBridge._Participator.participator(participatorId)
+    const simulator = EParticipator.simulator(participator)
+
+    seminarWorker.SeminarRunner.handleChatRequest({
+      seminarId: id as number,
+      subTopic,
+      participatorId: participatorId,
+      intent: seminarWorker.Intent.HOST_CHALLENGE,
+      round: this.round,
+      subRound: this.subRound,
+      prompts: {
+        topicMaterial: this.topicMaterial,
+        generateAudio: true,
+        historyMessages,
+        archetype: dbBridge._Simulator.archetypeWithId(
+          simulator.simulator.id as number
+        )
+      }
+    }).then((payload) => {
+      if (payload) this.onChatResponse(payload)
+        else console.log('I really dont know what to say')
+    }).catch((e) => {
+      console.log(`Failed guest request: ${e}, retrying ...`)
+      setTimeout(() => {
+        this.guestRequest(subTopic, participatorId)
+      }, 1000)
+    })
+  }
+
   nextGuests = async (subTopic: string) => {
     const participators = this.participators()
-    const { id, topic } = this.seminar
-
-    const historyMessages = this.historyMessages().get(subTopic) || []
 
     const guests = Math.max(Math.ceil(Math.random() * participators.length), 2)
     let speakers = [] as PSimulator[]
@@ -308,24 +338,7 @@ export class ESeminar {
       this.onThinking(host.participatorId)
       this.lastRoundIsHost = true
 
-      const payload = await seminarWorker.SeminarRunner.handleChatRequest({
-        seminarId: id as number,
-        subTopic,
-        participatorId: host.participatorId,
-        intent: seminarWorker.Intent.HOST_CHALLENGE,
-        round: this.round,
-        subRound: this.subRound,
-        prompts: {
-          topicMaterial: this.topicMaterial,
-          generateAudio: true,
-          historyMessages,
-          archetype: dbBridge._Simulator.archetypeWithId(
-            host.simulator.id as number
-          )
-        }
-      })
-      if (payload) this.onChatResponse(payload)
-
+      this.guestRequest(subTopic, host.participatorId)
       return
     }
 
@@ -338,21 +351,7 @@ export class ESeminar {
     for (const speaker of speakers) {
       this.onThinking(speaker.participatorId)
 
-      const payload = await seminarWorker.SeminarRunner.handleChatRequest({
-        seminarId: id as number,
-        subTopic,
-        participatorId: speaker.participatorId,
-        intent: seminarWorker.Intent.DISCUSS,
-        round: this.round,
-        subRound: this.subRound,
-        prompts: {
-          hostMessage: topic,
-          generateAudio: true,
-          historyMessages,
-          archetype: dbBridge._Simulator.archetype(speaker.simulator)
-        }
-      })
-      if (payload) this.onChatResponse(payload)
+      this.guestRequest(subTopic, speaker.participatorId)
     }
   }
 
