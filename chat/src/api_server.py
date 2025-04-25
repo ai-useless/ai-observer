@@ -101,6 +101,7 @@ def get_client_host(request: Request) -> str:
 @app.exception_handler(asyncio.TimeoutError)
 async def timeout_exception_handler(request: Request, e: asyncio.TimeoutError):
     global errors
+    host = get_client_host(request)
     with mutex:
         errors += 1
     logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read or connect timeout{RESET} ... {errors}')
@@ -109,6 +110,7 @@ async def timeout_exception_handler(request: Request, e: asyncio.TimeoutError):
 @app.exception_handler(aiohttp.client_exceptions.ClientConnectorError)
 async def connector_error_handler(request: Request, e: aiohttp.client_exceptions.ClientConnectorError):
     global errors
+    host = get_client_host(request)
     with mutex:
         errors += 1
     logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Connection error{RESET} ... {errors}')
