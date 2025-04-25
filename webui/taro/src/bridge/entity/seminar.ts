@@ -340,7 +340,7 @@ export class ESeminar {
 
   stop = () => {}
 
-  guestRequest = (subTopic: string, participatorId: number) => {
+  guestRequest = (subTopic: string, participatorId: number, intent: seminarWorker.Intent) => {
     const { id } = this.seminar
     const historyMessages = this.historyMessages().get(subTopic) || []
 
@@ -351,7 +351,7 @@ export class ESeminar {
       seminarId: id as number,
       subTopic,
       participatorId: participatorId,
-      intent: seminarWorker.Intent.HOST_CHALLENGE,
+      intent,
       round: this.round,
       subRound: this.subRound,
       prompts: {
@@ -370,7 +370,7 @@ export class ESeminar {
       .catch((e) => {
         console.log(`Failed guest request: ${e}, retrying ...`)
         setTimeout(() => {
-          this.guestRequest(subTopic, participatorId)
+          this.guestRequest(subTopic, participatorId, intent)
         }, 1000)
       })
   }
@@ -400,7 +400,7 @@ export class ESeminar {
       this.onThinking(host.participatorId)
       this.lastRoundIsHost = true
 
-      this.guestRequest(subTopic, host.participatorId)
+      this.guestRequest(subTopic, host.participatorId, seminarWorker.Intent.HOST_CHALLENGE)
       return
     }
 
@@ -413,7 +413,7 @@ export class ESeminar {
     for (const speaker of speakers) {
       this.onThinking(speaker.participatorId)
 
-      this.guestRequest(subTopic, speaker.participatorId)
+      this.guestRequest(subTopic, speaker.participatorId, seminarWorker.Intent.DISCUSS)
     }
   }
 
