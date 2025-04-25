@@ -85,6 +85,7 @@ import * as msgs from '../../i18n/zh-CN'
 import { Image, View, ScrollView, RichText } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import CryptoJS from 'crypto-js'
+import { purify } from 'src/utils'
 
 import Outline from './Outline.vue'
 
@@ -358,12 +359,12 @@ const historyMessages = (): Map<string, string[]> => {
 
   displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(el.simulator.name + ' 的观点 ' + el.message)
+    _messages.push(el.simulator.name + ' 的观点: ' + purify.purifyText(el.message))
     messages.set(el.subTopic, _messages)
   })
   waitMessages.value.forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(el.message)
+    _messages.push(purify.purifyText(el.message))
     messages.set(el.subTopic, _messages)
   })
 
