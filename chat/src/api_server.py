@@ -9,9 +9,10 @@ import sys
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
 import logging
-from requests.exceptions import ConnectTimeout, ReadTimeout, Timeout
 import json
 import threading
+import aiohttp
+import asyncio
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
@@ -63,8 +64,8 @@ async def chat(
     messages: list[ChatMessage] = Body(..., embed=True) ,
     prompt: str = Body(...)
 ):
-    # url = 'https://llm.chutes.ai/v1/chat/completions'
-    url = 'http://47.238.224.37:8091/v1/chat/completions'
+    url = 'https://llm.chutes.ai/v1/chat/completions'
+    # url = 'http://47.238.224.37:8091/v1/chat/completions'
 
     payload = {
         'model': model,
@@ -78,11 +79,13 @@ async def chat(
         'Content-Type': 'application/json'
     }
 
+    timeout = aiohttp.ClientTimeout(connect=10, total=30)
     try:
-        response = requests.post(url, json=payload, headers=headers, timeout=(10, 20))
-        response.raise_for_status()
-        chat_response = ModelChatResponse(response.json())
-        return { 'content': chat_response.choices[0].message.content }
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
+                response.raise_for_status()
+                chat_response = ModelChatResponse(await response.json())
+                return { 'content': chat_response.choices[0].message.content }
     except Exception as e:
         raise e
 
@@ -95,6 +98,23 @@ def get_client_host(request: Request) -> str:
         host = request.client.host if request.client else "unknown"
     return host
 
+@app.exception_handler(asyncio.TimeoutError)
+async def timeout_exception_handler(request: Request, e: asyncio.TimeoutError):
+    global errors
+    host = get_client_host(request)
+    with mutex:
+        errors += 1
+    logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read or connect timeout{RESET} ... {errors}')
+    return JSONResponse({'error': f'{e}'}, status_code=502)
+
+@app.exception_handler(aiohttp.client_exceptions.ClientConnectorError)
+async def connector_error_handler(request: Request, e: aiohttp.client_exceptions.ClientConnectorError):
+    global errors
+    host = get_client_host(request)
+    with mutex:
+        errors += 1
+    logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Connection error{RESET} ... {errors}')
+    return JSONResponse({'error': f'{e}'}, status_code=502)
 
 class ApiElapseMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -110,29 +130,20 @@ class ApiElapseMiddleware(BaseHTTPMiddleware):
         start_at = time.time()
         try:
             response = await call_next(request)
+            if response.status_code != 200:
+                with mutex:
+                    errors += 1
+                logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}')
+                return response
+
             with mutex:
                 responses += 1
             logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET} ... {responses}')
             return response
-        except ConnectTimeout as e:
-            with mutex:
-                errors += 1
-            logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Connect timeout{RESET} ... {errors}')
-            return JSONResponse({'error': f'{e}'}, status_code=502)
-        except ReadTimeout as e:
-            with mutex:
-                errors += 1
-            logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read timeout{RESET} ... {errors}')
-            return JSONResponse({'error': f'{e}'}, status_code=502)
-        except Timeout as e:
-            with mutex:
-                errors += 1
-            logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read or connect timeout{RESET} ... {errors}')
-            return JSONResponse({'error': f'{e}'}, status_code=502)
         except Exception as e:
             with mutex:
                 errors += 1
-            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}: {e}')
+            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}')
             return JSONResponse({'error': f'{e}'}, status_code=502)
 
 if __name__ == '__main__':
