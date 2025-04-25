@@ -268,13 +268,14 @@ export class SeminarRunner {
     const textResp = await axios.post(
       /* model.endpoint || */ constants.FALLBACK_API,
       {
-        ai: model.name,
-        messages: [...(prompts.historyMessages || []), prompt].map((el) => {
+        model: model.name,
+        messages: (prompts.historyMessages || []).map((el) => {
           return {
-            role: 'user',
+            role: 'user', // TODO: if it's my model, it should be assistant
             content: el
           }
-        })
+        }),
+        prompt
       }
     )
 
