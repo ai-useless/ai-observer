@@ -5,4 +5,3 @@ export const purifyText = (html: string): string => {
   $('script').remove()
   return $.text().trim()
 }
-

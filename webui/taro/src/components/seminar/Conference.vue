@@ -2,6 +2,8 @@
   <View style='padding: 8px'>
     <scroll-view
       :scroll-y='true'
+      :show-scrollbar='false'
+      :enhanced='true'
       :scroll-with-animation='true'
       :style='{ height: chatBoxHeight + "px" }'
       ref='chatBox'
@@ -38,39 +40,15 @@
         </View>
       </View>
       <Outline :json='outline' :active-topic='activeTopic || ""' />
-      <View style='margin-top: 16px;'>
-        <View v-for='(message, index) in displayMessages' :key='index' :id='messageViewId(index === displayMessages.length - 1 ? typingMessage : message)'>
-          <View
-            v-if='!message.subTopicTitle'
-            :key='index'
-            :name='message.simulator.name + " | " + message.participator.role + " | " + message.model.name'
-            :avatar='message.simulator.avatar'
-            :stamp='message.datetime'
-            :text='[message.message]'
-            text-color='grey-9'
-            bg-color='grey-2'
-          >
-            <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px;'>
-              <View style='display: flex; background-color: red; height: 24px;'>
-                <View>{{ message.participator.role === dbModel.Role.HOST ? '主持人' : '嘉宾' }}</View>
-                <Image :src='message.simulator.avatar' mode='widthFix' style='margin-left: 4px; width: 24px; border-radius: 50%;' />
-                <View style='color: blue; font-weight: 600; margin-left: 8px;'>{{ message.simulator.name }}</View>
-                <Image :src='message.model.authorLogo' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
-                <Image :src='message.model.vendorLogo' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
-                <Image :src='message.model.modelLogo' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
-              </View>
-              <View style='font-size: 12px; color: gray;'>{{ message.simulator.personality }}</View>
-              <View style='font-size: 12px; color: gray;'>
-                {{ message.model.name }}
-              </View>
-            </View>
-            <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px;' />
-          </View>
-          <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600;'>
-            {{ message.subTopic }}
+        <View style='margin-top: 16px;'>
+          <View v-for='(message, index) in displayMessages' :key='index'>
+            <MessageCard :message='message' />
           </View>
         </View>
-      </View>
+      <Block>
+        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' />
+      </Block>
+      <View id='scrollBottomView'  />
     </scroll-view>
   </View>
 </template>
@@ -82,12 +60,14 @@ import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
-import { Image, View, ScrollView, RichText } from '@tarojs/components'
+import { View, ScrollView, Text, Block } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import CryptoJS from 'crypto-js'
 import { purify } from 'src/utils'
+import { Message } from './Message'
 
 import Outline from './Outline.vue'
+import MessageCard from './MessageCard.vue'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -96,36 +76,19 @@ const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
-const scrollIntoView = ref('')
+const scrollIntoView = ref('scrollBottomView')
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
 const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
-interface Message {
-  round: number
-  message: string
-  participator: dbModel.Participator
-  simulator: dbModel.Simulator
-  model: dbModel.Model
-  datetime: string
-  timestamp: number
-  audio: string
-  subTopicTitle: boolean
-  subTopic: string
-}
-
-const messageViewId = (message: Message) => {
-  return 'a' + CryptoJS.SHA256(message.message).toString()
-}
-
 const displayMessages = ref([] as Message[])
 const loading = ref(true)
 const messageCount = computed(() => displayMessages.value.length)
 const waitMessages = ref([] as Message[])
+const lastDisplayMessage = ref(undefined as unknown as Message)
 const typingMessage = ref(undefined as unknown as Message)
-const typingIndex = ref(0)
 const lastRound = ref(0)
 const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
@@ -164,7 +127,7 @@ const calculateTypingInterval = (duration: number) => {
 const scrollToBottom = () => {
   scrollIntoView.value = ''
   setTimeout(() => {
-    scrollIntoView.value = messageViewId(typingMessage.value)
+    scrollIntoView.value = 'scrollBottomView'
   }, 100)
 }
 
@@ -172,21 +135,25 @@ const typing = () => {
   if (!typingMessage.value && !waitMessages.value.length) return
 
   // If we have a message in typing, finish it
-  if (typingMessage.value && typingIndex.value < typingMessage.value.message.length) {
-    const matches = typingMessage.value.message.slice(typingIndex.value).match(/<[^>]+>/) || []
+  if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
+    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/<[^>]+>/) || []
     const appendLen = matches[0] ? matches[0].length : 1
-    displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value + appendLen)
-    typingIndex.value += appendLen
+    lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
     scrollToBottom()
     return
   }
+
+  if (lastDisplayMessage.value) displayMessages.value.push(lastDisplayMessage.value)
+  displayMessages.value.forEach((el) => {
+    const timestamp = timestamp2HumanReadable(el.timestamp)
+    el.datetime = msgs.default[timestamp.msg](timestamp.value)
+  })
 
   if (!waitMessages.value.length) return
   // If audio is still playing, do nothing
   if (audioPlayer.value && !audioPlayer.value.ended) return
 
   typingMessage.value = waitMessages.value[0]
-  typingIndex.value = 0
   waitMessages.value = waitMessages.value.slice(1)
 
   seminar.Seminar.speak(typingMessage.value.participator.id as number)
@@ -226,15 +193,10 @@ const typing = () => {
     })
   }
 
-  displayMessages.value.forEach((el) => {
-    const timestamp = timestamp2HumanReadable(el.timestamp)
-    el.datetime = msgs.default[timestamp.msg](timestamp.value)
-  })
-
-  displayMessages.value.push({
+  lastDisplayMessage.value = {
     ...typingMessage.value,
     message: ''
-  })
+  }
 
   scrollToBottom()
 }
