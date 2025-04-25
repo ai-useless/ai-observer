@@ -222,12 +222,6 @@ watch(participators, async () => {
   simulators.value = await entityBridge.EParticipator.simulators(participators.value)
 })
 
-watch(typingMessage, () => {
-  if (!typingMessage.value.audio?.length) return
-  const audio = typingMessage.value.audio
-  void playAudio(audio)
-})
-
 const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
   seminar.Seminar.stopThink(participatorId)
 
