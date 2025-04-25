@@ -6,21 +6,11 @@ from pydantic import BaseModel
 import os
 import sys
 from starlette.middleware.base import BaseHTTPMiddleware
-from fastapi.middleware.cors import CORSMiddleware
 import time
 import logging
-import re
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
-
-# Dev env
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
 
 RED = '\033[31m'
 GREEN = '\33[32m'
@@ -36,13 +26,6 @@ class ServerKit:
         self.data_dir = data_dir
 
 server_kit = None
-
-def process_content(content: str) -> str:
-    content = re.sub(r'<reasoning>[\s\S]*?</reasoning>', '', content)
-    
-    content = re.sub(r'<think>[\s\S]*?', '', content)
-    
-    return content
 
 class ChatMessage(BaseModel):
     role: str
@@ -88,20 +71,31 @@ async def chat(
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
         chat_response = ModelChatResponse(response.json())
-        return { 'content': process_content(chat_response.choices[0].message.content) }
+        return { 'content': chat_response.choices[0].message.content }
     except Exception as e:
         raise e
 
+
+def get_client_host(request: Request) -> str:
+    x_forwarded_for = request.headers.get("x-forwarded-for")
+    if x_forwarded_for:
+        host = x_forwarded_for.split(",")[0].strip()
+    else:
+        host = request.client.host if request.client else "unknown"
+    return host
+
+
 class ApiElapseMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        logger.info(f'{request.client.host} - {BOLD}{request.url.path}{RESET} ...')
+        host = get_client_host(request)
+        logger.info(f'{host} - {BOLD}{request.url.path}{RESET} ...')
         start_at = time.time()
         try:
             response = await call_next(request)
-            logger.info(f'{request.client.host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET}')
+            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET}')
             return response
         except Exception as e:
-            logger.info(f'{request.client.host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET}')
+            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET}')
             raise e
 
 if __name__ == '__main__':
