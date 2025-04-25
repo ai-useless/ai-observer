@@ -41,13 +41,11 @@
       </View>
       <Outline :json='outline' :active-topic='activeTopic || ""' />
       <View style='margin-top: 16px;'>
-        <View v-for='(message, index) in displayMessages' :key='index'>
+        <View v-for='message in displayMessages' :key='message.message'>
           <MessageCard :message='message' />
         </View>
-      </View>
-      <Block>
         <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='lastDisplayMessage.message' />
-      </Block>
+      </View>
       <View id='scrollBottomView'  />
     </scroll-view>
   </View>

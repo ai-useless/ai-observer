@@ -5,7 +5,6 @@
     :avatar='message.simulator.avatar'
     :stamp='message.datetime'
     :text='[message.message]'
-    :key='message.message'
     text-color='grey-9'
     bg-color='grey-2'
   >
@@ -23,9 +22,9 @@
         {{ message.model.name }}
       </View>
     </View>
-    <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px;' :key='message.message' />
+    <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px;' />
   </View>
-  <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600;' :key='message.subTopic'>
+  <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600;'>
     {{ message.subTopic }}
   </View>
 </template>
