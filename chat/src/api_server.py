@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Body, Request
+from fastapi.responses import JSONResponse
 import uvicorn
 import argparse
 import requests
@@ -83,7 +84,7 @@ async def chat(
         chat_response = ModelChatResponse(response.json())
         return { 'content': chat_response.choices[0].message.content }
     except Exception as e:
-        return { 'error': f'{e}' }
+        raise e
 
 
 def get_client_host(request: Request) -> str:
@@ -117,22 +118,22 @@ class ApiElapseMiddleware(BaseHTTPMiddleware):
             with mutex:
                 errors += 1
             logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Connect timeout{RESET} ... {errors}')
-            raise e
+            return JSONResponse({'error': f'{e}'}, status_code=502)
         except ReadTimeout as e:
             with mutex:
                 errors += 1
             logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read timeout{RESET} ... {errors}')
-            raise e
+            return JSONResponse({'error': f'{e}'}, status_code=502)
         except Timeout as e:
             with mutex:
                 errors += 1
             logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read or connect timeout{RESET} ... {errors}')
-            raise e
+            return JSONResponse({'error': f'{e}'}, status_code=502)
         except Exception as e:
             with mutex:
                 errors += 1
-            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}')
-            raise e
+            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}: {e}')
+            return JSONResponse({'error': f'{e}'}, status_code=502)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Chat proxy of AI Observer')
