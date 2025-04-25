@@ -40,16 +40,16 @@
         </View>
       </View>
       <Outline :json='outline' :active-topic='activeTopic || ""' />
-        <View style='margin-top: 16px;'>
-          <View v-for='(message, index) in displayMessages' :key='index'>
-            <MessageCard :message='message' />
-          </View>
+      <View style='margin-top: 16px;'>
+        <View v-for='(message, index) in displayMessages' :key='index'>
+          <MessageCard :message='message' />
         </View>
+      </View>
+      <Block>
+        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='lastDisplayMessage.message' />
+      </Block>
       <View id='scrollBottomView'  />
     </scroll-view>
-    <View id='lastMessageCard' :style='{ position: "fixed", bottom: bottomViewHeight + "px", left: 0, height: bottomViewHeight + "px", transition: 0.1 }'>
-      <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' />
-    </View>
   </View>
 </template>
 
@@ -77,7 +77,6 @@ const simulators = ref([] as entityBridge.PSimulator[])
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const scrollIntoView = ref('scrollBottomView')
-const bottomViewHeight = ref(0)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -125,18 +124,9 @@ const calculateTypingInterval = (duration: number) => {
   }
 }
 
-const adjustLastMessageHeight = () => {
-  const query = Taro.createSelectorQuery()
-  query.select('#lastMessageCard').boundingClientRect()
-  query.exec(res => {
-    if (res && res[0]) bottomViewHeight.value = res[0].height
-  })
-}
-
 const scrollToBottom = () => {
   scrollIntoView.value = ''
   setTimeout(() => {
-    adjustLastMessageHeight()
     scrollIntoView.value = 'scrollBottomView'
   }, 100)
 }
@@ -347,7 +337,7 @@ const historyMessages = (): Map<string, string[]> => {
 }
 
 onMounted(async () => {
-  chatBoxHeight.value = window.innerHeight - 106
+  chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 106
   Taro.showLoading({
     title: '主持人正在准备台本'
   })
@@ -358,7 +348,7 @@ onMounted(async () => {
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
   await eSeminar.value.start()
 
-  typingTicker.value = window.setInterval(typing, 40)
+  typingTicker.value = window.setInterval(typing, 100)
 })
 
 onBeforeUnmount(() => {
