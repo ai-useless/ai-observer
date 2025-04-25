@@ -30,4 +30,13 @@ export class EParticipator {
       isHost: true
     }
   }
+
+  static simulator = (participator: dbModel.Participator) => {
+    const simulator = _Simulator.simulator(participator.simulatorId)
+    return {
+      participatorId: participator.id,
+      simulator: simulator,
+      isHost: participator.role === dbModel.Role.HOST
+    } as PSimulator
+  }
 }

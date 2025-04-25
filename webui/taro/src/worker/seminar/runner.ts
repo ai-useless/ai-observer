@@ -261,19 +261,21 @@ export class SeminarRunner {
     const textResp = await axios.post(
       /* model.endpoint || */ constants.FALLBACK_API,
       {
-        ai: model.name,
-        messages: [...(prompts.historyMessages || []), prompt].map((el) => {
+        model: model.name,
+        messages: (prompts.historyMessages || []).map((el) => {
           return {
-            role: 'user',
+            role: 'user', // TODO: if it's my model, it should be assistant
             content: el
           }
-        })
+        }),
+        prompt
       }
     )
 
     const generateAudio = await dbBridge._Setting.get(
       dbModel.SettingKey.GENERATE_AUDIO
     )
+    prompts.generateAudio = false
     if (!prompts.generateAudio || !generateAudio) {
       return {
         text: (textResp.data as Record<string, string>).content,
