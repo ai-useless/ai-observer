@@ -11,6 +11,9 @@ import logging
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
+
+RED = '\033[31m'
+GREEN = '\33[32m'
 BOLD = '\033[1m'
 RESET = '\033[0m'
 
@@ -47,7 +50,7 @@ class ChatResponse(BaseModel):
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
     model: str = Body(...),
-    messages: list[ChatMessage] = Body(...),
+    messages: list[ChatMessage] = Body(..., embed=True) ,
     prompt: str = Body(...)
 ):
     url = 'https://llm.chutes.ai/v1/chat/completions'
@@ -55,11 +58,8 @@ async def chat(
     payload = {
         'model': model,
         'messages': [
-            *messages,
-            {
-                'role': 'user',
-                'content': prompt,
-            }
+            *[{ 'role': message.role, 'content': message.content } for message in messages],
+            {'role': 'user', 'content': prompt}
         ]
     }
     headers = {
@@ -78,9 +78,13 @@ async def chat(
 class ApiElapseMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         start_at = time.time()
-        response = await call_next(request)
-        logger.info(f'Invoke {BOLD}{request.url}{RESET} take {BOLD}{time.time() - start_at}{RESET}s')
-        return response
+        try:
+            response = await call_next(request)
+            logger.info(f'{BOLD}{request.url}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET}')
+            return response
+        except Exception as e:
+            logger.info(f'{BOLD}{request.url}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET}')
+            raise e
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Chat proxy of AI Observer')
