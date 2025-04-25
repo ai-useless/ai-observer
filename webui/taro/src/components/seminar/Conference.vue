@@ -51,10 +51,10 @@
             bg-color='grey-2'
           >
             <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px;'>
-              <View style='display: flex;'>
-                <Image :src='message.simulator.avatar' mode='widthFix' style='width: 24px; border-radius: 50%;' />
+              <View style='display: flex; background-color: red; height: 24px;'>
+                <View>{{ message.participator.role === dbModel.Role.HOST ? '主持人' : '嘉宾' }}</View>
+                <Image :src='message.simulator.avatar' mode='widthFix' style='margin-left: 4px; width: 24px; border-radius: 50%;' />
                 <View style='color: blue; font-weight: 600; margin-left: 8px;'>{{ message.simulator.name }}</View>
-                <View style='margin-left: 4px;'>{{ message.participator.role === dbModel.Role.HOST ? '主持人' : '嘉宾' }}</View>
                 <Image :src='message.model.authorLogo' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
                 <Image :src='message.model.vendorLogo' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
                 <Image :src='message.model.modelLogo' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
@@ -291,6 +291,16 @@ watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
+const strip = (html: string): string => {
+  return  html
+    .replace(/<!DOCTYPE html[^>]*>/gi, '')
+    .replace(/<html[^>]*>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<body[^>]*>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .trim()
+}
+
 const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
   seminar.Seminar.stopThink(participatorId)
 
@@ -315,7 +325,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
 
   waitMessages.value.push({
     round,
-    message,
+    message: strip(message),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as dbModel.Simulator,
     model: dbBridge._Model.model(participator.modelId) as dbModel.Model,
