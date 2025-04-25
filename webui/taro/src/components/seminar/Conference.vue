@@ -4,6 +4,8 @@
       :scroll-y='true'
       :show-scrollbar='false'
       :enhanced='true'
+      :scrollTop='scrollTop'
+      @on-scroll='(e) => onScroll(e)'
       :scroll-with-animation='true'
       :style='{ height: chatBoxHeight + "px" }'
       ref='chatBox'
@@ -60,7 +62,7 @@ import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
-import { View, ScrollView, Text, Block } from '@tarojs/components'
+import { View, ScrollView, Text, Block, ScrollViewProps, BaseEventOrig } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import CryptoJS from 'crypto-js'
 import { purify } from 'src/utils'
@@ -77,6 +79,7 @@ const simulators = ref([] as entityBridge.PSimulator[])
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const scrollIntoView = ref('scrollBottomView')
+const scrollTop = ref(0)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -109,6 +112,11 @@ const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
+
+const onScroll = (e: BaseEventOrig) => {
+  console.log(e, 111)
+  scrollTop.value = e.detail.scrollTop
+}
 
 watch(messageCount, () => {
   if (messageCount.value && loading.value) {
@@ -143,7 +151,10 @@ const typing = () => {
     return
   }
 
-  if (lastDisplayMessage.value) displayMessages.value.push(lastDisplayMessage.value)
+  if (lastDisplayMessage.value) {
+    displayMessages.value.push(lastDisplayMessage.value)
+    lastDisplayMessage.value = undefined as unknown as Message
+  }
   displayMessages.value.forEach((el) => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
     el.datetime = msgs.default[timestamp.msg](timestamp.value)
