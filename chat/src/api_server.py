@@ -1,12 +1,18 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Request
 import uvicorn
 import argparse
 import requests
 from pydantic import BaseModel
 import os
 import sys
+from starlette.middleware.base import BaseHTTPMiddleware
+import time
+import logging
 
 app = FastAPI()
+logger = logging.getLogger('uvicorn')
+BOLD = '\033[1m'
+RESET = '\033[0m'
 
 class ServerKit:
     api_token: str
@@ -69,6 +75,13 @@ async def chat(
     except Exception as e:
         raise e
 
+class ApiElapseMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start_at = time.time()
+        response = await call_next(request)
+        logger.info(f'Invoke {BOLD}{request.url}{RESET} take {BOLD}{time.time() - start_at}{RESET}s')
+        return response
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Chat proxy of AI Observer')
 
@@ -85,4 +98,5 @@ if __name__ == '__main__':
         print('You must provide valid api token')
         sys.exit(0)
 
+    app.add_middleware(ApiElapseMiddleware)
     uvicorn.run(app, host='0.0.0.0', port=args.port)
