@@ -8,9 +8,17 @@ import sys
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
 import logging
+from requests.exceptions import ConnectTimeout, ReadTimeout, Timeout
+import json
+import threading
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
+
+mutex = threading.Lock()
+_requests = 0
+responses = 0
+errors = 0
 
 RED = '\033[31m'
 GREEN = '\33[32m'
@@ -46,6 +54,7 @@ class ModelChatResponse:
 
 class ChatResponse(BaseModel):
     content: str | None = None
+    error: str | None = None
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
@@ -53,7 +62,8 @@ async def chat(
     messages: list[ChatMessage] = Body(..., embed=True) ,
     prompt: str = Body(...)
 ):
-    url = 'https://llm.chutes.ai/v1/chat/completions'
+    # url = 'https://llm.chutes.ai/v1/chat/completions'
+    url = 'http://47.238.224.37:8091/v1/chat/completions'
 
     payload = {
         'model': model,
@@ -68,12 +78,12 @@ async def chat(
     }
 
     try:
-        response = requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers, timeout=(10, 20))
         response.raise_for_status()
         chat_response = ModelChatResponse(response.json())
         return { 'content': chat_response.choices[0].message.content }
     except Exception as e:
-        raise e
+        return { 'error': f'{e}' }
 
 
 def get_client_host(request: Request) -> str:
@@ -87,15 +97,41 @@ def get_client_host(request: Request) -> str:
 
 class ApiElapseMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        global _requests
+        global responses
+        global errors
+
+        with mutex:
+            _requests += 1
+
         host = get_client_host(request)
-        logger.info(f'{host} - {BOLD}{request.url.path}{RESET} ...')
+        logger.info(f'{host} - {BOLD}{request.url.path}{RESET} ... {_requests}')
         start_at = time.time()
         try:
             response = await call_next(request)
-            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET}')
+            with mutex:
+                responses += 1
+            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET} ... {responses}')
             return response
+        except ConnectTimeout as e:
+            with mutex:
+                errors += 1
+            logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Connect timeout{RESET} ... {errors}')
+            raise e
+        except ReadTimeout as e:
+            with mutex:
+                errors += 1
+            logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read timeout{RESET} ... {errors}')
+            raise e
+        except Timeout as e:
+            with mutex:
+                errors += 1
+            logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read or connect timeout{RESET} ... {errors}')
+            raise e
         except Exception as e:
-            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET}')
+            with mutex:
+                errors += 1
+            logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}')
             raise e
 
 if __name__ == '__main__':
