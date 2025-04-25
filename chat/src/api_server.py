@@ -9,6 +9,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 import time
 import logging
+import re
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
@@ -35,6 +36,13 @@ class ServerKit:
         self.data_dir = data_dir
 
 server_kit = None
+
+def process_content(content: str) -> str:
+    content = re.sub(r'<reasoning>[\s\S]*?</reasoning>', '', content)
+    
+    content = re.sub(r'<think>[\s\S]*?', '', content)
+    
+    return content
 
 class ChatMessage(BaseModel):
     role: str
@@ -80,7 +88,7 @@ async def chat(
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()
         chat_response = ModelChatResponse(response.json())
-        return { 'content': chat_response.choices[0].message.content }
+        return { 'content': process_content(chat_response.choices[0].message.content) }
     except Exception as e:
         raise e
 
