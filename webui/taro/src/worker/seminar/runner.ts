@@ -266,10 +266,10 @@ export class SeminarRunner {
         messages: (prompts.historyMessages || []).map((el) => {
           return {
             role: 'user', // TODO: if it's my model, it should be assistant
-            content: el
+            content: purify.purifyText(el)
           }
         }),
-        prompt
+        prompt: purify.purifyText(prompt || '')
       }
     )
 
@@ -289,9 +289,7 @@ export class SeminarRunner {
     }
 
     try {
-      const speechContent = (textResp.data as Record<string, string>).content
-        .replace(/<[^>]+>/g, '. ')
-        .replace(/<script[\s\S]*?<\/script>/gi, '. ')
+      const speechContent = purify.purifyText((textResp.data as Record<string, string>).content)
       const speakerVoice = await SeminarRunner.speakerVoice(participatorId)
       const audioResp = await axios.post(
         /* model.endpoint || */ constants.TEXT2SPEECH_API,
