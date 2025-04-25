@@ -1,11 +1,9 @@
 <template>
   <View style='padding: 8px'>
     <scroll-view
-      :scroll-y='true'
-      :show-scrollbar='false'
-      :enhanced='true'
-      :scrollTop='scrollTop'
-      @on-scroll='(e) => onScroll(e)'
+      scrollY={true}
+      showScrollbar={false}
+      enhanced={true}
       :scroll-with-animation='true'
       :style='{ height: chatBoxHeight + "px" }'
       ref='chatBox'
@@ -47,11 +45,11 @@
             <MessageCard :message='message' />
           </View>
         </View>
-      <Block>
-        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' />
-      </Block>
       <View id='scrollBottomView'  />
     </scroll-view>
+    <View id='lastMessageCard' :style='{ position: "fixed", bottom: bottomViewHeight + "px", left: 0, height: bottomViewHeight + "px", transition: 0.1 }'>
+      <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' />
+    </View>
   </View>
 </template>
 
@@ -62,7 +60,7 @@ import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
-import { View, ScrollView, Text, Block, ScrollViewProps, BaseEventOrig } from '@tarojs/components'
+import { View, ScrollView, Text, Block } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import CryptoJS from 'crypto-js'
 import { purify } from 'src/utils'
@@ -79,7 +77,7 @@ const simulators = ref([] as entityBridge.PSimulator[])
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const scrollIntoView = ref('scrollBottomView')
-const scrollTop = ref(0)
+const bottomViewHeight = ref(0)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -113,11 +111,6 @@ const audioPlayer = ref(undefined as unknown as AudioPlayer)
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
-const onScroll = (e: BaseEventOrig) => {
-  console.log(e, 111)
-  scrollTop.value = e.detail.scrollTop
-}
-
 watch(messageCount, () => {
   if (messageCount.value && loading.value) {
     Taro.hideLoading()
@@ -132,9 +125,18 @@ const calculateTypingInterval = (duration: number) => {
   }
 }
 
+const adjustLastMessageHeight = () => {
+  const query = Taro.createSelectorQuery()
+  query.select('#lastMessageCard').boundingClientRect()
+  query.exec(res => {
+    if (res && res[0]) bottomViewHeight.value = res[0].height
+  })
+}
+
 const scrollToBottom = () => {
   scrollIntoView.value = ''
   setTimeout(() => {
+    adjustLastMessageHeight()
     scrollIntoView.value = 'scrollBottomView'
   }, 100)
 }
