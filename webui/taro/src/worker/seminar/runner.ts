@@ -3,6 +3,7 @@ import { constants } from '../../constant'
 import { dbBridge } from '../../bridge'
 import { Intent, Prompt } from './prompt'
 import { dbModel } from '../../model'
+import { purify } from 'src/utils'
 
 export enum SeminarEventType {
   CHAT_REQUEST = 'ChatRequest',
@@ -276,7 +277,11 @@ export class SeminarRunner {
       dbModel.SettingKey.GENERATE_AUDIO
     )
     prompts.generateAudio = false
-    if (!prompts.generateAudio || !generateAudio) {
+    if (
+      !prompts.generateAudio ||
+      !generateAudio ||
+      !(textResp.data as Record<string, string>).content
+    ) {
       return {
         text: (textResp.data as Record<string, string>).content,
         audio: ''
@@ -285,6 +290,8 @@ export class SeminarRunner {
 
     try {
       const speechContent = (textResp.data as Record<string, string>).content
+        .replace(/<[^>]+>/g, '. ')
+        .replace(/<script[\s\S]*?<\/script>/gi, '. ')
       const speakerVoice = await SeminarRunner.speakerVoice(participatorId)
       const audioResp = await axios.post(
         /* model.endpoint || */ constants.TEXT2SPEECH_API,
@@ -321,7 +328,7 @@ export class SeminarRunner {
       participatorId,
       Intent.OUTLINE_SUBTOPICS,
       {
-        topicMaterial: response
+        topicMaterial: purify.purifyText(response)
       }
     )
     if (!_response) return
@@ -351,7 +358,7 @@ export class SeminarRunner {
       intent,
       prompts
     )
-    if (!response) return
+    if (!response || !response.text) return
 
     const json = await SeminarRunner.postProcess(
       seminar.topic,

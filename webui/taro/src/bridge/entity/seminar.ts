@@ -123,14 +123,14 @@ export class ESeminar {
     return this.canNext
   }
 
-  start = async () => {
+  start = () => {
     const { id } = this.seminar
     const host = this.host()
 
     if (!host) throw new Error('Invalid host')
 
     this.onThinking(host.participatorId as number)
-    const payload = await seminarWorker.SeminarRunner.handleChatRequest({
+    seminarWorker.SeminarRunner.handleChatRequest({
       seminarId: id as number,
       subTopic: undefined as unknown as string,
       participatorId: host.participatorId as number,
@@ -144,10 +144,22 @@ export class ESeminar {
         rounds: this.totalTopics
       }
     })
-    if (payload) this.onChatResponse(payload)
+      .then((payload) => {
+        if (payload) this.onChatResponse(payload)
+        else
+          setTimeout(() => {
+            this.start()
+          }, 1000)
+      })
+      .catch((e) => {
+        console.log(`Failed start seminar: ${e}`)
+        setTimeout(() => {
+          this.start()
+        }, 1000)
+      })
   }
 
-  startTopic = async () => {
+  startTopic = () => {
     const { id, uid } = this.seminar
     const host = this.host()
 
@@ -157,7 +169,7 @@ export class ESeminar {
     const simulators = EParticipator.simulators(participators)
 
     this.onThinking(host.participatorId as number)
-    const payload = await seminarWorker.SeminarRunner.handleChatRequest({
+    seminarWorker.SeminarRunner.handleChatRequest({
       seminarId: id as number,
       subTopic: undefined as unknown as string,
       participatorId: host.participatorId as number,
@@ -175,10 +187,22 @@ export class ESeminar {
         )
       }
     })
-    if (payload) this.onChatResponse(payload)
+      .then((payload) => {
+        if (payload) this.onChatResponse(payload)
+        else
+          setTimeout(() => {
+            this.startTopic()
+          }, 1000)
+      })
+      .catch((e) => {
+        console.log(`Failed start topic: ${e}`)
+        setTimeout(() => {
+          this.startTopic()
+        }, 1000)
+      })
   }
 
-  startNextSubTopic = async (prevSubTopic?: string) => {
+  startNextSubTopic = (prevSubTopic?: string) => {
     const { id } = this.seminar
     const host = this.host()
 
@@ -196,7 +220,7 @@ export class ESeminar {
     }
 
     this.onThinking(host.participatorId as number)
-    const payload = await seminarWorker.SeminarRunner.handleChatRequest({
+    seminarWorker.SeminarRunner.handleChatRequest({
       seminarId: id as number,
       subTopic: this.subTopics[index],
       participatorId: host.participatorId as number,
@@ -214,7 +238,19 @@ export class ESeminar {
         )
       }
     })
-    if (payload) this.onChatResponse(payload)
+      .then((payload) => {
+        if (payload) this.onChatResponse(payload)
+        else
+          setTimeout(() => {
+            this.startNextSubTopic(prevSubTopic)
+          }, 1000)
+      })
+      .catch((e) => {
+        console.log(`Failed start subtopic: ${e}`)
+        setTimeout(() => {
+          this.startNextSubTopic(prevSubTopic)
+        }, 1000)
+      })
   }
 
   concludeSubTopic = async (subTopic: string) => {
@@ -228,7 +264,7 @@ export class ESeminar {
     const historyMessages = this.historyMessages().get(subTopic) || []
 
     this.onThinking(host.participatorId as number)
-    const payload = await seminarWorker.SeminarRunner.handleChatRequest({
+    seminarWorker.SeminarRunner.handleChatRequest({
       seminarId: id as number,
       subTopic,
       participatorId: host.participatorId as number,
@@ -244,7 +280,19 @@ export class ESeminar {
         )
       }
     })
-    if (payload) this.onChatResponse(payload)
+      .then((payload) => {
+        if (payload) this.onChatResponse(payload)
+        else
+          setTimeout(() => {
+            this.concludeSubTopic(subTopic)
+          }, 1000)
+      })
+      .catch((e) => {
+        console.log(`Failed conclude subtopic: ${e}`)
+        setTimeout(() => {
+          this.concludeSubTopic(subTopic)
+        }, 1000)
+      })
   }
 
   concludeTopic = async () => {
@@ -259,7 +307,7 @@ export class ESeminar {
     )
 
     this.onThinking(host.participatorId as number)
-    const payload = await seminarWorker.SeminarRunner.handleChatRequest({
+    seminarWorker.SeminarRunner.handleChatRequest({
       seminarId: id as number,
       subTopic: this.subTopics[this.subTopics.length - 1],
       participatorId: host.participatorId as number,
@@ -275,7 +323,19 @@ export class ESeminar {
         )
       }
     })
-    if (payload) this.onChatResponse(payload)
+      .then((payload) => {
+        if (payload) this.onChatResponse(payload)
+        else
+          setTimeout(() => {
+            this.concludeTopic()
+          }, 1000)
+      })
+      .catch((e) => {
+        console.log(`Failed conclude topic: ${e}`)
+        setTimeout(() => {
+          this.concludeTopic()
+        }, 1000)
+      })
   }
 
   stop = () => {}
@@ -302,15 +362,17 @@ export class ESeminar {
           simulator.simulator.id as number
         )
       }
-    }).then((payload) => {
-      if (payload) this.onChatResponse(payload)
-        else console.log('I really dont know what to say')
-    }).catch((e) => {
-      console.log(`Failed guest request: ${e}, retrying ...`)
-      setTimeout(() => {
-        this.guestRequest(subTopic, participatorId)
-      }, 1000)
     })
+      .then((payload) => {
+        if (payload) this.onChatResponse(payload)
+        else console.log('I really dont know what to say')
+      })
+      .catch((e) => {
+        console.log(`Failed guest request: ${e}, retrying ...`)
+        setTimeout(() => {
+          this.guestRequest(subTopic, participatorId)
+        }, 1000)
+      })
   }
 
   nextGuests = async (subTopic: string) => {
