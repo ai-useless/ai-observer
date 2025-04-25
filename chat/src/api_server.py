@@ -12,6 +12,8 @@ import logging
 from requests.exceptions import ConnectTimeout, ReadTimeout, Timeout
 import json
 import threading
+import aiohttp
+import asyncio
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
@@ -63,8 +65,8 @@ async def chat(
     messages: list[ChatMessage] = Body(..., embed=True) ,
     prompt: str = Body(...)
 ):
-    # url = 'https://llm.chutes.ai/v1/chat/completions'
-    url = 'http://47.238.224.37:8091/v1/chat/completions'
+    url = 'https://llm.chutes.ai/v1/chat/completions'
+    # url = 'http://47.238.224.37:8091/v1/chat/completions'
 
     payload = {
         'model': model,
@@ -78,11 +80,13 @@ async def chat(
         'Content-Type': 'application/json'
     }
 
+    timeout = aiohttp.ClientTimeout(connect=10, total=30)
     try:
-        response = requests.post(url, json=payload, headers=headers, timeout=(10, 20))
-        response.raise_for_status()
-        chat_response = ModelChatResponse(response.json())
-        return { 'content': chat_response.choices[0].message.content }
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
+                response.raise_for_status()
+                chat_response = ModelChatResponse(await response.json())
+                return { 'content': chat_response.choices[0].message.content }
     except Exception as e:
         raise e
 
