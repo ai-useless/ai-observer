@@ -110,6 +110,12 @@ class ApiElapseMiddleware(BaseHTTPMiddleware):
         start_at = time.time()
         try:
             response = await call_next(request)
+            if response.status_code != 200:
+                with mutex:
+                    errors += 1
+                logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}')
+                return response
+
             with mutex:
                 responses += 1
             logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET} ... {responses}')
