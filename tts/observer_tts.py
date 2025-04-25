@@ -1,7 +1,7 @@
 import uuid
 from io import BytesIO
 from enum import Enum
-from fastapi.responses import StreamingResponse
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 from chutes.image import Image
 from chutes.chute import Chute, NodeSelector
@@ -10,7 +10,7 @@ image = (
     Image(
         username="kikakkz",
         name="observer-tts",
-        tag="0.0.4",
+        tag="0.0.7",
         readme="## Text-to-speech using hexgrade/Kokoro-82M",
     )
     .from_base("parachutes/base-python:3.12.7")
@@ -198,7 +198,7 @@ async def initialize(self):
     stream=False,
     output_content_type="audio/wav",
 )
-async def speak(self, args: InputArgs) -> StreamingResponse:
+async def speak(self, args: InputArgs) -> Response:
     import soundfile as sf
     import torch
     from utils import clean_html_bs, split_text_into_chunks
@@ -223,9 +223,27 @@ async def speak(self, args: InputArgs) -> StreamingResponse:
 
     buffer.seek(0)
     filename = f"{str(uuid.uuid4())}.wav"
-    return StreamingResponse(
-        buffer,
+    return Response(
+        content=buffer.getvalue(),
         media_type="audio/wav",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
+@chute.cord(
+    public_api_path="/echo",
+    public_api_method="POST",
+    stream=False,
+    output_content_type="text/html",
+)
+async def echo(self, args: InputArgs) -> Response:
+    import random
+    random_number = random.random()
+    print(f"args.text={args.text}")
+    response_text = str(random_number) + args.text + str(random_number) + args.voice.value
+    return Response(
+        content=response_text,
+        media_type="text/html",
+        headers={"Content-Type": "text/html"},
     )
 

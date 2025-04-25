@@ -1,0 +1,11 @@
+[project]
+name = "observer-chat"
+version = "0.1"
+description = "Chat proxy of AI Observer."
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 128
