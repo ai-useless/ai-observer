@@ -77,13 +77,14 @@ async def chat(
 
 class ApiElapseMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        logger.info(f'{request.client.host} - {BOLD}{request.url.path}{RESET} ...')
         start_at = time.time()
         try:
             response = await call_next(request)
-            logger.info(f'{BOLD}{request.url}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET}')
+            logger.info(f'{request.client.host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {GREEN}SUCCESS{RESET}')
             return response
         except Exception as e:
-            logger.info(f'{BOLD}{request.url}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET}')
+            logger.info(f'{request.client.host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET}')
             raise e
 
 if __name__ == '__main__':
