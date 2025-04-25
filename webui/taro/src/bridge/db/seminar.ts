@@ -1,0 +1,43 @@
+import { _Model } from './model'
+import { _Simulator } from './simulator'
+import { dbModel } from '../../model'
+import { _Participator } from './participator'
+import { uuid } from 'src/utils'
+
+export class _Seminar {
+  private static seminars = [] as dbModel.Seminar[]
+
+  static create = (topic: string) => {
+    const _uid = uuid.newUuid()
+    const count = Math.ceil(Math.random() * 5 + 5)
+    const participators = [] as dbModel.Participator[]
+
+    for (let i = 0; i < count; i++) {
+      const model = _Model.randomPeek(i === 0 ? true : undefined)
+      const simulator = _Simulator.randomPeek(i === 0 ? true : undefined)
+      participators.push({
+        seminarUid: _uid,
+        role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
+        simulatorId: simulator.id as number,
+        modelId: model.id as number
+      })
+    }
+
+    _Participator.createParticipators(participators)
+    _Seminar.seminars.push({
+      id: _Seminar.seminars.length,
+      uid: _uid,
+      topic: topic
+    })
+
+    return _uid
+  }
+
+  static seminar = (_uid?: string, id?: number) => {
+    return _Seminar.seminars.find((el) => {
+      if (_uid !== undefined) return el.uid === _uid
+      if (id !== undefined) return el.id === id
+      return false
+    })
+  }
+}

@@ -1,10 +1,12 @@
 <template>
-  <view class="index">
-    <CounterVue />
-  </view>
+  <View>
+    <Seminar />
+  </View>
 </template>
 
 <script setup lang='ts'>
-import './index.scss'
-import CounterVue from '../../components/CounterVue.vue'
+import { View } from '@tarojs/components';
+
+import './index.sass'
+import Seminar from '../../components/seminar/Seminar.vue'
 </script>

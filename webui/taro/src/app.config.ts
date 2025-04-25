@@ -1,11 +1,10 @@
 export default {
-  pages: [
-    'pages/index/IndexPage'
-  ],
+  pages: ['pages/index/IndexPage'],
+  workers: 'worker',
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: 'WeChat',
+    navigationBarTitleText: 'AGI观点',
     navigationBarTextStyle: 'black'
   }
 }
