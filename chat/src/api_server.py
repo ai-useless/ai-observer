@@ -6,11 +6,20 @@ from pydantic import BaseModel
 import os
 import sys
 from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 import time
 import logging
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
+
+# Dev env
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 RED = '\033[31m'
 GREEN = '\33[32m'
