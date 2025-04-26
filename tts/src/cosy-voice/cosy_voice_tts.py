@@ -229,7 +229,7 @@ async def initialize(self):
     self.generator = CosyVoiceGenerator()
 
 @chute.cord(
-    public_api_path="/v1/speak",
+    public_api_path="/speak",
     public_api_method="POST",
     stream=False,
     output_content_type="audio/wav",
