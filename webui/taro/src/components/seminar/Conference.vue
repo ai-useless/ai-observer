@@ -202,19 +202,9 @@ const typing = () => {
   scrollToBottom()
 }
 
-const playAudio = (base64Data: string): Promise<AudioPlayer | undefined> => {
-  const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
-  const fileCid = CryptoJS.SHA256(cleanBase64).toString()
-  const filePath = `${Taro.env.USER_DATA_PATH}/${fileCid}.mp3`
-  const fs = Taro.getFileSystemManager()
-
-  try {
-    fs.writeFileSync(filePath, cleanBase64)
-  } catch(e) {
-    return Promise.reject(`Failed write file: ${e}`)
-  }
+const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
   const context = Taro.createInnerAudioContext()
-  context.src = filePath
+  context.src = audioUrl
 
   const player = {
     context: context,
@@ -223,13 +213,11 @@ const playAudio = (base64Data: string): Promise<AudioPlayer | undefined> => {
   } as AudioPlayer
 
   context.onEnded(() => {
-    fs.removeSavedFile({filePath})
     player.ended = true
   })
 
   return new Promise((resolve, reject) => {
     context.onError((e) => {
-      fs.removeSavedFile({filePath})
       player.ended = true
       reject(`Failed play audio: ${JSON.stringify(e)}`)
     })

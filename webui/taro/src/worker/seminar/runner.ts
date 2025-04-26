@@ -276,7 +276,6 @@ export class SeminarRunner {
     const generateAudio = await dbBridge._Setting.get(
       dbModel.SettingKey.GENERATE_AUDIO
     )
-    prompts.generateAudio = false
     if (
       !prompts.generateAudio ||
       !generateAudio ||
@@ -292,13 +291,12 @@ export class SeminarRunner {
       const speechContent = purify.purifyText(
         (textResp.data as Record<string, string>).content
       )
-      const speakerVoice = await SeminarRunner.speakerVoice(participatorId)
+      // const voice = await SeminarRunner.speakerVoice(participatorId)
       const audioResp = await axios.post(
         /* model.endpoint || */ constants.TEXT2SPEECH_API,
         {
           text: speechContent,
-          speakerVoice,
-          speed: 1.1
+          voice: 'huyihu',
         }
       )
       return {
