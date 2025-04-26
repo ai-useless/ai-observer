@@ -16,7 +16,7 @@ cd $OUTPUT_DIR/cosy-voice
 
 # CosyVoice
 chutes build cosy_voice_tts:chute --local
-# docker run --gpus all --rm -it -e CHUTES_EXECUTION_CONTEXT=REMOTE -p 8800:8000 cosy-voice-tts:0.0.1 chutes run cosy_voice_tts:chute --port 8000 --dev
+# docker run --gpus all --rm -it -v $PWD/.chutes.output/cache:/home/chutes/.cache -e CHUTES_EXECUTION_CONTEXT=REMOTE -p 8800:8000 cosy-voice-tts:0.0.2 chutes run cosy_voice_tts:chute --port 8000 --dev
 
 # chutes build cosy_voice_tts:chute --public --wait --debug
 # chutes deploy cosy_voice_tts:chute --public

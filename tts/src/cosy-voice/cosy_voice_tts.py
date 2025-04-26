@@ -9,7 +9,7 @@ image = (
     Image(
         username="kikakkz",
         name="cosy-voice-tts",
-        tag="0.0.1",
+        tag="0.0.2",
         readme="## Text-to-speech using FunAudioLLM/CosyVoice",
     )
     .from_base("parachutes/base-python:3.10.17")
@@ -239,7 +239,7 @@ async def speak(self, args: InputArgs) -> Response:
     """
     Generate SSE audio chunks from input text.
     """
-    text = purify(args.text)
+    text = purify_text(args.text)
     audio_bytes = self.generator.generate_speech(
         voice_name=args.voice,
         target_text=text
