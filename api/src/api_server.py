@@ -115,7 +115,7 @@ async def speak(
         'voice': voice
     }
 
-    timeout = aiohttp.ClientTimeout(connect=10, total=120)
+    timeout = aiohttp.ClientTimeout(connect=10, total=59)
     try:
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
