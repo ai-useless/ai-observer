@@ -33,10 +33,12 @@ RESET = '\033[0m'
 class ServerKit:
     api_token: str
     data_dir: str
+    audio_host: str
 
-    def __init__(self, api_token: str, data_dir: str):
+    def __init__(self, api_token: str, data_dir: str, audio_host: str):
         self.api_token = api_token
         self.data_dir = data_dir
+        self.audio_host = audio_host
 
 server_kit = None
 
@@ -99,7 +101,6 @@ async def chat(
 
 @app.post('/api/v1/speak', response_model=SpeakResponse)
 async def speak(
-    request: Request,
     text: str = Body(...),
     voice: str = Body(...),
 ):
@@ -124,7 +125,7 @@ async def speak(
                 file_cid = hashlib.sha256(audio_bytes).hexdigest()
                 with open(f'{server_kit.data_dir}/{file_cid}.wav', 'wb') as f:
                     f.write(audio_bytes)
-                return {'audio_url': f'{request.url.scheme}://{request.url.hostname}/audios/{file_cid}'}
+                return {'audio_url': f'{server_kit.audio_host}/audios/{file_cid}'}
     except Exception as e:
         raise e
 
@@ -200,11 +201,12 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, default=80, help='API port')
     parser.add_argument('--api-token', type=str, default='', help='API token of api.chutes.ai')
     parser.add_argument('--data-dir', type=str, default='./.data', help='Data dir for audio/video/text, default=./.data')
+    parser.add_argument('--audio-host', type=str, default='http://api.meipu-ai.cn', help='Host of audio file service')
 
     args = parser.parse_args()
 
     os.makedirs(args.data_dir, exist_ok=True)
-    server_kit = ServerKit(args.api_token, args.data_dir)
+    server_kit = ServerKit(args.api_token, args.data_dir, args.audio_host)
 
     if len(args.api_token) == 0:
         print('You must provide valid api token')
