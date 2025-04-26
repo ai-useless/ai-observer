@@ -9,7 +9,7 @@ from chutes.chute import Chute, NodeSelector
 image = (
     Image(
         username="kikakkz",
-        name="observer-tts",
+        name="kokoro-tts",
         tag="0.0.7",
         readme="## Text-to-speech using hexgrade/Kokoro-82M",
     )
@@ -32,7 +32,7 @@ image = (
 
 chute = Chute(
     username="kikakkz",
-    name="observer-tts",
+    name="kokoro-tts",
     tagline="Text-to-speech with hexgrad/Kokoro-82M",
     readme="Kokoro is a frontier TTS model for its size of 82 million parameters (text in/audio out).",
     image=image,
