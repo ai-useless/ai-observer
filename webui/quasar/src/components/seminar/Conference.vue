@@ -193,16 +193,8 @@ const typing = () => {
   })
 }
 
-const playAudio = async (base64Data: string) => {
-  const cleanBase64 = base64Data.replace(/^data:audio\/\w+;base64,/, '')
-
-  const byteCharacters = atob(cleanBase64)
-  const byteArrays = new Uint8Array(byteCharacters.length)
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteArrays[i] = byteCharacters.charCodeAt(i)
-  }
-  const blob = new Blob([byteArrays], { type: 'audio/mpeg' })
-  const audioUrl = URL.createObjectURL(blob)
+const playAudio = async (audioUrl: string) => {
+  console.log(111, audioUrl)
   const audioPlayer = new Audio(audioUrl)
   audioPlayer.loop = false
   await audioPlayer.play()

@@ -8,8 +8,6 @@ export class _Message {
     content: string,
     audio: string
   ) => {
-    const cid = audio.length ? await saveAudio(audio) : ''
-
     // If prompt and content is long, store its hash
     if (prompt.length > 32) prompt = await saveText(prompt)
     if (content.length > 32) content = await saveText(content)
@@ -20,7 +18,7 @@ export class _Message {
       prompt,
       content,
       timestamp: Date.now(),
-      audioCid: cid
+      audioCid: audio
     })
   }
 }
