@@ -16,6 +16,7 @@ import asyncio
 import io
 from scipy.io import wavfile
 import hashlib
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
@@ -213,4 +214,6 @@ if __name__ == '__main__':
         sys.exit(0)
 
     app.add_middleware(ApiElapseMiddleware)
+    app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'], max_age=3600)
+
     uvicorn.run(app, host='0.0.0.0', port=args.port)
