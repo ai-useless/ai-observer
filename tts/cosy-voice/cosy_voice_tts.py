@@ -91,7 +91,7 @@ image = (
     .run_command("git clone https://github.com/jakys/test-voice.git")
     .run_command("mkdir -p /app/preset_voices/")
     .run_command("mv -f test-voice/* /app/preset_voices/")
-    .add("utils.py", "/app/")
+    .add("../utils.py", "/app/")
     .add("download.py", "/app/")
     .add("frontend.py", "/app/cosyvoice/cli/frontend.py")
     .run_command("python download.py")
