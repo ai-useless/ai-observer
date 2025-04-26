@@ -27,7 +27,7 @@ image = (
     .run_command("git clone https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh")
     .run_command("cd Kokoro-82M-v1.1-zh; git checkout 01e7505bd6a7a2ac4975463114c3a7650a9f7218")
     .run_command("mv -f Kokoro-82M-v1.1-zh/* /app/")
-    .add("utils/utils.py", "/app/")
+    .add("utils.py", "/app/")
 )
 
 chute = Chute(
