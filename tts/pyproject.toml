@@ -1,0 +1,11 @@
+[project]
+name = "observer-tts"
+version = "0.1"
+description = "TTS proxy of AI Observer."
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 128
