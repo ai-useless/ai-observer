@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Body, Request
 from fastapi.responses import JSONResponse
-from typing import Optional
 import uvicorn
 import argparse
 import requests
@@ -102,7 +101,7 @@ async def chat(
 async def speak(
     request: Request,
     text: str = Body(...),
-    voice: Optional[str] = 'huyihu',
+    voice: str = Body(...),
 ):
     url = 'https://kikakkz-cosy-voice-tts.chutes.ai/speak'
     headers = {
@@ -115,7 +114,7 @@ async def speak(
         'voice': voice
     }
 
-    timeout = aiohttp.ClientTimeout(connect=10, total=30)
+    timeout = aiohttp.ClientTimeout(connect=10, total=120)
     try:
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
