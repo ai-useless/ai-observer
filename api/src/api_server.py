@@ -154,6 +154,15 @@ async def connector_error_handler(request: Request, e: aiohttp.client_exceptions
     logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Connection error{RESET} ... {errors}')
     return JSONResponse({'error': f'{e}'}, status_code=502)
 
+@app.exception_handler(aiohttp.client_exceptions.ClientResponseError)
+async def connector_error_handler(request: Request, e: aiohttp.client_exceptions.ClientResponseError):
+    global errors
+    host = get_client_host(request)
+    with mutex:
+        errors += 1
+    logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Response error{RESET} ... {errors}')
+    return JSONResponse({'error': f'{e}'}, status_code=502)
+
 class ApiElapseMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         global _requests
