@@ -27,7 +27,7 @@ image = (
     .run_command("git clone https://huggingface.co/hexgrad/Kokoro-82M-v1.1-zh")
     .run_command("cd Kokoro-82M-v1.1-zh; git checkout 01e7505bd6a7a2ac4975463114c3a7650a9f7218")
     .run_command("mv -f Kokoro-82M-v1.1-zh/* /app/")
-    .add("utils.py", "/app/")
+    .add("utils/utils.py", "/app/")
 )
 
 chute = Chute(
@@ -193,7 +193,7 @@ async def initialize(self):
 
 
 @chute.cord(
-    public_api_path="/speak",
+    public_api_path="/v1/speak",
     public_api_method="POST",
     stream=False,
     output_content_type="audio/wav",
@@ -201,14 +201,14 @@ async def initialize(self):
 async def speak(self, args: InputArgs) -> Response:
     import soundfile as sf
     import torch
-    from utils import clean_html_bs, split_text_into_chunks
+    from utils import purify_text, chunk_test
     """
     Generate SSE audio chunks from input text.
     """
-    cleaned_text = clean_html_bs(args.text)
+    text = purify_text(args.text)
     segments = []
-    text_chunks = split_text_into_chunks(cleaned_text, 128)
-    for i, chunk in enumerate(text_chunks, 1):
+    chunks = chunk_text(text, 128)
+    for i, chunk in enumerate(chunks, 1):
         generator = self.zh_pipeline(chunk, voice=self.voice_packs[args.voice.value], speed=1.1)
         try:
             audio_segment = next(generator).audio
@@ -229,21 +229,4 @@ async def speak(self, args: InputArgs) -> Response:
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
 
-
-@chute.cord(
-    public_api_path="/echo",
-    public_api_method="POST",
-    stream=False,
-    output_content_type="text/html",
-)
-async def echo(self, args: InputArgs) -> Response:
-    import random
-    random_number = random.random()
-    print(f"args.text={args.text}")
-    response_text = str(random_number) + args.text + str(random_number) + args.voice.value
-    return Response(
-        content=response_text,
-        media_type="text/html",
-        headers={"Content-Type": "text/html"},
-    )
 
