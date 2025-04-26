@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Body, Request
 from fastapi.responses import JSONResponse
+from typing import Optional
 import uvicorn
 import argparse
 import requests
@@ -13,6 +14,7 @@ import json
 import threading
 import aiohttp
 import asyncio
+import io
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
@@ -58,6 +60,10 @@ class ChatResponse(BaseModel):
     content: str | None = None
     error: str | None = None
 
+class SpeakResponse(BaseModel):
+    audio_url: str | None = None
+    error: str | None = None
+
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
     model: str = Body(...),
@@ -86,6 +92,38 @@ async def chat(
                 response.raise_for_status()
                 chat_response = ModelChatResponse(await response.json())
                 return { 'content': chat_response.choices[0].message.content }
+    except Exception as e:
+        raise e
+
+
+@app.post('/api/v1/speak', response_model=SpeakResponse)
+async def speak(
+    request: Request,
+    text: str = Body(...),
+    voice: Optional[str] = 'huyihu',
+):
+    url = 'https://kikakkz-cosy-voice-tts.chutes.ai/speak'
+    headers = {
+        'Authorization': f'Bearer {server_kit.api_token}',
+        'Content-Type': 'application/json'
+    }
+
+    payload = {
+        'text': text,
+        'voice': voice
+    }
+
+    timeout = aiohttp.ClientTimeout(connect=10, total=30)
+    try:
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
+                response.raise_for_status()
+                audio_bytes = io.BytesIO(response.content)
+                # Write file
+                file_cid = hash(audio_bytes)
+                with open(f'{server_kit.data_dir}/{file_cid}.wav', 'wb') as f:
+                    f.write(audio_bytes)
+                return {'audio_url': f'{request.url.schema}://{request.url.hostname}/audios/{file_cid}'}
     except Exception as e:
         raise e
 
