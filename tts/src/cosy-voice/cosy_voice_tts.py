@@ -96,7 +96,7 @@ image = (
     .add("utils.py", "/app/")
     .add("download.py", "/app/")
     .add("frontend.py", "/app/cosyvoice/cli/frontend.py")
-    .run_command("python download.py")
+    # .run_command("python download.py")
 )
 
 chute = Chute(
@@ -158,12 +158,12 @@ class CosyVoiceGenerator:
     def __init__(self, model_path="pretrained_models/CosyVoice2-0.5B"):
         from cosyvoice.cli.cosyvoice import CosyVoice2
         self.cosyvoice = CosyVoice2(model_path)
-    
+
     def _merge_audio_segments(self, waveforms):
         import torch
         if any(wave.dim() != 2 for wave in waveforms):
             raise ValueError("Invalid audio dimension, expected 2D tensor")
-        
+
         return torch.cat(waveforms, dim=1)
 
     def _waveform_to_bytes(self, waveform):
@@ -181,7 +181,7 @@ class CosyVoiceGenerator:
         byte_data = buffer.read()
         buffer.close()
         return byte_data
-        
+
     def generate_speech(self, voice_name, target_text):
         from cosyvoice.utils.file_utils import load_wav
 
@@ -193,12 +193,12 @@ class CosyVoiceGenerator:
         voice_info = VOICE_LIBRARY.get(voice_name)
         if not voice_info:
             raise ValueError(f"Voice configuration not found: {voice_name}")
-        
+
         if not os.path.exists(voice_info["audio_path"]):
             raise FileNotFoundError(f"The audio file does not exist: {voice_info['audio_path']}")
-            
+
         prompt_speech = load_wav(voice_info["audio_path"], 16000)
-        
+
         results = self.cosyvoice.inference_zero_shot(
             tts_text=target_text,
             prompt_text=voice_info["prompt_text"],
@@ -221,6 +221,10 @@ async def initialize(self):
     """
     Load the model and all voice packs.
     """
+
+    from modelscope import snapshot_download
+    snapshot_download('iic/CosyVoice2-0.5B', local_dir='pretrained_models/CosyVoice2-0.5B')
+    snapshot_download('iic/CosyVoice-ttsfrd', local_dir='pretrained_models/CosyVoice-ttsfrd')
 
     self.generator = CosyVoiceGenerator()
 
