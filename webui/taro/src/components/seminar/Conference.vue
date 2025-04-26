@@ -2,12 +2,10 @@
   <View style='padding: 8px'>
     <scroll-view
       scrollY={true}
-      showScrollbar={false}
-      enhanced={true}
       :scroll-with-animation='true'
       :style='{ height: chatBoxHeight + "px" }'
       ref='chatBox'
-      :scroll-into-view='scrollIntoView'
+      :scroll-top='scrollTop'
     >
       <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray;'>
         {{ topic }}
@@ -55,12 +53,11 @@
 import { dbBridge, entityBridge } from 'src/bridge'
 import { seminar } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
+import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import * as msgs from '../../i18n/zh-CN'
-import { View, ScrollView, Text, Block } from '@tarojs/components'
+import { View, ScrollView, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import CryptoJS from 'crypto-js'
 import { purify } from 'src/utils'
 import { Message } from './Message'
 
@@ -75,6 +72,7 @@ const simulators = ref([] as entityBridge.PSimulator[])
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const scrollIntoView = ref('scrollBottomView')
+const scrollTop = ref(999999)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -86,6 +84,7 @@ const loading = ref(true)
 const messageCount = computed(() => displayMessages.value.length)
 const waitMessages = ref([] as Message[])
 const lastDisplayMessage = ref(undefined as unknown as Message)
+const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.message : undefined)
 const typingMessage = ref(undefined as unknown as Message)
 const lastRound = ref(0)
 const requesting = ref(false)
@@ -113,6 +112,11 @@ watch(messageCount, () => {
     Taro.hideLoading()
     loading.value = false
   }
+})
+
+watch(lastMessageText, async () => {
+  await nextTick()
+  scrollTop.value += 1
 })
 
 const calculateTypingInterval = (duration: number) => {

@@ -291,17 +291,17 @@ export class SeminarRunner {
       const speechContent = purify.purifyText(
         (textResp.data as Record<string, string>).content
       )
-      // const voice = await SeminarRunner.speakerVoice(participatorId)
+      const voice = await SeminarRunner.speakerVoice(participatorId)
       const audioResp = await axios.post(
         /* model.endpoint || */ constants.TEXT2SPEECH_API,
         {
           text: speechContent,
-          voice: 'huyihu',
+          voice,
         }
       )
       return {
         text: (textResp.data as Record<string, string>).content,
-        audio: (audioResp.data as Record<string, string>).data
+        audio: (audioResp.data as Record<string, string>).audio_url
       }
     } catch {
       return {
