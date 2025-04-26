@@ -20,9 +20,11 @@ image = (
     .set_user("chutes")
     .run_command("pip install --upgrade pip")
     .run_command("pip install setuptools==75.8.0")
-    .add("local_whl/*", "/app/")
-    .run_command("pip install --user /app/Cython-3.0.12-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
-    .run_command("pip install --user /app/pynini-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
+    # .add("local_whl/*", "/app/")
+    # .run_command("pip install --user /app/Cython-3.0.12-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
+    # .run_command("pip install --user /app/pynini-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
+    .run_command("pip install Cython==3.0.12")
+    .run_command("pip install pynini==2.1.5")
     .run_command(
         "pip install --extra-index-url https://download.pytorch.org/whl/cu121 "
         "--extra-index-url https://aiinfra.pkgs.visualstudio.com/PublicPackages/_packaging/onnxruntime-cuda-12/pypi/simple/ "
@@ -91,7 +93,7 @@ image = (
     .run_command("git clone https://github.com/jakys/test-voice.git")
     .run_command("mkdir -p /app/preset_voices/")
     .run_command("mv -f test-voice/* /app/preset_voices/")
-    .add("../utils.py", "/app/")
+    .add("utils/utils.py", "/app/")
     .add("download.py", "/app/")
     .add("frontend.py", "/app/cosyvoice/cli/frontend.py")
     .run_command("python download.py")
@@ -223,20 +225,20 @@ async def initialize(self):
     self.generator = CosyVoiceGenerator()
 
 @chute.cord(
-    public_api_path="/speak",
+    public_api_path="/v1/speak",
     public_api_method="POST",
     stream=False,
     output_content_type="audio/wav",
 )
 async def speak(self, args: InputArgs) -> Response:
-    from utils import clean_html_bs
+    from utils import purify_text
     """
     Generate SSE audio chunks from input text.
     """
-    cleaned_text = clean_html_bs(args.text)
+    text = purify(args.text)
     audio_bytes = self.generator.generate_speech(
         voice_name=args.voice,
-        target_text=cleaned_text
+        target_text=text
     )
 
     if audio_bytes:
