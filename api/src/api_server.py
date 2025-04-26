@@ -15,6 +15,8 @@ import threading
 import aiohttp
 import asyncio
 import io
+from scipy.io import wavfile
+import hashlib
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
@@ -118,12 +120,12 @@ async def speak(
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
                 response.raise_for_status()
-                audio_bytes = io.BytesIO(response.content)
+                audio_bytes = await response.read()
                 # Write file
-                file_cid = hash(audio_bytes)
+                file_cid = hashlib.sha256(audio_bytes).hexdigest()
                 with open(f'{server_kit.data_dir}/{file_cid}.wav', 'wb') as f:
                     f.write(audio_bytes)
-                return {'audio_url': f'{request.url.schema}://{request.url.hostname}/audios/{file_cid}'}
+                return {'audio_url': f'{request.url.scheme}://{request.url.hostname}/audios/{file_cid}'}
     except Exception as e:
         raise e
 
