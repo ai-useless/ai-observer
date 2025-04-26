@@ -125,7 +125,7 @@ async def speak(
                 file_cid = hashlib.sha256(audio_bytes).hexdigest()
                 with open(f'{server_kit.data_dir}/{file_cid}.wav', 'wb') as f:
                     f.write(audio_bytes)
-                return {'audio_url': f'{server_kit.audio_host}/audios/{file_cid}'}
+                return {'audio_url': f'{server_kit.audio_host}/audios/{file_cid}.wav'}
     except Exception as e:
         raise e
 
