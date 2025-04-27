@@ -288,7 +288,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
 
   waitMessages.value.push({
     round,
-    message: purify.purifyThink(strip(message)),
+    message: strip(purify.purifyThink(message)),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as dbModel.Simulator,
     model: dbBridge._Model.model(participator.modelId) as dbModel.Model,
