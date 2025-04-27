@@ -140,7 +140,7 @@ const typing = () => {
 
   // If we have a message in typing, finish it
   if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
-    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/<[^>]+>/) || []
+    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
     const appendLen = matches[0] ? matches[0].length : 1
     lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
     scrollToBottom()
