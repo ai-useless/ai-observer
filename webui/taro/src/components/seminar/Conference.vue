@@ -288,8 +288,6 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   lastRound.value = round
   lastTopic.value = subTopic
 
-  console.log(message, strip(purify.purifyThink(message)))
-
   waitMessages.value.push({
     round,
     message: strip(purify.purifyThink(message)),
