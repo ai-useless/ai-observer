@@ -42,10 +42,10 @@
       </View>
       <Outline :json='outline' :active-topic='activeTopic || ""' />
       <View style='margin-top: 16px;'>
-        <View v-for='message in displayMessages' :key='message.message'>
+        <View v-for='(message, index) in displayMessages' :key='index'>
           <MessageCard :message='message' />
         </View>
-        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='lastDisplayMessage.message' />
+        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
       </View>
       <View id='scrollBottomView'  />
     </scroll-view>
@@ -74,7 +74,6 @@ const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
-const scrollIntoView = ref('scrollBottomView')
 const scrollTop = ref(999999)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
@@ -129,13 +128,6 @@ const calculateTypingInterval = (duration: number) => {
   }
 }
 
-const scrollToBottom = () => {
-  scrollIntoView.value = ''
-  setTimeout(() => {
-    scrollIntoView.value = 'scrollBottomView'
-  }, 100)
-}
-
 const typing = () => {
   if (!typingMessage.value && !waitMessages.value.length) return
 
@@ -144,7 +136,6 @@ const typing = () => {
     const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
     const appendLen = matches[0] ? matches[0].length + 1 : 1
     lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
-    scrollToBottom()
     return
   }
 
@@ -205,8 +196,6 @@ const typing = () => {
     ...typingMessage.value,
     message: ''
   }
-
-  scrollToBottom()
 }
 
 const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
