@@ -5,14 +5,7 @@ export const purifyText = (html: string): string => {
   $('script').remove()
   $('sup').remove()
   $('think').remove()
-  return $.text().trim()
-}
-
-export const purifyKeepSub = (html: string): string => {
-  const $ = cheerio.load(html)
-  $('script').remove()
-  $('think').remove()
-  return $.text().trim()
+  return $.text().trim().replace(/^\[\d\].*$/gm, '')
 }
 
 export const purifyThink = (html: string): string =>{
