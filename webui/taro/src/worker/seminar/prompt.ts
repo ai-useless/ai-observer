@@ -30,7 +30,8 @@ enum PromptType {
   WITH_HISTORY_ANALYSIS,
   WITH_HISTORY_CONCLUSION,
   WITH_HUMAN_WORDS,
-  WITHOUT_ABSENT_GUESTS
+  WITHOUT_ABSENT_GUESTS,
+  WITHOUT_POLITICAL
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -39,7 +40,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格') as RequirementFunc],
   [
     PromptType.IDENT_2_SPACE,
-    (() => ') 分级资料按照2个空格缩进') as RequirementFunc
+    (() => ') 分级资料按照2个空格缩进，参考资料独立成行并用方括号括起来的数字开头') as RequirementFunc
   ],
   [
     PromptType.WITH_HTML,
@@ -123,6 +124,10 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     PromptType.WITHOUT_ABSENT_GUESTS,
     (() =>
       ') 如果嘉宾及其观点没有出现在本轮讨论，不要邀请他们回答，也不要将其作为在场嘉宾加以分析，但是你可以引用不在场的嘉宾的观点') as RequirementFunc
+  ],
+  [
+    PromptType.WITHOUT_POLITICAL,
+    (() => '不要出现跟国家政要相关的事情，不要出现跟国家政策相悖的言论') as RequirementFunc
   ]
 ])
 
@@ -141,7 +146,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.MERGE_SPACES,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -163,7 +169,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_ANALYSIS,
       PromptType.WITH_HUMAN_WORDS,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -180,7 +187,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -198,7 +206,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -216,7 +225,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -235,7 +245,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_CONCLUSION,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -253,7 +264,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -272,7 +284,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_CONCLUSION,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ]
 ])
@@ -301,9 +314,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topic: string,
       rounds: number,
       archetype: string
-    ) => `作为主持人，你的人物原型是${archetype}，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题，要求只输出主题和主题
-          相关素材（格式如下：本期主题：xxxxx (1).xxxxx 素材：xxxx (2).xxxxxxx 素材：xxxxxxx。标题和素材之间显示换行，不同主题之间显示换行。
-          要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
+    ) => `作为主持人，你的人物原型是${archetype}，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题。如果该主题不符合公序良俗，
+          跟国家领导人相关，或者违背国家现行政策，返回请求主题不支持。要求只输出主题和主题相关素材（格式如下：本期主题：xxxxx (1).xxxxx 素材：xxxx
+          (2).xxxxxxx 素材：xxxxxxx。标题独立一行，主题独立一行，素材独立一行。独立一行表示用html的p标签包裹。要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
   ],
   [
     Intent.DISCUSS,
