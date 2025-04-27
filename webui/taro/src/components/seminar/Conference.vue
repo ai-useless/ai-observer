@@ -6,6 +6,8 @@
       :style='{ height: chatBoxHeight + "px" }'
       ref='chatBox'
       :scroll-top='scrollTop'
+      showScrollbar={false}
+      enhanced={true}
     >
       <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray;'>
         {{ topic }}
@@ -97,9 +99,9 @@ const lastTopic = ref(undefined as unknown as string)
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
-  ended: boolean
   playing: boolean
   duration: number
+  durationTicker: number
 }
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
@@ -121,7 +123,7 @@ watch(lastMessageText, async () => {
 
 const calculateTypingInterval = (duration: number) => {
   if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
-    const interval = Math.ceil(duration * 1000 / typingMessage.value.message.length)
+    const interval = Math.ceil(duration * 1000 / purify.purifyText(typingMessage.value.message).length)
     typingInterval.value = interval
   }
 }
@@ -156,7 +158,7 @@ const typing = () => {
 
   if (!waitMessages.value.length) return
   // If audio is still playing, do nothing
-  if (audioPlayer.value && !audioPlayer.value.ended) return
+  if (audioPlayer.value && audioPlayer.value.playing) return
 
   typingMessage.value = waitMessages.value[0]
   waitMessages.value = waitMessages.value.slice(1)
@@ -212,24 +214,39 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
 
   const player = {
     context: context,
-    ended: false,
+    playing: false,
     duration: context.duration
   } as AudioPlayer
 
-  context.onEnded(() => {
-    player.ended = true
-  })
-
   return new Promise((resolve, reject) => {
     context.onError((e) => {
-      player.ended = true
+      player.playing = false
+      if (player.ticker >= 0) {
+        window.clearInterval(player.ticker)
+        player.ticker = -1
+      }
       reject(`Failed play audio: ${JSON.stringify(e)}`)
     })
     context.onCanplay(() => {
       context.play()
       player.playing = true
-      player.duration = context.duration
-      resolve(player)
+
+      player.ticker = window.setInterval(() => {
+        if (context.duration) {
+          window.clearInterval(player.ticker)
+          player.ticker = -1
+          player.duration = context.duration
+          resolve(player)
+          return
+        }
+      }, 100)
+    })
+    context.onEnded(() => {
+      player.playing = false
+      if (player.ticker >= 0) {
+        window.clearInterval(player.ticker)
+        player.ticker = -1
+      }
     })
   })
 }

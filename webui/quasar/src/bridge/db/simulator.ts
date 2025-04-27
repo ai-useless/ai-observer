@@ -18,7 +18,7 @@ export class _Simulator {
       avatar: luxunAvatar,
       personality: '知识丰富，关心前沿科技的科技公司创始人',
       host: false,
-      speakerVoice: 'jay',
+      speakerVoice: 'xiaoge',
       archetype: '朱重八',
       title: '明朝开国皇帝朱元璋'
     },
