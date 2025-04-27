@@ -17,6 +17,8 @@ import io
 from scipy.io import wavfile
 import hashlib
 from fastapi.middleware.cors import CORSMiddleware
+from pydub import AudioSegment
+from audio import chunk_text, concurrent_audio_requests, merge_audio_buffers
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
@@ -99,36 +101,20 @@ async def chat(
     except Exception as e:
         raise e
 
-
 @app.post('/api/v1/speak', response_model=SpeakResponse)
 async def speak(
     text: str = Body(...),
     voice: str = Body(...),
 ):
-    url = 'https://kikakkz-cosy-voice-tts.chutes.ai/speak'
-    headers = {
-        'Authorization': f'Bearer {server_kit.api_token}',
-        'Content-Type': 'application/json'
-    }
+    chunks = chunk_text(text)
+    audio_buffers = await concurrent_audio_requests(chunks, voice, server_kit.api_token, max_concurrency=5)
 
-    payload = {
-        'text': text,
-        'voice': voice
-    }
+    file_name = merge_audio_buffers(
+        audio_buffers=[b for b in audio_buffers if b],
+        output_path=f'{server_kit.data_dir}'
+    )
 
-    timeout = aiohttp.ClientTimeout(connect=10, total=59)
-    try:
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
-                response.raise_for_status()
-                audio_bytes = await response.read()
-                # Write file
-                file_cid = hashlib.sha256(audio_bytes).hexdigest()
-                with open(f'{server_kit.data_dir}/{file_cid}.wav', 'wb') as f:
-                    f.write(audio_bytes)
-                return {'audio_url': f'{server_kit.audio_host}/audios/{file_cid}.wav'}
-    except Exception as e:
-        raise e
+    return {'audio_url': f'{server_kit.audio_host}/audios/{file_name}'}
 
 
 def get_client_host(request: Request) -> str:
