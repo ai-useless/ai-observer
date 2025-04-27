@@ -261,6 +261,8 @@ const strip = (html: string): string => {
     .replace(/<\/html>/gi, '')
     .replace(/<body[^>]*>/gi, '')
     .replace(/<\/body>/gi, '')
+    .replace(/<head[^>]*>/gi, '')
+    .replace(/<\/head>/gi, '')
     .trim()
 }
 
@@ -285,6 +287,8 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
 
   lastRound.value = round
   lastTopic.value = subTopic
+
+  console.log(message, strip(purify.purifyThink(message)))
 
   waitMessages.value.push({
     round,
