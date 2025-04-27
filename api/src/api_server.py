@@ -2,23 +2,17 @@ from fastapi import FastAPI, Body, Request
 from fastapi.responses import JSONResponse
 import uvicorn
 import argparse
-import requests
 from pydantic import BaseModel
 import os
 import sys
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
 import logging
-import json
 import threading
 import aiohttp
 import asyncio
-import io
-from scipy.io import wavfile
-import hashlib
 from fastapi.middleware.cors import CORSMiddleware
-from pydub import AudioSegment
-from audio import chunk_text, concurrent_audio_requests, merge_audio_buffers
+from audio import AudioGenerate
 
 app = FastAPI()
 logger = logging.getLogger('uvicorn')
@@ -106,15 +100,10 @@ async def speak(
     text: str = Body(...),
     voice: str = Body(...),
 ):
-    chunks = chunk_text(text)
-    audio_buffers = await concurrent_audio_requests(chunks, voice, server_kit.api_token, max_concurrency=5)
+    generator = AudioGenerate()
+    audio_name = await generator.generate_audio(text, voice, server_kit.api_token, server_kit.data_dir, max_concurrency=5)
 
-    file_name = merge_audio_buffers(
-        audio_buffers=[b for b in audio_buffers if b],
-        output_path=f'{server_kit.data_dir}'
-    )
-
-    return {'audio_url': f'{server_kit.audio_host}/audios/{file_name}'}
+    return {'audio_url': f'{server_kit.audio_host}/audios/{audio_name}'}
 
 
 def get_client_host(request: Request) -> str:
