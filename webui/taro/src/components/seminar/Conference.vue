@@ -222,9 +222,9 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
   return new Promise((resolve, reject) => {
     context.onError((e) => {
       player.playing = false
-      if (player.ticker >= 0) {
-        window.clearInterval(player.ticker)
-        player.ticker = -1
+      if (player.durationTicker >= 0) {
+        window.clearInterval(player.durationTicker)
+        player.durationTicker = -1
       }
       reject(`Failed play audio: ${JSON.stringify(e)}`)
     })
@@ -232,10 +232,10 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
       context.play()
       player.playing = true
 
-      player.ticker = window.setInterval(() => {
+      player.durationTicker = window.setInterval(() => {
         if (context.duration) {
-          window.clearInterval(player.ticker)
-          player.ticker = -1
+          window.clearInterval(player.durationTicker)
+          player.durationTicker = -1
           player.duration = context.duration
           resolve(player)
           return
@@ -244,9 +244,9 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
     })
     context.onEnded(() => {
       player.playing = false
-      if (player.ticker >= 0) {
-        window.clearInterval(player.ticker)
-        player.ticker = -1
+      if (player.durationTicker >= 0) {
+        window.clearInterval(player.durationTicker)
+        player.durationTicker = -1
       }
     })
   })
