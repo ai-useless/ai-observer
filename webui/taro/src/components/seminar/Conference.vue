@@ -8,6 +8,7 @@
       :scroll-top='scrollTop'
       showScrollbar={false}
       enhanced={true}
+      showsVerticalScrollIndicator={false}
     >
       <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray;'>
         {{ topic }}
@@ -141,7 +142,7 @@ const typing = () => {
   // If we have a message in typing, finish it
   if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
     const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
-    const appendLen = matches[0] ? matches[0].length : 1
+    const appendLen = matches[0] ? matches[0].length + 1 : 1
     lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
     scrollToBottom()
     return
@@ -298,7 +299,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
 
   waitMessages.value.push({
     round,
-    message: strip(message),
+    message: purify.purifyThink(strip(message)),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as dbModel.Simulator,
     model: dbBridge._Model.model(participator.modelId) as dbModel.Model,
