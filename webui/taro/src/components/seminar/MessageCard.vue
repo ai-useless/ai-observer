@@ -8,7 +8,7 @@
     text-color='grey-9'
     bg-color='grey-2'
   >
-    <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px;'>
+    <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px; margin-bottom: 8px;'>
       <View style='display: flex; height: 24px;'>
         <View>{{ message.participator.role === dbModel.Role.HOST ? '主持人' : '嘉宾' }}</View>
         <Image :src='message.simulator.avatar' mode='widthFix' style='margin-left: 4px; width: 24px; border-radius: 50%;' />
