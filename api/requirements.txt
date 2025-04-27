@@ -4,3 +4,4 @@ pydantic
 aiohttp
 scipy
 pydub
+bs4
