@@ -2,3 +2,6 @@ __pycache__
 ckpts
 local_whl
 .chutes.output
+node_modules
+.quasar
+project.private.config.json

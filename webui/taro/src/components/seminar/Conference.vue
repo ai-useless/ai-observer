@@ -6,6 +6,9 @@
       :style='{ height: chatBoxHeight + "px" }'
       ref='chatBox'
       :scroll-top='scrollTop'
+      showScrollbar={false}
+      enhanced={true}
+      showsVerticalScrollIndicator={false}
     >
       <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray;'>
         {{ topic }}
@@ -39,10 +42,10 @@
       </View>
       <Outline :json='outline' :active-topic='activeTopic || ""' />
       <View style='margin-top: 16px;'>
-        <View v-for='message in displayMessages' :key='message.message'>
+        <View v-for='(message, index) in displayMessages' :key='index'>
           <MessageCard :message='message' />
         </View>
-        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='lastDisplayMessage.message' />
+        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
       </View>
       <View id='scrollBottomView'  />
     </scroll-view>
@@ -71,7 +74,6 @@ const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
-const scrollIntoView = ref('scrollBottomView')
 const scrollTop = ref(999999)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
@@ -97,9 +99,9 @@ const lastTopic = ref(undefined as unknown as string)
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
-  ended: boolean
   playing: boolean
   duration: number
+  durationTicker: number
 }
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
@@ -121,16 +123,9 @@ watch(lastMessageText, async () => {
 
 const calculateTypingInterval = (duration: number) => {
   if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
-    const interval = Math.ceil(duration * 1000 / typingMessage.value.message.length)
+    const interval = Math.ceil(duration * 1000 / purify.purifyText(typingMessage.value.message).length)
     typingInterval.value = interval
   }
-}
-
-const scrollToBottom = () => {
-  scrollIntoView.value = ''
-  setTimeout(() => {
-    scrollIntoView.value = 'scrollBottomView'
-  }, 100)
 }
 
 const typing = () => {
@@ -138,10 +133,9 @@ const typing = () => {
 
   // If we have a message in typing, finish it
   if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
-    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/<[^>]+>/) || []
-    const appendLen = matches[0] ? matches[0].length : 1
+    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
+    const appendLen = matches[0] ? matches[0].length + 1 : 1
     lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
-    scrollToBottom()
     return
   }
 
@@ -156,7 +150,7 @@ const typing = () => {
 
   if (!waitMessages.value.length) return
   // If audio is still playing, do nothing
-  if (audioPlayer.value && !audioPlayer.value.ended) return
+  if (audioPlayer.value && audioPlayer.value.playing) return
 
   typingMessage.value = waitMessages.value[0]
   waitMessages.value = waitMessages.value.slice(1)
@@ -202,8 +196,6 @@ const typing = () => {
     ...typingMessage.value,
     message: ''
   }
-
-  scrollToBottom()
 }
 
 const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
@@ -212,24 +204,39 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
 
   const player = {
     context: context,
-    ended: false,
+    playing: false,
     duration: context.duration
   } as AudioPlayer
 
-  context.onEnded(() => {
-    player.ended = true
-  })
-
   return new Promise((resolve, reject) => {
     context.onError((e) => {
-      player.ended = true
+      player.playing = false
+      if (player.durationTicker >= 0) {
+        window.clearInterval(player.durationTicker)
+        player.durationTicker = -1
+      }
       reject(`Failed play audio: ${JSON.stringify(e)}`)
     })
     context.onCanplay(() => {
       context.play()
       player.playing = true
-      player.duration = context.duration
-      resolve(player)
+
+      player.durationTicker = window.setInterval(() => {
+        if (context.duration) {
+          window.clearInterval(player.durationTicker)
+          player.durationTicker = -1
+          player.duration = context.duration
+          resolve(player)
+          return
+        }
+      }, 100)
+    })
+    context.onEnded(() => {
+      player.playing = false
+      if (player.durationTicker >= 0) {
+        window.clearInterval(player.durationTicker)
+        player.durationTicker = -1
+      }
     })
   })
 }
@@ -281,7 +288,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
 
   waitMessages.value.push({
     round,
-    message: strip(message),
+    message: strip(purify.purifyThink(message)),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as dbModel.Simulator,
     model: dbBridge._Model.model(participator.modelId) as dbModel.Model,
