@@ -330,7 +330,7 @@ export class SeminarRunner {
       }
     )
     if (!_response) return
-    return Prompt.postProcess(intent, _response.text)
+    return Prompt.postProcess(intent, purify.purifyText(_response.text))
   }
 
   static handleChatRequest = async (
