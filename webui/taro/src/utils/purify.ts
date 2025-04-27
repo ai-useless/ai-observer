@@ -7,3 +7,16 @@ export const purifyText = (html: string): string => {
   $('think').remove()
   return $.text().trim()
 }
+
+export const purifyKeepSub = (html: string): string => {
+  const $ = cheerio.load(html)
+  $('script').remove()
+  $('think').remove()
+  return $.text().trim()
+}
+
+export const purifyThink = (html: string): string =>{
+  const $ = cheerio.load(html)
+  $('think').remove()
+  return $.text().trim()
+}
