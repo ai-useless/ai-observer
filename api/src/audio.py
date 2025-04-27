@@ -6,118 +6,138 @@ import hashlib
 from pydub import AudioSegment
 import io
 import random
+import logging
 
-def purify_text(text):
-    soup = BeautifulSoup(text, 'html.parser')
-    cleand_html = soup.get_text(separator=' ')
-    cleaned_tag = re.sub(r'\[.*?\]', '', cleand_html)
-    cleaned_space = re.sub(r'(?<=[\u4e00-\u9fa5])\s+(?=[\u4e00-\u9fa5])', '', cleaned_tag)
-    cleaned_space = re.sub(r'(?<=[\u4e00-\u9fa5])\s+(?=，|。|！|？)', '', cleaned_space)
-    cleaned_space = re.sub(r'(?<=，|。|！|？)\s+(?=[\u4e00-\u9fa5])', '', cleaned_space)
-    return cleaned_space
+logger = logging.getLogger('uvicorn')
 
-def chunk_text(text, chunk_size=100):
-    punctuation_pattern = r'(?<=[。！？])'
+RED = '\033[31m'
+GREEN = '\33[32m'
+BOLD = '\033[1m'
+RESET = '\033[0m'
 
-    sentences = re.split(punctuation_pattern, text)
-    sentences = [s.strip() for s in sentences if s.strip()]
+class AudioGenerate:
+    async def generate_audio(self, text: str, voice: str, api_token: str, output_path: str, max_concurrency: int) -> str:
+        cleaned_text = self.purify_text(text)
+        chunks = self.chunk_text(cleaned_text)
+        audio_buffers = await self.concurrent_audio_requests(chunks, voice, api_token, max_concurrency)
 
-    chunks = []
-    current_chunk = ""
+        file_name = self.merge_audio_buffers(
+            audio_buffers=[b for b in audio_buffers if b],
+            output_path=f'{output_path}'
+        )
+        return file_name
 
-    for sentence in sentences:
-        if not current_chunk:
+    def purify_text(self, text):
+        soup = BeautifulSoup(text, 'html.parser')
+        cleand_html = soup.get_text(separator=' ')
+        cleaned_tag = re.sub(r'\[.*?\]', '', cleand_html)
+        cleaned_space = re.sub(r'(?<=[\u4e00-\u9fa5])\s+(?=[\u4e00-\u9fa5])', '', cleaned_tag)
+        cleaned_space = re.sub(r'(?<=[\u4e00-\u9fa5])\s+(?=，|。|！|？)', '', cleaned_space)
+        cleaned_space = re.sub(r'(?<=，|。|！|？)\s+(?=[\u4e00-\u9fa5])', '', cleaned_space)
+        return cleaned_space
+
+    def chunk_text(self, text, chunk_size=100):
+        punctuation_pattern = r'(?<=[。！？])'
+
+        sentences = re.split(punctuation_pattern, text)
+        sentences = [s.strip() for s in sentences if s.strip()]
+
+        chunks = []
+        current_chunk = ""
+
+        for sentence in sentences:
+            if not current_chunk:
+                current_chunk = sentence
+                continue
+
+            if len(current_chunk) + len(sentence) + 1 <= chunk_size:
+                current_chunk += ' ' + sentence
+                continue
+
+            chunks.append(current_chunk.strip())
             current_chunk = sentence
-            continue
 
-        if len(current_chunk) + len(sentence) + 1 <= chunk_size:
-            current_chunk += ' ' + sentence
-            continue
+        if current_chunk:
+            chunks.append(current_chunk.strip())
 
-        chunks.append(current_chunk.strip())
-        current_chunk = sentence
+        return chunks
 
-    if current_chunk:
-        chunks.append(current_chunk.strip())
+    async def fetch_audio(
+            self,
+            text: str, 
+            voice: str, 
+            api_token: str, 
+            session: aiohttp.ClientSession, 
+            semaphore: asyncio.Semaphore,
+            min_delay_ms: float = 50,
+            max_delay_ms: float = 300
+            ) -> bytes:
+        url = 'https://kikakkz-cosy-voice-tts.chutes.ai/speak'
+        headers = {
+            'Authorization': f'Bearer {api_token}',
+            'Content-Type': 'application/json'
+        }
+        payload = {
+            'text': text,
+            'voice': voice
+        }
+        timeout = aiohttp.ClientTimeout(connect=10, total=59)
+        async with semaphore:
+            try:
+                delay_seconds = random.uniform(min_delay_ms, max_delay_ms) / 1000
+                await asyncio.sleep(delay_seconds)
 
-    return chunks
+                async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
+                    response.raise_for_status()
+                    audio_bytes = await response.read()
+                    return audio_bytes
+            except Exception as e:
+                logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {str(e)}')
+                return b''
 
-async def fetch_audio(
-        text: str, 
-        voice: str, 
-        api_token: str, 
-        session: aiohttp.ClientSession, 
-        semaphore: asyncio.Semaphore,
-        min_delay_ms: float = 50,
-        max_delay_ms: float = 300
-        ) -> bytes:
-    url = 'https://kikakkz-cosy-voice-tts.chutes.ai/speak'
-    headers = {
-        'Authorization': f'Bearer {api_token}',
-        'Content-Type': 'application/json'
-    }
-    payload = {
-        'text': text,
-        'voice': voice
-    }
-    timeout = aiohttp.ClientTimeout(connect=10, total=59)
-    async with semaphore:
-        try:
-            delay_seconds = random.uniform(min_delay_ms, max_delay_ms) / 1000
-            await asyncio.sleep(delay_seconds)
+    async def concurrent_audio_requests(self, chunks: list[str], voice: str, api_token: str, max_concurrency: int) -> list[bytes]:
+        semaphore = asyncio.Semaphore(max_concurrency)
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for idx, text in enumerate(chunks):
+                task = asyncio.create_task(self.fetch_audio(text, voice, api_token, session, semaphore))
+                task.index = idx
+                tasks.append(task)
 
-            async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
-                response.raise_for_status()
-                audio_bytes = await response.read()
-                return audio_bytes
-        except Exception as e:
-            print(f"Request exception：{url}，error：{str(e)}")
-            return b''
+            results = await asyncio.gather(*tasks)
 
-async def concurrent_audio_requests(chunks: list[str], voice: str, api_token: str, max_concurrency: int) -> list[bytes]:
-    semaphore = asyncio.Semaphore(max_concurrency)
-    async with aiohttp.ClientSession() as session:
-        tasks = []
-        for idx, text in enumerate(chunks):
-            task = asyncio.create_task(fetch_audio(text, voice, api_token, session, semaphore))
-            task.index = idx
-            tasks.append(task)
+            sorted_results = [None] * len(chunks)
+            for task in tasks:
+                sorted_results[task.index] = results[tasks.index(task)]
+            return sorted_results
 
-        results = await asyncio.gather(*tasks)
+    def merge_audio_buffers(self, audio_buffers: list[bytes], output_path: str) -> str:
+        valid_buffers = [b for b in audio_buffers if b]
+        hasher = hashlib.sha256()
+        for buffer in valid_buffers:
+            hasher.update(buffer)
 
-        sorted_results = [None] * len(chunks)
-        for task in tasks:
-            sorted_results[task.index] = results[tasks.index(task)]
-        return sorted_results
+        file_name = hasher.hexdigest() + ".wav"
+        output_path = f"{output_path}/{file_name}"
 
-def merge_audio_buffers(audio_buffers: list[bytes], output_path: str) -> str:
-    valid_buffers = [b for b in audio_buffers if b]
-    hasher = hashlib.sha256()
-    for buffer in valid_buffers:
-        hasher.update(buffer)
+        combined = None
+        for i, buffer in enumerate(audio_buffers):
+            if not buffer:
+                continue
 
-    file_name = hasher.hexdigest() + ".wav"
-    output_path = f"{output_path}/{file_name}"
+            audio = AudioSegment.from_wav(io.BytesIO(buffer))
 
-    combined = None
-    for i, buffer in enumerate(audio_buffers):
-        if not buffer:
-            continue
+            if combined is None:
+                combined = audio
+                target_frame_rate = combined.frame_rate
+                target_channels = combined.channels
+            else:
+                audio = audio.set_frame_rate(target_frame_rate)
+                audio = audio.set_channels(target_channels)
+                combined += audio
 
-        audio = AudioSegment.from_wav(io.BytesIO(buffer))
-
-        if combined is None:
-            combined = audio
-            target_frame_rate = combined.frame_rate
-            target_channels = combined.channels
+        if combined:
+            combined.export(output_path, format="wav")
         else:
-            audio = audio.set_frame_rate(target_frame_rate)
-            audio = audio.set_channels(target_channels)
-            combined += audio
-
-    if combined:
-        combined.export(output_path, format="wav")
-        print(f"Merge audio to ：{output_path}")
-    else:
-        print("No valid audio data to merge")
-    return file_name
+            logger.error(f'{RED}No valid audio data to merge{RESET}')
+        return file_name
