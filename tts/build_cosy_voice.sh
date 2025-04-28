@@ -7,7 +7,7 @@ mkdir -p $OUTPUT_DIR
 
 rm -rf $OUTPUT_DIR/cosy-voice
 cp -rfv $SCRIPT_DIR/src/cosy-voice $OUTPUT_DIR/cosy-voice
-cp -rfv $SCRIPT_DIR/src/utils/utils.py $OUTPUT_DIR/cosy-voice
+cp -rfv $SCRIPT_DIR/../common/utils.py $OUTPUT_DIR/cosy-voice
 
 images=`docker images | grep 'cosy\|none' | awk '{print $3}'`
 [ "x$images" != "x" ] && docker rmi $images
