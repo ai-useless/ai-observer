@@ -7,25 +7,19 @@ import os
 import sys
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
-import logging
 import threading
 import aiohttp
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from audio import AudioGenerate
+from include import *
 
 app = FastAPI()
-logger = logging.getLogger('uvicorn')
 
 mutex = threading.Lock()
 _requests = 0
 responses = 0
 errors = 0
-
-RED = '\033[31m'
-GREEN = '\33[32m'
-BOLD = '\033[1m'
-RESET = '\033[0m'
 
 class ServerKit:
     api_token: str
