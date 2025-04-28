@@ -33,14 +33,36 @@ const onRecordAudioClick = () => {
   // TODO:
 }
 
+const readAsBase64 = async (filePath: string) => {
+  const fs = Taro.getFileSystemManager()
+  const b64 = await new Promise((resolve, reject) => {
+    fs.readFile({
+      filePath,
+      encoding: 'base64',
+      success: (r) => resolve(r.data),
+      fail: (e) => reject(e)
+    })
+  })
+  return b64
+}
+
 const onUploadAudioClick = async () => {
+  const extensions = ['mp3', 'wav']
   Taro.chooseMessageFile({
     count: 1,
     type: 'file',
     extension: ['mp3', 'wav']
   }).then((res) => {
-
-    console.log(res)
+    if (!res.tempFiles[0].path.endsWith(extensions[0]) && !res.tempFiles[0].path.endsWith(extensions[1])) return
+    readAsBase64(res.tempFiles[0].path).then((audioB64) => {
+      console.log(audioB64)
+    }).catch((e) => {
+      Taro.showToast({
+        title: `读取文件失败：${JSON.stringify(e)}`,
+        icon: 'error',
+        duration: 1000
+      })
+    })
   }).catch((e) => {
     console.log(`选择文件失败: ${JSON.stringify(e)}`)
   })
