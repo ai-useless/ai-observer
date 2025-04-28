@@ -15,6 +15,7 @@ parser.add_argument('--mysql-port', type=str, default='3306', help='Mysql port')
 parser.add_argument('--mysql-user', type=str, default='debian-sys-maint', help='Mysql user')
 parser.add_argument('--mysql-password', type=str, default='4waB4C6hbPv7cm5U', help='Mysql user')
 parser.add_argument('--reviewers', type=str, default='', help='WeChat ids of reviewers')
+parser.add_argument('--clean-database', action='store_true', help='Clean database') 
 
 config = parser.parse_args()
 

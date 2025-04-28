@@ -27,6 +27,7 @@ class AudioGenerate:
             voice: str,
             session: aiohttp.ClientSession,
             semaphore: asyncio.Semaphore,
+            index: int,
             min_delay_ms: float = 50,
             max_delay_ms: float = 300
             ) -> bytes:
@@ -42,7 +43,7 @@ class AudioGenerate:
         timeout = aiohttp.ClientTimeout(connect=10, total=59)
         async with semaphore:
             try:
-                delay_seconds = random.uniform(min_delay_ms, max_delay_ms) / 1000
+                delay_seconds = random.uniform(min_delay_ms, max_delay_ms) / 1000 * (index + 1)
                 await asyncio.sleep(delay_seconds)
 
                 async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
@@ -58,7 +59,7 @@ class AudioGenerate:
         async with aiohttp.ClientSession() as session:
             tasks = []
             for idx, text in enumerate(chunks):
-                task = asyncio.create_task(self.fetch_audio(text, voice, config.api_token, session, semaphore))
+                task = asyncio.create_task(self.fetch_audio(text, voice, session, semaphore, idx))
                 task.index = idx
                 tasks.append(task)
 
