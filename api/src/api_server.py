@@ -15,7 +15,7 @@ from audio import AudioGenerate
 from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
-from cook_audio import cook_audio as _cook_audio
+from cook_simulator import cook_simulator as _cook_simulator
 
 app = FastAPI()
 
@@ -36,15 +36,17 @@ class CookAudioResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
 
-@app.post('/api/v1/cook_audio', response_model=CookAudioResponse)
-async def cook_audio(
+@app.post('/api/v1/cook_simulator', response_model=CookAudioResponse)
+async def cook_simulator(
     code: str = Body(...),
     username: str = Body(...),
     avatar: str = Body(...),
-    audio_b64: str = Body(...)
+    audio_b64: str = Body(...),
+    simulator: str = Body(...),
+    simulator_avatar: str = Body(...),
 ):
     try:
-        audio_name = await _cook_audio(code, username, avatar, audio_b64)
+        audio_name = await _cook_simulator(code, username, avatar, audio_b64, simulator, simulator_avatar)
         return {'audio_url': f'{config.audio_host}/materials/{audio_name}'}
     except Exception as e:
         raise e

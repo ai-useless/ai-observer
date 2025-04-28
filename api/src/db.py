@@ -8,7 +8,7 @@ class Db:
     def __init__(self):
         self.db_name = 'ai_observer'
         self.table_bans = 'bans'
-        self.table_audios = 'audios'
+        self.table_simulators = 'simulators'
 
         self.config = {
             'user': config.mysql_user,
@@ -58,52 +58,58 @@ class Db:
             ''')
             self.connection.commit()
 
-        if self.table_audios not in tables:
+        if self.table_simulators not in tables:
             self.cursor.execute(f'''
-                CREATE TABLE IF NOT EXISTS {self.table_audios} (
+                CREATE TABLE IF NOT EXISTS {self.table_simulators} (
                     wechat_openid VARCHAR(32),
                     wechat_username VARCHAR(128),
                     wechat_avatar VARCHAR(1024),
-                    audio_file_cid VARCHAR(256),
+                    audio_file_cid VARCHAR(256) UNIQUE,
                     text VARCHAR(512),
+                    simulator VARCHAR(32),
+                    simulator_avatar_cid VARCHAR(64),
+                    origin_personality VARCHAR(256),
                     timestamp INT UNSIGNED,
                     state VARCHAR(16),
-                    PRIMARY KEY (audio_file_cid)
+                    PRIMARY KEY (simulator)
                 )
             ''')
             self.connection.commit()
 
-    def new_audio(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text):
+    def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality):
         self.cursor.execute(
             f'''
-                INSERT INTO {self.table_audios}
-                VALUE (%s, %s, %s, %s, %s, %s, %s) as alias
+                INSERT INTO {self.table_simulators}
+                VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
             ''',
             (wechat_openid,
              wechat_username,
              wechat_avatar,
              audio_file_cid,
              text,
+             simulator,
+             simulator_avatar_cid,
+             personality,
              int(time.time()),
              'CREATED')
         )
         self.connection.commit()
 
-    def update_audio(self, audio_file_cid, state):
+    def update_simulator(self, simulator, state):
         self.cursor.execute(
             f'''
-                UPDATE TABLE {self.table_audios}
+                UPDATE TABLE {self.table_simulators}
                 SET state="{state}"
-                WHERE audio_file_cid="{audio_file_cid}"
+                WHERE simulator="{simulator}"
             '''
         )
         self.connection.commit()
 
-    def approve_audio(self, audio_file_cid):
-        self.update_audio(audio_file_cid, 'APPROVED')
+    def approve_simulator(self, simulator):
+        self.update_simulator(simulator, 'APPROVED')
 
-    def reject_audio(self, audio_file_cid):
-        self.update_audio(audio_file_cid, 'REJECTED')
+    def reject_simulator(self, simulator):
+        self.update_simulator(simulator, 'REJECTED')
 
     def ban(self, wechat_openid, ban_by_reason, ban_by_id):
         self.cursor.execute(

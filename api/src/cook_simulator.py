@@ -23,7 +23,7 @@ async def audio_2_text(audio_b64: str) -> str:
             response.raise_for_status()
             return (await response.json())['text']
 
-async def cook_audio(code: str, username: str, avatar: str, audio_b64: str):
+async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str):
     url = f'https://api.weixin.qq.com/sns/jscode2session?appid={config.weapp_id}&secret={config.weapp_secret}&js_code={code}&grant_type=authorization_code'
 
     timeout = aiohttp.ClientTimeout(connect=10, total=30)
@@ -53,8 +53,16 @@ async def cook_audio(code: str, username: str, avatar: str, audio_b64: str):
             with open(file_path, 'wb') as f:
                 f.write(audio_bytes)
 
-            db.new_audio(openid, username, avatar, file_cid, text)
+
+            simulator_avatar_cid = hashlib.sha256(simulator_avatar.encode("utf-8")).hexdigest()
+            simulator_avatar_path = f'{config.data_dir}/avatars/{simulator_avatar_cid}'
+            with open(simulator_avatar_path, 'w') as f:
+                f.write(simulator_avatar_cid)
+
+            # TODO: get origin personality
+            personality = '普普通通路人甲'
+            db.new_audio(openid, username, avatar, file_cid, text, simulator, simulator_avatar_cid, personality)
 
             # TODO: automatically review audio by another AI
 
-            return file_name
+            return simulator
