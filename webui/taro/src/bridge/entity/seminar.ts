@@ -4,6 +4,7 @@ import { dbBridge } from '..'
 import { EParticipator, PSimulator } from './participator'
 
 type MessageFunc = (
+  seminaUid: string,
   subTopic: string,
   participatorId: number,
   message: string,
@@ -111,6 +112,7 @@ export class ESeminar {
     }
 
     void this.onMessage(
+      this.seminar.uid,
       subTopic,
       participatorId,
       payload.text,

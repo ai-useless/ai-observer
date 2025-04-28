@@ -266,7 +266,9 @@ const strip = (html: string): string => {
     .trim()
 }
 
-const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
+const onMessage = async (seminarUid: string, subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
+  if (seminarUid !== _uid.value) return
+
   seminar.Seminar.stopThink(participatorId)
 
   const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
