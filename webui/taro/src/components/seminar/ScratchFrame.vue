@@ -38,7 +38,7 @@
         <View class='title' style='color: blue' @click='onChangeTopicsClick'>{{ generating ? '生成中...' : '换一批' }}</View>
       </View>
       <View v-if='topics.length' style='margin-top: 8px;'>
-        <View v-for='_topic in topics' style='font-size: 14px; color: blue;'>
+        <View v-for='_topic in topics' style='font-size: 14px; color: blue;' @click='onTopicClick(_topic)'>
           {{ _topic }}
         </View>
       </View>
@@ -132,6 +132,11 @@ useDidShow(async () => {
     if (!_seminar.value) startSeminar()
   }
 })
+
+const onTopicClick = (_topic: string) => {
+  topic.value = _topic
+  startSeminar()
+}
 
 const generating = ref(false)
 
