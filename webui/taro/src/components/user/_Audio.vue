@@ -26,8 +26,12 @@
 <script setup lang='ts'>
 import { View, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { user } from 'src/localstores'
+import { computed } from 'vue'
 
 import { chevronRight, folder, record } from 'src/assets'
+
+const username = computed(() => user.User.username())
 
 const onRecordAudioClick = () => {
   // TODO:
@@ -47,15 +51,37 @@ const readAsBase64 = async (filePath: string) => {
 }
 
 const onUploadAudioClick = async () => {
+  if (!username.value) {
+    Taro.showToast({
+      title: '请先登录哦！',
+      icon: 'error',
+      duration: 1000
+    })
+    return
+  }
+
   const extensions = ['mp3', 'wav']
   Taro.chooseMessageFile({
     count: 1,
     type: 'file',
     extension: ['mp3', 'wav']
   }).then((res) => {
-    if (!res.tempFiles[0].path.endsWith(extensions[0]) && !res.tempFiles[0].path.endsWith(extensions[1])) return
-    readAsBase64(res.tempFiles[0].path).then((audioB64) => {
-      console.log(audioB64)
+    if (!res.tempFiles[0].path.endsWith(extensions[0]) && !res.tempFiles[0].path.endsWith(extensions[1])) {
+      Taro.showToast({
+        title: '无效音频文件！',
+        icon: 'error',
+        duration: 1000
+      })
+      return
+    }
+    readAsBase64(res.tempFiles[0].path).then((audioB64: string) => {
+      if (audioB64.length > 8 * 1024 * 1024) {
+        Taro.showToast({
+          title: '文件太大了！',
+          icon: 'error',
+          duration: 1000
+        })
+      }
     }).catch((e) => {
       Taro.showToast({
         title: `读取文件失败：${JSON.stringify(e)}`,
