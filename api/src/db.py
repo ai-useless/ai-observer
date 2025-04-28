@@ -1,6 +1,7 @@
 import mysql.connector
 import warnings
 from config import config
+import time
 
 
 class Db:
@@ -67,7 +68,7 @@ class Db:
             ''')
             self.connection.commit()
 
-    def new_audio(self, wechat_openid, wechat_username, wechat_avatar, audio_fild_cid):
+    def new_audio(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid):
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_audios}
