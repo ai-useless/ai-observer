@@ -1,29 +1,39 @@
 <template>
-  <View>
+  <View style='padding: 8px;'>
     <Text style='width: 100%; display: flex; justify-content: center; align-items: center;' class='title'>
-      What would you like to dig ?
+      您想让AGI讨论点儿什么呢 ?
     </Text>
     <Input
       type='textarea'
       :value='topic'
-      placeholder='Key in any topic you are interesting in'
-      style='width: "100%"; font-size: 20px;'
-      @keyup.enter.stop='onEnter'
+      placeholder='您想让AGI讨论点儿什么呢 ?'
+      style='width: "100%"; font-size: 20px; min-height: 200px;'
       class='section-margin'
     />
+    <Button
+      class='border'
+      @click='onStartDiscussClick'
+      size='mini'
+      style='width: 100%;'
+    >
+      开始讨论
+    </Button>
     <View style='margin-top: 24px;'>
       <Button
         class='border'
+        size='mini'
       >
         随便听点儿什么
       </Button>
       <Button
         class='border'
+        size='mini'
       >
         历史
       </Button>
       <Button
         class='border'
+        size='mini'
       >
         二战
       </Button>
@@ -35,8 +45,9 @@
 <script setup lang='ts'>
 import { dbBridge } from 'src/bridge'
 import { seminar, setting } from 'src/localstores'
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { View, Input, Button, Text } from '@tarojs/components'
+import Taro, { useDidShow } from '@tarojs/taro'
 
 const initialTopics = [
   '油条的工艺与口味以及外观',
@@ -67,21 +78,30 @@ const initialTopics = [
   '洋奶粉安全信任问题'
 ]
 
-// TODO: random initial topic
-const topic = ref(initialTopics[Math.floor(Math.random() * initialTopics.length)])
+const _seminar = computed(() => dbBridge._Seminar.seminar(seminar.Seminar.seminar()))
+const topic = ref(_seminar.value?.topic || initialTopics[Math.floor(Math.random() * initialTopics.length)])
+const tabIndex = computed(() => setting.Setting.tabIndex())
 
 watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
 })
 
-const onEnter = () => {
+const createSeminar = () => {
   const _uid = dbBridge._Seminar.create(topic.value)
   seminar.Seminar.setSeminar(_uid)
-  setting.Setting.setInScratch(false)
 }
 
-onMounted(() => {
-  onEnter()
+const onStartDiscussClick = () => {
+  createSeminar()
+}
+
+useDidShow(async () => {
+  // If we're first time in here, goto seminar with random topic
+  if (tabIndex.value < 0) {
+    if (!_seminar.value) createSeminar()
+    setting.Setting.setTabIndex(1)
+    Taro.switchTab({ url: '/pages/seminar/SeminarPage' })
+  }
 })
 
 </script>

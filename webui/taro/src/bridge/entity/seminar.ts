@@ -128,6 +128,7 @@ export class ESeminar {
     const host = this.host()
 
     if (!host) throw new Error('Invalid host')
+    console.log(host)
 
     this.onThinking(host.participatorId as number)
     seminarWorker.SeminarRunner.handleChatRequest({

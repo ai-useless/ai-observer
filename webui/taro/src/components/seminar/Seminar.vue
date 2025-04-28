@@ -1,34 +1,23 @@
 <template>
-  <View v-if='initialized'>
-    <View v-if='inScratch' style='padding-bottom: 64px;'>
-      <ScratchFrame />
-    </View>
-    <View v-else style='width: 100%;'>
-      <Conference />
-      <View style='display: flex; flex-direction: row-reverse; margin-top: -32px;'>
-        <Switcher style='position: absolute;' />
-      </View>
+  <View style='width: 100%;'>
+    <Conference />
+    <View style='display: flex; flex-direction: row-reverse; margin-top: -32px;'>
+      <Switcher style='position: absolute;' />
     </View>
   </View>
 </template>
 
 <script setup lang='ts'>
-import { setting } from 'src/localstores'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { View } from '@tarojs/components'
 import { dbBridge } from 'src/bridge'
 
-import ScratchFrame from './ScratchFrame.vue'
 import Conference from './Conference.vue'
 import Switcher from './Switcher.vue'
-
-const inScratch = computed(() => setting.Setting.inScratch())
-const initialized = ref(false)
 
 onMounted(() => {
   dbBridge._Simulator.initialize()
   dbBridge._Model.initialize()
-  initialized.value = true
 })
 
 </script>
