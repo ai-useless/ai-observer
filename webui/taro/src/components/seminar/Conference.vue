@@ -350,7 +350,6 @@ const startSeminar = async () => {
   if (typingTicker.value >= 0) window.clearInterval(typingTicker.value)
   typingTicker.value = -1
 
-  chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 106
   Taro.showLoading({
     title: '主持人正在准备台本'
   })
@@ -370,6 +369,7 @@ watch(_uid, () => {
 })
 
 onMounted(async () => {
+  chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 20
   startSeminar()
 })
 
