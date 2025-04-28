@@ -8,7 +8,7 @@
     text-color='grey-9'
     bg-color='grey-2'
   >
-    <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px; margin-bottom: 8px;'>
+    <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px; margin-bottom: 8px; padding-bottom: 8px;'>
       <View style='display: flex; height: 24px;'>
         <View>{{ message.participator.role === dbModel.Role.HOST ? '主持人' : '嘉宾' }}</View>
         <Image :src='message.simulator.avatar' mode='widthFix' style='margin-left: 4px; width: 24px; border-radius: 50%;' />
@@ -17,8 +17,8 @@
         <Image :src='message.model.vendorLogo' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
         <Image :src='message.model.modelLogo' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
       </View>
-      <View style='font-size: 12px; color: gray;'>{{ message.simulator.personality }}</View>
-      <View style='font-size: 12px; color: gray;'>
+      <View style='font-size: 12px; color: gray; height: 16px;'>{{ message.simulator.personality }}</View>
+      <View style='font-size: 12px; color: gray; height: 16px;'>
         {{ message.model.name }}
       </View>
     </View>
