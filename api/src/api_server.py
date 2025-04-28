@@ -15,7 +15,7 @@ from audio import AudioGenerate
 from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
-from cook_audio import cook_audio
+from cook_audio import cook_audio as _cook_audio
 
 app = FastAPI()
 
@@ -44,7 +44,7 @@ async def cook_audio(
     audio_b64: str = Body(...)
 ):
     try:
-        audio_name = await cook_audio(code, username, avatar, audio_b64)
+        audio_name = await _cook_audio(code, username, avatar, audio_b64)
         return {'audio_url': f'{config.audio_host}/materials/{audio_name}'}
     except Exception as e:
         raise e
