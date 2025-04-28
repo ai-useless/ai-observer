@@ -76,7 +76,7 @@ class AudioGenerate:
             hasher.update(buffer)
 
         file_name = hasher.hexdigest() + ".wav"
-        output_path = f"{config.data_dir}/{file_name}"
+        output_path = f"{config.data_dir}/audios/{file_name}"
 
         combined = None
         for i, buffer in enumerate(audio_buffers):

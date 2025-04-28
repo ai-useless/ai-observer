@@ -33,7 +33,7 @@ class SpeakResponse(BaseModel):
     error: str | None = None
 
 class CookAudioResponse(BaseModel):
-    info: str | None = None
+    audio_url: str | None = None
     error: str | None = None
 
 @app.post('/api/v1/cook_audio', response_model=CookAudioResponse)
@@ -44,8 +44,8 @@ async def cook_audio(
     audio_b64: str = Body(...)
 ):
     try:
-        info = await cook_audio(code, username, avatar, audio_b64)
-        return { 'info': info }
+        audio_name = await cook_audio(code, username, avatar, audio_b64)
+        return {'audio_url': f'{config.audio_host}/materials/{audio_name}'}
     except Exception as e:
         raise e
 

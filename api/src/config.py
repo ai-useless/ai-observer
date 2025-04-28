@@ -18,7 +18,8 @@ parser.add_argument('--reviewers', type=str, default='', help='WeChat ids of rev
 
 config = parser.parse_args()
 
-os.makedirs(config.data_dir, exist_ok=True)
+os.makedirs(f'{config.data_dir}/audios', exist_ok=True)
+os.makedirs(f'{config.data_dir}/materials', exist_ok=True)
 
 if len(config.api_token) == 0:
     print('You must provide valid api token')
