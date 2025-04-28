@@ -1,6 +1,8 @@
 import { dbModel } from '../../model'
 
 export class _Model {
+  private static topicModel = 'deepseek-ai/DeepSeek-V3-0324'
+
   private static models = [
     {
       name: 'deepseek-ai/DeepSeek-V3-0324',
@@ -101,5 +103,9 @@ export class _Model {
 
   static model = (id: number) => {
     return _Model.models[id]
+  }
+
+  static _topicModel = () => {
+    return _Model.topicModel
   }
 }

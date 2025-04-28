@@ -1,5 +1,6 @@
 import {
   ChatRequestPayload,
+  GenerateTopicsPayload,
   SeminarEvent,
   SeminarEventType,
   SeminarRunner
@@ -15,6 +16,10 @@ self.onmessage = async (message: MessageEvent) => {
     case SeminarEventType.CHAT_REQUEST:
       return await SeminarRunner.handleChatRequest(
         event.payload as ChatRequestPayload
+      )
+    case SeminarEventType.GENERATE_TOPICS:
+      return await SeminarRunner.handleGenerateTopics(
+        event.payload as GenerateTopicsPayload
       )
   }
 }

@@ -9,6 +9,9 @@ export enum SeminarEventType {
   CHAT_REQUEST = 'ChatRequest',
   CHAT_RESPONSE = 'ChatResponse',
 
+  GENERATE_TOPICS = 'GenerateTopics',
+  GENERATED_TOPICS = 'GeneratedTopics',
+
   ERROR = 'Error'
 }
 
@@ -55,6 +58,12 @@ export interface OutlineSubTopicsPrompts extends BasePrompts {
   topicMaterial: string
 }
 
+export interface GenerateTopicsPrompts extends BasePrompts {
+  model: string
+  topicType: string
+  count: number
+}
+
 export type Prompts =
   | OutlinePrompts
   | DiscussPrompts
@@ -74,7 +83,7 @@ export interface ChatRequestPayload {
   prompts: Prompts
 }
 
-export type ChatResponsePayload = {
+export interface ChatResponsePayload {
   seminarId: number
   participatorId: number
   subTopic: string
@@ -88,9 +97,17 @@ export type ChatResponsePayload = {
   }
 }
 
+export interface GenerateTopicsPayload {
+  prompts: GenerateTopicsPrompts
+}
+
+export interface GeneratedTopicsPayload {
+  topics: string[]
+}
+
 export interface SeminarEvent {
   type: SeminarEventType
-  payload: ChatRequestPayload | ChatResponsePayload
+  payload: ChatRequestPayload | ChatResponsePayload | GenerateTopicsPayload | GeneratedTopicsPayload
 }
 
 export type ErrorResponsePayload = {
@@ -260,7 +277,7 @@ export class SeminarRunner {
     )
 
     const textResp = await axios.post(
-      /* model.endpoint || */ constants.FALLBACK_API,
+      constants.FALLBACK_API,
       {
         model: model.name,
         messages: (prompts.historyMessages || []).map((el) => {
@@ -293,7 +310,7 @@ export class SeminarRunner {
       )
       const voice = await SeminarRunner.speakerVoice(participatorId)
       const audioResp = await axios.post(
-        /* model.endpoint || */ constants.TEXT2SPEECH_API,
+        constants.TEXT2SPEECH_API,
         {
           text: speechContent,
           voice,
@@ -318,6 +335,7 @@ export class SeminarRunner {
     intent: Intent,
     response: string
   ) => {
+    if (intent === Intent.GENERATE_TOPICS) return Prompt.postProcess(intent, purify.purifyText(response))
     if (intent !== Intent.OUTLINE) return
 
     const _response = await SeminarRunner.requestParticipatorChat(
@@ -392,6 +410,30 @@ export class SeminarRunner {
         ...response,
         json
       }
+    }
+  }
+
+  static handleGenerateTopics = async (payload: GenerateTopicsPayload): Promise<GeneratedTopicsPayload | undefined> => {
+    const { prompts } = payload
+    const { model, topicType, count, historyMessages } = prompts
+    const prompt = Prompt.prompt(
+      Intent.GENERATE_TOPICS,
+      topicType,
+      count,
+      historyMessages || []
+    )
+    const resp = await axios.post(
+      constants.FALLBACK_API,
+      {
+        model,
+        messages: [],
+        prompt: purify.purifyText(prompt || '')
+      }
+    )
+    const json = Prompt.postProcess(Intent.GENERATE_TOPICS, purify.purifyText((resp.data as Record<string, string>).content))
+    if (!json) return
+    return {
+      topics: json.titles as string[]
     }
   }
 }
