@@ -102,7 +102,6 @@ const presetClasses = [
 
 const _seminar = computed(() => dbBridge._Seminar.seminar(seminar.Seminar.seminar()))
 const topic = ref(_seminar.value?.topic || initialTopics[Math.floor(Math.random() * initialTopics.length)])
-const tabIndex = computed(() => setting.Setting.tabIndex())
 const topicType = ref('')
 const historyTopics = ref([] as string[])
 const topics = ref([] as string[])
@@ -125,13 +124,6 @@ const startSeminar = () => {
 const onStartDiscussClick = () => {
   startSeminar()
 }
-
-useDidShow(async () => {
-  // If we're first time in here, goto seminar with random topic
-  if (tabIndex.value < 0) {
-    if (!_seminar.value) startSeminar()
-  }
-})
 
 const onTopicClick = (_topic: string) => {
   topic.value = _topic
