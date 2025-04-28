@@ -28,13 +28,41 @@ import { View, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { user } from 'src/localstores'
 import { computed } from 'vue'
+import axios from 'taro-axios'
+import { constants } from 'src/constant'
 
 import { chevronRight, folder, record } from 'src/assets'
 
 const username = computed(() => user.User.username())
+const avatar = computed(() => user.User.avatar())
 
 const onRecordAudioClick = () => {
   // TODO:
+}
+
+const uploadAudioB64 = (audioB64: string) => {
+  Taro.login().then((code) => {
+    axios.post(constants.COOK_AUDIO_API, {
+      code,
+      username: username.value,
+      avatar: avatar.value,
+      audioB64
+    }).then((audioUrl) => {
+      console.log(audioUrl)
+    }).catch((e) => {
+      Taro.showToast({
+        title: '上传失败！',
+        icon: 'error',
+        duration: 1000
+      })
+    })
+  }).catch(() => {
+    Taro.showToast({
+      title: '认证失败！',
+      icon: 'error',
+      duration: 1000
+    })
+  })
 }
 
 const readAsBase64 = async (filePath: string) => {
@@ -81,7 +109,9 @@ const onUploadAudioClick = async () => {
           icon: 'error',
           duration: 1000
         })
+        return
       }
+      void uploadAudioB64(audioB64)
     }).catch((e) => {
       Taro.showToast({
         title: `读取文件失败：${JSON.stringify(e)}`,
