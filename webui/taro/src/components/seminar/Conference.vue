@@ -372,7 +372,9 @@ watch(_uid, () => {
 })
 
 onMounted(async () => {
-  chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 20
+  if (Taro.getWindowInfo()) {
+    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 20
+  }
   startSeminar()
 })
 
