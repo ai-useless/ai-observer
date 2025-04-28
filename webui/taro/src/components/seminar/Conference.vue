@@ -82,7 +82,7 @@ const host = computed(() => simulators.value.find((el) => hostParticipator.value
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
 const displayMessages = ref([] as Message[])
-const loading = ref(true)
+const loading = ref(false)
 const messageCount = computed(() => displayMessages.value.length)
 const waitMessages = ref([] as Message[])
 const lastDisplayMessage = ref(undefined as unknown as Message)
@@ -335,7 +335,19 @@ const historyMessages = (): Map<string, string[]> => {
   return messages
 }
 
-onMounted(async () => {
+const startSeminar = async () => {
+  displayMessages.value = []
+  waitMessages.value = []
+  typingMessage.value = undefined as unknown as Message
+  lastDisplayMessage.value = undefined as unknown as Message
+  lastRound.value = 0
+  outline.value = {
+    titles: []
+  }
+
+  if (typingTicker.value >= 0) window.clearInterval(typingTicker.value)
+  typingTicker.value = -1
+
   chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 106
   Taro.showLoading({
     title: '主持人正在准备台本'
@@ -345,9 +357,18 @@ onMounted(async () => {
   _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
-  await eSeminar.value.start()
+  loading.value = true
+  eSeminar.value.start()
 
   typingTicker.value = window.setInterval(typing, 100)
+}
+
+watch(_uid, () => {
+  startSeminar()
+})
+
+onMounted(async () => {
+  startSeminar()
 })
 
 onBeforeUnmount(() => {
