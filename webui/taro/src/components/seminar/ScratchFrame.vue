@@ -1,43 +1,34 @@
 <template>
   <View style='padding: 8px;'>
-    <Text style='width: 100%; display: flex; justify-content: center; align-items: center;' class='title'>
+    <Text style='width: 100%;' class='title'>
       您想让AGI讨论点儿什么呢 ?
     </Text>
     <Input
       type='textarea'
       :value='topic'
       placeholder='您想让AGI讨论点儿什么呢 ?'
-      style='width: "100%"; font-size: 20px; min-height: 200px;'
+      style='width: "100%"; font-size: 20px; min-height: 120px; border: 1px solid gray; border-radius: 16px; padding: 8px;'
       class='section-margin'
+      @input='handleInput'
     />
     <Button
       class='border'
       @click='onStartDiscussClick'
       size='mini'
-      style='width: 100%;'
+      style='width: 100%; margin-top: 16px; border-radius: 8px; color: blue;'
     >
       开始讨论
     </Button>
-    <View style='margin-top: 24px;'>
+    <View style='margin-top: 16px;' class='container'>
       <Button
         class='border'
         size='mini'
+        v-for='clazz in presetClasses'
+        :key='clazz'
+        @click='onGenerateTopics(clazz)'
       >
-        随便听点儿什么
+        {{ clazz }}
       </Button>
-      <Button
-        class='border'
-        size='mini'
-      >
-        历史
-      </Button>
-      <Button
-        class='border'
-        size='mini'
-      >
-        二战
-      </Button>
-      <!-- You must bind event to button if you place more than 4 buttons here -->
     </View>
   </View>
 </template>
@@ -78,35 +69,62 @@ const initialTopics = [
   '洋奶粉安全信任问题'
 ]
 
+const presetClasses = [
+  '随便听点儿什么',
+  '历史',
+  '二战',
+  '量子物理',
+  '春秋战国',
+  '关于夏朝',
+  '大航海时代',
+  '文艺复兴',
+  '羊吃人运动'
+]
+
 const _seminar = computed(() => dbBridge._Seminar.seminar(seminar.Seminar.seminar()))
 const topic = ref(_seminar.value?.topic || initialTopics[Math.floor(Math.random() * initialTopics.length)])
 const tabIndex = computed(() => setting.Setting.tabIndex())
+
+const handleInput = (e: { detail: { value: string } }) => {
+  topic.value = e.detail.value
+}
 
 watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
 })
 
-const createSeminar = () => {
+const startSeminar = () => {
   const _uid = dbBridge._Seminar.create(topic.value)
   seminar.Seminar.setSeminar(_uid)
+  setting.Setting.setTabIndex(1)
+  Taro.switchTab({ url: '/pages/seminar/SeminarPage' })
 }
 
 const onStartDiscussClick = () => {
-  createSeminar()
+  startSeminar()
 }
 
 useDidShow(async () => {
   // If we're first time in here, goto seminar with random topic
   if (tabIndex.value < 0) {
-    if (!_seminar.value) createSeminar()
-    setting.Setting.setTabIndex(1)
-    Taro.switchTab({ url: '/pages/seminar/SeminarPage' })
+    if (!_seminar.value) startSeminar()
   }
 })
+
+const onGenerateTopics = (clazz: string) => {
+  console.log(clazz)
+}
 
 </script>
 
 <style scoped lang='sass'>
 .border
   border: 1px solid var(--red-3)
+
+.container
+  display: flex
+  justify-content: flex-start
+
+.container > *:not(:last-child)
+  margin-right: 8px
 </style>
