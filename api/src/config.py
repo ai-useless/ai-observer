@@ -10,6 +10,11 @@ parser.add_argument('--data-dir', type=str, default='./.data', help='Data dir fo
 parser.add_argument('--audio-host', type=str, default='http://api.meipu-ai.cn', help='Host of audio file service')
 parser.add_argument('--weapp-id', type=str, default='', help='WeChat mini program id')
 parser.add_argument('--weapp-secret', type=str, default='', help='WeChat mini program secret')
+parser.add_argument('--mysql-host', type=str, default='172.16.31.44', help='Mysql host')
+parser.add_argument('--mysql-port', type=str, default='3306', help='Mysql port')
+parser.add_argument('--mysql-user', type=str, default='debian-sys-maint', help='Mysql user')
+parser.add_argument('--mysql-password', type=str, default='4waB4C6hbPv7cm5U', help='Mysql user')
+parser.add_argument('--reviewers', type=str, default='', help='WeChat ids of reviewers')
 
 config = parser.parse_args()
 
