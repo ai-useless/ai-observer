@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 import aiohttp
 
+from config import config
+
 class ChatMessage(BaseModel):
     role: str
     content: str
@@ -34,7 +36,7 @@ async def chat(
         ]
     }
     headers = {
-        'Authorization': f'Bearer {server_kit.api_token}',
+        'Authorization': f'Bearer {config.api_token}',
         'Content-Type': 'application/json'
     }
 

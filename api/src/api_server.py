@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from audio import AudioGenerate
 from include import *
-from chat import chat, ChatMessage
+from chat import chat as _chat, ChatMessage
 from config import config
 
 app = FastAPI()
@@ -50,7 +50,7 @@ async def chat(
     prompt: str = Body(...)
 ):
     try:
-        content = await chat(model, messages, prompt)
+        content = await _chat(model, messages, prompt)
         return { 'content': chat_response.choices[0].message.content }
     except Exception as e:
         raise e
