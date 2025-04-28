@@ -51,7 +51,7 @@ async def chat(
 ):
     try:
         content = await _chat(model, messages, prompt)
-        return { 'content': chat_response.choices[0].message.content }
+        return { 'content': content }
     except Exception as e:
         raise e
 
