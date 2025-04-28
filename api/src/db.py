@@ -24,6 +24,10 @@ class Db:
         self.connection = mysql.connector.connect(**self.config)
         self.cursor = self.connection.cursor()
 
+        if config.clean_database is True:
+            self.cursor.execute(f'DROP DATABASE {self.db_name}')
+            self.connection.commit()
+
         self.cursor.execute('SHOW DATABASES')
         databases = [row[0] for row in self.cursor.fetchall()]
 
@@ -61,6 +65,7 @@ class Db:
                     wechat_username VARCHAR(128),
                     wechat_avatar VARCHAR(1024),
                     audio_file_cid VARCHAR(256),
+                    text VARCHAR(512),
                     timestamp INT UNSIGNED,
                     state VARCHAR(16),
                     PRIMARY KEY (audio_file_cid)
@@ -68,16 +73,17 @@ class Db:
             ''')
             self.connection.commit()
 
-    def new_audio(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid):
+    def new_audio(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text):
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_audios}
-                VALUE (%s, %s, %s, %s, %s, %s) as alias
+                VALUE (%s, %s, %s, %s, %s, %s, %s) as alias
             ''',
             (wechat_openid,
              wechat_username,
              wechat_avatar,
              audio_file_cid,
+             text,
              int(time.time()),
              'CREATED')
         )
