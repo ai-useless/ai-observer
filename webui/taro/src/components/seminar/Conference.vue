@@ -350,11 +350,12 @@ const startSeminar = async () => {
   if (typingTicker.value >= 0) window.clearInterval(typingTicker.value)
   typingTicker.value = -1
 
+  if (!_uid.value) return
+
   Taro.showLoading({
     title: '主持人正在准备台本'
   })
 
-  if (!_uid.value) return
   _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)

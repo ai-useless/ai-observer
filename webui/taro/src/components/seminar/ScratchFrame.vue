@@ -101,7 +101,7 @@ const presetClasses = [
 ]
 
 const _seminar = computed(() => dbBridge._Seminar.seminar(seminar.Seminar.seminar()))
-const topic = ref(_seminar.value?.topic || initialTopics[Math.floor(Math.random() * initialTopics.length)])
+const topic = ref(_seminar.value ? _seminar.value.topic : initialTopics[Math.floor(Math.random() * initialTopics.length)])
 const topicType = ref('')
 const historyTopics = ref([] as string[])
 const topics = ref([] as string[])

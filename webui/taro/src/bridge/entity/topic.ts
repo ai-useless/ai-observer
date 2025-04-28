@@ -18,7 +18,7 @@ export class Topic {
           }, 1000)
           return
         }
-        resolve(payload?.topics)
+        resolve(payload.topics)
       }).catch(() => {
         setTimeout(() => {
           Topic.generateTopics(topicType, count, historyTopics)
