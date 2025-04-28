@@ -21,6 +21,7 @@ config = parser.parse_args()
 
 os.makedirs(f'{config.data_dir}/audios', exist_ok=True)
 os.makedirs(f'{config.data_dir}/materials', exist_ok=True)
+os.makedirs(f'{config.data_dir}/avatars', exist_ok=True)
 
 if len(config.api_token) == 0:
     print('You must provide valid api token')
