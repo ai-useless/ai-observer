@@ -20,7 +20,7 @@ async def cook_audio(code: str, username: str, avatar: str, audio_b64: str):
             text = audio_2_text(audio_b64)
 
             file_name = f'{hashlib.sha256(audio_b64).hexdigest()}.wav'
-            file_path = f'{config.data_dir}/{file_name}'
+            file_path = f'{config.data_dir}/materials/{file_name}'
 
             audio_bytes = base64.b64decode(audio_b64)
             with open(file_path, 'wb') as f:
