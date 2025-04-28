@@ -22,10 +22,10 @@ class AudioGenerate:
 
     async def fetch_audio(
             self,
-            text: str, 
-            voice: str, 
-            api_token: str, 
-            session: aiohttp.ClientSession, 
+            text: str,
+            voice: str,
+            api_token: str,
+            session: aiohttp.ClientSession,
             semaphore: asyncio.Semaphore,
             min_delay_ms: float = 50,
             max_delay_ms: float = 300
