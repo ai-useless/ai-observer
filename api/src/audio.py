@@ -6,17 +6,18 @@ import hashlib
 from pydub import AudioSegment
 import io
 import random
+
 from include import *
+from config import config
 
 class AudioGenerate:
-    async def generate_audio(self, text: str, voice: str, api_token: str, output_path: str, max_concurrency: int) -> str:
+    async def generate_audio(self, text: str, voice: str, max_concurrency: int) -> str:
         cleaned_text = purify_text(text)
         chunks = chunk_text(cleaned_text)
-        audio_buffers = await self.concurrent_audio_requests(chunks, voice, api_token, max_concurrency)
+        audio_buffers = await self.concurrent_audio_requests(chunks, voice, max_concurrency)
 
         file_name = self.merge_audio_buffers(
             audio_buffers=[b for b in audio_buffers if b],
-            output_path=f'{output_path}'
         )
         return file_name
 
@@ -24,7 +25,6 @@ class AudioGenerate:
             self,
             text: str,
             voice: str,
-            api_token: str,
             session: aiohttp.ClientSession,
             semaphore: asyncio.Semaphore,
             min_delay_ms: float = 50,
@@ -32,7 +32,7 @@ class AudioGenerate:
             ) -> bytes:
         url = 'https://kikakkz-cosy-voice-tts.chutes.ai/speak'
         headers = {
-            'Authorization': f'Bearer {api_token}',
+            'Authorization': f'Bearer {config.api_token}',
             'Content-Type': 'application/json'
         }
         payload = {
@@ -53,12 +53,12 @@ class AudioGenerate:
                 logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {str(e)}')
                 return b''
 
-    async def concurrent_audio_requests(self, chunks: list[str], voice: str, api_token: str, max_concurrency: int) -> list[bytes]:
+    async def concurrent_audio_requests(self, chunks: list[str], voice: str, max_concurrency: int) -> list[bytes]:
         semaphore = asyncio.Semaphore(max_concurrency)
         async with aiohttp.ClientSession() as session:
             tasks = []
             for idx, text in enumerate(chunks):
-                task = asyncio.create_task(self.fetch_audio(text, voice, api_token, session, semaphore))
+                task = asyncio.create_task(self.fetch_audio(text, voice, config.api_token, session, semaphore))
                 task.index = idx
                 tasks.append(task)
 
@@ -69,14 +69,14 @@ class AudioGenerate:
                 sorted_results[task.index] = results[tasks.index(task)]
             return sorted_results
 
-    def merge_audio_buffers(self, audio_buffers: list[bytes], output_path: str) -> str:
+    def merge_audio_buffers(self, audio_buffers: list[bytes]) -> str:
         valid_buffers = [b for b in audio_buffers if b]
         hasher = hashlib.sha256()
         for buffer in valid_buffers:
             hasher.update(buffer)
 
         file_name = hasher.hexdigest() + ".wav"
-        output_path = f"{output_path}/{file_name}"
+        output_path = f"{config.data_dir}/{file_name}"
 
         combined = None
         for i, buffer in enumerate(audio_buffers):

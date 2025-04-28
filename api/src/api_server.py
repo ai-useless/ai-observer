@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Body, Request
 from fastapi.responses import JSONResponse
 import uvicorn
-import argparse
 from pydantic import BaseModel
 import os
 import sys
@@ -11,8 +10,11 @@ import threading
 import aiohttp
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
+
 from audio import AudioGenerate
 from include import *
+from chat import chat as _chat, ChatMessage
+from config import config
 
 app = FastAPI()
 
@@ -20,35 +22,6 @@ mutex = threading.Lock()
 _requests = 0
 responses = 0
 errors = 0
-
-class ServerKit:
-    api_token: str
-    data_dir: str
-    audio_host: str
-
-    def __init__(self, api_token: str, data_dir: str, audio_host: str):
-        self.api_token = api_token
-        self.data_dir = data_dir
-        self.audio_host = audio_host
-
-server_kit = None
-
-class ChatMessage(BaseModel):
-    role: str
-    content: str
-
-class ModelChatChoice:
-    message: ChatMessage
-
-    def __init__(self, api_choice: dict):
-        message = api_choice['message']
-        self.message = ChatMessage(role=message['role'], content=message['content'])
-
-class ModelChatResponse:
-    choices: list[ModelChatChoice]
-
-    def __init__(self, api_response: dict):
-        self.choices = [ModelChatChoice(choice) for choice in api_response['choices']]
 
 class ChatResponse(BaseModel):
     content: str | None = None
@@ -58,34 +31,27 @@ class SpeakResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
 
+class LoginResponse(BaseModel):
+    info: str | None = None
+    error: str | None = None
+
+@app.post('/api/v1/login', response_model=LoginResponse)
+async def login(code: str):
+    try:
+        info = await login(code)
+        return { 'info': info }
+    except Exception as e:
+        raise e
+
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
     model: str = Body(...),
     messages: list[ChatMessage] = Body(..., embed=True) ,
     prompt: str = Body(...)
 ):
-    url = 'https://llm.chutes.ai/v1/chat/completions'
-    # url = 'http://47.238.224.37:8091/v1/chat/completions'
-
-    payload = {
-        'model': model,
-        'messages': [
-            *[{ 'role': message.role, 'content': message.content } for message in messages],
-            {'role': 'user', 'content': prompt}
-        ]
-    }
-    headers = {
-        'Authorization': f'Bearer {server_kit.api_token}',
-        'Content-Type': 'application/json'
-    }
-
-    timeout = aiohttp.ClientTimeout(connect=10, total=30)
     try:
-        async with aiohttp.ClientSession(timeout=timeout) as session:
-            async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
-                response.raise_for_status()
-                chat_response = ModelChatResponse(await response.json())
-                return { 'content': chat_response.choices[0].message.content }
+        content = await _chat(model, messages, prompt)
+        return { 'content': content }
     except Exception as e:
         raise e
 
@@ -95,9 +61,9 @@ async def speak(
     voice: str = Body(...),
 ):
     generator = AudioGenerate()
-    audio_name = await generator.generate_audio(text, voice, server_kit.api_token, server_kit.data_dir, max_concurrency=5)
+    audio_name = await generator.generate_audio(text, voice, max_concurrency=5)
 
-    return {'audio_url': f'{server_kit.audio_host}/audios/{audio_name}'}
+    return {'audio_url': f'{config.audio_host}/audios/{audio_name}'}
 
 
 def get_client_host(request: Request) -> str:
@@ -166,23 +132,7 @@ class ApiElapseMiddleware(BaseHTTPMiddleware):
             return JSONResponse({'error': f'{e}'}, status_code=502)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Chat proxy of AI Observer')
-
-    parser.add_argument('--port', type=int, default=80, help='API port')
-    parser.add_argument('--api-token', type=str, default='', help='API token of api.chutes.ai')
-    parser.add_argument('--data-dir', type=str, default='./.data', help='Data dir for audio/video/text, default=./.data')
-    parser.add_argument('--audio-host', type=str, default='http://api.meipu-ai.cn', help='Host of audio file service')
-
-    args = parser.parse_args()
-
-    os.makedirs(args.data_dir, exist_ok=True)
-    server_kit = ServerKit(args.api_token, args.data_dir, args.audio_host)
-
-    if len(args.api_token) == 0:
-        print('You must provide valid api token')
-        sys.exit(0)
-
     app.add_middleware(ApiElapseMiddleware)
     app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'], max_age=3600)
 
-    uvicorn.run(app, host='0.0.0.0', port=args.port)
+    uvicorn.run(app, host='0.0.0.0', port=config.port)
