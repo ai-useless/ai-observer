@@ -6,15 +6,7 @@ import hashlib
 from pydub import AudioSegment
 import io
 import random
-import logging
-from include import purify_text, chunk_text
-
-logger = logging.getLogger('uvicorn')
-
-RED = '\033[31m'
-GREEN = '\33[32m'
-BOLD = '\033[1m'
-RESET = '\033[0m'
+from include import *
 
 class AudioGenerate:
     async def generate_audio(self, text: str, voice: str, api_token: str, output_path: str, max_concurrency: int) -> str:
