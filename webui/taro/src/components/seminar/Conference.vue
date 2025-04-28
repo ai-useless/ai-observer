@@ -352,6 +352,8 @@ const startSeminar = async () => {
 
   if (!_uid.value) return
 
+  if (audioPlayer.value) audioPlayer.value.context.stop()
+
   Taro.showLoading({
     title: '主持人正在准备台本'
   })
