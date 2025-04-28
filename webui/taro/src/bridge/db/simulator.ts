@@ -6,7 +6,7 @@ export class _Simulator {
       name: '渾二虎',
       avatar:
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
-      personality: '客观理性的AGI智障频道AGI观点栏目主持人',
+      personality: '客观理性的没谱儿的AGI频道AGI观点栏目主持人',
       host: true,
       speakerVoice: 'huyihu',
       archetype: '胡一虎',
