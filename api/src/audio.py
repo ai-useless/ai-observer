@@ -7,6 +7,7 @@ from pydub import AudioSegment
 import io
 import random
 import logging
+from include import purify_text, chunk_text
 
 logger = logging.getLogger('uvicorn')
 
@@ -17,8 +18,8 @@ RESET = '\033[0m'
 
 class AudioGenerate:
     async def generate_audio(self, text: str, voice: str, api_token: str, output_path: str, max_concurrency: int) -> str:
-        cleaned_text = self.purify_text(text)
-        chunks = self.chunk_text(cleaned_text)
+        cleaned_text = purify_text(text)
+        chunks = chunk_text(cleaned_text)
         audio_buffers = await self.concurrent_audio_requests(chunks, voice, api_token, max_concurrency)
 
         file_name = self.merge_audio_buffers(
@@ -26,41 +27,6 @@ class AudioGenerate:
             output_path=f'{output_path}'
         )
         return file_name
-
-    def purify_text(self, text):
-        soup = BeautifulSoup(text, 'html.parser')
-        cleand_html = soup.get_text(separator=' ')
-        cleaned_tag = re.sub(r'\[.*?\]', '', cleand_html)
-        cleaned_space = re.sub(r'(?<=[\u4e00-\u9fa5])\s+(?=[\u4e00-\u9fa5])', '', cleaned_tag)
-        cleaned_space = re.sub(r'(?<=[\u4e00-\u9fa5])\s+(?=，|。|！|？)', '', cleaned_space)
-        cleaned_space = re.sub(r'(?<=，|。|！|？)\s+(?=[\u4e00-\u9fa5])', '', cleaned_space)
-        return cleaned_space
-
-    def chunk_text(self, text, chunk_size=100):
-        punctuation_pattern = r'(?<=[。！？])'
-
-        sentences = re.split(punctuation_pattern, text)
-        sentences = [s.strip() for s in sentences if s.strip()]
-
-        chunks = []
-        current_chunk = ""
-
-        for sentence in sentences:
-            if not current_chunk:
-                current_chunk = sentence
-                continue
-
-            if len(current_chunk) + len(sentence) + 1 <= chunk_size:
-                current_chunk += ' ' + sentence
-                continue
-
-            chunks.append(current_chunk.strip())
-            current_chunk = sentence
-
-        if current_chunk:
-            chunks.append(current_chunk.strip())
-
-        return chunks
 
     async def fetch_audio(
             self,
