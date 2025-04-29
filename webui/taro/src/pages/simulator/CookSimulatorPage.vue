@@ -9,8 +9,8 @@
     </View>
     <View style='margin-top: 16px; font-weight: 600; font-size: 14px;'>声音（可以用方言录制哦）</View>
     <View style='width: 100%; height: 80px; border-radius: 16px; border: 1px dashed gray; display: flex; justify-content: center; align-items: center; margin-top: 4px;'>
-      <View v-if='simulatorAudio.length'>
-        <Image :src='playing ? stopCircle : playCircle' style='width: 48px; height: 48px;' @click='onPlayAudioClick' />
+      <View v-if='simulatorAudio.length' @click='onPlayAudioClick'>
+        <Image :src='playing ? stopCircle : playCircle' style='width: 48px; height: 48px;' />
       </View>
       <View v-else @click='onRecordAudioClick'>
         <Image :src='mic' style='width: 48px; height: 48px;' />
