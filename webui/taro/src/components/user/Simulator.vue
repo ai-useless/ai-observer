@@ -27,22 +27,40 @@
 <script setup lang='ts'>
 import { View, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { user } from 'src/localstores'
 
 import { chevronRight, mic } from 'src/assets'
 
+const loginCheck = () => {
+  if (!user.User.logined()) {
+    Taro.showToast({
+      title: '请先登录！',
+      icon: 'error',
+      duration: 1000
+    })
+  }
+  return user.User.logined()
+}
+
 const onCookSimulatorClick = () => {
+  if (!loginCheck()) return
+
   Taro.navigateTo({
     url: '/pages/simulator/CookSimulatorPage'
   })
 }
 
 const onMySimulatorsClick = () => {
+  if (!loginCheck()) return
+
   Taro.navigateTo({
     url: '/pages/simulator/MySimulatorsPage'
   })
 }
 
 const onAllSimulatorsClick = () => {
+  if (!loginCheck()) return
+
   Taro.navigateTo({
     url: '/pages/simulator/AllSimulatorsPage'
   })

@@ -138,27 +138,6 @@ const onChooseAvatar = () => {
   })
 }
 
-const login = async () => {
-  return new Promise((resolve, reject) => {
-    Taro.getUserProfile({
-      desc: '用于完善用户信息',
-      success: (res) => {
-        user.User.setAvatar(res.userInfo.avatarUrl)
-        user.User.setUsername(res.userInfo.nickName)
-        resolve(undefined)
-      },
-      fail: (e) => {
-        Taro.showToast({
-          title: `获取用户信息失败：${JSON.stringify(e)}`,
-          icon: 'error',
-          duration: 1000
-        })
-        reject(e)
-      }
-    })
-  })
-}
-
 const onChooseAudioFileClick = async () => {
   const extensions = ['mp3', 'wav']
   Taro.chooseMessageFile({
@@ -227,16 +206,6 @@ const onPlayAudioClick = () => {
 
 const onCreateSimulatorClick = async () => {
   creating.value = true
-
-  if (!username.value) {
-    try {
-      await login()
-    } catch (e) {
-      creating.value = false
-      console.log(`Failed login: ${e}`)
-      return
-    }
-  }
 
   Taro.login().then((code) => {
     axios.post(constants.COOK_SIMULATOR_API, {
