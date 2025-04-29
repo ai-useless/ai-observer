@@ -3,7 +3,9 @@ export default {
     'pages/index/IndexPage',
     'pages/seminar/SeminarPage',
     'pages/user/UserPage',
-    'pages/simulator/CookSimulatorPage'
+    'pages/simulator/CookSimulatorPage',
+    'pages/simulator/MySimulatorsPage',
+    'pages/simulator/AllSimulatorsPage'
   ],
   workers: 'worker',
   window: {
