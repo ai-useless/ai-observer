@@ -49,7 +49,7 @@ async def cook_simulator(
 ):
     try:
         audio_name = await _cook_simulator(code, username, avatar, audio_b64, simulator, simulator_avatar, personality)
-        return {'audio_url': f'{config.audio_host}/materials/{audio_name}'}
+        return {'audio_url': f'{config.file_server}/materials/{audio_name}'}
     except Exception as e:
         raise e
 
@@ -59,7 +59,12 @@ async def count_simulators(code: Optional[str] = None):
 
 @app.get('/api/v1/simulators')
 async def get_simulators(code: Optional[str] = None, offset: int = 0, limit: int = 100):
-    return await _get_simulators(code, offset, limit)
+    simulators = await _get_simulators(code, offset, limit)
+    return [{
+        **simulator,
+        'audio_url': f'{config.file_server}/materials/{simulator["audio_file_cid"]}.wav',
+        'simulator_avatar_url': f'{config.file_server}/materials/{simulator["simulator_avatar_cid"]}'
+    }]
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
@@ -81,7 +86,7 @@ async def speak(
     generator = AudioGenerate()
     audio_name = await generator.generate_audio(text, voice, max_concurrency=5)
 
-    return {'audio_url': f'{config.audio_host}/audios/{audio_name}'}
+    return {'audio_url': f'{config.file_server}/audios/{audio_name}'}
 
 
 def get_client_host(request: Request) -> str:
