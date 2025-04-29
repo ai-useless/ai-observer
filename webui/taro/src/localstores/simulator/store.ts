@@ -13,22 +13,22 @@ export const useSimulatorStore = defineStore('simulator', {
     countSimulators(code?: string, done?: (error: boolean, count?: number) => void) {
       const url = `${constants.COUNT_SIMULATORS_API}${code ? '?code=' + code : ''}`
       axios.get(url).then((resp) => {
-        done?.(false, resp.data)
+        if (done) done(false, resp.data)
         if (code) this.mySimulatorsCount = resp.data
         else this.allSimulatorsCount = resp.data
       }).catch((e) => {
         console.log(`Failed count simulators: ${JSON.stringify(e)}`)
-        done?.(true)
+        if (done) done(true)
       })
     },
     getSimulators(code?: string, done?: (error: boolean, rows?: unknown[]) => void) {
       const url = `${constants.GET_SIMULATORS_API}${code ? '?code=' + code : ''}`
       axios.get(url).then((resp) => {
-        done?.(false, resp.data)
+        if (done) done(false, resp.data)
         this.appendSimulators(resp.data, code !== undefined)
       }).catch((e) => {
         console.log(`Failed count simulators: ${JSON.stringify(e)}`)
-        done?.(true)
+        if (done) done(true)
       })
     },
     appendSimulators(simulators: _Simulator[], mine: boolean) {

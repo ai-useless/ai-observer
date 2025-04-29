@@ -1,6 +1,6 @@
 <template>
   <View style='padding: 16px;'>
-    <View v-for='(_simulator, index) in mySimulators' :key='index' style='border-bottom: 1px solid gray'>
+    <View v-for='(_simulator, index) in mySimulators' :key='index' style='border-bottom: 1px solid gray;'>
       <SimulatorCard :simulator='_simulator' />
     </View>
   </View>
