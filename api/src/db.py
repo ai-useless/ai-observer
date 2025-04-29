@@ -2,6 +2,7 @@ import mysql.connector
 import warnings
 from config import config
 import time
+import json
 
 
 class Db:
@@ -24,15 +25,20 @@ class Db:
         self.connection = mysql.connector.connect(**self.config)
         self.cursor = self.connection.cursor()
 
+        self.cursor.execute('SHOW DATABASES')
+        databases = [row[0] for row in self.cursor.fetchall()]
+
         if config.clean_database is True:
-            self.cursor.execute(f'DROP DATABASE {self.db_name}')
-            self.connection.commit()
+            if self.db_name in databases:
+                self.cursor.execute(f'DROP DATABASE {self.db_name}')
+                self.connection.commit()
 
         self.cursor.execute('SHOW DATABASES')
         databases = [row[0] for row in self.cursor.fetchall()]
 
         if self.db_name not in databases:
             self.cursor.execute(f'CREATE DATABASE IF NOT EXISTS {self.db_name}')
+            self.connection.commit()
 
         self.cursor.close()
         self.connection.close()
@@ -41,6 +47,7 @@ class Db:
 
         self.connection = mysql.connector.connect(**self.config)
         self.cursor = self.connection.cursor()
+        self.cursor_dict = self.connection.cursor(dictionary=True)
 
         self.cursor.execute('SHOW TABLES')
         tables = [row[0] for row in self.cursor.fetchall()]
@@ -67,7 +74,7 @@ class Db:
                     audio_file_cid VARCHAR(256) UNIQUE,
                     text VARCHAR(512),
                     simulator VARCHAR(32),
-                    simulator_avatar_cid VARCHAR(64),
+                    simulator_avatar_cid VARCHAR(64) UNIQUE,
                     origin_personality VARCHAR(256),
                     timestamp INT UNSIGNED,
                     state VARCHAR(16),
@@ -110,6 +117,20 @@ class Db:
 
     def reject_simulator(self, simulator):
         self.update_simulator(simulator, 'REJECTED')
+
+    def count_simulators(self, wechat_openid: str | None):
+        query = f'SELECT COUNT(*) FROM {self.table_simulators}'
+        query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
+        self.cursor.execute(query)
+        return int(self.cursor.fetchone()[0])
+
+    def get_simulators(self, wechat_openid: str | None, offset: int, limit: int):
+        query = f'SELECT * FROM {self.table_simulators}'
+        query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
+        query += ' ORDER BY timestamp DESC'
+        query += f' LIMIT {limit} OFFSET {offset}'
+        self.cursor_dict.execute(query)
+        return self.cursor_dict.fetchall()
 
     def ban(self, wechat_openid, ban_by_reason, ban_by_id):
         self.cursor.execute(

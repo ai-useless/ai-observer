@@ -13,5 +13,6 @@ export const purifyText = (html: string): string => {
 export const purifyThink = (html: string): string => {
   const $ = cheerio.load(html)
   $('think').remove()
+  $('reasoning').remove()
   return $.html()
 }
