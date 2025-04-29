@@ -5,7 +5,7 @@ from chutes.chute import Chute, NodeSelector
 
 image = (
     Image(
-        username="whisper",
+        username="kikakkz",
         name="whisper-stt",
         tag="0.0.1",
         readme="## speech-to-Text using openai/whisper",
