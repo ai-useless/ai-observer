@@ -21,7 +21,7 @@ async def audio_2_text(audio_b64: str) -> str:
     async with aiohttp.ClientSession(timeout=timeout) as session:
         async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
             response.raise_for_status()
-            return (await response.json())['text']
+            return await response.text()
 
 async def get_openid(code: str):
     url = f'https://api.weixin.qq.com/sns/jscode2session?appid={config.weapp_id}&secret={config.weapp_secret}&js_code={code}&grant_type=authorization_code'
