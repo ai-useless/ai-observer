@@ -72,3 +72,7 @@ async def count_simulators(code: str | None):
     openid = (await get_openid(code)) if code is not None else None
     return db.count_simulators(openid)
 
+async def get_simulators(code: str | None, offset: int, limit: int):
+    openid = (await get_openid(code)) if code is not None else None
+    limit = 100 if limit == 0 or limit > 100 else limit
+    return db.get_simulators(openid, offset, limit)

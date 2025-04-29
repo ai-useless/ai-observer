@@ -16,7 +16,7 @@ from audio import AudioGenerate
 from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
-from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators
+from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators
 
 app = FastAPI()
 
@@ -56,6 +56,10 @@ async def cook_simulator(
 @app.get('/api/v1/count_simulators')
 async def count_simulators(code: Optional[str] = None):
     return await _count_simulators(code)
+
+@app.get('/api/v1/simulators')
+async def get_simulators(code: Optional[str] = None, offset: int = 0, limit: int = 100):
+    return await _get_simulators(code, offset, limit)
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
