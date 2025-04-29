@@ -115,7 +115,9 @@ sys.path.append('{}/third_party/Matcha-TTS'.format(ROOT_DIR))
 
 class InputArgs(BaseModel):
     text: str
-    voice: str = "laozhu"
+    speed: float = 1.0
+    prompt_audio_b64: str
+    prompt_audio_text: str
 
 @chute.on_startup()
 async def initialize(self):
@@ -124,19 +126,17 @@ async def initialize(self):
     from cosy_voice_generator import CosyVoiceGenerator
 
     MODEL_DIR = Path(os.getenv("HF_HOME", "/app")).resolve()
-    print(f"--MODEL_DIR={MODEL_DIR}")
     MODEL_PATH = (Path(MODEL_DIR) / "pretrained_models/CosyVoice2-0.5B").resolve()
-    print(f"--MODEL_PATH={str(MODEL_PATH)}")
-    # TTSFRD_PATH = (Path(MODEL_DIR) / "pretrained_models/CosyVoice-ttsfrd").resolve()
+
     from modelscope import snapshot_download
-    print(f"--snapshot_download")
     snapshot_download('iic/CosyVoice2-0.5B', local_dir=str(MODEL_PATH))
-    # snapshot_download('iic/CosyVoice-ttsfrd', local_dir=TTSFRD_PATH)
 
     self.generator = CosyVoiceGenerator(model_path=str(MODEL_PATH))
 
 @chute.cord(
-    public_api_path="/speak",
+    path="/v1/speak",
+    passthrough_path="/v1/speak",
+    public_api_path="/v1/speak",
     public_api_method="POST",
     stream=False,
     output_content_type="audio/wav",
@@ -148,8 +148,9 @@ async def speak(self, args: InputArgs) -> Response:
     """
     text = purify_text(args.text)
     audio_bytes = self.generator.generate_speech(
-        voice_name=args.voice,
-        target_text=text
+        target_text=text,
+        prompt_audio_b64=args.prompt_audio_b64,
+        prompt_audio_text=args.prompt_audio_text
     )
 
     if audio_bytes:
