@@ -7,7 +7,7 @@ from include import *
 import json
 
 async def audio_2_text(audio_b64: str) -> str:
-    url = 'http://210.209.69.40:8900/v1/transcribe'
+    url = 'https://kikakkz-whisper-stt.chutes.ai/v1/transcribe'
 
     payload = {
         'audio_b64': audio_b64,
