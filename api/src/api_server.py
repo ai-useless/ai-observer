@@ -73,7 +73,7 @@ async def get_simulators(code: Optional[str] = None, offset: int = 0, limit: int
         **simulator,
         'audio_url': f'{config.file_server}/materials/{simulator["audio_file_cid"]}.wav',
         'simulator_avatar_url': f'{config.file_server}/avatars/{simulator["simulator_avatar_cid"]}',
-        'wechat_avatar_url': f'{config.file_server}/avatars/{simulator["wechat_avatar_cid"]}'
+        'wechat_avatar_url': f'{config.file_server}/avatars/{simulator["wechat_avatar"]}'
     } for simulator in simulators]
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
