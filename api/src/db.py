@@ -67,7 +67,7 @@ class Db:
                     audio_file_cid VARCHAR(256) UNIQUE,
                     text VARCHAR(512),
                     simulator VARCHAR(32),
-                    simulator_avatar_cid VARCHAR(64),
+                    simulator_avatar_cid VARCHAR(64) UNIQUE,
                     origin_personality VARCHAR(256),
                     timestamp INT UNSIGNED,
                     state VARCHAR(16),
