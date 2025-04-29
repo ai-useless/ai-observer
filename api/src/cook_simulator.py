@@ -55,10 +55,12 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
         f.write(audio_bytes)
 
 
-    simulator_avatar_cid = hashlib.sha256(simulator_avatar.encode("utf-8")).hexdigest()
+    simulator_avatar_b64_bytes = simulator_avatar.encode("utf-8")
+    simulator_avatar_cid = hashlib.sha256(simulator_avatar_b64_bytes).hexdigest()
+    simulator_avatar_bytes = base64.b64decode(simulator_avatar_b64_bytes)
     simulator_avatar_path = f'{config.data_dir}/avatars/{simulator_avatar_cid}'
-    with open(simulator_avatar_path, 'w') as f:
-        f.write(simulator_avatar_cid)
+    with open(simulator_avatar_path, 'wb') as f:
+        f.write(simulator_avatar_bytes)
 
     # TODO: get origin personality
     personality = '普普通通路人甲' if personality is None else personality
