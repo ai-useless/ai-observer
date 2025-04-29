@@ -50,6 +50,6 @@ export class User {
   static setAvatar = (v: string) => (user.avatar = v)
 
   static getUser = (code: string) => user.getUser(code)
-  static logined = () => user.username && user.avatar
+  static logined = () => user.username && (user.avatar || user.avatarUrl)
   static cookUser = (code: string) => user.cookUser(code)
 }
