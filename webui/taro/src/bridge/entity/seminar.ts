@@ -342,7 +342,11 @@ export class ESeminar {
 
   stop = () => {}
 
-  guestRequest = (subTopic: string, participatorId: number, intent: seminarWorker.Intent) => {
+  guestRequest = (
+    subTopic: string,
+    participatorId: number,
+    intent: seminarWorker.Intent
+  ) => {
     const { id } = this.seminar
     const historyMessages = this.historyMessages().get(subTopic) || []
 
@@ -402,7 +406,11 @@ export class ESeminar {
       this.onThinking(host.participatorId)
       this.lastRoundIsHost = true
 
-      this.guestRequest(subTopic, host.participatorId, seminarWorker.Intent.HOST_CHALLENGE)
+      this.guestRequest(
+        subTopic,
+        host.participatorId,
+        seminarWorker.Intent.HOST_CHALLENGE
+      )
       return
     }
 
@@ -415,7 +423,11 @@ export class ESeminar {
     for (const speaker of speakers) {
       this.onThinking(speaker.participatorId)
 
-      this.guestRequest(subTopic, speaker.participatorId, seminarWorker.Intent.DISCUSS)
+      this.guestRequest(
+        subTopic,
+        speaker.participatorId,
+        seminarWorker.Intent.DISCUSS
+      )
     }
   }
 

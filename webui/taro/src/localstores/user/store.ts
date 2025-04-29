@@ -13,7 +13,7 @@ const user = useUserStore()
 
 export class User {
   static username = () => user.username
-  static setUsername = (v: string) => user.username = v
+  static setUsername = (v: string) => (user.username = v)
   static avatar = () => user.avatar
-  static setAvatar = (v: string) => user.avatar = v
+  static setAvatar = (v: string) => (user.avatar = v)
 }

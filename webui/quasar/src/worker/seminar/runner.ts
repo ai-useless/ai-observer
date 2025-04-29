@@ -3,6 +3,7 @@ import { constants } from 'src/constant'
 import { dbBridge } from 'src/bridge'
 import { Intent, Prompt } from './prompt'
 import { dbModel } from 'src/model'
+import { purify } from 'src/utils'
 
 export enum SeminarEventType {
   CHAT_REQUEST = 'ChatRequest',
@@ -272,10 +273,10 @@ export class SeminarRunner {
         messages: (prompts.historyMessages || []).map((el) => {
           return {
             role: 'user', // TODO: if it's my model, it should be assistant
-            content: el
+            content: purify.purifyText(el)
           }
         }),
-        prompt
+        prompt: purify.purifyText(prompt || '')
       }
     )
 
@@ -284,7 +285,9 @@ export class SeminarRunner {
     )
     if (!prompts.generateAudio || !generateAudio) {
       return {
-        text: (textResp.data as Record<string, string>).content,
+        text: purify.purifyText(
+          (textResp.data as Record<string, string>).content
+        ),
         audio: ''
       }
     }
@@ -326,11 +329,11 @@ export class SeminarRunner {
       participatorId,
       Intent.OUTLINE_SUBTOPICS,
       {
-        topicMaterial: response
+        topicMaterial: purify.purifyText(response)
       }
     )
     if (!_response) return
-    return Prompt.postProcess(intent, _response.text)
+    return Prompt.postProcess(intent, purify.purifyText(_response.text))
   }
 
   static handleChatRequest = async (payload: ChatRequestPayload) => {

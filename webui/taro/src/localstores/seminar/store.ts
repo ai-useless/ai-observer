@@ -15,15 +15,20 @@ const seminar = useSeminarStore()
 export class Seminar {
   static seminar = () => seminar.uid
 
-  static setSeminar = (v: string) => seminar.uid = v
+  static setSeminar = (v: string) => (seminar.uid = v)
 
-  static startThink = (participatorId: number) => seminar.participatorsInThinking.set(participatorId, true)
+  static startThink = (participatorId: number) =>
+    seminar.participatorsInThinking.set(participatorId, true)
 
-  static stopThink = (participatorId: number) => seminar.participatorsInThinking.delete(participatorId)
+  static stopThink = (participatorId: number) =>
+    seminar.participatorsInThinking.delete(participatorId)
 
-  static thinking = (participatorId: number) => seminar.participatorsInThinking.has(participatorId)
+  static thinking = (participatorId: number) =>
+    seminar.participatorsInThinking.has(participatorId)
 
-  static speak = (participatorId: number) => seminar.participatorInSpeaking = participatorId
+  static speak = (participatorId: number) =>
+    (seminar.participatorInSpeaking = participatorId)
 
-  static speaking = (participatorId: number) => seminar.participatorInSpeaking === participatorId
+  static speaking = (participatorId: number) =>
+    seminar.participatorInSpeaking === participatorId
 }
