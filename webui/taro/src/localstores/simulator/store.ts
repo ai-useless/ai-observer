@@ -1,0 +1,58 @@
+import { defineStore } from 'pinia'
+import { constants } from 'src/constant'
+import axios from 'taro-axios'
+import { _Simulator } from './types'
+
+export const useSimulatorStore = defineStore('simulator', {
+  state: () => ({
+    allSimulatorsCount: 0,
+    mySimulatorsCount: 0,
+    simulators: [] as _Simulator[]
+  }),
+  actions: {
+    countSimulators(code?: string, done?: (error: boolean, count?: number) => void) {
+      const url = `${constants.COUNT_SIMULATORS_API}${code ? '?code=' + code : ''}`
+      axios.get(url).then((resp) => {
+        done?.(false, resp.data)
+        if (code) this.mySimulatorsCount = resp.data
+        else this.allSimulatorsCount = resp.data
+      }).catch((e) => {
+        console.log(`Failed count simulators: ${JSON.stringify(e)}`)
+        done?.(true)
+      })
+    },
+    getSimulators(code?: string, done?: (error: boolean, rows?: unknown[]) => void) {
+      const url = `${constants.GET_SIMULATORS_API}${code ? '?code=' + code : ''}`
+      axios.get(url).then((resp) => {
+        done?.(false, resp.data)
+        this.appendSimulators(resp.data, code !== undefined)
+      }).catch((e) => {
+        console.log(`Failed count simulators: ${JSON.stringify(e)}`)
+        done?.(true)
+      })
+    },
+    appendSimulators(simulators: _Simulator[], mine: boolean) {
+      simulators.forEach((simulator) => {
+        const index = this.simulators.findIndex((el) => el.simulator === simulator.simulator)
+        simulator.mine = mine
+        this.simulators.splice(index >= 0 ? index : 0, index >= 0 ? 1 : 0, simulator)
+      })
+    }
+  },
+  getters: {}
+})
+
+const simulator = useSimulatorStore()
+
+export class Simulator {
+  static allSimulatorsCount = () => simulator.allSimulatorsCount
+  static setAllSimulatorsCount = (v: number) => simulator.allSimulatorsCount = v
+  static mySimulatorsCount = () => simulator.mySimulatorsCount
+  static setAvatar = (v: number) => simulator.mySimulatorsCount = v
+
+  static countSimulators = (code?: string) => simulator.countSimulators(code)
+  static getSimulators = (code?: string) => simulator.getSimulators(code)
+
+  static mySimulators = () => simulator.simulators.filter((el) => el.mine)
+  static allSimulators = () => simulator.simulators
+}
