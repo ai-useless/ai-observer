@@ -111,6 +111,12 @@ class Db:
     def reject_simulator(self, simulator):
         self.update_simulator(simulator, 'REJECTED')
 
+    def count_simulators(self, wechat_openid: str | None):
+        query = f'SELECT COUNT(*) FROM {self.table_simulators}'
+        query += f' WHERE wechat_openid={wechat_openid}' if wechat_openid is not None else ''
+        self.cursor.execute(query)
+        return int(self.cursor.fetchone()[0])
+
     def ban(self, wechat_openid, ban_by_reason, ban_by_id):
         self.cursor.execute(
             f'''

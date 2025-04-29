@@ -23,9 +23,8 @@ async def audio_2_text(audio_b64: str) -> str:
             response.raise_for_status()
             return (await response.json())['text']
 
-async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None):
+async def get_openid(code: str):
     url = f'https://api.weixin.qq.com/sns/jscode2session?appid={config.weapp_id}&secret={config.weapp_secret}&js_code={code}&grant_type=authorization_code'
-
     timeout = aiohttp.ClientTimeout(connect=10, total=30)
     async with aiohttp.ClientSession(timeout=timeout) as session:
         async with session.get(url) as response:
@@ -33,36 +32,43 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
 
             try:
                 response = json.loads(await response.text())
-                openid = response['openid']
+                return response['openid']
             except Exception as e:
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
                 raise e
 
+async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None):
+    openid = await get_openid(code)
 
-            try:
-                text = await audio_2_text(audio_b64)
-            except Exception as e:
-                logger.error(f'{BOLD}Audio2Text{RESET} {RED}{e}{RESET}')
-                raise e
+    try:
+        text = await audio_2_text(audio_b64)
+    except Exception as e:
+        logger.error(f'{BOLD}Audio2Text{RESET} {RED}{e}{RESET}')
+        raise e
 
-            file_cid = hashlib.sha256(audio_b64.encode("utf-8")).hexdigest()
-            file_name = f'{file_cid}.wav'
-            file_path = f'{config.data_dir}/materials/{file_name}'
+    file_cid = hashlib.sha256(audio_b64.encode("utf-8")).hexdigest()
+    file_name = f'{file_cid}.wav'
+    file_path = f'{config.data_dir}/materials/{file_name}'
 
-            audio_bytes = base64.b64decode(audio_b64)
-            with open(file_path, 'wb') as f:
-                f.write(audio_bytes)
+    audio_bytes = base64.b64decode(audio_b64)
+    with open(file_path, 'wb') as f:
+        f.write(audio_bytes)
 
 
-            simulator_avatar_cid = hashlib.sha256(simulator_avatar.encode("utf-8")).hexdigest()
-            simulator_avatar_path = f'{config.data_dir}/avatars/{simulator_avatar_cid}'
-            with open(simulator_avatar_path, 'w') as f:
-                f.write(simulator_avatar_cid)
+    simulator_avatar_cid = hashlib.sha256(simulator_avatar.encode("utf-8")).hexdigest()
+    simulator_avatar_path = f'{config.data_dir}/avatars/{simulator_avatar_cid}'
+    with open(simulator_avatar_path, 'w') as f:
+        f.write(simulator_avatar_cid)
 
-            # TODO: get origin personality
-            personality = '普普通通路人甲' if personality is None else personality
-            db.new_simulator(openid, username, avatar, file_cid, text, simulator, simulator_avatar_cid, personality)
+    # TODO: get origin personality
+    personality = '普普通通路人甲' if personality is None else personality
+    db.new_simulator(openid, username, avatar, file_cid, text, simulator, simulator_avatar_cid, personality)
 
-            # TODO: automatically review audio by another AI
+    # TODO: automatically review audio by another AI
 
-            return simulator
+    return simulator
+
+async def count_simulators(code: str | None):
+    openid = (await get_openid(code)) if code is not None else None
+    return db.count_simulators(openid)
+
