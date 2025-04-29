@@ -1,3 +1,4 @@
+import Taro from '@tarojs/taro'
 import { defineStore } from 'pinia'
 import { constants } from 'src/constant'
 import axios from 'taro-axios'
@@ -40,7 +41,7 @@ export const useUserStore = defineStore('user', {
     getAvatar(done?: (error: boolean) => void) {
       axios.get(this.avatarUrl).then((resp) => {
         if (done) done(false)
-        this.avatar = resp.data
+        this.avatar =  Taro.arrayBufferToBase64(new Uint8Array(resp.data))
       }).catch((e) => {
         console.log(`Failed get avatar: ${JSON.stringify(e)}`)
         if (done) done(true)
