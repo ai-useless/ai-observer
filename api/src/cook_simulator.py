@@ -62,7 +62,7 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
     with open(simulator_avatar_path, 'wb') as f:
         f.write(simulator_avatar_bytes)
 
-    wechat_avatar_b64_bytes = wechat_avatar.encode("utf-8")
+    wechat_avatar_b64_bytes = avatar.encode("utf-8")
     wechat_avatar_cid = hashlib.sha256(wechat_avatar_b64_bytes).hexdigest()
     wechat_avatar_bytes = base64.b64decode(wechat_avatar_b64_bytes)
     wechat_avatar_path = f'{config.data_dir}/avatars/{wechat_avatar_cid}'
