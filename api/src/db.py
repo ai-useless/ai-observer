@@ -120,13 +120,13 @@ class Db:
 
     def count_simulators(self, wechat_openid: str | None):
         query = f'SELECT COUNT(*) FROM {self.table_simulators}'
-        query += f' WHERE wechat_openid={wechat_openid}' if wechat_openid is not None else ''
+        query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
         self.cursor.execute(query)
         return int(self.cursor.fetchone()[0])
 
     def get_simulators(self, wechat_openid: str | None, offset: int, limit: int):
         query = f'SELECT * FROM {self.table_simulators}'
-        query += f' WHERE wechat_openid={wechat_openid}' if wechat_openid is not None else ''
+        query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
         query += ' ORDER BY timestamp DESC'
         query += f' LIMIT {limit} OFFSET {offset}'
         self.cursor_dict.execute(query)
