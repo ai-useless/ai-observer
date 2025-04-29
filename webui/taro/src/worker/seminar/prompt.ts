@@ -41,7 +41,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格') as RequirementFunc],
   [
     PromptType.IDENT_2_SPACE,
-    (() => ') 分级资料按照2个空格缩进，参考资料独立成行并用方括号括起来的数字开头') as RequirementFunc
+    (() =>
+      ') 分级资料按照2个空格缩进，参考资料独立成行并用方括号括起来的数字开头') as RequirementFunc
   ],
   [
     PromptType.WITH_HTML,
@@ -128,7 +129,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.WITHOUT_POLITICAL,
-    (() => '不要出现跟国家政要相关的事情，不要出现跟国家政策相悖的言论') as RequirementFunc
+    (() =>
+      '不要出现跟国家政要相关的事情，不要出现跟国家政策相悖的言论') as RequirementFunc
   ]
 ])
 
@@ -436,7 +438,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     ((
       topicType: string,
       count: number,
-      historyTopics: string[],
+      historyTopics: string[]
     ) => `生成${count}个和${topicType}相关的适合用于观点碰撞讨论的随机话题，每个话题独立成行返回，不需要序号。
           新生成的话题中不应包含下列话题：${historyTopics.join(',')}。话题要有开放性，不要非对即错，也不要辩论题，题目中不要包含是否等词，不要用问句。
           要求：${intentRequirements(Intent.GENERATE_TOPICS, 20, 500, historyTopics)}`) as IntentFunc

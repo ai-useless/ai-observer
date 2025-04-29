@@ -81,6 +81,7 @@ import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { useI18n } from 'vue-i18n'
 import { QScrollArea } from 'quasar'
+import { purify } from 'src/utils'
 
 import SimulatorCard from './SimulatorCard.vue'
 import Outline from './Outline.vue'
@@ -130,7 +131,7 @@ const typingTicker = ref(-1)
 
 const calculateTypingInterval = (duration: number) => {
   if (typingMessage.value.audio?.length) {
-    const interval = Math.ceil(duration * 1000 / typingMessage.value.message?.length)
+    const interval = Math.ceil(duration * 1000 / purify.purifyText(typingMessage.value.message || '').length)
     typingInterval.value = interval
   }
 }
@@ -140,7 +141,7 @@ const typing = () => {
 
   // If we have a message in typing, finish it
   if (typingMessage.value && typingIndex.value < typingMessage.value.message.length) {
-    const matches = typingMessage.value.message.slice(typingIndex.value).match(/<[^>]+>/) || []
+    const matches = typingMessage.value.message.slice(typingIndex.value).match(/^<[^>]+>/) || []
     const appendLen = matches[0]?.length || 1
     displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value + appendLen)
     typingIndex.value += appendLen
@@ -214,6 +215,18 @@ watch(participators, async () => {
   simulators.value = await entityBridge.EParticipator.simulators(participators.value)
 })
 
+const strip = (html: string): string => {
+  return html
+    .replace(/<!DOCTYPE html[^>]*>/gi, '')
+    .replace(/<html[^>]*>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<body[^>]*>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .replace(/<head[^>]*>/gi, '')
+    .replace(/<\/head>/gi, '')
+    .trim()
+}
+
 const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
   seminar.Seminar.stopThink(participatorId)
 
@@ -238,7 +251,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
 
   waitMessages.value.push({
     round,
-    message,
+    message: strip(purify.purifyThink(message)),
     participator,
     simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
     model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
@@ -272,12 +285,12 @@ const historyMessages = (): Map<string, string[]> => {
 
   displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(el.simulator.name + ' 的观点 ' + el.message)
+    _messages.push(el.simulator.name + ' 的观点: ' + purify.purifyText(el.message))
     messages.set(el.subTopic, _messages)
   })
   waitMessages.value.forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(el.message)
+    _messages.push(purify.purifyText(el.message))
     messages.set(el.subTopic, _messages)
   })
 

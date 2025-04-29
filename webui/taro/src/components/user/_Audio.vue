@@ -4,11 +4,8 @@
     <View style='display: flex; width: 100%; justify-content: space-between; align-items: center; margin-top: 8px; border-bottom: 1px solid lightblue; padding-bottom: 4px;'>
       <View style='font-size: 14px; color: gray;'>定制AGI声音</View>
       <View style='display: flex;'>
-        <View @click='onUploadAudioClick'>
-          <Image :src='folder' style='width: 18px; height: 18px;' />
-        </View>
-        <View @click='onRecordAudioClick'>
-          <Image :src='record' style='width: 18px; height: 18px; margin-left: 4px;' @click='onRecordAudioClick' />
+        <View @click='onAudioClick'>
+          <Image :src='mic' style='width: 18px; height: 18px;' />
         </View>
       </View>
     </View>
@@ -31,25 +28,25 @@ import { computed } from 'vue'
 import axios from 'taro-axios'
 import { constants } from 'src/constant'
 
-import { chevronRight, folder, record } from 'src/assets'
+import { chevronRight, mic } from 'src/assets'
 
 const username = computed(() => user.User.username())
 const avatar = computed(() => user.User.avatar())
 
-const onRecordAudioClick = () => {
+const onAudioClick = () => {
   // TODO:
 }
 
 const uploadAudioB64 = (audioB64: string) => {
   Taro.login().then((code) => {
     axios.post(constants.COOK_AUDIO_API, {
-      code,
+      code: code.code,
       username: username.value,
       avatar: avatar.value,
-      audioB64
+      audio_b64: audioB64
     }).then((audioUrl) => {
       console.log(audioUrl)
-    }).catch((e) => {
+    }).catch(() => {
       Taro.showToast({
         title: '上传失败！',
         icon: 'error',
