@@ -10,7 +10,7 @@
     <View style='margin-top: 16px; font-weight: 600; font-size: 14px;'>声音（可以用方言录制哦）</View>
     <View style='width: 100%; height: 80px; border-radius: 16px; border: 1px dashed gray; display: flex; justify-content: center; align-items: center; margin-top: 4px;'>
       <View v-if='simulatorAudio.length'>
-        <Image :src='playCircle' style='width: 48px; height: 48px;' />
+        <Image :src='playing ? stopCircle : playCircle' style='width: 48px; height: 48px;' @click='onPlayAudioClick' />
       </View>
       <View v-else @click='onRecordAudioClick'>
         <Image :src='mic' style='width: 48px; height: 48px;' />
@@ -59,7 +59,7 @@ import { computed, onMounted, ref } from 'vue'
 import Taro from '@tarojs/taro'
 import { View, Input, Button, Image } from '@tarojs/components'
 
-import { addCircle, mic, folder, warnCircle, playCircle } from 'src/assets'
+import { addCircle, mic, folder, warnCircle, playCircle, stopCircle } from 'src/assets'
 
 const username = computed(() => user.User.username())
 const avatar = computed(() => user.User.avatar())
@@ -69,6 +69,8 @@ const simulatorAvatar = ref('')
 const simulatorAvatarType = ref('')
 const simulatorDisplayAvatar = computed(() => `data:image/${simulatorAvatarType.value};base64,${simulatorAvatar.value}`)
 const simulatorAudio = ref('')
+const simulatorAudioPath = ref('')
+const playing = ref(false)
 const simulatorArchetype = ref('')
 const simulatorPersonality = ref('')
 
@@ -214,6 +216,7 @@ const onChooseAudioFileClick = async () => {
         })
         return
       }
+      simulatorAudioPath.value = res.tempFiles[0].path
       simulatorAudio.value = audioB64
     }).catch((e) => {
       Taro.showToast({
@@ -243,6 +246,18 @@ const onRecordAudioClick = () => {
   })
 }
 
+const audioPlayer = Taro.createInnerAudioContext()
+
+const onPlayAudioClick = () => {
+  if (playing.value) {
+    audioPlayer.stop()
+  } else {
+    audioPlayer.src = simulatorAudioPath.value
+    audioPlayer.play()
+  }
+  playing.value = !playing.value
+}
+
 const onCreateSimulatorClick = () => {
   // TODO
 }
@@ -265,7 +280,24 @@ onMounted(() => {
     })
   })
   recorderManager.onStop((res) => {
-    console.log('停止', res.tempFilePath)
+    readAsBase64(res.tempFilePath).then((audioB64: string) => {
+    if (audioB64.length > 8 * 1024 * 1024) {
+      Taro.showToast({
+        title: '文件太大了！',
+        icon: 'error',
+        duration: 1000
+      })
+      return
+    }
+    simulatorAudioPath.value = res.tempFilePath
+    simulatorAudio.value = audioB64
+  }).catch((e) => {
+    Taro.showToast({
+      title: `读取文件失败：${JSON.stringify(e)}`,
+      icon: 'error',
+      duration: 1000
+    })
+  })
   })
   recorderManager.onError(() => {
     if (!recordStarted.value) {
