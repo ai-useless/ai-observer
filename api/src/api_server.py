@@ -10,12 +10,13 @@ import threading
 import aiohttp
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 
 from audio import AudioGenerate
 from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
-from cook_simulator import cook_simulator as _cook_simulator
+from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators
 
 app = FastAPI()
 
@@ -32,11 +33,11 @@ class SpeakResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
 
-class CookAudioResponse(BaseModel):
+class CookSimulatorResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
 
-@app.post('/api/v1/cook_simulator', response_model=CookAudioResponse)
+@app.post('/api/v1/cook_simulator', response_model=CookSimulatorResponse)
 async def cook_simulator(
     code: str = Body(...),
     username: str = Body(...),
@@ -48,9 +49,22 @@ async def cook_simulator(
 ):
     try:
         audio_name = await _cook_simulator(code, username, avatar, audio_b64, simulator, simulator_avatar, personality)
-        return {'audio_url': f'{config.audio_host}/materials/{audio_name}'}
+        return {'audio_url': f'{config.file_server}/materials/{audio_name}'}
     except Exception as e:
         raise e
+
+@app.get('/api/v1/count_simulators')
+async def count_simulators(code: Optional[str] = None):
+    return await _count_simulators(code)
+
+@app.get('/api/v1/simulators')
+async def get_simulators(code: Optional[str] = None, offset: int = 0, limit: int = 100):
+    simulators = await _get_simulators(code, offset, limit)
+    return [{
+        **simulator,
+        'audio_url': f'{config.file_server}/materials/{simulator["audio_file_cid"]}.wav',
+        'simulator_avatar_url': f'{config.file_server}/avatars/{simulator["simulator_avatar_cid"]}'
+    } for simulator in simulators]
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
@@ -72,7 +86,7 @@ async def speak(
     generator = AudioGenerate()
     audio_name = await generator.generate_audio(text, voice, max_concurrency=5)
 
-    return {'audio_url': f'{config.audio_host}/audios/{audio_name}'}
+    return {'audio_url': f'{config.file_server}/audios/{audio_name}'}
 
 
 def get_client_host(request: Request) -> str:

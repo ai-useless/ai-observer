@@ -13,9 +13,9 @@ if common_dir not in sys.path:
     sys.path.append(common_dir)
 
 from purify_text import purify_text, chunk_text
-from logger import *
+from logger import logger, RED, BOLD, RESET, GREEN
 
 __all__ = [
     'purify_text', 'chunk_text',
-    *[name for name in dir() if not name.startswith('_')],
+    'logger', 'RED', 'BOLD', 'RESET', 'GREEN'
 ]
