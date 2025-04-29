@@ -35,6 +35,7 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
                 response = json.loads(await response.text())
                 openid = response['openid']
             except Exception as e:
+                # TODO: logger cannot output
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.text()}')
                 raise e
 
@@ -61,7 +62,7 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
 
             # TODO: get origin personality
             personality = '普普通通路人甲' if personality is None else personality
-            db.new_audio(openid, username, avatar, file_cid, text, simulator, simulator_avatar_cid, personality)
+            db.new_simulator(openid, username, avatar, file_cid, text, simulator, simulator_avatar_cid, personality)
 
             # TODO: automatically review audio by another AI
 
