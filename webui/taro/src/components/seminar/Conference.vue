@@ -144,8 +144,7 @@ const typing = () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }
   displayMessages.value.forEach((el) => {
-    const timestamp = timestamp2HumanReadable(el.timestamp)
-    el.datetime = msgs.default[timestamp.msg](timestamp.value)
+    el.datetime = timestamp2HumanReadable(el.timestamp)
   })
 
   if (!waitMessages.value.length) return
@@ -297,7 +296,7 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as dbModel.Simulator,
     model: dbBridge._Model.model(participator.modelId) as dbModel.Model,
     timestamp: Date.now(),
-    datetime: msgs.default[timestamp.msg](timestamp.value),
+    datetime: timestamp,
     audio,
     subTopicTitle: false,
     subTopic
@@ -305,7 +304,7 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
 
   waitMessages.value = waitMessages.value.map((el) => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
-    return { ...el, datetime: msgs.default[timestamp.msg](timestamp.value) }
+    return { ...el, datetime: timestamp }
   })
 }
 

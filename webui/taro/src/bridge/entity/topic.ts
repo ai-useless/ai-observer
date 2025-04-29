@@ -7,7 +7,7 @@ export class Topic {
     count: number,
     historyTopics: string[]
   ): Promise<string[]> => {
-    return new Promise((resolve, _reject) => {
+    return new Promise((resolve, reject) => {
       seminarWorker.SeminarRunner.handleGenerateTopics({
         prompts: {
           model: dbBridge._Model._topicModel(),
@@ -18,17 +18,12 @@ export class Topic {
       })
         .then((payload) => {
           if (!payload) {
-            setTimeout(() => {
-              Topic.generateTopics(topicType, count, historyTopics)
-            }, 1000)
-            return
+            return reject('Invalid topics')
           }
           resolve(payload.topics)
         })
-        .catch(() => {
-          setTimeout(() => {
-            Topic.generateTopics(topicType, count, historyTopics)
-          }, 1000)
+        .catch((e) => {
+          reject(e)
         })
     })
   }

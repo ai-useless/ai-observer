@@ -136,7 +136,14 @@ const generateTopics = async () => {
   let clazz = topicType.value
   if (topicType.value === presetClasses.values[0]) clazz = '随机不同领域可以输出观点的话题'
   generating.value = true
-  topics.value = await entityBridge.Topic.generateTopics(clazz, 10, historyTopics.value)
+  try {
+    topics.value = await entityBridge.Topic.generateTopics(clazz, 10, historyTopics.value)
+  } catch {
+    setTimeout(() => {
+      generateTopics()
+    }, 1000)
+    return
+  }
   historyTopics.value.push(...topics.value)
   generating.value = false
 }
