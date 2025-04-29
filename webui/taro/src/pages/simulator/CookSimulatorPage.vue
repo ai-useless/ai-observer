@@ -1,6 +1,6 @@
 <template>
   <View style='padding: 16px;'>
-    <View style='margin-top: 16px; font-weight: 600; font-size: 14px;'>ID</View>
+    <View style='font-weight: 600; font-size: 14px;'>ID</View>
     <Input :value='simulatorId' @input='onSimulatorIdInput' placeholder='独一无二屌炸天的模拟器标识' style='border-radius: 4px; border: 1px solid lightblue; font-size: 12px; padding: 4px; margin-top: 4px;' />
 
     <View style='margin-top: 16px; font-weight: 600; font-size: 14px;'>头像</View>
