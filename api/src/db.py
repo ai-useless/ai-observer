@@ -10,6 +10,7 @@ class Db:
         self.db_name = 'ai_observer'
         self.table_bans = 'bans'
         self.table_simulators = 'simulators'
+        self.table_users = 'users'
 
         self.config = {
             'user': config.mysql_user,
@@ -32,6 +33,9 @@ class Db:
             if self.db_name in databases:
                 self.cursor.execute(f'DROP DATABASE {self.db_name}')
                 self.connection.commit()
+
+        self.cursor.execute('SHOW DATABASES')
+        databases = [row[0] for row in self.cursor.fetchall()]
 
         if self.db_name not in databases:
             self.cursor.execute(f'CREATE DATABASE IF NOT EXISTS {self.db_name}')
@@ -80,11 +84,23 @@ class Db:
             ''')
             self.connection.commit()
 
+        if self.table_users not in tables:
+            self.cursor.execute(f'''
+                CREATE TABLE IF NOT EXISTS {self.table_users} (
+                    wechat_openid VARCHAR(32),
+                    wechat_username VARCHAR(128),
+                    wechat_avatar VARCHAR(1024),
+                    timestamp INT UNSIGNED,
+                    PRIMARY KEY (wechat_openid)
+                )
+            ''')
+            self.connection.commit()
+
     def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality):
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_simulators}
-                VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+                VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''',
             (wechat_openid,
              wechat_username,
@@ -117,13 +133,13 @@ class Db:
 
     def count_simulators(self, wechat_openid: str | None):
         query = f'SELECT COUNT(*) FROM {self.table_simulators}'
-        query += f' WHERE wechat_openid={wechat_openid}' if wechat_openid is not None else ''
+        query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
         self.cursor.execute(query)
         return int(self.cursor.fetchone()[0])
 
     def get_simulators(self, wechat_openid: str | None, offset: int, limit: int):
         query = f'SELECT * FROM {self.table_simulators}'
-        query += f' WHERE wechat_openid={wechat_openid}' if wechat_openid is not None else ''
+        query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
         query += ' ORDER BY timestamp DESC'
         query += f' LIMIT {limit} OFFSET {offset}'
         self.cursor_dict.execute(query)
@@ -133,7 +149,7 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_bans}
-                VALUE (%s, %s, %s, %s, %s) as alias
+                VALUE (%s, %s, %s, %s, %s)
             ''',
             (wechat_openid,
              ban_by_reason,
@@ -152,5 +168,29 @@ class Db:
                 AND ban_by_id="{ban_by_id}"
             '''
         )
+
+    def new_user(self, wechat_openid, wechat_username, wechat_avatar):
+        sekf.cursor.execute(
+            f'''
+                INSERT INTO {self.table_users}
+                VALUE (%s, %s, %s, %s) as alias
+                ON DUPLICATE KEY UPDATE
+                wechat_username=alias.wechat_username,
+                wechat_avatar=alias.wechat_avatar
+            ''',
+            (wechat_openid,
+             wechat_username,
+             wecaht_avatar,
+             int(time.time()))
+        )
+
+    def get_user(self, wechat_openid):
+        self.cursor_dict.execute(
+            f'''
+                SELECT * FROM {self.table_users}
+                WHERE wechat_openid="{wechat_openid}"
+            '''
+        )
+        return self.cursor_dict.fetchone()
 
 db = Db()

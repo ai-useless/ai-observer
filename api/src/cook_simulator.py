@@ -7,7 +7,7 @@ from include import *
 import json
 
 async def audio_2_text(audio_b64: str) -> str:
-    url = 'http://210.209.69.40:8900/v1/transcribe'
+    url = 'https://kikakkz-whisper-stt.chutes.ai/v1/transcribe'
 
     payload = {
         'audio_b64': audio_b64,
@@ -55,14 +55,23 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
         f.write(audio_bytes)
 
 
-    simulator_avatar_cid = hashlib.sha256(simulator_avatar.encode("utf-8")).hexdigest()
+    simulator_avatar_b64_bytes = simulator_avatar.encode("utf-8")
+    simulator_avatar_cid = hashlib.sha256(simulator_avatar_b64_bytes).hexdigest()
+    simulator_avatar_bytes = base64.b64decode(simulator_avatar_b64_bytes)
     simulator_avatar_path = f'{config.data_dir}/avatars/{simulator_avatar_cid}'
-    with open(simulator_avatar_path, 'w') as f:
-        f.write(simulator_avatar_cid)
+    with open(simulator_avatar_path, 'wb') as f:
+        f.write(simulator_avatar_bytes)
 
-    # TODO: get origin personality
+    wechat_avatar_b64_bytes = avatar.encode("utf-8")
+    wechat_avatar_cid = hashlib.sha256(wechat_avatar_b64_bytes).hexdigest()
+    wechat_avatar_bytes = base64.b64decode(wechat_avatar_b64_bytes)
+    wechat_avatar_path = f'{config.data_dir}/avatars/{wechat_avatar_cid}'
+    with open(wechat_avatar_path, 'wb') as f:
+        f.write(wechat_avatar_bytes)
+
     personality = '普普通通路人甲' if personality is None else personality
-    db.new_simulator(openid, username, avatar, file_cid, text, simulator, simulator_avatar_cid, personality)
+    db.new_simulator(openid, username, wechat_avatar_cid, file_cid, text, simulator, simulator_avatar_cid, personality)
+    db.new_user(openid, username, wechat_avatar_cid)
 
     # TODO: automatically review audio by another AI
 
@@ -76,3 +85,7 @@ async def get_simulators(code: str | None, offset: int, limit: int):
     openid = (await get_openid(code)) if code is not None else None
     limit = 100 if limit == 0 or limit > 100 else limit
     return db.get_simulators(openid, offset, limit)
+
+async def get_user(code: str):
+    openid = await get_openid(code)
+    return db.get_user(openid)
