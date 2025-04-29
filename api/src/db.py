@@ -170,7 +170,7 @@ class Db:
         )
 
     def new_user(self, wechat_openid, wechat_username, wechat_avatar):
-        sekf.cursor.execute(
+        self.cursor.execute(
             f'''
                 INSERT INTO {self.table_users}
                 VALUE (%s, %s, %s, %s) as alias
@@ -180,7 +180,7 @@ class Db:
             ''',
             (wechat_openid,
              wechat_username,
-             wecaht_avatar,
+             wechat_avatar,
              int(time.time()))
         )
 
