@@ -89,3 +89,15 @@ async def get_simulators(code: str | None, offset: int, limit: int):
 async def get_user(code: str):
     openid = await get_openid(code)
     return db.get_user(openid)
+
+async def cook_user(code: str, username: str, avatar: str):
+    openid = await get_openid(code)
+
+    wechat_avatar_b64_bytes = avatar.encode("utf-8")
+    wechat_avatar_cid = hashlib.sha256(wechat_avatar_b64_bytes).hexdigest()
+    wechat_avatar_bytes = base64.b64decode(wechat_avatar_b64_bytes)
+    wechat_avatar_path = f'{config.data_dir}/avatars/{wechat_avatar_cid}'
+    with open(wechat_avatar_path, 'wb') as f:
+        f.write(wechat_avatar_bytes)
+
+    db.new_user(openid, username, wechat_avatar_cid)
