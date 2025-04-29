@@ -16,7 +16,7 @@ from audio import AudioGenerate
 from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
-from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators
+from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators, get_user as _get_user
 
 app = FastAPI()
 
@@ -36,6 +36,10 @@ class SpeakResponse(BaseModel):
 class CookSimulatorResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
+
+@app.get('/api/v1/user')
+async def get_user(code: str):
+    return await _get_user(code)
 
 @app.post('/api/v1/cook_simulator', response_model=CookSimulatorResponse)
 async def cook_simulator(
@@ -63,7 +67,8 @@ async def get_simulators(code: Optional[str] = None, offset: int = 0, limit: int
     return [{
         **simulator,
         'audio_url': f'{config.file_server}/materials/{simulator["audio_file_cid"]}.wav',
-        'simulator_avatar_url': f'{config.file_server}/avatars/{simulator["simulator_avatar_cid"]}'
+        'simulator_avatar_url': f'{config.file_server}/avatars/{simulator["simulator_avatar_cid"]}',
+        'wechat_avatar_url': f'{config.file_server}/avatars/{simulator["wechat_avatar_cid"]}'
     } for simulator in simulators]
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
