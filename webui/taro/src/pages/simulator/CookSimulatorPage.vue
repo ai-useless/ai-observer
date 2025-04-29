@@ -137,40 +137,6 @@ const onChooseAvatar = () => {
   })
 }
 
-const uploadAudioB64 = async (audioB64: string) => {
-  if (!username.value) {
-    try {
-      await login()
-    } catch (e) {
-      console.log(`Failed login: ${e}`)
-      return
-    }
-  }
-
-  Taro.login().then((code) => {
-    axios.post(constants.COOK_AUDIO_API, {
-      code: code.code,
-      username: username.value,
-      avatar: avatar.value,
-      audio_b64: audioB64
-    }).then((audioUrl) => {
-      console.log(audioUrl)
-    }).catch(() => {
-      Taro.showToast({
-        title: '上传失败！',
-        icon: 'error',
-        duration: 1000
-      })
-    })
-  }).catch(() => {
-    Taro.showToast({
-      title: '认证失败！',
-      icon: 'error',
-      duration: 1000
-    })
-  })
-}
-
 const login = async () => {
   return new Promise((resolve, reject) => {
     Taro.getUserProfile({
@@ -258,8 +224,41 @@ const onPlayAudioClick = () => {
   playing.value = !playing.value
 }
 
-const onCreateSimulatorClick = () => {
-  // TODO
+const onCreateSimulatorClick = async () => {
+  if (!username.value) {
+    try {
+      await login()
+    } catch (e) {
+      console.log(`Failed login: ${e}`)
+      return
+    }
+  }
+
+  Taro.login().then((code) => {
+    axios.post(constants.COOK_SIMULATOR_API, {
+      code: code.code,
+      username: username.value,
+      avatar: avatar.value,
+      audio_b64: simulatorAudio.value,
+      simulator: simulatorId.value,
+      simulator_avatar: simulatorAvatar.value,
+      personality: simulatorPersonality.value
+    }).then((audioUrl) => {
+      console.log(audioUrl)
+    }).catch(() => {
+      Taro.showToast({
+        title: '上传失败！',
+        icon: 'error',
+        duration: 1000
+      })
+    })
+  }).catch(() => {
+    Taro.showToast({
+      title: '认证失败！',
+      icon: 'error',
+      duration: 1000
+    })
+  })
 }
 
 onMounted(() => {
