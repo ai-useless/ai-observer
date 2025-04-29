@@ -312,6 +312,18 @@ onMounted(() => {
     recordingText.value = '录制出错了！'
     recordError.value = true
   })
+
+  audioPlayer.onEnded(() => {
+    playing.value = false
+  })
+  audioPlayer.onError(() => {
+    playing.value = false
+    Taro.showToast({
+      title: '播放出错了！',
+      icon: 'error',
+      duration: 1000
+    })
+  })
 })
 
 </script>
