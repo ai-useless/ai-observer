@@ -32,11 +32,11 @@ class SpeakResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
 
-class CookAudioResponse(BaseModel):
+class CookSimulatorResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
 
-@app.post('/api/v1/cook_simulator', response_model=CookAudioResponse)
+@app.post('/api/v1/cook_simulator', response_model=CookSimulatorResponse)
 async def cook_simulator(
     code: str = Body(...),
     username: str = Body(...),
