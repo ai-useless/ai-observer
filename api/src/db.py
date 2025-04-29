@@ -33,6 +33,9 @@ class Db:
                 self.cursor.execute(f'DROP DATABASE {self.db_name}')
                 self.connection.commit()
 
+        self.cursor.execute('SHOW DATABASES')
+        databases = [row[0] for row in self.cursor.fetchall()]
+
         if self.db_name not in databases:
             self.cursor.execute(f'CREATE DATABASE IF NOT EXISTS {self.db_name}')
             self.connection.commit()
