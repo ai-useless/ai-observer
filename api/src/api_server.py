@@ -10,6 +10,7 @@ import threading
 import aiohttp
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 
 from audio import AudioGenerate
 from include import *
@@ -53,7 +54,7 @@ async def cook_simulator(
         raise e
 
 @app.get('/api/v1/count_simulators')
-async def count_simulators(code: str | None = Body(...)):
+async def count_simulators(code: Optional[str] = None):
     return await _count_simulators(code)
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
