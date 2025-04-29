@@ -12,10 +12,11 @@ export const useUserStore = defineStore('user', {
     getUser(code: string, done?: (error: boolean) => void) {
       const url = `${constants.GET_USER}?code=${code}`
       axios.get(url).then((resp) => {
-        if (done) done(false)
         if (!resp.data) return
         this.username = resp.data.wechat_username
         this.avatarUrl = resp.data.wechat_avatar_url
+
+        this.getAvatar(done)
       }).catch((e) => {
         console.log(`Failed get user: ${JSON.stringify(e)}`)
         if (done) done(true)
@@ -33,6 +34,15 @@ export const useUserStore = defineStore('user', {
         if (done) done(false)
       }).catch((e) => {
         console.log(`Failed cook user: ${JSON.stringify(e)}`)
+        if (done) done(true)
+      })
+    },
+    getAvatar(done?: (error: boolean) => void) {
+      axios.get(this.avatarUrl).then((resp) => {
+        if (done) done(false)
+        this.avatar = resp.data
+      }).catch((e) => {
+        console.log(`Failed get avatar: ${JSON.stringify(e)}`)
         if (done) done(true)
       })
     }
