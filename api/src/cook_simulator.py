@@ -35,8 +35,7 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
                 response = json.loads(await response.text())
                 openid = response['openid']
             except Exception as e:
-                # TODO: logger cannot output
-                logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.text()}')
+                logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
                 raise e
 
 
