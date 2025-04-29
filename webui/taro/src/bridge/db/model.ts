@@ -59,6 +59,20 @@ export class _Model {
       vendorLogo:
         'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
       hostModel: true
+    },
+    {
+      name: 'Qwen/Qwen3-235B-A22B',
+      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
+      apiKey:
+        'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
+      vendor: 'Chutes',
+      author: 'Meta',
+      authorLogo:
+        'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
+      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
+      vendorLogo:
+        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
+      hostModel: true
     }
   ] as dbModel.Model[]
 

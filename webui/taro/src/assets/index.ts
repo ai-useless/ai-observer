@@ -3,5 +3,8 @@ import personCircle from './PersonCircle.svg'
 import folder from './Folder.svg'
 import record from './Record.svg'
 import mic from './Mic.svg'
+import addCircle from './AddCircle.svg'
+import warnCircle from './WarnCircle.svg'
+import playCircle from './PlayCircle.svg'
 
-export { chevronRight, personCircle, folder, record, mic }
+export { chevronRight, personCircle, folder, record, mic, addCircle, warnCircle, playCircle }
