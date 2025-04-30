@@ -1,7 +1,6 @@
 [{
     "name": "deepseek-ai/DeepSeek-V3-0324",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
-    "apiKey": "***REMOVED***",
     "vendor": "Chutes",
     "author": "High-Flyer",
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
@@ -11,17 +10,15 @@
 }, {
     "name": "chutesai/Mistral-Small-3.1-24B-Instruct-2503",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
-    "apiKey": "***REMOVED***",
     "vendor": "Chutes",
-    "author": "High-Flyer",
-    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "author": "Mistral AI",
+    "authorLogo": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Mistral_AI_logo_%282025%E2%80%93%29.svg",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": false
 }, {
     "name": "deepseek-ai/DeepSeek-R1",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
-    "apiKey": "***REMOVED***",
     "vendor": "Chutes",
     "author": "High-Flyer",
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
@@ -31,21 +28,28 @@
 }, {
     "name": "chutesai/Llama-4-Maverick-17B-128E-Instruct-FP8",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
-    "apiKey": "***REMOVED***",
     "vendor": "Chutes",
     "author": "Meta",
-    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "authorLogo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/800px-Meta_Platforms_Inc._logo.svg.png",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": true
 }, {
     "name": "Qwen/Qwen3-235B-A22B",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
-    "apiKey": "***REMOVED***",
     "vendor": "Chutes",
-    "author": "Meta",
-    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": true
+}, {
+    "name": "deepseek-ai/DeepSeek-Prover-V2-671B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
 }]
