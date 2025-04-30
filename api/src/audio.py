@@ -53,7 +53,7 @@ class AudioGenerate:
                     return audio_bytes
             except Exception as e:
                 logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {str(e)}')
-                return b''
+                raise e
 
     async def concurrent_audio_requests(self, chunks: list[str], voice: str, max_concurrency: int) -> list[bytes]:
         semaphore = asyncio.Semaphore(max_concurrency)
