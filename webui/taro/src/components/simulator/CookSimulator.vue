@@ -33,6 +33,12 @@
       <Image :src='warnCircle' style='width: 16px; height: 16px;' />
       <View style='color: gray; font-size: 12px; margin-left: 4px;'>您应该确保您选择的模拟器原型符合公序良俗和国家政策</View>
     </View>
+    <View style='margin-top: 16px; font-weight: 600; font-size: 14px;'>头衔</View>
+    <Input :value='simulatorTitle' @input='onSimulatorTitleInput' placeholder='模拟器的头衔，例如：八路军独立团团长' style='border-radius: 4px; border: 1px solid lightblue; font-size: 12px; padding: 4px; margin-top: 4px;' />
+    <View style='display: flex; margin-top: 4px;'>
+      <Image :src='warnCircle' style='width: 16px; height: 16px;' />
+      <View style='color: gray; font-size: 12px; margin-left: 4px;'>您应该确保您选择的模拟器头衔符合公序良俗和国家政策</View>
+    </View>
     <View style='margin-top: 16px; font-weight: 600; font-size: 14px;'>人设</View>
     <Input type='textarea' :value='simulatorPersonality' @input='onSimulatorPersonalityInput' placeholder='例如：带着二营长和意大利炮拿下平安县城，但是没有解救成功自己的女人的独立团团长' style='border-radius: 4px; border: 1px solid lightblue; font-size: 12px; padding: 4px; margin-top: 4px;' />
     <View style='display: flex; margin-top: 4px;'>
@@ -73,6 +79,7 @@ const simulatorAudioPath = ref('')
 const playing = ref(false)
 const simulatorArchetype = ref('')
 const simulatorPersonality = ref('')
+const simulatorTitle = ref('')
 const creating = ref(false)
 
 const onSimulatorIdInput = (e: { detail: { value: string } }) => {
@@ -85,6 +92,10 @@ const onSimulatorArchetypeInput = (e: { detail: { value: string } }) => {
 
 const onSimulatorPersonalityInput = (e: { detail: { value: string } }) => {
   simulatorPersonality.value = e.detail.value
+}
+
+const onSimulatorTitleInput = (e: { detail: { value: string } }) => {
+  simulatorTitle.value = e.detail.value
 }
 
 const readAsBase64 = async (filePath: string) => {
@@ -215,7 +226,9 @@ const onCreateSimulatorClick = async () => {
       audio_b64: simulatorAudio.value,
       simulator: simulatorId.value,
       simulator_avatar: simulatorAvatar.value,
-      personality: simulatorPersonality.value
+      personality: simulatorPersonality.value,
+      simulator_archetype: simulatorArchetype.value,
+      simulator_title: simulatorTitle.value
     }).then(() => {
       creating.value = false
       Taro.navigateBack({

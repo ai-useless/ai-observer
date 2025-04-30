@@ -21,6 +21,12 @@
         <Image :src='chevronRight' style='width: 18px; height: 18px;' />
       </View>
     </View>
+    <View style='display: flex; width: 100%; justify-content: space-between; align-items: center; margin-top: 8px; border-bottom: 1px solid lightblue; padding-bottom: 4px;'>
+      <View style='font-size: 14px; color: gray;'>AGI模型</View>
+      <View @click='onModelsClick'>
+        <Image :src='chevronRight' style='width: 18px; height: 18px;' />
+      </View>
+    </View>
   </View>
 </template>
 
@@ -59,10 +65,14 @@ const onMySimulatorsClick = () => {
 }
 
 const onAllSimulatorsClick = () => {
-  if (!loginCheck()) return
-
   Taro.navigateTo({
     url: '/pages/simulator/AllSimulatorsPage'
+  })
+}
+
+const onModelsClick = () => {
+  Taro.navigateTo({
+    url: '/pages/model/ModelsPage'
   })
 }
 

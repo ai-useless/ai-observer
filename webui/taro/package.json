@@ -57,6 +57,7 @@
     "pinia": "^2.0.10",
     "prettier": "^3.5.3",
     "taro-axios": "^1.1.1",
+    "taro-ui-vue3": "^1.0.0-alpha.21",
     "vue": "^3.2.24"
   },
   "devDependencies": {

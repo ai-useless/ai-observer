@@ -12,16 +12,14 @@
       @input='handleInput'
     />
     <Button
-      class='border'
       @click='onStartDiscussClick'
       size='mini'
       style='width: calc(100% - 32px); margin-top: 16px; border-radius: 8px; color: blue;'
     >
-      开始讨论
+      选择AGI主持人和嘉宾讨论
     </Button>
     <View style='margin-top: 16px; width: calc(100% - 32px);' class='container'>
       <Button
-        class='border'
         size='mini'
         v-for='clazz in presetClasses'
         :key='clazz'
@@ -121,7 +119,7 @@ const startSeminar = () => {
   const _uid = dbBridge._Seminar.create(topic.value)
   seminar.Seminar.setSeminar(_uid)
   setting.Setting.setTabIndex(1)
-  Taro.switchTab({ url: '/pages/seminar/SeminarPage' })
+  Taro.navigateTo({ url: '/pages/guest/GuestsPage' })
 }
 
 const onStartDiscussClick = () => {
@@ -172,9 +170,6 @@ onMounted(async () => {
 </script>
 
 <style lang='sass'>
-.border
-  border: 1px solid var(--red-3)
-
 .plain-btn
   border: none !important
   background-color: transparent
