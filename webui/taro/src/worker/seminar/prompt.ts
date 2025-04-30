@@ -85,7 +85,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.DONT_START_WITH_TOPIC,
     (() =>
-      ') 不要生硬的重复主题，用谈话的形式，不要用写文章的形式') as RequirementFunc
+      ') 不要生硬的重复主题，用谈话的形式，不要用写文章的形式，这是一个多个人的聊天节目，不是写文章，因此不要总结分析，要用自然的口吻说话') as RequirementFunc
   ],
   [
     PromptType.AS_HOST,
@@ -94,7 +94,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.DONT_DESCRIBE_PERSONALITY,
-    (() => ') 不要描述自己的人设') as RequirementFunc
+    (() => ') 不要描述自己的人设。不要生硬地将讨论话题和自己的人设联系，过渡要自然。') as RequirementFunc
   ],
   [
     PromptType.NO_VIRTUAL_WORDS,
