@@ -17,6 +17,7 @@ from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
 from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators, get_user as _get_user, cook_user as _cook_user
+from db import db
 
 app = FastAPI()
 
@@ -37,6 +38,16 @@ class CookSimulatorResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
 
+@app.get('/api/v1/models')
+async def get_models(offset: int = 0, limit: int = 100):
+    models = db.get_models(offset, limit)
+    return [{
+        **model,
+        'author_logo_url': f'{config.file_server}/avatars/model/{model["author_logo"]}',
+        'model_logo_url': f'{config.file_server}/avatars/model/{model["model_logo"]}',
+        'vendor_logo_url': f'{config.file_server}/avatars/model/{model["vendor_logo"]}',
+    } for model in models]
+
 @app.post('/api/v1/cook_user')
 async def gook_user(code: str = Body(...), username: str = Body(...), avatar: str = Body(...)):
     await _cook_user(code, username, avatar)
@@ -44,7 +55,7 @@ async def gook_user(code: str = Body(...), username: str = Body(...), avatar: st
 @app.get('/api/v1/user')
 async def get_user(code: str):
     user = await _get_user(code)
-    return { **user, 'wechat_avatar_url': f'{config.file_server}/avatars/{user["wechat_avatar"]}' } if user is not None else None
+    return { **user, 'wechat_avatar_url': f'{config.file_server}/avatars/wechat/{user["wechat_avatar"]}' } if user is not None else None
 
 @app.post('/api/v1/cook_simulator', response_model=CookSimulatorResponse)
 async def cook_simulator(
@@ -72,8 +83,8 @@ async def get_simulators(code: Optional[str] = None, offset: int = 0, limit: int
     return [{
         **simulator,
         'audio_url': f'{config.file_server}/materials/{simulator["audio_file_cid"]}.wav',
-        'simulator_avatar_url': f'{config.file_server}/avatars/{simulator["simulator_avatar_cid"]}',
-        'wechat_avatar_url': f'{config.file_server}/avatars/{simulator["wechat_avatar"]}'
+        'simulator_avatar_url': f'{config.file_server}/avatars/simulator/{simulator["simulator_avatar_cid"]}',
+        'wechat_avatar_url': f'{config.file_server}/avatars/wechat/{simulator["wechat_avatar"]}'
     } for simulator in simulators]
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
