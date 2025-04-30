@@ -7,14 +7,14 @@ from config import config
 from db import db
 from include import *
 
-def fetch_avatar_then_save(avatar_url: str):
+def fetch_avatar_then_save(avatar_url: str, target: str):
     print(f'    Downloading {BOLD}{avatar_url}{RESET}')
     resp = requests.get(avatar_url)
 
     avatar_bytes = resp.content
 
     avatar_cid = hashlib.sha256(avatar_bytes).hexdigest()
-    avatar_path = f'{config.data_dir}/avatars/simulator/{avatar_cid}'
+    avatar_path = f'{config.data_dir}/avatars/{target}/{avatar_cid}'
     print(f'    Writting {BOLD}{avatar_path}{RESET}')
     with open(avatar_path, 'wb') as f:
         f.write(avatar_bytes)
@@ -33,7 +33,7 @@ def audio_2_text(audio_b64: str):
     }
 
     print(f'    Converting {BOLD}{audio_b64[0:32]}{RESET}...')
-    resp = requests.post(url=url, json=payload, headers=headers, timeout=(10, 30))
+    resp = requests.post(url=url, json=payload, headers=headers, timeout=(10, 300))
     resp.raise_for_status()
     print(f'    Converted {BOLD}{resp.text[0:32]}{RESET}...')
     return resp.text
@@ -57,7 +57,7 @@ def fetch_audio_then_save(audio_url: str):
 
 def fetch_kikakkz_avatar():
     url = 'https://avatars.githubusercontent.com/u/13128505?v=4&size=40'
-    return fetch_avatar_then_save(url)
+    return fetch_avatar_then_save(url, 'wechat')
 
 def main():
     with open(config.simulators_file, 'r', encoding='utf-8') as f:
@@ -68,7 +68,7 @@ def main():
     for simulator in simulators:
         print(f'\n\nImporting {BOLD}{simulator["name"]}{RESET} ...')
 
-        avatar_cid = fetch_avatar_then_save(simulator['avatar'])
+        avatar_cid = fetch_avatar_then_save(simulator['avatar'], 'simulator')
         (audio_cid, audio_b64) = fetch_audio_then_save(simulator['audio'])
         audio_text = audio_2_text(audio_b64)
 
