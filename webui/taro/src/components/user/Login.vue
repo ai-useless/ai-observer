@@ -115,7 +115,7 @@ const cookUser = () => {
   if (!username || !avatar) return
   Taro.login().then((code) => {
     user.User.cookUser(code.code)
-  }).catch((e) => {
+  }).catch(() => {
     Taro.showToast({
       title: '登录失败！',
       icon: 'error',
