@@ -102,9 +102,8 @@ class Db:
     def keep_alive(self):
         while True:
             try:
-                with self.connection.cursor() as cursor:
-                    cursor.execute(f'SELECT 1')
-                    cursor.fetchall()
+                self.cursor.execute(f'SELECT 1')
+                self.cursor.fetchall()
             except Exception:
                 self.connection.ping(reconnect=True)
             time.sleep(3600)
