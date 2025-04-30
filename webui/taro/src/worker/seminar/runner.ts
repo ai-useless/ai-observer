@@ -15,9 +15,14 @@ export enum SeminarEventType {
   ERROR = 'Error'
 }
 
+export interface HistoryMessage {
+  content: string
+  participatorId: number
+}
+
 export interface BasePrompts {
   archetype?: string
-  historyMessages?: string[]
+  historyMessages?: HistoryMessage[]
   generateAudio?: boolean
 }
 
@@ -36,22 +41,18 @@ export interface StartSubTopicPrompts extends BasePrompts {
 
 export interface ConcludeSubTopicPrompts extends BasePrompts {
   topicMaterial: string
-  historyMessages: string[]
 }
 
 export interface ConcludeTopicPrompts extends BasePrompts {
   topicMaterial: string
-  historyMessages: string[]
 }
 
 export interface HostChallengePrompts extends BasePrompts {
   topicMaterial: string
-  historyMessages: string[]
 }
 
 export interface DiscussPrompts extends BasePrompts {
   hostMessage: string
-  historyMessages: string[]
 }
 
 export interface OutlineSubTopicsPrompts extends BasePrompts {
@@ -212,7 +213,7 @@ export class SeminarRunner {
           _prompts.topicMaterial,
           subTopic,
           100,
-          _prompts.historyMessages,
+          (_prompts.historyMessages || []).map((el) => el.content),
           _prompts.archetype as string
         )
       }
@@ -223,7 +224,7 @@ export class SeminarRunner {
           simulator.origin_personality,
           _prompts.topicMaterial,
           100,
-          _prompts.historyMessages,
+          (_prompts.historyMessages || []).map((el) => el.content),
           _prompts.archetype as string
         )
       }
@@ -236,7 +237,7 @@ export class SeminarRunner {
           simulator.origin_personality,
           _prompts.hostMessage,
           100,
-          _prompts.historyMessages,
+          (_prompts.historyMessages || []).map((el) => el.content),
           _prompts.archetype as string
         )
       }
@@ -252,7 +253,7 @@ export class SeminarRunner {
           _prompts.topicMaterial,
           subTopic,
           100,
-          _prompts.historyMessages,
+          (_prompts.historyMessages || []).map((el) => el.content),
           _prompts.archetype as string
         )
       }
@@ -284,8 +285,8 @@ export class SeminarRunner {
       model: model.name,
       messages: (prompts.historyMessages || []).map((el) => {
         return {
-          role: 'user', // TODO: if it's my model, it should be assistant
-          content: purify.purifyText(el)
+          role: el.participatorId === participatorId ? 'assistant' : 'user', // TODO: if it's my model, it should be assistant
+          content: purify.purifyText(el.content)
         }
       }),
       prompt: purify.purifyText(prompt || '')
@@ -387,7 +388,7 @@ export class SeminarRunner {
     let promptMessage = seminar.topic
     if (prompts.historyMessages && prompts.historyMessages.length) {
       promptMessage =
-        prompts.historyMessages[prompts.historyMessages.length - 1]
+        prompts.historyMessages[prompts.historyMessages.length - 1].content
     }
 
     await SeminarRunner.saveMessage(
@@ -421,7 +422,7 @@ export class SeminarRunner {
       Intent.GENERATE_TOPICS,
       topicType,
       count,
-      historyMessages || []
+      (historyMessages || []).map((el) => el.content)
     )
     const resp = await axios.post(constants.FALLBACK_API, {
       model,

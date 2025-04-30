@@ -13,7 +13,7 @@ type MessageFunc = (
 ) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
-type HistoryMessagesFunc = () => Map<string, string[]>
+type HistoryMessagesFunc = () => Map<string, { content: string, participatorId: number }[]>
 
 export class ESeminar {
   private seminar = undefined as unknown as dbModel.Seminar
@@ -141,7 +141,7 @@ export class ESeminar {
       subRound: this.subRound,
       prompts: {
         archetype: dbBridge._Simulator.archetypeWithId(
-          host.simulator.id as number
+          host.simulator ? host.simulator.id : 0
         ),
         rounds: this.totalTopics
       }
@@ -182,10 +182,10 @@ export class ESeminar {
         topicMaterial: this.topicMaterial,
         generateAudio: true,
         guests: simulators.map(
-          (el) => el.simulator.name + ', ' + el.simulator.personality
+          (el) => el.simulator.simulator + ', ' + el.simulator.origin_personality
         ),
         archetype: dbBridge._Simulator.archetypeWithId(
-          host.simulator.id as number
+          host.simulator ? host.simulator.id : 0
         )
       }
     })
@@ -236,7 +236,7 @@ export class ESeminar {
         topicMaterial: this.topicMaterial,
         generateAudio: true,
         archetype: dbBridge._Simulator.archetypeWithId(
-          host.simulator.id as number
+          host.simulator ? host.simulator.id : 0
         )
       }
     })
@@ -278,7 +278,7 @@ export class ESeminar {
         generateAudio: true,
         historyMessages,
         archetype: await dbBridge._Simulator.archetypeWithId(
-          host.simulator.id as number
+          host.simulator ? host.simulator.id : 0
         )
       }
     })
@@ -303,7 +303,7 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
 
-    const historyMessages = [] as string[]
+    const historyMessages = [] as seminarWorker.HistoryMessage[]
     this.historyMessages().forEach((messages) =>
       historyMessages.push(...messages)
     )
@@ -321,7 +321,7 @@ export class ESeminar {
         generateAudio: true,
         historyMessages,
         archetype: dbBridge._Simulator.archetypeWithId(
-          host.simulator.id as number
+          host.simulator ? host.simulator.id : 0
         )
       }
     })
