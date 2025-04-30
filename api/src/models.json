@@ -30,7 +30,7 @@
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
     "vendor": "Chutes",
     "author": "Meta",
-    "authorLogo": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Meta_Platforms_Inc._logo.svg/800px-Meta_Platforms_Inc._logo.svg.png",
+    "authorLogo": "https://logosarchive.com/wp-content/uploads/2021/10/Meta-logo.svg",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": true
