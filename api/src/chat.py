@@ -56,18 +56,23 @@ async def chat(
         async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
             async for chunk in response.content.iter_any():
                 text = chunk.decode('utf-8').strip()
-                if text.startswith('data:'):
-                    json_str = text[len('data:'):].strip()
-                    if json_str == '[DONE]':
-                        logger.info(f'{BOLD}{model}{RESET} {BOLD}Response {content[0:32]}{RESET} ...')
-                        return content
+                for line in text.splitlines():
+                    if line.startswith('data:'):
+                        json_str = line[len('data:'):].strip()
+                        if json_str == '[DONE]':
+                            logger.info(f'{BOLD}{model}{RESET} {BOLD}Response {content[0:16]}{RESET} ...')
+                            return content
 
-                    obj = json.loads(json_str)
-                    chat_response = ModelChatResponse(obj)
+                        try:
+                            obj = json.loads(json_str)
+                        except Exception as e:
+                            logger.error(f'{BOLD}{model}{RESET} {RED}{json_str}{RESET} ... {e}')
+                            raise e
+                        chat_response = ModelChatResponse(obj)
 
-                    choice = chat_response.choices[0]
-                    if choice.message is None or choice.message.content is None:
-                        continue
-                    content += chat_response.choices[0].message.content
+                        choice = chat_response.choices[0]
+                        if choice.message is None or choice.message.content is None:
+                            continue
+                        content += chat_response.choices[0].message.content
 
-    logger.info(f'{BOLD}{model}{RESET} {RED}You should not be here{RESET} ...')
+    logger.error(f'{BOLD}{model}{RESET} {RED}You should not be here{RESET} ...')
