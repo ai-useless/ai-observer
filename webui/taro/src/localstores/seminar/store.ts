@@ -4,7 +4,8 @@ export const useSeminarStore = defineStore('seminar', {
   state: () => ({
     uid: undefined as unknown as string,
     participatorsInThinking: new Map<number, boolean>(),
-    participatorInSpeaking: undefined as unknown as number
+    participatorInSpeaking: undefined as unknown as number,
+    topic: undefined as unknown as string
   }),
   actions: {},
   getters: {}
@@ -16,6 +17,10 @@ export class Seminar {
   static seminar = () => seminar.uid
 
   static setSeminar = (v: string) => (seminar.uid = v)
+
+  static topic = () => seminar.topic
+
+  static setTopic = (v: string) => (seminar.topic = v)
 
   static startThink = (participatorId: number) =>
     seminar.participatorsInThinking.set(participatorId, true)

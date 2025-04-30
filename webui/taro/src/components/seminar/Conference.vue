@@ -54,11 +54,10 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { seminar } from 'src/localstores'
+import { seminar, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
-import * as msgs from '../../i18n/zh-CN'
 import { View, ScrollView, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { purify } from 'src/utils'
@@ -293,8 +292,8 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
     round,
     message: strip(purify.purifyThink(message)),
     participator,
-    simulator: dbBridge._Simulator.simulator(participator.simulatorId) as dbModel.Simulator,
-    model: dbBridge._Model.model(participator.modelId) as dbModel.Model,
+    simulator: dbBridge._Simulator.simulator(participator.simulatorId) as simulator._Simulator,
+    model: dbBridge._Model.model(participator.modelId) as model._Model,
     timestamp: Date.now(),
     datetime: timestamp,
     audio,
@@ -324,7 +323,7 @@ const historyMessages = (): Map<string, string[]> => {
 
   displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(el.simulator.name + ' 的观点: ' + purify.purifyText(el.message))
+    _messages.push(el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message))
     messages.set(el.subTopic, _messages)
   })
   waitMessages.value.forEach((el) => {

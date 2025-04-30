@@ -1,122 +1,18 @@
-import { dbModel } from '../../model'
+import { model } from "src/localstores"
 
 export class _Model {
   private static topicModel = 'deepseek-ai/DeepSeek-V3-0324'
 
-  private static models = [
-    {
-      name: 'deepseek-ai/DeepSeek-V3-0324',
-      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
-      apiKey:
-        'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
-      vendor: 'Chutes',
-      author: 'High-Flyer',
-      authorLogo:
-        'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
-      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp',
-      vendorLogo:
-        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
-      hostModel: true
-    },
-    {
-      name: 'chutesai/Mistral-Small-3.1-24B-Instruct-2503',
-      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
-      apiKey:
-        'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
-      vendor: 'Chutes',
-      author: 'High-Flyer',
-      authorLogo:
-        'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
-      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/mistral.webp',
-      vendorLogo:
-        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
-      hostModel: false
-    },
-    {
-      name: 'deepseek-ai/DeepSeek-R1',
-      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
-      apiKey:
-        'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
-      vendor: 'Chutes',
-      author: 'High-Flyer',
-      authorLogo:
-        'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
-      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
-      vendorLogo:
-        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
-      hostModel: true
-    },
-    {
-      name: 'chutesai/Llama-4-Maverick-17B-128E-Instruct-FP8',
-      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
-      apiKey:
-        'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
-      vendor: 'Chutes',
-      author: 'Meta',
-      authorLogo:
-        'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
-      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
-      vendorLogo:
-        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
-      hostModel: true
-    },
-    {
-      name: 'Qwen/Qwen3-235B-A22B',
-      endpoint: 'https://llm.chutes.ai/v1/chat/completions',
-      apiKey:
-        'cpk_0c8fd15b154844d3a135fb0bbe3d46e2.5dcf47f7d7a95385b1ff82c6ead8b178.LDpSXZrZbaqh2T89jFRxViWck6VWFVg1',
-      vendor: 'Chutes',
-      author: 'Meta',
-      authorLogo:
-        'https://upload.wikimedia.org/wikipedia/commons/b/bd/High-Flyer.png',
-      modelLogo: 'https://cdn.rayonlabs.ai/chutes/logos/qwen.webp',
-      vendorLogo:
-        'https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256',
-      hostModel: true
-    }
-  ] as dbModel.Model[]
-
-  static initialize = () => {
-    _Model.models.forEach((model, index) => {
-      model.id = index
-    })
-  }
-
-  static create = (
-    name: string,
-    endpoint: string,
-    apiKey: string | undefined,
-    vendor: string,
-    author: string,
-    authorLogo: string,
-    modelLogo: string,
-    vendorLogo: string,
-    hostModel: boolean
-  ) => {
-    return _Model.models.push({
-      id: _Model.models.length,
-      name,
-      endpoint,
-      apiKey,
-      vendor,
-      author,
-      authorLogo,
-      modelLogo,
-      vendorLogo,
-      hostModel
-    })
-  }
-
   static randomPeek = (hostModel?: boolean) => {
-    const models = _Model.models.filter(
-      (op) => hostModel === undefined || op.hostModel === hostModel
+    const models = model.Model.models().filter(
+      (op) => hostModel === undefined || op.host_model === hostModel
     )
     const index = Math.floor(Math.random() * models.length)
     return models[index]
   }
 
   static model = (id: number) => {
-    return _Model.models[id]
+    return model.Model.models().find((el) => el.id === id)
   }
 
   static _topicModel = () => {

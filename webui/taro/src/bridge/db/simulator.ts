@@ -1,92 +1,12 @@
-import { dbModel } from '../../model'
+import { simulator } from 'src/localstores'
 
 export class _Simulator {
-  private static _simulators = [
-    {
-      name: '渾二虎',
-      avatar:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
-      personality: '客观理性的没谱儿的AGI频道AGI观点栏目主持人',
-      host: true,
-      speakerVoice: 'huyihu',
-      archetype: '胡一虎',
-      title: '凤凰卫视一虎一席谈节目主持人'
-    },
-    {
-      name: '周杰棍',
-      avatar:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
-      personality: '知识丰富，关心前沿科技的科技公司创始人',
-      host: false,
-      speakerVoice: 'jay',
-      archetype: '朱重八',
-      title: '明朝开国皇帝朱元璋'
-    },
-    {
-      name: '李云蛇',
-      avatar:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
-      personality: '国防大学教授，国务院特殊津贴专家',
-      host: false,
-      speakerVoice: 'liyunlong',
-      archetype: '安又琪',
-      title: '超级女声选秀比赛冠军'
-    },
-    {
-      name: '米奇',
-      avatar:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
-      personality: '科技爱好者，民间科学家',
-      host: false,
-      speakerVoice: 'miqi',
-      archetype: '九头鸟',
-      title: '认为自己可以推翻相对论的民间科学家'
-    },
-    {
-      name: '非小弟',
-      avatar:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBWoHax_26D4cf1C5S_7bkARewi9-SijOSlw&s',
-      personality: '时事新闻媒体特约撰稿人',
-      host: false,
-      speakerVoice: 'xiaoge',
-      archetype: '鲁迅',
-      title: '愤世嫉俗的文艺青年'
-    }
-  ] as dbModel.Simulator[]
-
-  static initialize = () => {
-    _Simulator._simulators.forEach((simulator, index) => {
-      simulator.id = index
-    })
-  }
-
-  static create = (
-    name: string,
-    avatar: string,
-    personality: string,
-    host: boolean,
-    speakerVoice: string,
-    archetype: string,
-    title: string
-  ) => {
-    _Simulator._simulators.push({
-      id: _Simulator._simulators.length,
-      name,
-      avatar,
-      personality,
-      host,
-      speakerVoice,
-      archetype,
-      title
-    })
-  }
-
   static simulators = (ids: number[]) => {
-    return _Simulator._simulators.filter((el) => ids.includes(el.id as number))
+    return simulator.Simulator.allSimulators().filter((el) => ids.includes(el.id as number))
   }
 
   static randomPeek = (host?: boolean) => {
-    const simulators = _Simulator._simulators.filter(
+    const simulators = simulator.Simulator.allSimulators().filter(
       (el) => !host || el.host === host
     )
     const index = Math.floor(Math.random() * simulators.length)
@@ -94,16 +14,16 @@ export class _Simulator {
   }
 
   static simulator = (id: number) => {
-    return _Simulator._simulators[id]
+    return simulator.Simulator.allSimulators().find((el) => el.id === id)
   }
 
-  static archetype = (simulator?: dbModel.Simulator) => {
+  static archetype = (simulator?: simulator._Simulator) => {
     if (!simulator) return '朝阳区热心群众'
     return simulator.title + simulator.archetype
   }
 
   static archetypeWithId = (simulatorId: number) => {
-    const simulator = _Simulator._simulators.find((el) => el.id === simulatorId)
-    return _Simulator.archetype(simulator)
+    const _simulator = simulator.Simulator.allSimulators().find((el) => el.id === simulatorId)
+    return _Simulator.archetype(_simulator)
   }
 }

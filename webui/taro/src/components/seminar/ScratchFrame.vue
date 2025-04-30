@@ -116,9 +116,7 @@ watch(topic, () => {
 
 const startSeminar = () => {
   // TODO: check if it's a valid topic
-  const _uid = dbBridge._Seminar.create(topic.value)
-  seminar.Seminar.setSeminar(_uid)
-  setting.Setting.setTabIndex(1)
+  seminar.Seminar.setTopic(topic.value)
   Taro.navigateTo({ url: '/pages/guest/GuestsPage' })
 }
 
