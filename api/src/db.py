@@ -52,6 +52,8 @@ class Db:
         self.cursor = self.connection.cursor()
         self.cursor_dict = self.connection.cursor(dictionary=True)
 
+        self.cursor.execute('SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;')
+
         self.cursor.execute('SHOW TABLES')
         tables = [row[0] for row in self.cursor.fetchall()]
 
