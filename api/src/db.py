@@ -71,17 +71,20 @@ class Db:
         if self.table_simulators not in tables:
             self.cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_simulators} (
+                    id INT AUTO_INCREMENT NOT NULL,
                     wechat_openid VARCHAR(32),
                     wechat_username VARCHAR(128),
                     wechat_avatar VARCHAR(1024),
                     audio_file_cid VARCHAR(256) UNIQUE,
                     text VARCHAR(512),
-                    simulator VARCHAR(32),
+                    simulator VARCHAR(32) UNIQUE,
                     simulator_avatar_cid VARCHAR(64) UNIQUE,
                     origin_personality VARCHAR(256),
+                    archetype VARCHAR(64),
+                    title VARCHAR(64),
                     timestamp INT UNSIGNED,
                     state VARCHAR(16),
-                    PRIMARY KEY (simulator)
+                    PRIMARY KEY (id)
                 )
             ''')
             self.connection.commit()
@@ -129,11 +132,14 @@ class Db:
             time.sleep(3600)
 
 
-    def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality):
+    def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality, archetype, title):
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_simulators}
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality, timestamp, state, archetype, title)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+                ON DUPLICATE KEY UPDATE
+                wechat_avatar=alias.wechat_avatar
             ''',
             (wechat_openid,
              wechat_username,
@@ -144,7 +150,9 @@ class Db:
              simulator_avatar_cid,
              personality,
              int(time.time()),
-             'CREATED')
+             'CREATED',
+             archetype,
+             title)
         )
         self.connection.commit()
 

@@ -37,7 +37,7 @@ async def get_openid(code: str):
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
                 raise e
 
-async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None):
+async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None, simulator_archetype: str | None = None, simulator_title: str | None = None):
     openid = await get_openid(code)
 
     try:
@@ -70,7 +70,10 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
         f.write(wechat_avatar_bytes)
 
     personality = '普普通通路人甲' if personality is None else personality
-    db.new_simulator(openid, username, wechat_avatar_cid, file_cid, text, simulator, simulator_avatar_cid, personality)
+    simulator_archetype = '有来有去' if simulator_archetype is None else simulator_archetype
+    simulator_title = '巡山的小妖怪' if simulator_title is None else simulator_title
+
+    db.new_simulator(openid, username, wechat_avatar_cid, file_cid, text, simulator, simulator_avatar_cid, personality, simulator_archetype, simulator_title)
     db.new_user(openid, username, wechat_avatar_cid)
 
     # TODO: automatically review audio by another AI
