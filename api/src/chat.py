@@ -2,6 +2,7 @@ from pydantic import BaseModel
 import aiohttp
 
 from config import config
+from include import *
 
 class ChatMessage(BaseModel):
     role: str
@@ -39,6 +40,8 @@ async def chat(
         'Authorization': f'Bearer {config.api_token}',
         'Content-Type': 'application/json'
     }
+
+    logger.info(f'{BOLD}{model}{RESET} {RED}Requesting{RESET} ...')
 
     timeout = aiohttp.ClientTimeout(connect=10, total=30)
     async with aiohttp.ClientSession(timeout=timeout) as session:
