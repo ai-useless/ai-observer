@@ -136,7 +136,7 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_simulators}
-                (wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality, timestamp, state, archetype, title)
+                (wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 wechat_avatar=alias.wechat_avatar

@@ -32,9 +32,11 @@ def audio_2_text(audio_b64: str):
         'Content-Type': 'application/json'
     }
 
-    resp = requests.post(url=url, json=payload, headers=headers)
+    print(f'    Converting {BOLD}{audio_b64[0:32]}{RESET}...')
+    resp = requests.post(url=url, json=payload, headers=headers, timeout=(10, 30))
     resp.raise_for_status()
-    return resp.text()
+    print(f'    Converted {BOLD}{resp.text[0:32]}{RESET}...')
+    return resp.text
 
 def fetch_audio_then_save(audio_url: str):
     print(f'    Downloading {BOLD}{audio_url}{RESET}')
@@ -55,18 +57,13 @@ def fetch_audio_then_save(audio_url: str):
 
 def fetch_kikakkz_avatar():
     url = 'https://avatars.githubusercontent.com/u/13128505?v=4&size=40'
-
-    print(f'    Downloading {BOLD}{url}{RESET}')
-    resp = requests.get(url)
-
-    base64_bytes = base64.b64encode(resp.content)
-    return base64_bytes.decode('utf-8')
+    return fetch_avatar_then_save(url)
 
 def main():
     with open(config.simulators_file, 'r', encoding='utf-8') as f:
         simulators = json.load(f)
 
-    kikakkz_avatar_b64 = fetch_kikakkz_avatar()
+    kikakkz_avatar_cid = fetch_kikakkz_avatar()
 
     for simulator in simulators:
         print(f'\n\nImporting {BOLD}{simulator["name"]}{RESET} ...')
@@ -78,7 +75,7 @@ def main():
         db.new_simulator(
             config.kikakkz_wechat_openid,
             'kikakkz',
-            kikakkz_avatar_b64,
+            kikakkz_avatar_cid,
             audio_cid,
             audio_text,
             simulator['name'],
