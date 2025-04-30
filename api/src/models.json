@@ -12,7 +12,7 @@
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
     "vendor": "Chutes",
     "author": "Mistral AI",
-    "authorLogo": "https://cdn.brandfetch.io/idtiX4Hc7r/theme/dark/logo.svg?c=1dxbfHSJFAPEGdCLU4o5B",
+    "authorLogo": "https://img-blog.csdnimg.cn/direct/ae51fcbd18004bfe90aee1f30d99613f.png",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": false
@@ -30,7 +30,7 @@
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
     "vendor": "Chutes",
     "author": "Meta",
-    "authorLogo": "https://logosarchive.com/wp-content/uploads/2021/10/Meta-logo.svg",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": true
