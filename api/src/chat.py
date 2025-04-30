@@ -69,3 +69,5 @@ async def chat(
                     if choice.message is None or choice.message.content is None:
                         continue
                     content += chat_response.choices[0].message.content
+
+    logger.info(f'{BOLD}{model}{RESET} {RED}You should not be here{RESET} ...')
