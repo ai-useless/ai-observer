@@ -17,7 +17,7 @@
         <Image :src='message.model.vendor_logo_url' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
         <Image :src='message.model.model_logo_url' mode='widthFix' style='margin-left: 8px; width: 24px; height: 24px;' />
       </View>
-      <View style='font-size: 12px; color: gray; min-height: 16px;'>{{ message.simulator.origin_personality }}</View>
+      <View style='font-size: 12px; color: gray; min-height: 16px; line-height: 1.2; margin-top: 8px;'>{{ message.simulator.origin_personality }}</View>
       <View style='font-size: 12px; color: gray; height: 16px;'>
         {{ message.model.name }}
       </View>
