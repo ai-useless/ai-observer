@@ -11,7 +11,7 @@
     "name": "chutesai/Mistral-Small-3.1-24B-Instruct-2503",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
     "vendor": "Chutes",
-    "author": "High-Flyer",
+    "author": "Mistral AI",
     "authorLogo": "https://upload.wikimedia.org/wikipedia/commons/e/e6/Mistral_AI_logo_%282025%E2%80%93%29.svg",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
