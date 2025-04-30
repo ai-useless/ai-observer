@@ -133,7 +133,7 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_simulators}
-                VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''',
             (wechat_openid,
              wechat_username,
@@ -182,7 +182,7 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_bans}
-                VALUE (%s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s)
             ''',
             (wechat_openid,
              ban_by_reason,
@@ -207,7 +207,7 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_users}
-                VALUE (%s, %s, %s, %s) as alias
+                VALUES (%s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 wechat_username=alias.wechat_username,
                 wechat_avatar=alias.wechat_avatar
@@ -232,7 +232,8 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_models}
-                VALUE (%s, %s, %s, %s, %s, %s, %s, %s) as alias
+                (name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 author_logo=alias.author_logo
             ''',
