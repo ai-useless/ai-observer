@@ -19,7 +19,7 @@ export const useModelStore = defineStore('model', {
     },
     appendModels(models: _Model[]) {
       models.forEach((model) => {
-        const index = this.models.findIndex((el) => el.model === model.name)
+        const index = this.models.findIndex((el) => el.name === model.name)
         this.models.splice(index >= 0 ? index : 0, index >= 0 ? 1 : 0, model)
       })
     }

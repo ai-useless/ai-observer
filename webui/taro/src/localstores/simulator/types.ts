@@ -1,7 +1,9 @@
 export interface _Simulator {
+  id: number
   wechat_openid: string
   wechat_username: string
   wechat_avatar_url: string
+  audio_id: string
   audio_url: string
   text: string
   simulator: string
@@ -11,5 +13,6 @@ export interface _Simulator {
   state: string
   archetype: string
   title: string
+  host: boolean
   mine: boolean
 }
