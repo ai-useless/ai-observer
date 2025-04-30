@@ -5,3 +5,4 @@ local_whl
 node_modules
 .quasar
 project.private.config.json
+.data

@@ -18,6 +18,7 @@ class AudioGenerate:
 
         file_name = self.merge_audio_buffers(
             audio_buffers=[b for b in audio_buffers if b],
+            voice=voice,
         )
         return file_name
 
@@ -52,7 +53,7 @@ class AudioGenerate:
                     return audio_bytes
             except Exception as e:
                 logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {str(e)}')
-                return b''
+                raise e
 
     async def concurrent_audio_requests(self, chunks: list[str], voice: str, max_concurrency: int) -> list[bytes]:
         semaphore = asyncio.Semaphore(max_concurrency)
@@ -70,7 +71,7 @@ class AudioGenerate:
                 sorted_results[task.index] = results[tasks.index(task)]
             return sorted_results
 
-    def merge_audio_buffers(self, audio_buffers: list[bytes]) -> str:
+    def merge_audio_buffers(self, audio_buffers: list[bytes], voice: str) -> str:
         valid_buffers = [b for b in audio_buffers if b]
         hasher = hashlib.sha256()
         for buffer in valid_buffers:
@@ -98,5 +99,6 @@ class AudioGenerate:
         if combined:
             combined.export(output_path, format="wav")
         else:
-            logger.error(f'{RED}No valid audio data to merge{RESET}')
+            logger.error(f'{BOLD}{voice}{RESET} - {RED}No valid audio data to merge{RESET}')
+            raise Exception('Invalid audio')
         return file_name
