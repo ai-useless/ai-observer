@@ -76,6 +76,7 @@ def main():
             config.kikakkz_wechat_openid,
             'kikakkz',
             kikakkz_avatar_cid,
+            simulator['audio_id'],
             audio_cid,
             audio_text,
             simulator['name'],
