@@ -12,6 +12,7 @@ class Db:
         self.table_bans = 'bans'
         self.table_simulators = 'simulators'
         self.table_users = 'users'
+        self.table_models = 'models'
 
         self.config = {
             'user': config.mysql_user,
@@ -93,6 +94,25 @@ class Db:
                     wechat_avatar VARCHAR(1024),
                     timestamp INT UNSIGNED,
                     PRIMARY KEY (wechat_openid)
+                )
+            ''')
+            self.connection.commit()
+
+        if self.table_models not in tables:
+            self.cursor.execute(f'''
+                CREATE TABLE IF NOT EXISTS {self.table_models} (
+                    id INT AUTO_INCREMENT NOT NULL,
+                    name VARCHAR(256),
+                    endpoint VARCHAR(1024),
+                    vendor VARCHAR(64),
+                    author VARCHAR(64),
+                    author_logo VARCHAR(256),
+                    model_logo VARCHAR(256),
+                    vendor_logo VARCHAR(256),
+                    host_model TINYINT,
+                    timestamp INT UNSIGNED,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY vendor_model (name, vendor)
                 )
             ''')
             self.connection.commit()
@@ -181,6 +201,7 @@ class Db:
                 AND ban_by_id="{ban_by_id}"
             '''
         )
+        self.connection.commit()
 
     def new_user(self, wechat_openid, wechat_username, wechat_avatar):
         self.cursor.execute(
@@ -196,6 +217,7 @@ class Db:
              wechat_avatar,
              int(time.time()))
         )
+        self.connection.commit()
 
     def get_user(self, wechat_openid):
         self.cursor_dict.execute(
@@ -205,5 +227,34 @@ class Db:
             '''
         )
         return self.cursor_dict.fetchone()
+
+    def new_model(self, name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model):
+        self.cursor.execute(
+            f'''
+                INSERT INTO {self.table_models}
+                VALUE (%s, %s, %s, %s, %s, %s, %s, %s) as alias
+                ON DUPLICATE KEY UPDATE
+                author_logo=alias.author_logo
+            ''',
+            (name,
+             endpoint,
+             vendor,
+             author,
+             author_logo,
+             model_logo,
+             vendor_logo,
+             host_model)
+        )
+        self.connection.commit()
+
+    def get_models(self, offset: int, limit: int):
+        self.cursor_dict.execute(
+            f'''
+                SELECT * FROM {self.table_models}
+                ORDER BY timestamp DESC
+                LIMIT {limit} OFFSET {offset}
+            '''
+        )
+        return self.cursor_dict.fetchall()
 
 db = Db()
