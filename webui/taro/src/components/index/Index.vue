@@ -1,5 +1,5 @@
 <template>
-  <View>
+  <View style='width: 100%; padding: 0 16px;'>
     <ScratchFrame />
   </View>
 </template>
