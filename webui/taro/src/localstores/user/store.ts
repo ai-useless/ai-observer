@@ -39,7 +39,9 @@ export const useUserStore = defineStore('user', {
       })
     },
     getAvatar(done?: (error: boolean) => void) {
-      axios.get(this.avatarUrl).then((resp) => {
+      axios.get(this.avatarUrl, {
+        responseType: 'arraybuffer'
+      }).then((resp) => {
         if (done) done(false)
         this.avatar =  Taro.arrayBufferToBase64(new Uint8Array(resp.data))
       }).catch((e) => {
@@ -62,5 +64,5 @@ export class User {
 
   static getUser = (code: string) => user.getUser(code)
   static logined = () => user.username && (user.avatar || user.avatarUrl)
-  static cookUser = (code: string) => user.cookUser(code)
+  static cookUser = (code: string, done?: (error: boolean) => void) => user.cookUser(code, done)
 }
