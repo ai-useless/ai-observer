@@ -242,8 +242,8 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_models}
-                (name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s) as alias
+                (name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model, timestamp)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 author_logo=alias.author_logo
             ''',
@@ -254,7 +254,8 @@ class Db:
              author_logo,
              model_logo,
              vendor_logo,
-             host_model)
+             host_model,
+             int(time.time()))
         )
         self.connection.commit()
 
