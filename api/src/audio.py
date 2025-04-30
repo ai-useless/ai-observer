@@ -62,7 +62,7 @@ class AudioGenerate:
 
         _uid = uuid.uuid4()
         start_time = time.time()
-        logger.error(f'{BOLD}{url}{RESET} {BOLD}Requesting{RESET} ... {_uid}')
+        logger.info(f'{BOLD}{url}{RESET} {BOLD}Requesting{RESET} ... {_uid}')
 
         timeout = aiohttp.ClientTimeout(connect=10, total=59)
         async with semaphore:
