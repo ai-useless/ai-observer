@@ -3,21 +3,6 @@ import { dbModel } from '../../model'
 export class _Participator {
   private static _participators = [] as dbModel.Participator[]
 
-  static create = (
-    seminarUid: string,
-    role: dbModel.Role,
-    simulatorId: number,
-    modelId: number
-  ) => {
-    _Participator._participators.push({
-      id: _Participator.participators.length,
-      seminarUid,
-      role,
-      simulatorId,
-      modelId
-    })
-  }
-
   static participators = (seminarUid: string) => {
     return _Participator._participators.filter(
       (el) => el.seminarUid === seminarUid

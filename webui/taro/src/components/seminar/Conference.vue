@@ -19,7 +19,7 @@
             主持人：
           </View>
           <View style='color: blue'>
-            {{ host.simulator.name }}
+            {{ host.simulator.simulator }}
           </View>
         </View>
         <View style='font-size: 14px;'>
@@ -35,7 +35,7 @@
               :key='index'
               :is-host='false'
             >
-              {{ guest.simulator.name }}
+              {{ guest.simulator.simulator }}
             </Text>
           </View>
         </View>

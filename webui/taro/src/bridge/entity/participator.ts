@@ -1,9 +1,10 @@
+import { simulator } from 'src/localstores'
 import { dbModel } from '../../model'
 import { _Participator, _Simulator } from '../db'
 
 export interface PSimulator {
   participatorId: number
-  simulator: dbModel.Simulator
+  simulator: simulator._Simulator
   isHost: boolean
 }
 
