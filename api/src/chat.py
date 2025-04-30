@@ -67,10 +67,13 @@ async def chat(
                             obj = json.loads(json_str)
                         except Exception as e:
                             logger.error(f'{BOLD}{model}{RESET} {RED}{json_str}{RESET} ... {e}')
-                            logger.error(f'{BOLD}{model}{RESET} {RED}{line}{RESET} ... {e}')
-                            logger.error(f'{BOLD}{model}{RESET} {RED}{text}{RESET} ... {e}')
-                            raise e
+                            continue
+
                         chat_response = ModelChatResponse(obj)
+
+                        if chat_response.choices is None or len(chat_response.choices) == 0:
+                            logger.error(f'{BOLD}{model}{RESET} {RED}{json_str}{RESET} ... Invalid message')
+                            continue
 
                         choice = chat_response.choices[0]
                         if choice.message is None or choice.message.content is None:
