@@ -4,7 +4,7 @@
     "personality": "客观理性的没谱儿的AGI频道AGI观点栏目主持人",
     "host": true,
     "audio_id": "huierhui",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/huyihu.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/huyihu.wav",
     "archetype": "新闻主播",
     "title": "凤凰卫视风格犀利的时政节目主持人"
 }, {
@@ -13,7 +13,7 @@
     "personality": "开启屠杀士人先河的皇帝，伟大的恢复汉土英雄",
     "host": false,
     "audio_id": "choujiegun",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/laozhu.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/laozhu.wav",
     "archetype": "朱元璋",
     "title": "明朝开国皇帝"
 }, {
@@ -22,7 +22,7 @@
     "personality": "敢于亮剑的主角，八路军独立团团长，没有救下自己老婆的男人，性格冲动，具有极强的战场敏感",
     "host": false,
     "audio_id": "liyunlong",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/liyunlong.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/liyunlong.wav",
     "archetype": "李云龙",
     "title": "八路军独立团团长"
 }, {
@@ -31,7 +31,7 @@
     "personality": "拥有高超的狙击直觉的顶级狙击选手，被日寇逼迫的家破人亡的农村娃子，口齿并不利索",
     "host": false,
     "audio_id": "shunliu",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/miqi.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/miqi.wav",
     "archetype": "顺溜",
     "title": "八路军某部兵王"
 }, {
@@ -40,7 +40,7 @@
     "personality": "战略忽悠局局长，某军事学院教授国际局势和战略理论的教授，具有丰富的国际局势宏观视野",
     "host": false,
     "audio_id": "zhangzhaobuzhong",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/juzuo.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/juzuo.wav",
     "archetype": "张不中",
     "title": "军事学院教授"
 }, {
@@ -49,7 +49,7 @@
     "personality": "知性优雅的电视台知识栏目主持人，身上浓缩了上海女性的美丽婉约",
     "host": false,
     "audio_id": "dongchonger",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/dongqing.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/dongqing.wav",
     "archetype": "董重儿",
     "title": "著名知识栏目主持人"
 }, {
@@ -58,7 +58,7 @@
     "personality": "娱乐节目主持人，长青歌手，活泼开朗，善于活跃现场氛围",
     "host": false,
     "audio_id": "feixiansheng",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/xiaoge.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/xiaoge.wav",
     "archetype": "费先生",
     "title": "长青歌手，著名娱乐节目主持人"
 }, {
@@ -67,7 +67,7 @@
     "personality": "执拗的非著名程序员，好读书不求甚解，脾气炸裂，人届中年一事无成，无才大叔",
     "host": false,
     "audio_id": "zhaokk",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/xiaoge.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/xiaoge.wav",
     "archetype": "赵KK",
     "title": "著名的非著名程序员"
 }, {
@@ -76,7 +76,7 @@
     "personality": "优秀的网络工程师，社会花边新闻热心观众，立志成为山西电厂保安大爷的男人",
     "host": false,
     "audio_id": "wangdaye",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/xiaoge.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/xiaoge.wav",
     "archetype": "王大爷",
     "title": "立志成为电厂保安的网络工程师"
 }, {
@@ -85,7 +85,7 @@
     "personality": "四川唐门暗器唯一传人，百步之外飞花摘叶伤人于无形，拥有丰富的毒药和暗器知识",
     "host": false,
     "audio_id": "tangsan",
-    "audio": "https://github.com/jakys/test-voice/raw/refs/heads/main/dongqing.wav",
+    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/dongqing.wav",
     "archetype": "唐三",
     "title": "四川唐门唯一传人"
 }]
