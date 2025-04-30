@@ -7,6 +7,8 @@ from pydub import AudioSegment
 import io
 import random
 import base64
+import uuid
+import time
 
 from include import *
 from config import config
@@ -57,6 +59,11 @@ class AudioGenerate:
             'prompt_audio_b64': voice_audio_b64,
             'prompt_audio_text': voice_audio_text,
         }
+
+        _uid = uuid.uuid4()
+        start_time = time.time()
+        logger.error(f'{BOLD}{url}{RESET} {BOLD}Requesting{RESET} ... {_uid}')
+
         timeout = aiohttp.ClientTimeout(connect=10, total=59)
         async with semaphore:
             try:
@@ -68,7 +75,7 @@ class AudioGenerate:
                     audio_bytes = await response.read()
                     return audio_bytes
             except Exception as e:
-                logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {repr(e)}')
+                logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                 raise Exception(repr(e))
 
     async def concurrent_audio_requests(self, chunks: list[str], voice: str, max_concurrency: int, voice_audio_b64: str, voice_audio_text: str) -> list[bytes]:
