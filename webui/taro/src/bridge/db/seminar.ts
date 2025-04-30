@@ -6,7 +6,11 @@ import { _Participator } from './participator'
 export class _Seminar {
   private static seminars = [] as dbModel.Seminar[]
 
-  static create = (_uid: string, topic: string, participators: dbModel.Participator[]) => {
+  static create = (
+    _uid: string,
+    topic: string,
+    participators: dbModel.Participator[]
+  ) => {
     _Participator.createParticipators(participators)
     _Seminar.seminars.push({
       id: _Seminar.seminars.length,

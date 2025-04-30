@@ -2,7 +2,9 @@ import { simulator } from 'src/localstores'
 
 export class _Simulator {
   static simulators = (ids: number[]) => {
-    return simulator.Simulator.allSimulators().filter((el) => ids.includes(el.id as number))
+    return simulator.Simulator.allSimulators().filter((el) =>
+      ids.includes(el.id as number)
+    )
   }
 
   static randomPeek = (host?: boolean) => {
@@ -23,7 +25,9 @@ export class _Simulator {
   }
 
   static archetypeWithId = (simulatorId: number) => {
-    const _simulator = simulator.Simulator.allSimulators().find((el) => el.id === simulatorId)
+    const _simulator = simulator.Simulator.allSimulators().find(
+      (el) => el.id === simulatorId
+    )
     return _Simulator.archetype(_simulator)
   }
 }
