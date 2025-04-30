@@ -65,6 +65,7 @@ import { Message } from './Message'
 
 import Outline from './Outline.vue'
 import MessageCard from './MessageCard.vue'
+import { seminarWorker } from 'src/worker'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -318,17 +319,23 @@ const onOutline = (json: Record<string, unknown>) => {
   outline.value = json
 }
 
-const historyMessages = (): Map<string, string[]> => {
-  const messages = new Map<string, string[]>()
+const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
+  const messages = new Map<string, seminarWorker.HistoryMessage[]>()
 
   displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message))
+    _messages.push({
+      participatorId: el.participator.id as number,
+      content: el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
+    })
     messages.set(el.subTopic, _messages)
   })
   waitMessages.value.forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(purify.purifyText(el.message))
+    _messages.push({
+      participatorId: el.participator.id as number,
+      content: purify.purifyText(el.message)
+    })
     messages.set(el.subTopic, _messages)
   })
 
