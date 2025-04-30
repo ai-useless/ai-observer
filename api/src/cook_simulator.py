@@ -35,7 +35,7 @@ async def get_openid(code: str):
                 return response['openid']
             except Exception as e:
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
-                raise e
+                raise Exception(repr(e))
 
 async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None, simulator_archetype: str | None = None, simulator_title: str | None = None):
     openid = await get_openid(code)
@@ -44,7 +44,7 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
         text = await audio_2_text(audio_b64)
     except Exception as e:
         logger.error(f'{BOLD}Audio2Text{RESET} {RED}{e}{RESET}')
-        raise e
+        raise Exception(repr(e))
 
     file_cid = hashlib.sha256(audio_b64.encode("utf-8")).hexdigest()
     file_name = f'{file_cid}.wav'
