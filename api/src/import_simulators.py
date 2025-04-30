@@ -82,7 +82,8 @@ def main():
             avatar_cid,
             simulator['personality'],
             simulator['archetype'],
-            simulator['title'])
+            simulator['title'],
+            True if simulator['host'] is True else False)
 
 if __name__ == '__main__':
     main()

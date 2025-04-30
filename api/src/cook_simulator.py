@@ -73,7 +73,7 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
     simulator_archetype = '有来有去' if simulator_archetype is None else simulator_archetype
     simulator_title = '巡山的小妖怪' if simulator_title is None else simulator_title
 
-    db.new_simulator(openid, username, wechat_avatar_cid, file_cid, text, simulator, simulator_avatar_cid, personality, simulator_archetype, simulator_title)
+    db.new_simulator(openid, username, wechat_avatar_cid, file_cid, text, simulator, simulator_avatar_cid, personality, simulator_archetype, simulator_title, False)
     db.new_user(openid, username, wechat_avatar_cid)
 
     # TODO: automatically review audio by another AI
