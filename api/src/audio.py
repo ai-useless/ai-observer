@@ -6,15 +6,28 @@ import hashlib
 from pydub import AudioSegment
 import io
 import random
+import base64
 
 from include import *
 from config import config
+from db import db
 
 class AudioGenerate:
     async def generate_audio(self, text: str, voice: str, max_concurrency: int) -> str:
+        simulator = db.get_simulator_with_audio_id(voice)
+        if simulator is None:
+            raise Exception('Invalid voice')
+
+        audio_path = f'{config.data_dir}/materials/{simulator["audio_file_cid"]}.wav'
+        with open(audio_path, 'rb') as f:
+            audio_bytes = f.read()
+
+        base64_bytes = base64.b64encode(audio_bytes)
+        audio_b64 = base64_bytes.decode('utf-8')
+
         cleaned_text = purify_text(text)
         chunks = chunk_text(cleaned_text)
-        audio_buffers = await self.concurrent_audio_requests(chunks, voice, max_concurrency)
+        audio_buffers = await self.concurrent_audio_requests(chunks, voice, max_concurrency, audio_b64, simulator['text'])
 
         file_name = self.merge_audio_buffers(
             audio_buffers=[b for b in audio_buffers if b],
@@ -29,6 +42,8 @@ class AudioGenerate:
             session: aiohttp.ClientSession,
             semaphore: asyncio.Semaphore,
             index: int,
+            voice_audio_b64: str,
+            voice_audio_text: str,
             min_delay_ms: float = 50,
             max_delay_ms: float = 300
             ) -> bytes:
@@ -39,7 +54,8 @@ class AudioGenerate:
         }
         payload = {
             'text': text,
-            'voice': voice
+            'prompt_audio_b64': voice_audio_b64,
+            'prompt_audio_text': voice_audio_text,
         }
         timeout = aiohttp.ClientTimeout(connect=10, total=59)
         async with semaphore:
@@ -55,12 +71,12 @@ class AudioGenerate:
                 logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {str(e)}')
                 raise e
 
-    async def concurrent_audio_requests(self, chunks: list[str], voice: str, max_concurrency: int) -> list[bytes]:
+    async def concurrent_audio_requests(self, chunks: list[str], voice: str, max_concurrency: int, voice_audio_b64: str, voice_audio_text: str) -> list[bytes]:
         semaphore = asyncio.Semaphore(max_concurrency)
         async with aiohttp.ClientSession() as session:
             tasks = []
             for idx, text in enumerate(chunks):
-                task = asyncio.create_task(self.fetch_audio(text, voice, session, semaphore, idx))
+                task = asyncio.create_task(self.fetch_audio(text, voice, session, semaphore, idx, voice_audio_b64, voice_audio_text))
                 task.index = idx
                 tasks.append(task)
 

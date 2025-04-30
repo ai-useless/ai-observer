@@ -45,7 +45,7 @@ def fetch_audio_then_save(audio_url: str):
     audio_bytes = resp.content
 
     audio_cid = hashlib.sha256(audio_bytes).hexdigest()
-    audio_path = f'{config.data_dir}/audios/{audio_cid}.wav'
+    audio_path = f'{config.data_dir}/materials/{audio_cid}.wav'
     print(f'    Writting {BOLD}{audio_path}{RESET}')
     with open(audio_path, 'wb') as f:
         f.write(audio_bytes)
