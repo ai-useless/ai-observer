@@ -33,9 +33,11 @@
       </Button>
     </View>
     <View style='margin-top: 16px;' v-if='topicType.length'>
-      <View style=' width: calc(100% - 32px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid gray; padding-bottom: 4px;'>
+      <View style=' width: calc(100% - 32px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid gray;'>
         <View class='title'>{{ topicType }}</View>
-        <View class='title' style='color: blue' @click='onChangeTopicsClick'>{{ generating ? '生成中...' : '换一批' }}</View>
+        <View>
+          <Button class='title plain-btn' size='mini' plain style='color: blue;' @click='onChangeTopicsClick' :loading='generating'>{{ generating ? '生成中...' : '换一批' }}</Button>
+        </View>
       </View>
       <View v-if='topics.length' style='margin-top: 8px; width: calc(100% - 32px);'>
         <View v-for='_topic in topics' style='font-size: 14px; color: blue;' @click='onTopicClick(_topic)'>
@@ -169,14 +171,17 @@ onMounted(async () => {
 
 </script>
 
-<style scoped lang='sass'>
+<style lang='sass'>
 .border
   border: 1px solid var(--red-3)
 
-.container
-  display: flex
-  justify-content: flex-start
+.plain-btn
+  border: none !important
+  background-color: transparent
+  box-shadow: none !important
+  padding: 0 !important
 
-.container > *:not(:last-child)
-  margin-right: 8px
+.plain-btn::after
+  border: none !important
+  content: none !important
 </style>
