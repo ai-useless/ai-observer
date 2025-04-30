@@ -5,7 +5,9 @@ export default {
     'pages/user/UserPage',
     'pages/simulator/CookSimulatorPage',
     'pages/simulator/MySimulatorsPage',
-    'pages/simulator/AllSimulatorsPage'
+    'pages/simulator/AllSimulatorsPage',
+    'pages/guest/GuestsPage',
+    'pages/model/ModelsPage'
   ],
   workers: 'worker',
   window: {

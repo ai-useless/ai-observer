@@ -27,7 +27,7 @@ export const useSimulatorStore = defineStore('simulator', {
         if (done) done(false, resp.data)
         this.appendSimulators(resp.data, code !== undefined)
       }).catch((e) => {
-        console.log(`Failed count simulators: ${JSON.stringify(e)}`)
+        console.log(`Failed get simulators: ${JSON.stringify(e)}`)
         if (done) done(true)
       })
     },

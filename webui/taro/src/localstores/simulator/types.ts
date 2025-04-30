@@ -9,5 +9,7 @@ export interface _Simulator {
   origin_personality: string
   timestamp: number
   state: string
+  archetype: string
+  title: string
   mine: boolean
 }
