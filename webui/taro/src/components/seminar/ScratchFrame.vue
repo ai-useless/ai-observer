@@ -1,13 +1,13 @@
 <template>
-  <View style='padding: 8px;'>
+  <View>
     <Text style='width: 100%;' class='title'>
       您想让AGI讨论点儿什么呢 ?
     </Text>
-    <Input
+    <Textarea
       type='textarea'
       :value='topic'
       placeholder='您想让AGI讨论点儿什么呢 ?'
-      style='width: "100%"; font-size: 20px; min-height: 120px; border: 1px solid gray; border-radius: 16px; padding: 8px;'
+      style='width: calc(100% - 50px); font-size: 20px; min-height: 120px; border: 1px solid gray; border-radius: 16px; padding: 8px;'
       class='section-margin'
       @input='handleInput'
     />
@@ -15,11 +15,11 @@
       class='border'
       @click='onStartDiscussClick'
       size='mini'
-      style='width: 100%; margin-top: 16px; border-radius: 8px; color: blue;'
+      style='width: calc(100% - 32px); margin-top: 16px; border-radius: 8px; color: blue;'
     >
       开始讨论
     </Button>
-    <View style='margin-top: 16px;' class='container'>
+    <View style='margin-top: 16px; width: calc(100% - 32px);' class='container'>
       <Button
         class='border'
         size='mini'
@@ -33,16 +33,16 @@
       </Button>
     </View>
     <View style='margin-top: 16px;' v-if='topicType.length'>
-      <View style='width: 100%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid gray; padding-bottom: 4px;'>
+      <View style=' width: calc(100% - 32px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid gray; padding-bottom: 4px;'>
         <View class='title'>{{ topicType }}</View>
         <View class='title' style='color: blue' @click='onChangeTopicsClick'>{{ generating ? '生成中...' : '换一批' }}</View>
       </View>
-      <View v-if='topics.length' style='margin-top: 8px;'>
+      <View v-if='topics.length' style='margin-top: 8px; width: calc(100% - 32px);'>
         <View v-for='_topic in topics' style='font-size: 14px; color: blue;' @click='onTopicClick(_topic)'>
           {{ _topic }}
         </View>
       </View>
-      <View v-else class='title' style='height: 200px; display: flex; justify-content: center; align-items: center;'>
+      <View v-else class='title' style='height: 200px; display: flex; justify-content: center; align-items: center; width: calc(100% - 32px);'>
         AGI正在为您生成话题...
       </View>
     </View>
@@ -52,9 +52,9 @@
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
 import { seminar, setting } from 'src/localstores'
-import { ref, watch, computed } from 'vue'
-import { View, Input, Button, Text } from '@tarojs/components'
-import Taro, { useDidShow } from '@tarojs/taro'
+import { ref, watch, computed, onMounted } from 'vue'
+import { View, Button, Text, Textarea } from '@tarojs/components'
+import Taro from '@tarojs/taro'
 
 const initialTopics = [
   '油条的工艺与口味以及外观',
@@ -102,7 +102,7 @@ const presetClasses = [
 
 const _seminar = computed(() => dbBridge._Seminar.seminar(seminar.Seminar.seminar()))
 const topic = ref(_seminar.value ? _seminar.value.topic : initialTopics[Math.floor(Math.random() * initialTopics.length)])
-const topicType = ref('')
+const topicType = ref(presetClasses[0])
 const historyTopics = ref([] as string[])
 const topics = ref([] as string[])
 
@@ -115,6 +115,7 @@ watch(topic, () => {
 })
 
 const startSeminar = () => {
+  // TODO: check if it's a valid topic
   const _uid = dbBridge._Seminar.create(topic.value)
   seminar.Seminar.setSeminar(_uid)
   setting.Setting.setTabIndex(1)
@@ -161,6 +162,10 @@ const onChangeTopicsClick = async () => {
   if (generating.value) return
   await generateTopics()
 }
+
+onMounted(async () => {
+  await generateTopics()
+})
 
 </script>
 
