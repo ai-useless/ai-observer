@@ -66,9 +66,11 @@ async def cook_simulator(
     simulator: str = Body(...),
     simulator_avatar: str = Body(...),
     personality: str | None = Body(...),
+    simulator_archetype: str = Body(...),
+    simulator_title: str = Body(...),
 ):
     try:
-        audio_name = await _cook_simulator(code, username, avatar, audio_b64, simulator, simulator_avatar, personality)
+        audio_name = await _cook_simulator(code, username, avatar, audio_b64, simulator, simulator_avatar, personality, simulator_archetype, simulator_title)
         return {'audio_url': f'{config.file_server}/materials/{audio_name}'}
     except Exception as e:
         raise e

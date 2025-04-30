@@ -16,8 +16,10 @@ parser.add_argument('--mysql-user', type=str, default='debian-sys-maint', help='
 parser.add_argument('--mysql-password', type=str, default='4waB4C6hbPv7cm5U', help='Mysql user')
 parser.add_argument('--reviewers', type=str, default='', help='WeChat ids of reviewers')
 parser.add_argument('--models-file', type=str, default='./models.json', help='Models in json format')
+parser.add_argument('--simulators-file', type=str, default='./simulators.json', help='Simulators in json format')
 parser.add_argument('--clean-database', action='store_true', help='Clean database')
 parser.add_argument('--ignore-api-token', action='store_true', help='Ignore api token')
+parser.add_argument('--kikakkz-wechat-openid', type=str, default='', help='WeChat openid of kikakkz')
 
 config = parser.parse_args()
 
