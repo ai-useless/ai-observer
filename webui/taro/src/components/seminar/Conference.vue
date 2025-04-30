@@ -1,5 +1,5 @@
 <template>
-  <View style='padding: 8px'>
+  <View>
     <scroll-view
       scrollY={true}
       :scroll-with-animation='true'
@@ -42,7 +42,7 @@
       </View>
       <Outline :json='outline' :active-topic='activeTopic || ""' />
       <View style='margin-top: 16px;'>
-        <View v-for='(message, index) in displayMessages' :key='index'>
+        <View v-for='(message, index) in displayMessages' :key='index' style='width: calc(100% - 32px)'>
           <MessageCard :message='message' />
         </View>
         <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
