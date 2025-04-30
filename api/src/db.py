@@ -12,6 +12,7 @@ class Db:
         self.table_bans = 'bans'
         self.table_simulators = 'simulators'
         self.table_users = 'users'
+        self.table_models = 'models'
 
         self.config = {
             'user': config.mysql_user,
@@ -51,6 +52,8 @@ class Db:
         self.cursor = self.connection.cursor()
         self.cursor_dict = self.connection.cursor(dictionary=True)
 
+        self.cursor.execute('SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;')
+
         self.cursor.execute('SHOW TABLES')
         tables = [row[0] for row in self.cursor.fetchall()]
 
@@ -70,17 +73,21 @@ class Db:
         if self.table_simulators not in tables:
             self.cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_simulators} (
+                    id INT AUTO_INCREMENT NOT NULL,
                     wechat_openid VARCHAR(32),
                     wechat_username VARCHAR(128),
                     wechat_avatar VARCHAR(1024),
                     audio_file_cid VARCHAR(256) UNIQUE,
                     text VARCHAR(512),
-                    simulator VARCHAR(32),
+                    simulator VARCHAR(32) UNIQUE,
                     simulator_avatar_cid VARCHAR(64) UNIQUE,
                     origin_personality VARCHAR(256),
+                    archetype VARCHAR(64),
+                    title VARCHAR(64),
                     timestamp INT UNSIGNED,
                     state VARCHAR(16),
-                    PRIMARY KEY (simulator)
+                    host TINYINT,
+                    PRIMARY KEY (id)
                 )
             ''')
             self.connection.commit()
@@ -97,6 +104,25 @@ class Db:
             ''')
             self.connection.commit()
 
+        if self.table_models not in tables:
+            self.cursor.execute(f'''
+                CREATE TABLE IF NOT EXISTS {self.table_models} (
+                    id INT AUTO_INCREMENT NOT NULL,
+                    name VARCHAR(256),
+                    endpoint VARCHAR(1024),
+                    vendor VARCHAR(64),
+                    author VARCHAR(64),
+                    author_logo VARCHAR(256),
+                    model_logo VARCHAR(256),
+                    vendor_logo VARCHAR(256),
+                    host_model TINYINT,
+                    timestamp INT UNSIGNED,
+                    PRIMARY KEY (id),
+                    UNIQUE KEY vendor_model (name, vendor)
+                )
+            ''')
+            self.connection.commit()
+
         threading.Thread(target=self.keep_alive, daemon=True).start()
 
     def keep_alive(self):
@@ -109,11 +135,14 @@ class Db:
             time.sleep(3600)
 
 
-    def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality):
+    def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality, archetype, title, host):
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_simulators}
-                VALUE (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                (wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+                ON DUPLICATE KEY UPDATE
+                wechat_avatar=alias.wechat_avatar
             ''',
             (wechat_openid,
              wechat_username,
@@ -124,7 +153,10 @@ class Db:
              simulator_avatar_cid,
              personality,
              int(time.time()),
-             'CREATED')
+             'CREATED',
+             archetype,
+             title,
+             host)
         )
         self.connection.commit()
 
@@ -162,7 +194,7 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_bans}
-                VALUE (%s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s)
             ''',
             (wechat_openid,
              ban_by_reason,
@@ -181,12 +213,13 @@ class Db:
                 AND ban_by_id="{ban_by_id}"
             '''
         )
+        self.connection.commit()
 
     def new_user(self, wechat_openid, wechat_username, wechat_avatar):
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_users}
-                VALUE (%s, %s, %s, %s) as alias
+                VALUES (%s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 wechat_username=alias.wechat_username,
                 wechat_avatar=alias.wechat_avatar
@@ -196,6 +229,7 @@ class Db:
              wechat_avatar,
              int(time.time()))
         )
+        self.connection.commit()
 
     def get_user(self, wechat_openid):
         self.cursor_dict.execute(
@@ -205,5 +239,36 @@ class Db:
             '''
         )
         return self.cursor_dict.fetchone()
+
+    def new_model(self, name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model):
+        self.cursor.execute(
+            f'''
+                INSERT INTO {self.table_models}
+                (name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model, timestamp)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+                ON DUPLICATE KEY UPDATE
+                author_logo=alias.author_logo
+            ''',
+            (name,
+             endpoint,
+             vendor,
+             author,
+             author_logo,
+             model_logo,
+             vendor_logo,
+             host_model,
+             int(time.time()))
+        )
+        self.connection.commit()
+
+    def get_models(self, offset: int, limit: int):
+        self.cursor_dict.execute(
+            f'''
+                SELECT * FROM {self.table_models}
+                ORDER BY timestamp DESC
+                LIMIT {limit} OFFSET {offset}
+            '''
+        )
+        return self.cursor_dict.fetchall()
 
 db = Db()

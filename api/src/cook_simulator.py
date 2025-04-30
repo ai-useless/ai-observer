@@ -37,7 +37,7 @@ async def get_openid(code: str):
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
                 raise e
 
-async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None):
+async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None, simulator_archetype: str | None = None, simulator_title: str | None = None):
     openid = await get_openid(code)
 
     try:
@@ -58,19 +58,22 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
     simulator_avatar_b64_bytes = simulator_avatar.encode("utf-8")
     simulator_avatar_cid = hashlib.sha256(simulator_avatar_b64_bytes).hexdigest()
     simulator_avatar_bytes = base64.b64decode(simulator_avatar_b64_bytes)
-    simulator_avatar_path = f'{config.data_dir}/avatars/{simulator_avatar_cid}'
+    simulator_avatar_path = f'{config.data_dir}/avatars/simulator/{simulator_avatar_cid}'
     with open(simulator_avatar_path, 'wb') as f:
         f.write(simulator_avatar_bytes)
 
     wechat_avatar_b64_bytes = avatar.encode("utf-8")
     wechat_avatar_cid = hashlib.sha256(wechat_avatar_b64_bytes).hexdigest()
     wechat_avatar_bytes = base64.b64decode(wechat_avatar_b64_bytes)
-    wechat_avatar_path = f'{config.data_dir}/avatars/{wechat_avatar_cid}'
+    wechat_avatar_path = f'{config.data_dir}/avatars/wechat/{wechat_avatar_cid}'
     with open(wechat_avatar_path, 'wb') as f:
         f.write(wechat_avatar_bytes)
 
     personality = '普普通通路人甲' if personality is None else personality
-    db.new_simulator(openid, username, wechat_avatar_cid, file_cid, text, simulator, simulator_avatar_cid, personality)
+    simulator_archetype = '有来有去' if simulator_archetype is None else simulator_archetype
+    simulator_title = '巡山的小妖怪' if simulator_title is None else simulator_title
+
+    db.new_simulator(openid, username, wechat_avatar_cid, file_cid, text, simulator, simulator_avatar_cid, personality, simulator_archetype, simulator_title, False)
     db.new_user(openid, username, wechat_avatar_cid)
 
     # TODO: automatically review audio by another AI
@@ -96,7 +99,7 @@ async def cook_user(code: str, username: str, avatar: str):
     wechat_avatar_b64_bytes = avatar.encode("utf-8")
     wechat_avatar_cid = hashlib.sha256(wechat_avatar_b64_bytes).hexdigest()
     wechat_avatar_bytes = base64.b64decode(wechat_avatar_b64_bytes)
-    wechat_avatar_path = f'{config.data_dir}/avatars/{wechat_avatar_cid}'
+    wechat_avatar_path = f'{config.data_dir}/avatars/wechat/{wechat_avatar_cid}'
     with open(wechat_avatar_path, 'wb') as f:
         f.write(wechat_avatar_bytes)
 
