@@ -3,6 +3,7 @@ import warnings
 from config import config
 import time
 import json
+import threading
 
 
 class Db:
@@ -95,6 +96,18 @@ class Db:
                 )
             ''')
             self.connection.commit()
+
+        threading.Thread(target=self.keep_alive, daemon=True).start()
+
+    def keep_alive(self):
+        while True:
+            try:
+                self.cursor.execute(f'SELECT 1')
+                self.cursor.fetchall()
+            except Exception:
+                self.connection.ping(reconnect=True)
+            time.sleep(3600)
+
 
     def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_file_cid, text, simulator, simulator_avatar_cid, personality):
         self.cursor.execute(
