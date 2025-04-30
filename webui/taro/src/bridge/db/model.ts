@@ -1,4 +1,4 @@
-import { model } from "src/localstores"
+import { model } from 'src/localstores'
 
 export class _Model {
   private static topicModel = 'deepseek-ai/DeepSeek-V3-0324'

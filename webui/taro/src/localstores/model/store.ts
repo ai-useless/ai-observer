@@ -9,13 +9,16 @@ export const useModelStore = defineStore('model', {
   }),
   actions: {
     getModels(done?: (error: boolean, rows?: unknown[]) => void) {
-      axios.get(constants.GET_MODELS_API).then((resp) => {
-        if (done) done(false, resp.data)
-        this.appendModels(resp.data)
-      }).catch((e) => {
-        console.log(`Failed get models: ${JSON.stringify(e)}`)
-        if (done) done(true)
-      })
+      axios
+        .get(constants.GET_MODELS_API)
+        .then((resp) => {
+          if (done) done(false, resp.data)
+          this.appendModels(resp.data)
+        })
+        .catch((e) => {
+          console.log(`Failed get models: ${JSON.stringify(e)}`)
+          if (done) done(true)
+        })
     },
     appendModels(models: _Model[]) {
       models.forEach((model) => {

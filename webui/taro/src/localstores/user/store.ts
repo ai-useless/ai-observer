@@ -12,42 +12,51 @@ export const useUserStore = defineStore('user', {
   actions: {
     getUser(code: string, done?: (error: boolean) => void) {
       const url = `${constants.GET_USER}?code=${code}`
-      axios.get(url).then((resp) => {
-        if (!resp.data) return
-        this.username = resp.data.wechat_username
-        this.avatarUrl = resp.data.wechat_avatar_url
+      axios
+        .get(url)
+        .then((resp) => {
+          if (!resp.data) return
+          this.username = resp.data.wechat_username
+          this.avatarUrl = resp.data.wechat_avatar_url
 
-        this.getAvatar(done)
-      }).catch((e) => {
-        console.log(`Failed get user: ${JSON.stringify(e)}`)
-        if (done) done(true)
-      })
+          this.getAvatar(done)
+        })
+        .catch((e) => {
+          console.log(`Failed get user: ${JSON.stringify(e)}`)
+          if (done) done(true)
+        })
     },
     cookUser(code: string, done?: (error: boolean) => void) {
       if (!this.username || !this.avatar) return
 
       const url = `${constants.COOK_USER}`
-      axios.post(url, {
-        code,
-        username: this.username,
-        avatar: this.avatar
-      }).then(() => {
-        if (done) done(false)
-      }).catch((e) => {
-        console.log(`Failed cook user: ${JSON.stringify(e)}`)
-        if (done) done(true)
-      })
+      axios
+        .post(url, {
+          code,
+          username: this.username,
+          avatar: this.avatar
+        })
+        .then(() => {
+          if (done) done(false)
+        })
+        .catch((e) => {
+          console.log(`Failed cook user: ${JSON.stringify(e)}`)
+          if (done) done(true)
+        })
     },
     getAvatar(done?: (error: boolean) => void) {
-      axios.get(this.avatarUrl, {
-        responseType: 'arraybuffer'
-      }).then((resp) => {
-        if (done) done(false)
-        this.avatar =  Taro.arrayBufferToBase64(new Uint8Array(resp.data))
-      }).catch((e) => {
-        console.log(`Failed get avatar: ${JSON.stringify(e)}`)
-        if (done) done(true)
-      })
+      axios
+        .get(this.avatarUrl, {
+          responseType: 'arraybuffer'
+        })
+        .then((resp) => {
+          if (done) done(false)
+          this.avatar = Taro.arrayBufferToBase64(new Uint8Array(resp.data))
+        })
+        .catch((e) => {
+          console.log(`Failed get avatar: ${JSON.stringify(e)}`)
+          if (done) done(true)
+        })
     }
   },
   getters: {}
@@ -64,5 +73,6 @@ export class User {
 
   static getUser = (code: string) => user.getUser(code)
   static logined = () => user.username && (user.avatar || user.avatarUrl)
-  static cookUser = (code: string, done?: (error: boolean) => void) => user.cookUser(code, done)
+  static cookUser = (code: string, done?: (error: boolean) => void) =>
+    user.cookUser(code, done)
 }

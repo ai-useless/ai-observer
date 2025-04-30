@@ -10,32 +10,50 @@ export const useSimulatorStore = defineStore('simulator', {
     simulators: [] as _Simulator[]
   }),
   actions: {
-    countSimulators(code?: string, done?: (error: boolean, count?: number) => void) {
+    countSimulators(
+      code?: string,
+      done?: (error: boolean, count?: number) => void
+    ) {
       const url = `${constants.COUNT_SIMULATORS_API}${code ? '?code=' + code : ''}`
-      axios.get(url).then((resp) => {
-        if (done) done(false, resp.data)
-        if (code) this.mySimulatorsCount = resp.data
-        else this.allSimulatorsCount = resp.data
-      }).catch((e) => {
-        console.log(`Failed count simulators: ${JSON.stringify(e)}`)
-        if (done) done(true)
-      })
+      axios
+        .get(url)
+        .then((resp) => {
+          if (done) done(false, resp.data)
+          if (code) this.mySimulatorsCount = resp.data
+          else this.allSimulatorsCount = resp.data
+        })
+        .catch((e) => {
+          console.log(`Failed count simulators: ${JSON.stringify(e)}`)
+          if (done) done(true)
+        })
     },
-    getSimulators(code?: string, done?: (error: boolean, rows?: unknown[]) => void) {
+    getSimulators(
+      code?: string,
+      done?: (error: boolean, rows?: unknown[]) => void
+    ) {
       const url = `${constants.GET_SIMULATORS_API}${code ? '?code=' + code : ''}`
-      axios.get(url).then((resp) => {
-        if (done) done(false, resp.data)
-        this.appendSimulators(resp.data, code !== undefined)
-      }).catch((e) => {
-        console.log(`Failed get simulators: ${JSON.stringify(e)}`)
-        if (done) done(true)
-      })
+      axios
+        .get(url)
+        .then((resp) => {
+          if (done) done(false, resp.data)
+          this.appendSimulators(resp.data, code !== undefined)
+        })
+        .catch((e) => {
+          console.log(`Failed get simulators: ${JSON.stringify(e)}`)
+          if (done) done(true)
+        })
     },
     appendSimulators(simulators: _Simulator[], mine: boolean) {
       simulators.forEach((simulator) => {
-        const index = this.simulators.findIndex((el) => el.simulator === simulator.simulator)
+        const index = this.simulators.findIndex(
+          (el) => el.simulator === simulator.simulator
+        )
         simulator.mine = mine
-        this.simulators.splice(index >= 0 ? index : 0, index >= 0 ? 1 : 0, simulator)
+        this.simulators.splice(
+          index >= 0 ? index : 0,
+          index >= 0 ? 1 : 0,
+          simulator
+        )
       })
     }
   },
@@ -46,9 +64,10 @@ const simulator = useSimulatorStore()
 
 export class Simulator {
   static allSimulatorsCount = () => simulator.allSimulatorsCount
-  static setAllSimulatorsCount = (v: number) => simulator.allSimulatorsCount = v
+  static setAllSimulatorsCount = (v: number) =>
+    (simulator.allSimulatorsCount = v)
   static mySimulatorsCount = () => simulator.mySimulatorsCount
-  static setAvatar = (v: number) => simulator.mySimulatorsCount = v
+  static setAvatar = (v: number) => (simulator.mySimulatorsCount = v)
 
   static countSimulators = (code?: string) => simulator.countSimulators(code)
   static getSimulators = (code?: string) => simulator.getSimulators(code)

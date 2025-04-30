@@ -9,4 +9,15 @@ import playCircle from './PlayCircle.svg'
 import stopCircle from './StopCircle.svg'
 import threeDotsVertical from './ThreeDotsVertical.svg'
 
-export { chevronRight, personCircle, folder, record, mic, addCircle, warnCircle, playCircle, stopCircle, threeDotsVertical }
+export {
+  chevronRight,
+  personCircle,
+  folder,
+  record,
+  mic,
+  addCircle,
+  warnCircle,
+  playCircle,
+  stopCircle,
+  threeDotsVertical
+}
