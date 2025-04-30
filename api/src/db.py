@@ -192,6 +192,15 @@ class Db:
         self.cursor_dict.execute(query)
         return self.cursor_dict.fetchall()
 
+    def get_simulator_with_audio_id(self, audio_id):
+        self.cursor_dict.execute(
+            f'''
+                SELECT * FROM {self.table_simulators}
+                WHERE audio_id="{audio_id}"
+            '''
+        )
+        return self.cursor_dict.fetchone()
+
     def ban(self, wechat_openid, ban_by_reason, ban_by_id):
         self.cursor.execute(
             f'''
