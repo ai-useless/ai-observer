@@ -6,7 +6,8 @@
     "audio_id": "huierhui",
     "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/huyihu.wav",
     "archetype": "新闻主播",
-    "title": "凤凰卫视风格犀利的时政节目主持人"
+    "title": "凤凰卫视风格犀利的时政节目主持人",
+    "host": true
 }, {
     "name": "朱重八",
     "avatar": "https://img2.baidu.com/it/u=897386765,2910315805&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800",
@@ -51,7 +52,8 @@
     "audio_id": "dongchonger",
     "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/dongqing.wav",
     "archetype": "董重儿",
-    "title": "著名知识栏目主持人"
+    "title": "著名知识栏目主持人",
+    "host": true
 }, {
     "name": "非小弟",
     "avatar": "https://img1.baidu.com/it/u=2041894563,835415281&fm=253&fmt=auto&app=138&f=JPEG?w=380&h=380",
@@ -60,7 +62,8 @@
     "audio_id": "feixiansheng",
     "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/xiaoge.wav",
     "archetype": "费先生",
-    "title": "长青歌手，著名娱乐节目主持人"
+    "title": "长青歌手，著名娱乐节目主持人",
+    "host": true
 }, {
     "name": "Zhao KK",
     "avatar": "https://img1.baidu.com/it/u=2921136221,1666139078&fm=253&fmt=auto&app=138&f=JPEG?w=180&h=180",
