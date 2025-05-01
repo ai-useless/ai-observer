@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { constants } from 'src/constant'
 import axios, { AxiosResponse } from 'axios'
 import { _Simulator } from './types'
+import { dbBridge } from 'src/bridge'
 
 export const useSimulatorStore = defineStore('simulator', {
   state: () => ({
@@ -55,6 +56,7 @@ export const useSimulatorStore = defineStore('simulator', {
           simulator
         )
       })
+      dbBridge._Simulator.initialize(this.simulators)
     }
   },
   getters: {}

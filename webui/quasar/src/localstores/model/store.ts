@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { constants } from 'src/constant'
 import axios, { AxiosResponse } from 'axios'
 import { _Model } from './types'
+import { dbBridge } from 'src/bridge'
 
 export const useModelStore = defineStore('model', {
   state: () => ({
@@ -25,6 +26,7 @@ export const useModelStore = defineStore('model', {
         const index = this.models.findIndex((el) => el.name === model.name)
         this.models.splice(index >= 0 ? index : 0, index >= 0 ? 1 : 0, model)
       })
+      dbBridge._Model.initialize(this.models)
     }
   },
   getters: {}
