@@ -14,7 +14,7 @@ export const dbSeminar = new Dexie('SeminarDatabase') as Dexie & {
 dbSeminar.version(1).stores({
   participators: '++id, seminarUid, role, simulatorId, modelId',
   models:
-    '++id, &name, endpoint, apiKey, vendor, author, authorLogo, modelLogo, hostModel',
+    '++id, &name, endpoint, vendor, author, authorLogo, modelLogo, hostModel',
   simulators: '++id, &name, avatar, host, speakerVoice, archetype, title',
   seminars: '++id, uid, topic',
   messages:

@@ -2,7 +2,6 @@ export interface Model {
   id?: number
   name: string
   endpoint: string
-  apiKey?: string
   vendor: string
   author: string
   authorLogo: string
