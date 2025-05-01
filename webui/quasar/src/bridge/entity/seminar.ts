@@ -12,7 +12,7 @@ type MessageFunc = (
 ) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
-type HistoryMessagesFunc = () => Map<string, string[]>
+type HistoryMessagesFunc = () => Map<string, seminarWorker.HistoryMessage[]>
 
 export class ESeminar {
   #seminar = undefined as unknown as dbModel.Seminar
@@ -65,6 +65,10 @@ export class ESeminar {
 
     // Outline round
     if (intent === seminarWorker.Intent.OUTLINE) {
+      if (!message.payload.json) {
+        console.log('Failed outline topic')
+        return
+      }
       this.#onOutline(message.payload.json)
       this.#topicMaterial = message.payload.text
       this.#subTopics = message.payload.json.titles as string[]
@@ -284,7 +288,7 @@ export class ESeminar {
 
     if (!host) throw new Error('Invalid host')
 
-    const historyMessages = [] as string[]
+    const historyMessages = [] as seminarWorker.HistoryMessage[]
     this.#historyMessages().forEach((messages) =>
       historyMessages.push(...messages)
     )

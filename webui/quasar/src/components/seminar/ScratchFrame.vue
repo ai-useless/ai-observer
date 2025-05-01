@@ -12,46 +12,52 @@
       style='width: 800px; font-size: 20px;'
       @keyup.enter.stop='onEnter'
     />
-    <div style='margin-top: 24px;'>
+    <div style='margin-top: 24px; max-width: 800px;'>
       <q-btn
         rounded
         flat
-        label='Random topic'
+        dense
+        :label='clazz'
         no-caps
         class='text-grey-7 border'
+        v-for='clazz in presetClasses'
+        :key='clazz'
+        @click='onGenerateTopics(clazz)'
+        style='margin: 2px; padding: auto 16px;'
       />
-      <q-btn
-        rounded
-        flat
-        label='History topic'
-        no-caps
-        class='text-grey-7 border'
-        style='margin-left: 8px;'
-      />
-      <q-btn
-        rounded
-        flat
-        label='The World War II'
-        no-caps
-        class='text-grey-7 border'
-        style='margin-left: 8px;'
-      />
-      <q-btn
-        rounded
-        flat
-        label='Big Countries Battle'
-        no-caps
-        class='text-grey-7 border'
-        style='margin-left: 8px;'
-      />
+    </div>
+    <div style='margin-top: 24px; max-width: 800px;'>
+      <div style='border-bottom: 1px solid gray;' class='row items-center'>
+        <div style='color: gray;'>
+          {{ topicType }}
+        </div>
+        <q-space />
+        <q-btn
+          label='换一批'
+          color='blue'
+          flat
+          dense
+          @click='onChangeTopicsClick'
+          :loading='generating'
+        />
+      </div>
+      <div
+        v-for='_topic in topics'
+        :key='_topic'
+        style='color: blue;' class='text-left cursor-pointer'
+        @click='onTopicClick(_topic)'
+      >
+        {{ _topic }}
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang='ts'>
-import { dbBridge } from 'src/bridge'
-import { seminar, setting } from 'src/localstores'
-import { ref, watch } from 'vue'
+import { entityBridge } from 'src/bridge'
+import { seminar } from 'src/localstores'
+import { ref, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const initialTopics = [
   '油条的工艺与口味以及外观',
@@ -82,18 +88,88 @@ const initialTopics = [
   '洋奶粉安全信任问题'
 ]
 
-// TODO: random initial topic
-const topic = ref(initialTopics[Math.floor(Math.random() * initialTopics.length)])
+const presetClasses = [
+  '随便讨论点儿什么',
+  '历史',
+  '二战',
+  '量子物理',
+  '春秋战国',
+  '关于夏朝',
+  '大航海时代',
+  '文艺复兴',
+  '羊吃人运动',
+  '微博热点',
+  '央视热点',
+  '今日热搜'
+]
+
+const topic = ref(seminar.Seminar.topic() || initialTopics[Math.floor(Math.random() * initialTopics.length)])
+const topicType = ref(presetClasses[0])
+const historyTopics = ref([] as string[])
+const topics = ref([] as string[])
+
+const router = useRouter()
 
 watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
 })
 
-const onEnter = async () => {
-  const _uid = await dbBridge._Seminar.create(topic.value)
-  seminar.Seminar.setSeminar(_uid)
-  setting.Setting.setInScratch(false)
+const startSeminar = () => {
+  // TODO: check if it's a valid topic
+  seminar.Seminar.setTopic(topic.value)
+  console.log(111, topic.value)
+  void router.push({ path: '/seminar' })
 }
+
+const onEnter = () => {
+  startSeminar()
+}
+
+const onTopicClick = (_topic: string) => {
+  topic.value = _topic
+  startSeminar()
+}
+
+const generating = ref(false)
+
+const generateTopics = async () => {
+  let clazz = topicType.value
+  if (topicType.value === presetClasses.values[0]) clazz = '随机不同领域可以输出观点的话题'
+  generating.value = true
+  try {
+    topics.value = await entityBridge.Topic.generateTopics(clazz, 10, historyTopics.value.map((el) => {
+      return {
+        participatorId: 0,
+        content: el
+      }
+    }))
+  } catch {
+    setTimeout(() => {
+      void generateTopics()
+    }, 1000)
+    return
+  }
+  historyTopics.value.push(...topics.value)
+  generating.value = false
+}
+
+const onGenerateTopics = async (clazz: string) => {
+  if (generating.value) return
+
+  historyTopics.value = []
+  topicType.value = clazz
+
+  await generateTopics()
+}
+
+const onChangeTopicsClick = async () => {
+  if (generating.value) return
+  await generateTopics()
+}
+
+onMounted(async () => {
+  await generateTopics()
+})
 
 </script>
 

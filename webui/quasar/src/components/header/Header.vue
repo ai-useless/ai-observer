@@ -1,13 +1,15 @@
 <template>
   <div class='row items-center'>
-    <div class='cursor-pointer' @click='onLogoClick' style='width: 120px;'>
-      <q-img
-        :src='aiObserverLogo'
-        height='36px'
-        width='240px'
-        fit='contain'
-        position='0 0'
-      />
+    <div class='cursor-pointer' @click='onLogoClick' style='width: 36px; border-radius: 50%;'>
+      <q-avatar>
+        <q-img
+          :src='meipuAgiLogo'
+          height='36px'
+          width='36px'
+          fit='contain'
+          position='0 0'
+        />
+      </q-avatar>
     </div>
     <q-space />
     <div v-if='_seminar' class='text-grey-8 text-bold'>
@@ -60,7 +62,7 @@ import { seminar } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { dbBridge } from 'src/bridge'
 
-import { aiObserverLogo } from 'src/assets'
+import { meipuAgiLogo } from 'src/assets'
 
 const router = useRouter()
 const _uid = computed(() => seminar.Seminar.seminar())
@@ -73,19 +75,16 @@ watch(_uid, async () => {
 })
 
 const onLogoClick = () => {
-  void router.push({ path: '/seminar' })
+  void router.push({ path: '/' })
 }
 
 onMounted(async () => {
-  await dbBridge._Model.initialize()
-  await dbBridge._Simulator.initialize()
-
   generateAudio.value = await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO) as boolean
 
   if (_uid.value) {
     _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
   }
-  void router.push({ path: '/seminar' })
+  void router.push({ path: '/' })
 })
 
 const onGenerateAudioClick = async () => {

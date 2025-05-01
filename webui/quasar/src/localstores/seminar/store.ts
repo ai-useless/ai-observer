@@ -4,7 +4,8 @@ export const useSeminarStore = defineStore('seminar', {
   state: () => ({
     uid: undefined as unknown as string,
     participatorsInThinking: new Map<number, boolean>(),
-    participatorInSpeaking: undefined as unknown as number
+    participatorInSpeaking: undefined as unknown as number,
+    topic: undefined as unknown as string
   }),
   actions: {},
   getters: {}
@@ -13,31 +14,26 @@ export const useSeminarStore = defineStore('seminar', {
 const seminar = useSeminarStore()
 
 export class Seminar {
-  static seminar = () => {
-    return seminar.uid
-  }
+  static seminar = () => seminar.uid
 
-  static setSeminar = (v: string) => {
-    seminar.uid = v
-  }
+  static setSeminar = (v: string) => (seminar.uid = v)
 
-  static startThink = (participatorId: number) => {
+  static topic = () => seminar.topic
+
+  static setTopic = (v: string) => (seminar.topic = v)
+
+  static startThink = (participatorId: number) =>
     seminar.participatorsInThinking.set(participatorId, true)
-  }
 
-  static stopThink = (participatorId: number) => {
+  static stopThink = (participatorId: number) =>
     seminar.participatorsInThinking.delete(participatorId)
-  }
 
-  static thinking = (participatorId: number) => {
-    return seminar.participatorsInThinking.has(participatorId)
-  }
+  static thinking = (participatorId: number) =>
+    seminar.participatorsInThinking.has(participatorId)
 
-  static speak = (participatorId: number) => {
-    seminar.participatorInSpeaking = participatorId
-  }
+  static speak = (participatorId: number) =>
+    (seminar.participatorInSpeaking = participatorId)
 
-  static speaking = (participatorId: number) => {
-    return seminar.participatorInSpeaking === participatorId
-  }
+  static speaking = (participatorId: number) =>
+    seminar.participatorInSpeaking === participatorId
 }
