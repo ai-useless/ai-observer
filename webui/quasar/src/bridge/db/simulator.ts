@@ -11,7 +11,9 @@ export class _Simulator {
   }
 
   static simulators = async (ids: number[]) => {
-    return (await dbSeminar.simulators.toArray()).filter((el) => ids.includes(el.id))
+    return (await dbSeminar.simulators.toArray()).filter((el) =>
+      ids.includes(el.id)
+    )
   }
 
   static randomPeek = async (host?: boolean) => {

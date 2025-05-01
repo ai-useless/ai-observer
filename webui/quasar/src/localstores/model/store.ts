@@ -26,9 +26,11 @@ export const useModelStore = defineStore('model', {
         const index = this.models.findIndex((el) => el.name === model.name)
         this.models.splice(index >= 0 ? index : 0, index >= 0 ? 1 : 0, model)
       })
-      await dbBridge._Model.initialize(this.models.map((el) => {
-        return { ...el }
-      }))
+      await dbBridge._Model.initialize(
+        this.models.map((el) => {
+          return { ...el }
+        })
+      )
     }
   },
   getters: {}

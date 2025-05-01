@@ -56,9 +56,11 @@ export const useSimulatorStore = defineStore('simulator', {
           simulator
         )
       })
-      await dbBridge._Simulator.initialize(this.simulators.map((el) => {
-        return { ...el }
-      }))
+      await dbBridge._Simulator.initialize(
+        this.simulators.map((el) => {
+          return { ...el }
+        })
+      )
     }
   },
   getters: {}

@@ -15,7 +15,9 @@ export class _Seminar {
       while (true) {
         let simulator = await _Simulator.randomPeek(i === 0 ? true : undefined)
         if (!simulator) simulator = await _Simulator.randomPeek()
-        if (participators.findIndex((el) => el.simulatorId === simulator.id) >= 0)
+        if (
+          participators.findIndex((el) => el.simulatorId === simulator.id) >= 0
+        )
           continue
 
         let model = await _Model.randomPeek(i === 0 ? true : undefined)
