@@ -368,7 +368,9 @@ export class ESeminar {
             topicMaterial: this.#topicMaterial,
             generateAudio: true,
             historyMessages,
-            archetype: await dbBridge._Simulator.archetypeWithId(host.simulator?.id)
+            archetype: await dbBridge._Simulator.archetypeWithId(
+              host.simulator?.id
+            )
           }
         }
       )
