@@ -40,8 +40,8 @@
             <q-chat-message
               v-if='!message.subTopicTitle'
               :key='index'
-              :name='message.simulator.name + " | " + message.participator.role + " | " + message.model.name'
-              :avatar='message.simulator.avatar'
+              :name='message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name'
+              :avatar='message.simulator.simulator_avatar_url'
               :stamp='message.datetime'
               :text='[message.message]'
               text-color='grey-9'
@@ -50,12 +50,12 @@
               <template #name>
                 <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
                   <div>
-                    {{ message.simulator.name + " | " + message.participator.role + " | " + message.model.name }}
+                    {{ message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name }}
                   </div>
-                  <q-img :src='message.model.authorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <q-img :src='message.model.vendorLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <q-img :src='message.model.modelLogo' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <div> | {{ message.simulator.personality }}</div>
+                  <q-img :src='message.model.author_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
+                  <q-img :src='message.model.vendor_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
+                  <q-img :src='message.model.model_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
+                  <div> | {{ message.simulator.origin_personality }}</div>
                 </div>
               </template>
               <div v-html='message.message' style='line-height: 1.5em;' />
@@ -75,7 +75,7 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { seminar } from 'src/localstores'
+import { model, seminar, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
@@ -103,8 +103,8 @@ interface Message {
   round: number
   message: string
   participator: dbModel.Participator
-  simulator: dbModel.Simulator
-  model: dbModel.Model
+  simulator: simulator._Simulator
+  model: model._Model
   datetime: string
   timestamp: number
   audio: string
@@ -208,8 +208,8 @@ watch(_seminar, async () => {
   participators.value = await dbBridge._Participator.participators(_seminar.value.uid)
 })
 
-watch(participators, async () => {
-  simulators.value = await entityBridge.EParticipator.simulators(participators.value)
+watch(participators, () => {
+  simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
 const strip = (html: string): string => {
@@ -250,8 +250,8 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     round,
     message: strip(purify.purifyThink(message)),
     participator,
-    simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
-    model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
+    simulator: dbBridge._Simulator.simulator(participator?.simulatorId) as simulator._Simulator,
+    model: dbBridge._Model.model(participator.modelId) as model._Model,
     timestamp: Date.now(),
     datetime: timestamp,
     audio,
@@ -284,7 +284,7 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
     const _messages = messages.get(el.subTopic) || []
     _messages.push({
       participatorId: el.participator.id as number,
-      content: el.simulator.name + ' 的观点: ' + purify.purifyText(el.message)
+      content: el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
     })
     messages.set(el.subTopic, _messages)
   })

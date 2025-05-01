@@ -1,14 +1,20 @@
-import { simulator } from 'src/localstores'
+import { _Simulator as __Simulator } from 'src/localstores/simulator/types'
 
 export class _Simulator {
+  private static _simulators = [] as __Simulator[]
+
+  static initialize = (simulators: __Simulator[]) => {
+    _Simulator._simulators = simulators
+  }
+
   static simulators = (ids: number[]) => {
-    return simulator.Simulator.allSimulators().filter((el) =>
+    return _Simulator._simulators.filter((el) =>
       ids.includes(el.id)
     )
   }
 
   static randomPeek = (host?: boolean) => {
-    const simulators = simulator.Simulator.allSimulators().filter(
+    const simulators = _Simulator._simulators.filter(
       (el) => !host || el.host === host
     )
     const index = Math.floor(Math.random() * simulators.length)
@@ -16,16 +22,16 @@ export class _Simulator {
   }
 
   static simulator = (id: number) => {
-    return simulator.Simulator.allSimulators().find((el) => el.id === id)
+    return _Simulator._simulators.find((el) => el.id === id)
   }
 
-  static archetype = (simulator?: simulator._Simulator) => {
+  static archetype = (simulator?: __Simulator) => {
     if (!simulator) return '朝阳区热心群众'
     return simulator.title + simulator.archetype
   }
 
   static archetypeWithId = (simulatorId: number) => {
-    const _simulator = simulator.Simulator.allSimulators().find(
+    const _simulator = _Simulator._simulators.find(
       (el) => el.id === simulatorId
     )
     return _Simulator.archetype(_simulator)

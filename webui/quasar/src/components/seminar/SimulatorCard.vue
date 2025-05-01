@@ -4,30 +4,30 @@
       <q-space />
       <div :class='["avatar", isHost ? "avatar-host" : ""]' :style='{ width: small ? "52px" : "68px" }'>
         <q-avatar :size='small ? "48px" : "64px"'>
-          <q-img :src='simulator.avatar' />
+          <q-img :src='_simulator.simulator_avatar_url' />
         </q-avatar>
       </div>
       <q-space />
     </div>
     <div v-if='!avatarOnly' class='text-grey-8'>
-      {{ simulator.name }}
+      {{ _simulator.simulator }}
     </div>
   </div>
 </template>
 
 <script setup lang='ts'>
-import { dbModel } from 'src/model'
+import { simulator } from 'src/localstores'
 import { toRef } from 'vue'
 
 interface Props {
-  simulator: dbModel.Simulator
+  simulator: simulator._Simulator
   small: boolean
   avatarOnly?: boolean
   isHost: boolean
 }
 // eslint-disable-next-line no-undef
 const props = defineProps<Props>()
-const simulator = toRef(props, 'simulator')
+const _simulator = toRef(props, 'simulator')
 const small = toRef(props, 'small')
 const avatarOnly = toRef(props, 'avatarOnly')
 const isHost = toRef(props, 'isHost')
