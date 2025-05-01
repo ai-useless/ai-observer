@@ -1,6 +1,7 @@
 export interface _Model {
   id: number
   name: string
+  author: string
   // eslint-disable-next-line camelcase
   author_logo_url: string
   // eslint-disable-next-line camelcase

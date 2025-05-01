@@ -7,9 +7,8 @@
       padding='8px 16px'
       v-model='expand'
     >
-      <q-fab-action flat dense v-for='(simulator, index) in simulators' :key='index'>
+      <q-fab-action flat dense v-for='(simulator, index) in simulators.filter((el) => el.simulator)' :key='index'>
         <simulator-card
-          v-if='simulator.simulator'
           :simulator='simulator.simulator'
           :small='true'
           :avatar-only='true'

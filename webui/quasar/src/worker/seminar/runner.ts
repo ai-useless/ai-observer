@@ -147,7 +147,7 @@ export class SeminarRunner {
     )
     if (!simulator) return
 
-    return simulator.audioId
+    return simulator.audio_id
   }
 
   static prompt = async (
@@ -179,7 +179,7 @@ export class SeminarRunner {
         const _prompts = prompts as StartTopicPrompts
         return Prompt.prompt(
           intent,
-          simulator.personality,
+          simulator.origin_personality,
           _prompts.topicMaterial,
           100,
           _prompts.guests,
@@ -191,7 +191,7 @@ export class SeminarRunner {
         return Prompt.prompt(
           intent,
           topic,
-          simulator.personality,
+          simulator.origin_personality,
           _prompts.topicMaterial,
           subTopic,
           100,
@@ -203,7 +203,7 @@ export class SeminarRunner {
         return Prompt.prompt(
           intent,
           topic,
-          simulator.personality,
+          simulator.origin_personality,
           _prompts.topicMaterial,
           subTopic,
           100,
@@ -215,7 +215,7 @@ export class SeminarRunner {
         return Prompt.prompt(
           intent,
           topic,
-          simulator.personality,
+          simulator.origin_personality,
           _prompts.topicMaterial,
           subTopic,
           100,
@@ -227,7 +227,7 @@ export class SeminarRunner {
         const _prompts = prompts as ConcludeTopicPrompts
         return Prompt.prompt(
           intent,
-          simulator.personality,
+          simulator.origin_personality,
           _prompts.topicMaterial,
           100,
           (_prompts.historyMessages || []).map((el) => el.content),
@@ -240,7 +240,7 @@ export class SeminarRunner {
           intent,
           topic,
           subTopic,
-          simulator.personality,
+          simulator.origin_personality,
           _prompts.hostMessage,
           100,
           (_prompts.historyMessages || []).map((el) => el.content),
@@ -255,7 +255,7 @@ export class SeminarRunner {
         const _prompts = prompts as HostChallengePrompts
         return Prompt.prompt(
           intent,
-          simulator.personality,
+          simulator.origin_personality,
           _prompts.topicMaterial,
           subTopic,
           100,

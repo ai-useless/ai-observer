@@ -14,11 +14,11 @@
           {{ topic }}
         </div>
         <div class='row' style='transition: 500ms;'>
-          <simulator-card v-if='host' :simulator='host.simulator' :small='false' :is-host='true' />
+          <simulator-card v-if='host?.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
           <div class='flex justify-end items-end' style='margin-left: 24px;'>
             <simulator-card
               :style='{marginLeft: index === 0 ? "0" : "16px"}'
-              v-for='(guest, index) in guests'
+              v-for='(guest, index) in guests.filter((el) => el.simulator)'
               :simulator='guest.simulator'
               :small='true'
               :key='index'
@@ -208,8 +208,8 @@ watch(_seminar, async () => {
   participators.value = await dbBridge._Participator.participators(_seminar.value.uid)
 })
 
-watch(participators, () => {
-  simulators.value = entityBridge.EParticipator.simulators(participators.value)
+watch(participators, async () => {
+  simulators.value = await entityBridge.EParticipator.simulators(participators.value)
 })
 
 const strip = (html: string): string => {
@@ -250,8 +250,8 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     round,
     message: strip(purify.purifyThink(message)),
     participator,
-    simulator: dbBridge._Simulator.simulator(participator?.simulatorId) as simulator._Simulator,
-    model: dbBridge._Model.model(participator.modelId) as model._Model,
+    simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as simulator._Simulator,
+    model: await dbBridge._Model.model(participator.modelId) as model._Model,
     timestamp: Date.now(),
     datetime: timestamp,
     audio,
