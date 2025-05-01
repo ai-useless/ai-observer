@@ -1,7 +1,7 @@
 <template>
   <div class='text-center'>
     <h3 class='text-grey-9'>
-      What would you like to dig ?
+      您想让AGI们讨论点儿什么 ?
     </h3>
     <q-input
       rounded
@@ -41,6 +41,7 @@
           :loading='generating'
         />
       </div>
+      <div style='margin-top: 8px;' />
       <div
         v-for='_topic in topics'
         :key='_topic'
