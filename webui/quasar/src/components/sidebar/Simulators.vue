@@ -6,7 +6,7 @@
     <q-separator />
     <div style='max-height: 400px; overflow: scroll;'>
       <div v-for='_simulator in simulators' :key='_simulator.simulator' class='cursor-pointer'>
-        <SimulatorCard :simulator='_simulator' />
+        <SimulatorCard v-if='_simulator' :simulator='_simulator' />
       </div>
     </div>
   </div>

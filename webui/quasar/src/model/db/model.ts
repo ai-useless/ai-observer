@@ -1,14 +1,7 @@
-export interface Model {
-  id?: number
-  name: string
-  endpoint: string
-  vendor: string
-  author: string
-  authorLogo: string
-  modelLogo: string
-  vendorLogo: string
-  hostModel: boolean
-}
+import { _Model } from 'src/localstores/model/types'
+import { _Simulator } from 'src/localstores/simulator/types'
+
+export type Model = _Model
 
 export enum Role {
   HOST = 'Host',
@@ -16,16 +9,7 @@ export enum Role {
   AUDIENCE = 'Audience'
 }
 
-export interface Simulator {
-  id?: number
-  name: string
-  avatar: string
-  personality: string
-  host: boolean
-  audioId: string
-  archetype: string
-  title: string
-}
+export type Simulator = _Simulator
 
 export interface Seminar {
   id?: number
