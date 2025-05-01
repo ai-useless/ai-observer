@@ -1,3 +1,6 @@
 export * as seminar from './seminar'
-export * as notify from './notify'
 export * as setting from './setting'
+export * as user from './user'
+export * as simulator from './simulator'
+export * as model from './model'
+export * as notify from './notify'

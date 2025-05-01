@@ -5,7 +5,6 @@
       vertical-actions-align='left'
       direction='up'
       padding='8px 16px'
-      :disable='inScratch'
       v-model='expand'
     >
       <q-fab-action flat dense v-for='(simulator, index) in simulators' :key='index'>
@@ -20,11 +19,11 @@
         <q-spinner-dots v-if='seminar.Seminar.speaking(simulator.participatorId)' color='red-4' style='margin-left: 8px;' />
       </q-fab-action>
       <template #icon>
-        <q-icon :name='inScratch ? "bi-hourglass-split" : "bi-chevron-up"' size='16px' />
+        <q-icon name='bi-hourglass-split' size='16px' />
       </template>
       <template #label>
         <div class='row'>
-          <span>{{ label }}</span>
+          <span>展开</span>
           <q-icon name='bi-person-circle' style='margin-left: 8px;' />
         </div>
       </template>
@@ -34,14 +33,11 @@
 
 <script setup lang='ts'>
 import { computed, onMounted, ref, watch } from 'vue'
-import { setting, seminar } from 'src/localstores'
+import { seminar } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { dbModel } from 'src/model'
 
 import SimulatorCard from './SimulatorCard.vue'
-
-const inScratch = computed(() => setting.Setting.inScratch())
-const label = computed(() => inScratch.value ? 'Preparing ...' : 'Expand')
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)

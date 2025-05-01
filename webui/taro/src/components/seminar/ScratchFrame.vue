@@ -51,7 +51,7 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { seminar, setting } from 'src/localstores'
+import { seminar } from 'src/localstores'
 import { ref, watch, computed, onMounted } from 'vue'
 import { View, Button, Text, Textarea } from '@tarojs/components'
 import Taro from '@tarojs/taro'
@@ -136,7 +136,12 @@ const generateTopics = async () => {
   if (topicType.value === presetClasses.values[0]) clazz = '随机不同领域可以输出观点的话题'
   generating.value = true
   try {
-    topics.value = await entityBridge.Topic.generateTopics(clazz, 10, historyTopics.value)
+    topics.value = await entityBridge.Topic.generateTopics(clazz, 10, historyTopics.value.map((el) => {
+      return {
+        participatorId: 0,
+        content: el
+      }
+    }))
   } catch {
     setTimeout(() => {
       generateTopics()

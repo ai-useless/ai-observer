@@ -7,7 +7,8 @@ export enum Intent {
   CONCLUDE_SUBTOPIC = 'ConcludeSubTopic',
   CONCLUDE = 'Conclude',
   OUTLINE_SUBTOPICS = 'OutlineSubTopics',
-  HOST_CHALLENGE = 'HostChallenge'
+  HOST_CHALLENGE = 'HostChallenge',
+  GENERATE_TOPICS = 'GenerateTopics'
 }
 
 enum PromptType {
@@ -30,7 +31,8 @@ enum PromptType {
   WITH_HISTORY_ANALYSIS,
   WITH_HISTORY_CONCLUSION,
   WITH_HUMAN_WORDS,
-  WITHOUT_ABSENT_GUESTS
+  WITHOUT_ABSENT_GUESTS,
+  WITHOUT_POLITICAL
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
@@ -39,7 +41,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格') as RequirementFunc],
   [
     PromptType.IDENT_2_SPACE,
-    (() => ') 分级资料按照2个空格缩进') as RequirementFunc
+    (() =>
+      ') 分级资料按照2个空格缩进，参考资料独立成行并用方括号括起来的数字开头') as RequirementFunc
   ],
   [
     PromptType.WITH_HTML,
@@ -48,7 +51,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.HTML_STYLE,
     (() =>
-      ') 不要默认加粗第一段文字，没有标题不要加粗，一级标题用16号字加粗，二级标题用14号字加粗，普通内容不加粗，行高1.5em') as RequirementFunc
+      ') 不要默认加粗第一段文字，没有标题不要加粗，一级标题用14px字加粗，二级标题用12px字加粗，普通内容不加粗，字号为12px，行高1.5em') as RequirementFunc
   ],
   [PromptType.SEGMENT, (() => ') 根据语义需要分段') as RequirementFunc],
   [
@@ -82,7 +85,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.DONT_START_WITH_TOPIC,
     (() =>
-      ') 不要生硬的重复主题，用谈话的形式，不要用写文章的形式') as RequirementFunc
+      ') 不要生硬的重复主题，用谈话的形式，不要用写文章的形式，这是一个多个人的聊天节目，不是写文章，因此不要总结分析，要用自然的口吻说话') as RequirementFunc
   ],
   [
     PromptType.AS_HOST,
@@ -91,7 +94,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.DONT_DESCRIBE_PERSONALITY,
-    (() => ') 不要描述自己的人设') as RequirementFunc
+    (() => ') 不要描述自己的人设。不要生硬地将讨论话题和自己的人设联系，过渡要自然。') as RequirementFunc
   ],
   [
     PromptType.NO_VIRTUAL_WORDS,
@@ -106,13 +109,13 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.WITH_HISTORY_ANALYSIS,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ((speakDuration: number, letters: number, historyMessages: string[]) =>
+    ((_speakDuration: number, _letters: number, historyMessages: string[]) =>
       `) 你前面的嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。如果有必要，分析他们的观点并发表自己的观点`) as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_CONCLUSION,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    ((speakDuration: number, letters: number, historyMessages: string[]) =>
+    ((_speakDuration: number, _letters: number, historyMessages: string[]) =>
       `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
   ],
   [
@@ -123,6 +126,11 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     PromptType.WITHOUT_ABSENT_GUESTS,
     (() =>
       ') 如果嘉宾及其观点没有出现在本轮讨论，不要邀请他们回答，也不要将其作为在场嘉宾加以分析，但是你可以引用不在场的嘉宾的观点') as RequirementFunc
+  ],
+  [
+    PromptType.WITHOUT_POLITICAL,
+    (() =>
+      '不要出现跟国家政要相关的事情，不要出现跟国家政策相悖的言论') as RequirementFunc
   ]
 ])
 
@@ -141,7 +149,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.MERGE_SPACES,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -163,7 +172,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_ANALYSIS,
       PromptType.WITH_HUMAN_WORDS,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -180,7 +190,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -198,7 +209,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -216,7 +228,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -235,7 +248,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_CONCLUSION,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -253,7 +267,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
     ]
   ],
   [
@@ -272,7 +287,21 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_CONCLUSION,
-      PromptType.WITHOUT_ABSENT_GUESTS
+      PromptType.WITHOUT_ABSENT_GUESTS,
+      PromptType.WITHOUT_POLITICAL
+    ]
+  ],
+  [
+    Intent.GENERATE_TOPICS,
+    [
+      PromptType.NO_EMOJI,
+      PromptType.DURATION,
+      PromptType.EMOTION,
+      PromptType.NO_ANALYSIS,
+      PromptType.NO_HEAD_SPACE,
+      PromptType.MERGE_SPACES,
+      PromptType.WITH_HISTORY_CONCLUSION,
+      PromptType.WITHOUT_POLITICAL
     ]
   ]
 ])
@@ -281,13 +310,16 @@ const intentRequirements = (
   intent: Intent,
   ...args: (string | number | string[])[]
 ) => {
+  const requirements = IntentRequirements.get(intent)
+  if (!requirements) throw Error('Invalid intent')
   return (
-    IntentRequirements.get(intent)
-      ?.map(
-        (el, index) =>
-          index.toString() + (Requirements.get(el)?.(...args) || '')
-      )
-      ?.join(' ') || ''
+    requirements
+      .map((el, index) => {
+        const _requirement = Requirements.get(el)
+        if (!_requirement) throw Error('Invalid requirement')
+        return index.toString() + (_requirement(...args) || '')
+      })
+      .join(' ') || ''
   )
 }
 
@@ -298,9 +330,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topic: string,
       rounds: number,
       archetype: string
-    ) => `作为主持人，你的人物原型是${archetype}，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题，要求只输出主题和主题
-          相关素材（格式如下：本期主题：xxxxx (1).xxxxx 素材：xxxx (2).xxxxxxx 素材：xxxxxxx。标题和素材之间需要换行。
-          要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
+    ) => `作为主持人，你的人物原型是${archetype}，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题。如果该主题不符合公序良俗，
+          跟国家领导人相关，或者违背国家现行政策，返回请求主题不支持。要求只输出主题和主题相关素材（格式如下：本期主题：xxxxx (1).xxxxx 素材：xxxx
+          (2).xxxxxxx 素材：xxxxxxx。标题独立一行，主题独立一行，素材独立一行。独立一行表示用html的p标签包裹。要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
   ],
   [
     Intent.DISCUSS,
@@ -399,14 +431,26 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       archetype: string
     ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目进行中，本期节目的主要内容为：${topicMaterial}，
           本轮讨论的主题为${subTopic}，现在你需要串联嘉宾发表的观点并提出启发性的问题以供进一步讨论，
-          要求：${intentRequirements(Intent.CONCLUDE, speakDuration, 300, historyMessages)}`) as IntentFunc
+          要求：${intentRequirements(Intent.HOST_CHALLENGE, speakDuration, 300, historyMessages)}`) as IntentFunc
+  ],
+  [
+    Intent.GENERATE_TOPICS,
+    ((
+      topicType: string,
+      count: number,
+      historyTopics: string[]
+    ) => `生成${count}个和${topicType}相关的适合用于观点碰撞讨论的随机话题，每个话题独立成行返回，不需要序号。
+          新生成的话题中不应包含下列话题：${historyTopics.join(',')}。话题要有开放性，不要非对即错，也不要辩论题，题目中不要包含是否等词，不要用问句。
+          要求：${intentRequirements(Intent.GENERATE_TOPICS, 20, 500, historyTopics)}`) as IntentFunc
   ]
 ])
 
 export class Prompt {
   static prompt = (intent: Intent, ...args: (string | number | string[])[]) => {
     const _args = [...args]
-    return IntentPrompt.get(intent)?.(..._args)
+    const intentPrompt = IntentPrompt.get(intent)
+    if (!intentPrompt) throw Error('Invalid intent')
+    return intentPrompt(..._args)
   }
 
   static postProcess = (
@@ -417,7 +461,7 @@ export class Prompt {
       titles: [] as string[]
     } as Record<string, string[]>
 
-    if (intent === Intent.OUTLINE) {
+    if (intent === Intent.OUTLINE || intent === Intent.GENERATE_TOPICS) {
       const lines = content.split('\n')
       for (const line of lines) {
         if (!line.replace(' ', '').length) continue

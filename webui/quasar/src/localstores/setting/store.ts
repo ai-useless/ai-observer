@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export const useSettingStore = defineStore('setting', {
   state: () => ({
-    inScratch: true
+    tabIndex: -1
   }),
   actions: {},
   getters: {}
@@ -11,11 +11,7 @@ export const useSettingStore = defineStore('setting', {
 const setting = useSettingStore()
 
 export class Setting {
-  static inScratch = () => {
-    return setting.inScratch
-  }
+  static tabIndex = () => setting.tabIndex
 
-  static setInScratch = (v: boolean) => {
-    setting.inScratch = v
-  }
+  static setTabIndex = (v: number) => (setting.tabIndex = v)
 }

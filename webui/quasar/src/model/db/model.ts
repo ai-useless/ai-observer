@@ -23,7 +23,7 @@ export interface Simulator {
   avatar: string
   personality: string
   host: boolean
-  speakerVoice: string
+  audioId: string
   archetype: string
   title: string
 }

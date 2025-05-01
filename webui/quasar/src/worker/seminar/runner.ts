@@ -9,12 +9,20 @@ export enum SeminarEventType {
   CHAT_REQUEST = 'ChatRequest',
   CHAT_RESPONSE = 'ChatResponse',
 
+  GENERATE_TOPICS = 'GenerateTopics',
+  GENERATED_TOPICS = 'GeneratedTopics',
+
   ERROR = 'Error'
+}
+
+export interface HistoryMessage {
+  content: string
+  participatorId: number
 }
 
 export interface BasePrompts {
   archetype?: string
-  historyMessages?: string[]
+  historyMessages?: HistoryMessage[]
   generateAudio?: boolean
 }
 
@@ -33,26 +41,28 @@ export interface StartSubTopicPrompts extends BasePrompts {
 
 export interface ConcludeSubTopicPrompts extends BasePrompts {
   topicMaterial: string
-  historyMessages: string[]
 }
 
 export interface ConcludeTopicPrompts extends BasePrompts {
   topicMaterial: string
-  historyMessages: string[]
 }
 
 export interface HostChallengePrompts extends BasePrompts {
   topicMaterial: string
-  historyMessages: string[]
 }
 
 export interface DiscussPrompts extends BasePrompts {
   hostMessage: string
-  historyMessages: string[]
 }
 
 export interface OutlineSubTopicsPrompts extends BasePrompts {
   topicMaterial: string
+}
+
+export interface GenerateTopicsPrompts extends BasePrompts {
+  model: string
+  topicType: string
+  count: number
 }
 
 export type Prompts =
@@ -74,7 +84,7 @@ export interface ChatRequestPayload {
   prompts: Prompts
 }
 
-export type ChatResponsePayload = {
+export interface ChatResponsePayload {
   seminarId: number
   participatorId: number
   subTopic: string
@@ -82,15 +92,27 @@ export type ChatResponsePayload = {
   round: number
   subRound: number
   payload: {
-    json: Record<string, unknown>
+    json: Record<string, unknown> | undefined
     text: string
     audio: string
   }
 }
 
+export interface GenerateTopicsPayload {
+  prompts: GenerateTopicsPrompts
+}
+
+export interface GeneratedTopicsPayload {
+  topics: string[]
+}
+
 export interface SeminarEvent {
   type: SeminarEventType
-  payload: ChatRequestPayload | ChatResponsePayload
+  payload:
+    | ChatRequestPayload
+    | ChatResponsePayload
+    | GenerateTopicsPayload
+    | GeneratedTopicsPayload
 }
 
 export type ErrorResponsePayload = {
@@ -117,15 +139,12 @@ export class SeminarRunner {
   }
 
   static speakerVoice = async (participatorId: number) => {
-    const participator =
-      await dbBridge._Participator.participator(participatorId)
+    const participator = await dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = await dbBridge._Simulator.simulator(
-      participator?.simulatorId
-    )
+    const simulator = await dbBridge._Simulator.simulator(participator.simulatorId)
     if (!simulator) return
 
-    return simulator.speakerVoice
+    return simulator.audioId
   }
 
   static prompt = async (
@@ -135,12 +154,9 @@ export class SeminarRunner {
     intent: Intent,
     prompts: Prompts
   ) => {
-    const participator =
-      await dbBridge._Participator.participator(participatorId)
+    const participator = await dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = await dbBridge._Simulator.simulator(
-      participator?.simulatorId
-    )
+    const simulator = await dbBridge._Simulator.simulator(participator.simulatorId)
     if (!simulator) return
 
     switch (intent) {
@@ -197,7 +213,7 @@ export class SeminarRunner {
           _prompts.topicMaterial,
           subTopic,
           100,
-          _prompts.historyMessages,
+          (_prompts.historyMessages || []).map((el) => el.content),
           _prompts.archetype as string
         )
       }
@@ -208,7 +224,7 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.topicMaterial,
           100,
-          _prompts.historyMessages,
+          (_prompts.historyMessages || []).map((el) => el.content),
           _prompts.archetype as string
         )
       }
@@ -221,7 +237,7 @@ export class SeminarRunner {
           simulator.personality,
           _prompts.hostMessage,
           100,
-          _prompts.historyMessages,
+          (_prompts.historyMessages || []).map((el) => el.content),
           _prompts.archetype as string
         )
       }
@@ -237,7 +253,7 @@ export class SeminarRunner {
           _prompts.topicMaterial,
           subTopic,
           100,
-          _prompts.historyMessages,
+          (_prompts.historyMessages || []).map((el) => el.content),
           _prompts.archetype as string
         )
       }
@@ -251,8 +267,7 @@ export class SeminarRunner {
     intent: Intent,
     prompts: Prompts
   ) => {
-    const participator =
-      await dbBridge._Participator.participator(participatorId)
+    const participator = await dbBridge._Participator.participator(participatorId)
     if (!participator) return
 
     const model = await dbBridge._Model.model(participator.modelId)
@@ -266,28 +281,27 @@ export class SeminarRunner {
       prompts
     )
 
-    const textResp = await axios.post(
-      /* model.endpoint || */ constants.FALLBACK_API,
-      {
-        model: model.name,
-        messages: (prompts.historyMessages || []).map((el) => {
-          return {
-            role: 'user', // TODO: if it's my model, it should be assistant
-            content: purify.purifyText(el)
-          }
-        }),
-        prompt: purify.purifyText(prompt || '')
-      }
-    )
+    const textResp = await axios.post(constants.FALLBACK_API, {
+      model: model.name,
+      messages: (prompts.historyMessages || []).map((el) => {
+        return {
+          role: el.participatorId === participatorId ? 'assistant' : 'user',
+          content: purify.purifyText(el.content)
+        }
+      }),
+      prompt: purify.purifyText(prompt || '')
+    })
 
     const generateAudio = await dbBridge._Setting.get(
       dbModel.SettingKey.GENERATE_AUDIO
     )
-    if (!prompts.generateAudio || !generateAudio) {
+    if (
+      !prompts.generateAudio ||
+      !generateAudio ||
+      !(textResp.data as Record<string, string>).content
+    ) {
       return {
-        text: purify.purifyText(
-          (textResp.data as Record<string, string>).content
-        ),
+        text: (textResp.data as Record<string, string>).content,
         audio: ''
       }
     }
@@ -297,13 +311,10 @@ export class SeminarRunner {
         (textResp.data as Record<string, string>).content
       )
       const voice = await SeminarRunner.speakerVoice(participatorId)
-      const audioResp = await axios.post(
-        /* model.endpoint || */ constants.TEXT2SPEECH_API,
-        {
-          text: speechContent,
-          voice
-        }
-      )
+      const audioResp = await axios.post(constants.TEXT2SPEECH_API, {
+        text: speechContent,
+        voice
+      })
       return {
         text: (textResp.data as Record<string, string>).content,
         audio: (audioResp.data as Record<string, string>).audio_url
@@ -323,6 +334,8 @@ export class SeminarRunner {
     intent: Intent,
     response: string
   ) => {
+    if (intent === Intent.GENERATE_TOPICS)
+      return Prompt.postProcess(intent, purify.purifyText(response))
     if (intent !== Intent.OUTLINE) return
 
     const _response = await SeminarRunner.requestParticipatorChat(
@@ -338,7 +351,9 @@ export class SeminarRunner {
     return Prompt.postProcess(intent, purify.purifyText(_response.text))
   }
 
-  static handleChatRequest = async (payload: ChatRequestPayload) => {
+  static handleChatRequest = async (
+    payload: ChatRequestPayload
+  ): Promise<ChatResponsePayload | undefined> => {
     const {
       seminarId,
       participatorId,
@@ -360,7 +375,7 @@ export class SeminarRunner {
         intent,
         prompts
       )
-      if (!response) return
+      if (!response || !response.text) return
 
       const json = await SeminarRunner.postProcess(
         seminar?.topic,
@@ -371,30 +386,83 @@ export class SeminarRunner {
       )
       if (json) json.topic = seminar.topic
 
+      let promptMessage = seminar.topic
+      if (prompts.historyMessages && prompts.historyMessages.length) {
+        promptMessage =
+          prompts.historyMessages[prompts.historyMessages.length - 1].content
+      }
+
       await SeminarRunner.saveMessage(
         seminarId,
         participatorId,
-        prompts.historyMessages?.[prompts.historyMessages.length - 1] ||
-          seminar.topic,
+        promptMessage,
         response.text,
         response.audio
       )
 
+      const payload = {
+        seminarId,
+        subTopic,
+        intent,
+        participatorId,
+        round,
+        subRound,
+        payload: {
+          ...response,
+          json
+        }
+      }
+
       self.postMessage({
         type: SeminarEventType.CHAT_RESPONSE,
+        payload
+      })
+      return payload
+    } catch (e) {
+      self.postMessage({
+        type: SeminarEventType.ERROR,
         payload: {
-          seminarId,
-          subTopic,
-          intent,
-          participatorId,
-          round,
-          subRound,
-          payload: {
-            ...response,
-            json
-          }
+          error: JSON.stringify(e),
+          type: SeminarEventType.CHAT_REQUEST,
+          payload
         }
       })
+    }
+  }
+
+  static handleGenerateTopics = async (
+    payload: GenerateTopicsPayload
+  ): Promise<GeneratedTopicsPayload | undefined> => {
+    const { prompts } = payload
+    const { model, topicType, count, historyMessages } = prompts
+    const prompt = Prompt.prompt(
+      Intent.GENERATE_TOPICS,
+      topicType,
+      count,
+      (historyMessages || []).map((el) => el.content)
+    )
+    try {
+      const resp = await axios.post(constants.FALLBACK_API, {
+        model,
+        messages: [],
+        prompt: purify.purifyText(prompt || '')
+      })
+      const json = Prompt.postProcess(
+        Intent.GENERATE_TOPICS,
+        purify.purifyText((resp.data as Record<string, string>).content)
+      )
+      if (!json) return
+
+      const payload = {
+        topics: json.titles as string[]
+      }
+
+      self.postMessage({
+        type: SeminarEventType.GENERATED_TOPICS,
+        payload
+      })
+
+      return payload
     } catch (e) {
       self.postMessage({
         type: SeminarEventType.ERROR,
