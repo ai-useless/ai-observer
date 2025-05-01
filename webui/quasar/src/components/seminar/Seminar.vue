@@ -3,7 +3,7 @@
     <div style='width: 240px;'>
       <Sidebar />
     </div>
-    <div style='width: calc(960px - 256px); margin-left: 16px;'>
+    <div style='margin-left: 16px;'>
       <Conference />
     </div>
   </q-page>
