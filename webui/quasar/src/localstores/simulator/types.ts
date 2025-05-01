@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 export interface _Simulator {
   id: number
   wechat_openid: string

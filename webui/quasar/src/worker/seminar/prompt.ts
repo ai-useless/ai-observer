@@ -94,7 +94,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.DONT_DESCRIBE_PERSONALITY,
-    (() => ') 不要描述自己的人设。不要生硬地将讨论话题和自己的人设联系，过渡要自然。') as RequirementFunc
+    (() =>
+      ') 不要描述自己的人设。不要生硬地将讨论话题和自己的人设联系，过渡要自然。') as RequirementFunc
   ],
   [
     PromptType.NO_VIRTUAL_WORDS,

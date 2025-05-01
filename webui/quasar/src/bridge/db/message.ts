@@ -1,4 +1,4 @@
-import { dbSeminar, saveAudio, saveText } from 'src/controller'
+import { dbSeminar, saveText } from 'src/controller'
 
 export class _Message {
   static create = async (

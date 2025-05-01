@@ -48,7 +48,7 @@ export class ESeminar {
   }
 
   participators = async () => {
-    return await EParticipator.simulators(
+    return EParticipator.simulators(
       await dbBridge._Participator.participators(this.#seminar.uid)
     )
   }
@@ -163,7 +163,7 @@ export class ESeminar {
         round: this.#round,
         subRound: this.#subRound,
         prompts: {
-          archetype: await dbBridge._Simulator.archetypeWithId(
+          archetype: dbBridge._Simulator.archetypeWithId(
             host.simulator?.id as number
           ),
           rounds: this.#totalTopics
@@ -181,7 +181,7 @@ export class ESeminar {
     if (!host) throw new Error('Invalid host')
 
     const participators = await dbBridge._Participator.guests(uid)
-    const simulators = await EParticipator.simulators(participators)
+    const simulators = EParticipator.simulators(participators)
 
     seminarWorker.SeminarWorker.send(
       seminarWorker.SeminarEventType.CHAT_REQUEST,
@@ -196,9 +196,10 @@ export class ESeminar {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
           guests: simulators.map(
-            (el) => el.simulator.name + ', ' + el.simulator.personality
+            (el) =>
+              el.simulator.simulator + ', ' + el.simulator.origin_personality
           ),
-          archetype: await dbBridge._Simulator.archetypeWithId(
+          archetype: dbBridge._Simulator.archetypeWithId(
             host.simulator?.id as number
           )
         }
@@ -240,7 +241,7 @@ export class ESeminar {
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
-          archetype: await dbBridge._Simulator.archetypeWithId(
+          archetype: dbBridge._Simulator.archetypeWithId(
             host.simulator?.id as number
           )
         }
@@ -273,7 +274,7 @@ export class ESeminar {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
           historyMessages,
-          archetype: await dbBridge._Simulator.archetypeWithId(
+          archetype: dbBridge._Simulator.archetypeWithId(
             host.simulator?.id as number
           )
         }
@@ -306,7 +307,7 @@ export class ESeminar {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
           historyMessages,
-          archetype: await dbBridge._Simulator.archetypeWithId(
+          archetype: dbBridge._Simulator.archetypeWithId(
             host.simulator?.id as number
           )
         }
@@ -367,9 +368,7 @@ export class ESeminar {
             topicMaterial: this.#topicMaterial,
             generateAudio: true,
             historyMessages,
-            archetype: await dbBridge._Simulator.archetypeWithId(
-              host.simulator?.id as number
-            )
+            archetype: dbBridge._Simulator.archetypeWithId(host.simulator?.id)
           }
         }
       )

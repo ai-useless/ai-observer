@@ -1,61 +1,33 @@
-import { dbSeminar } from 'src/controller'
-import { dbModel } from 'src/model'
+import { simulator } from 'src/localstores'
 
 export class _Simulator {
-  static initialize = async (simulators: dbModel.Simulator[]) => {
-    try {
-      await dbSeminar.simulators.bulkPut(simulators)
-    } catch {
-      // Ignore if exists
-    }
+  static simulators = (ids: number[]) => {
+    return simulator.Simulator.allSimulators().filter((el) =>
+      ids.includes(el.id)
+    )
   }
 
-  static create = async (
-    name: string,
-    avatar: string,
-    personality: string,
-    host: boolean,
-    speakerVoice: string,
-    archetype: string,
-    title: string
-  ) => {
-    await dbSeminar.simulators.add({
-      name,
-      avatar,
-      personality,
-      host,
-      speakerVoice,
-      archetype,
-      title
-    })
-  }
-
-  static simulators = async (ids: number[]) => {
-    return await dbSeminar.simulators.where('id').anyOf(ids).toArray()
-  }
-
-  static randomPeek = async (host?: boolean) => {
-    const simulators = await dbSeminar.simulators
-      .filter((op) => host === undefined || op.host === host)
-      .toArray()
+  static randomPeek = (host?: boolean) => {
+    const simulators = simulator.Simulator.allSimulators().filter(
+      (el) => !host || el.host === host
+    )
     const index = Math.floor(Math.random() * simulators.length)
     return simulators[index]
   }
 
-  static simulator = async (id: number) => {
-    return await dbSeminar.simulators.filter((op) => op.id === id).first()
+  static simulator = (id: number) => {
+    return simulator.Simulator.allSimulators().find((el) => el.id === id)
   }
 
-  static archetype = (simulator?: dbModel.Simulator) => {
+  static archetype = (simulator?: simulator._Simulator) => {
     if (!simulator) return '朝阳区热心群众'
-    return simulator?.title + simulator?.archetype
+    return simulator.title + simulator.archetype
   }
 
-  static archetypeWithId = async (simulatorId: number) => {
-    const simulator = await dbSeminar.simulators
-      .where('id')
-      .equals(simulatorId)
-      .first()
-    return _Simulator.archetype(simulator)
+  static archetypeWithId = (simulatorId: number) => {
+    const _simulator = simulator.Simulator.allSimulators().find(
+      (el) => el.id === simulatorId
+    )
+    return _Simulator.archetype(_simulator)
   }
 }

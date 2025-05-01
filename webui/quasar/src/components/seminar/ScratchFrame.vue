@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang='ts'>
-import { entityBridge } from 'src/bridge'
+import { dbBridge, entityBridge } from 'src/bridge'
 import { seminar } from 'src/localstores'
 import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -115,20 +115,21 @@ watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
 })
 
-const startSeminar = () => {
+const startSeminar = async () => {
   // TODO: check if it's a valid topic
+  const _uid = await dbBridge._Seminar.create(topic.value)
   seminar.Seminar.setTopic(topic.value)
-  console.log(111, topic.value)
+  seminar.Seminar.setSeminar(_uid)
   void router.push({ path: '/seminar' })
 }
 
-const onEnter = () => {
-  startSeminar()
+const onEnter = async () => {
+  await startSeminar()
 }
 
-const onTopicClick = (_topic: string) => {
+const onTopicClick = async (_topic: string) => {
   topic.value = _topic
-  startSeminar()
+  await startSeminar()
 }
 
 const generating = ref(false)

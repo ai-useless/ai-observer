@@ -5,7 +5,7 @@
     </div>
     <q-separator />
     <div style='max-height: 400px; overflow: scroll;'>
-      <div v-for='_model in models' :key='_model.name'>
+      <div v-for='_model in models' :key='_model.name' class='cursor-pointer'>
         <ModelCard :model='_model' />
       </div>
     </div>

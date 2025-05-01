@@ -12,14 +12,23 @@ export class _Seminar {
     const participators = [] as dbModel.Participator[]
 
     for (let i = 0; i < count; i++) {
-      const model = await _Model.randomPeek(i === 0 ? true : undefined)
-      const simulator = await _Simulator.randomPeek(i === 0 ? true : undefined)
-      participators.push({
-        seminarUid: _uid,
-        role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
-        simulatorId: simulator?.id || 0,
-        modelId: model?.id || 0
-      })
+      while (true) {
+        let simulator = _Simulator.randomPeek(i === 0 ? true : undefined)
+        if (!simulator) simulator = _Simulator.randomPeek()
+        if (participators.findIndex((el) => el.simulatorId === simulator.id))
+          continue
+
+        let model = _Model.randomPeek(i === 0 ? true : undefined)
+        if (!model) model = _Model.randomPeek()
+
+        participators.push({
+          seminarUid: _uid,
+          role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
+          simulatorId: simulator?.id || 0,
+          modelId: model?.id || 0
+        })
+        break
+      }
     }
 
     await dbSeminar.transaction(

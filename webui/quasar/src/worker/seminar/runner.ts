@@ -139,9 +139,12 @@ export class SeminarRunner {
   }
 
   static speakerVoice = async (participatorId: number) => {
-    const participator = await dbBridge._Participator.participator(participatorId)
+    const participator =
+      await dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = await dbBridge._Simulator.simulator(participator.simulatorId)
+    const simulator = await dbBridge._Simulator.simulator(
+      participator.simulatorId
+    )
     if (!simulator) return
 
     return simulator.audioId
@@ -154,9 +157,12 @@ export class SeminarRunner {
     intent: Intent,
     prompts: Prompts
   ) => {
-    const participator = await dbBridge._Participator.participator(participatorId)
+    const participator =
+      await dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = await dbBridge._Simulator.simulator(participator.simulatorId)
+    const simulator = await dbBridge._Simulator.simulator(
+      participator.simulatorId
+    )
     if (!simulator) return
 
     switch (intent) {
@@ -267,7 +273,8 @@ export class SeminarRunner {
     intent: Intent,
     prompts: Prompts
   ) => {
-    const participator = await dbBridge._Participator.participator(participatorId)
+    const participator =
+      await dbBridge._Participator.participator(participatorId)
     if (!participator) return
 
     const model = await dbBridge._Model.model(participator.modelId)
