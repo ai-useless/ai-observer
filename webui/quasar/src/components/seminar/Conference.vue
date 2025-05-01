@@ -1,7 +1,6 @@
 <template>
   <div class='row'>
-    <q-space />
-    <div style='width: 100%; max-width: 960px; max-height: 100%;'>
+    <div style='width: 960px; max-height: 100%;'>
       <q-scroll-area
         :style='{ height: chatBoxHeight + "px" }'
         ref='chatBox'
@@ -68,8 +67,7 @@
         </div>
       </q-scroll-area>
     </div>
-    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 160px;' :active-topic='activeTopic || ""' />
-    <q-space />
+    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 40px;' :active-topic='activeTopic || ""' />
   </div>
 </template>
 
