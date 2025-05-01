@@ -35,16 +35,16 @@ export const useSimulatorStore = defineStore('simulator', {
       const url = `${constants.GET_SIMULATORS_API}${code ? '?code=' + code : ''}`
       axios
         .get(url)
-        .then((resp: AxiosResponse<_Simulator[]>) => {
+        .then(async (resp: AxiosResponse<_Simulator[]>) => {
           if (done) done(false, resp.data)
-          this.appendSimulators(resp.data, code !== undefined)
+          await this.appendSimulators(resp.data, code !== undefined)
         })
         .catch((e) => {
           console.log(`Failed get simulators: ${JSON.stringify(e)}`)
           if (done) done(true)
         })
     },
-    appendSimulators(simulators: _Simulator[], mine: boolean) {
+    async appendSimulators(simulators: _Simulator[], mine: boolean) {
       simulators.forEach((simulator) => {
         const index = this.simulators.findIndex(
           (el) => el.simulator === simulator.simulator
@@ -56,7 +56,9 @@ export const useSimulatorStore = defineStore('simulator', {
           simulator
         )
       })
-      dbBridge._Simulator.initialize(this.simulators)
+      await dbBridge._Simulator.initialize(this.simulators.map((el) => {
+        return { ...el }
+      }))
     }
   },
   getters: {}

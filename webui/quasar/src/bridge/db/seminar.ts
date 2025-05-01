@@ -13,13 +13,13 @@ export class _Seminar {
 
     for (let i = 0; i < count; i++) {
       while (true) {
-        let simulator = _Simulator.randomPeek(i === 0 ? true : undefined)
-        if (!simulator) simulator = _Simulator.randomPeek()
+        let simulator = await _Simulator.randomPeek(i === 0 ? true : undefined)
+        if (!simulator) simulator = await _Simulator.randomPeek()
         if (participators.findIndex((el) => el.simulatorId === simulator.id) >= 0)
           continue
 
-        let model = _Model.randomPeek(i === 0 ? true : undefined)
-        if (!model) model = _Model.randomPeek()
+        let model = await _Model.randomPeek(i === 0 ? true : undefined)
+        if (!model) model = await _Model.randomPeek()
 
         participators.push({
           seminarUid: _uid,
