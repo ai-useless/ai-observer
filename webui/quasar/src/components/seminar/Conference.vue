@@ -79,14 +79,12 @@ import { seminar } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
-import { useI18n } from 'vue-i18n'
 import { QScrollArea } from 'quasar'
 import { purify } from 'src/utils'
 
 import SimulatorCard from './SimulatorCard.vue'
 import Outline from './Outline.vue'
-
-const { t } = useI18n({ useScope: 'global' })
+import { seminarWorker } from 'src/worker'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -184,8 +182,7 @@ const typing = () => {
   }
 
   displayMessages.value.forEach((el) => {
-    const timestamp = timestamp2HumanReadable(el.timestamp)
-    el.datetime = t(timestamp.msg, { VALUE: timestamp.value })
+    el.datetime = timestamp2HumanReadable(el.timestamp)
   })
 
   displayMessages.value.push({
@@ -256,7 +253,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     simulator: await dbBridge._Simulator.simulator(participator?.simulatorId) as dbModel.Simulator,
     model: await dbBridge._Model.model(participator.modelId) as dbModel.Model,
     timestamp: Date.now(),
-    datetime: t(timestamp.msg, { VALUE: timestamp.value }),
+    datetime: timestamp,
     audio,
     subTopicTitle: false,
     subTopic
@@ -264,7 +261,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
 
   waitMessages.value = waitMessages.value.map((el) => {
     const timestamp = timestamp2HumanReadable(el.timestamp)
-    return { ...el, datetime: t(timestamp.msg, { VALUE: timestamp.value }) }
+    return { ...el, datetime: timestamp }
   })
 }
 
@@ -280,17 +277,23 @@ const onChatBoxResize = (size: { height: number }) => {
   if (autoScroll.value) chatBox.value?.setScrollPosition('vertical', size.height, 300)
 }
 
-const historyMessages = (): Map<string, string[]> => {
-  const messages = new Map<string, string[]>()
+const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
+  const messages = new Map<string, seminarWorker.HistoryMessage[]>()
 
   displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(el.simulator.name + ' 的观点: ' + purify.purifyText(el.message))
+    _messages.push({
+      participatorId: el.participator.id as number,
+      content: el.simulator.name + ' 的观点: ' + purify.purifyText(el.message)
+    })
     messages.set(el.subTopic, _messages)
   })
   waitMessages.value.forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
-    _messages.push(purify.purifyText(el.message))
+    _messages.push({
+      participatorId: el.participator.id as number,
+      content: purify.purifyText(el.message)
+    })
     messages.set(el.subTopic, _messages)
   })
 

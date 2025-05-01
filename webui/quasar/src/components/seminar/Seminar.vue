@@ -1,6 +1,9 @@
 <template>
   <q-page class='flex justify-center'>
-    <div style='width: 100%;'>
+    <div style='width: 240px;'>
+      <Sidebar />
+    </div>
+    <div style='width: calc(960px - 256px); margin-left: 16px;'>
       <Conference />
     </div>
   </q-page>
@@ -9,6 +12,7 @@
 <script setup lang='ts'>
 
 import Conference from './Conference.vue'
+import Sidebar from '../sidebar/Sidebar.vue'
 
 </script>
 
