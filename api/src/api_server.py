@@ -134,7 +134,7 @@ async def speak_async(
 async def query_audio(audio_uid: str):
     audio = db.get_audio(audio_uid)
     return {
-        'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav' if audio['audio_file_cid'] is not None and len(audio['audio_file_cid']) > 0 else None,
+        'audio_url': f'{config.file_server}/audios/{audio["audio_file_cid"]}.wav' if audio['audio_file_cid'] is not None and len(audio['audio_file_cid']) > 0 else None,
         'settled': audio['settled'],
         'error': audio['error']
     }

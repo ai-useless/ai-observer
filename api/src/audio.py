@@ -17,10 +17,14 @@ from db import db
 class AudioGenerate:
     async def generate_audio_with_uid(self, audio_uid: str, text: str, voice: str, max_concurrency: int):
         try:
+            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating{RESET} ...')
+            start_time = time.time()
             audio_file_cid = await self.generate_audio(text, voice, max_concurrency)
             db.update_audio(audio_uid, audio_file_cid, None)
+            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generate success{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
         except Exception as e:
             db.update_audio(audio_uid, None, repr(e))
+            logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
 
     async def generate_audio_async(self, text: str, voice: str, max_concurrency: int) -> str:
         audio_uid = f'{uuid.uuid4()}'
@@ -89,7 +93,7 @@ class AudioGenerate:
                 async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
                     response.raise_for_status()
                     audio_bytes = await response.read()
-                    logger.error(f'{BOLD}{url}{RESET} {GREEN}Request success{RESET} ... {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
+                    logger.info(f'{BOLD}{url}{RESET} {GREEN}Request success{RESET} ... {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                     return audio_bytes
             except Exception as e:
                 logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
