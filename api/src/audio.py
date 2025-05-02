@@ -84,7 +84,7 @@ class AudioGenerate:
         start_time = time.time()
         logger.info(f'{BOLD}{url}{RESET} {BOLD}Requesting{RESET} ... {_uid}')
 
-        timeout = aiohttp.ClientTimeout(connect=10, total=300)
+        timeout = aiohttp.ClientTimeout(connect=10, total=None)
         async with semaphore:
             try:
                 delay_seconds = random.uniform(min_delay_ms, max_delay_ms) / 1000 * (index + 1)
