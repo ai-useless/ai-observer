@@ -3,7 +3,7 @@ import { constants } from 'src/constant'
 import { dbBridge } from 'src/bridge'
 import { Intent, Prompt } from './prompt'
 import { dbModel } from 'src/model'
-import { purify } from 'src/utils'
+import { delay, purify } from 'src/utils'
 
 export enum SeminarEventType {
   CHAT_REQUEST = 'ChatRequest',
@@ -288,7 +288,7 @@ export class SeminarRunner {
       prompts
     )
 
-    const textResp = await axios.post(constants.FALLBACK_API, {
+    const textResp = await axios.post(constants.CHAT_API, {
       model: model.name,
       messages: (prompts.historyMessages || []).map((el) => {
         return {
@@ -318,13 +318,27 @@ export class SeminarRunner {
         (textResp.data as Record<string, string>).content
       )
       const voice = await SeminarRunner.speakerVoice(participatorId)
-      const audioResp = await axios.post(constants.TEXT2SPEECH_API, {
+      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_API, {
         text: speechContent,
         voice
       })
+
+      let audioUrl = undefined as unknown as string
+
+      while (true) {
+        const queryResp = await axios.get(`${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`)
+        const resp = queryResp.data as Record<string, string>
+        if (!resp.settled && !resp.error) {
+          await delay.delay(10000)
+          continue
+        }
+        audioUrl = resp.audio_url
+        break
+      }
+
       return {
         text: (textResp.data as Record<string, string>).content,
-        audio: (audioResp.data as Record<string, string>).audio_url
+        audio: audioUrl
       }
     } catch {
       return {
@@ -449,7 +463,7 @@ export class SeminarRunner {
       (historyMessages || []).map((el) => el.content)
     )
     try {
-      const resp = await axios.post(constants.FALLBACK_API, {
+      const resp = await axios.post(constants.CHAT_API, {
         model,
         messages: [],
         prompt: purify.purifyText(prompt || '')
