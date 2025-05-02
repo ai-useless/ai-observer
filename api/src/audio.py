@@ -15,6 +15,25 @@ from config import config
 from db import db
 
 class AudioGenerate:
+    async def generate_audio_with_uid(self, audio_uid: str, text: str, voice: str, max_concurrency: int):
+        try:
+            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating{RESET} ...')
+            start_time = time.time()
+            audio_file_cid = await self.generate_audio(text, voice, max_concurrency)
+            db.update_audio(audio_uid, audio_file_cid, None)
+            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generate success{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
+        except Exception as e:
+            db.update_audio(audio_uid, None, repr(e))
+            logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
+
+    async def generate_audio_async(self, text: str, voice: str, max_concurrency: int) -> str:
+        audio_uid = f'{uuid.uuid4()}'
+        db.new_audio(audio_uid)
+
+        asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice, max_concurrency))
+
+        return audio_uid
+
     async def generate_audio(self, text: str, voice: str, max_concurrency: int) -> str:
         simulator = db.get_simulator_with_audio_id(voice)
         if simulator is None:
@@ -31,12 +50,12 @@ class AudioGenerate:
         chunks = chunk_text(cleaned_text)
         audio_buffers = await self.concurrent_audio_requests(chunks, voice, max_concurrency, audio_b64, simulator['text'])
 
-        file_name = self.merge_audio_buffers(
+        file_cid = self.merge_audio_buffers(
             audio_buffers=[b for b in audio_buffers if b],
             voice=voice,
             text=text,
         )
-        return file_name
+        return file_cid
 
     async def fetch_audio(
             self,
@@ -65,7 +84,7 @@ class AudioGenerate:
         start_time = time.time()
         logger.info(f'{BOLD}{url}{RESET} {BOLD}Requesting{RESET} ... {_uid}')
 
-        timeout = aiohttp.ClientTimeout(connect=10, total=59)
+        timeout = aiohttp.ClientTimeout(connect=10, total=300)
         async with semaphore:
             try:
                 delay_seconds = random.uniform(min_delay_ms, max_delay_ms) / 1000 * (index + 1)
@@ -74,6 +93,7 @@ class AudioGenerate:
                 async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
                     response.raise_for_status()
                     audio_bytes = await response.read()
+                    logger.info(f'{BOLD}{url}{RESET} {GREEN}Request success{RESET} ... {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                     return audio_bytes
             except Exception as e:
                 logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
@@ -101,8 +121,8 @@ class AudioGenerate:
         for buffer in valid_buffers:
             hasher.update(buffer)
 
-        file_name = hasher.hexdigest() + ".wav"
-        output_path = f"{config.data_dir}/audios/{file_name}"
+        file_cid = hasher.hexdigest()
+        output_path = f"{config.data_dir}/audios/{file_cid}.wav"
 
         combined = None
         for i, buffer in enumerate(audio_buffers):
@@ -125,4 +145,4 @@ class AudioGenerate:
         else:
             logger.error(f'{BOLD}{voice}{RESET} - {RED}No valid audio data to merge{RESET} for {BOLD}{text[0:16]}{RESET}...')
             raise Exception('Invalid audio')
-        return file_name
+        return file_cid
