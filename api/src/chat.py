@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 import aiohttp
 import json
+import time
 
 from config import config
 from include import *
@@ -47,9 +48,10 @@ async def chat(
         'Content-Type': 'application/json'
     }
 
+    start_time = time.time()
     logger.info(f'{BOLD}{model}{RESET} {BOLD}Requesting{RESET} ...')
 
-    timeout = aiohttp.ClientTimeout(connect=10, total=30)
+    timeout = aiohttp.ClientTimeout(connect=10, total=59)
     content = ''
 
     async with aiohttp.ClientSession(timeout=timeout) as session:
@@ -80,4 +82,4 @@ async def chat(
                             continue
                         content += chat_response.choices[0].message.content
 
-    logger.error(f'{BOLD}{model}{RESET} {RED}You should not be here{RESET} ...')
+    logger.error(f'{BOLD}{model}{RESET} {RED}You should not be here{RESET} ... {BOLD}{time.time() - start_time}{RESET}s')

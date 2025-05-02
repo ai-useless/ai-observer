@@ -10,7 +10,7 @@ def purify_text(text):
     cleaned_space = re.sub(r'(?<=，|。|！|？)\s+(?=[\u4e00-\u9fa5])', '', cleaned_space)
     return cleaned_space
 
-def chunk_text(text, chunk_size=100):
+def chunk_text(text, chunk_size=50):
     punctuation_pattern = r'(?<=[。！？])'
 
     sentences = re.split(punctuation_pattern, text)
