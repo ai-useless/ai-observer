@@ -137,6 +137,11 @@ const typing = () => {
 
   // If we have a message in typing, finish it
   if (typingMessage.value && typingIndex.value < typingMessage.value.message.length) {
+    if (typingIndex.value > 0 && audioPlayer.value && audioPlayer.value.ended) {
+      displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message
+      typingIndex.value = typingMessage.value.message.length
+      return
+    }
     const matches = typingMessage.value.message.slice(typingIndex.value).match(/^<[^>]+>/) || []
     const appendLen = matches[0]?.length || 1
     displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value + appendLen)
@@ -194,7 +199,6 @@ const typing = () => {
 }
 
 const playAudio = async (audioUrl: string) => {
-  console.log(111, audioUrl)
   const audioPlayer = new Audio(audioUrl)
   audioPlayer.loop = false
   await audioPlayer.play()
