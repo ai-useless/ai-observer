@@ -9,7 +9,7 @@ image = (
     Image(
         username="kikakkz",
         name="cosy-voice-tts",
-        tag="0.0.3",
+        tag="0.0.4",
         readme="## Text-to-speech using FunAudioLLM/CosyVoice",
     )
     .from_base("parachutes/base-python:3.10.17")

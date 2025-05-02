@@ -15,6 +15,21 @@ from config import config
 from db import db
 
 class AudioGenerate:
+    async def generate_audio_with_uid(self, audio_uid: str, text: str, voice: str, max_concurrency: int):
+        try:
+            audio_file_cid = await self.generate_audio(text, voice, max_concurrency)
+            db.update_audio(audio_uid, audio_file_cid, None)
+        except Exception as e:
+            db.update_audio(audio_uid, None, str(e))
+
+    async def generate_audio_async(self, text: str, voice: str, max_concurrency: int) -> str:
+        audio_uid = uuid.uuid4()
+        db.new_audio(audio_uid)
+
+        asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice, max_concurrency))
+
+        return audio_uid
+
     async def generate_audio(self, text: str, voice: str, max_concurrency: int) -> str:
         simulator = db.get_simulator_with_audio_id(voice)
         if simulator is None:
@@ -31,12 +46,12 @@ class AudioGenerate:
         chunks = chunk_text(cleaned_text)
         audio_buffers = await self.concurrent_audio_requests(chunks, voice, max_concurrency, audio_b64, simulator['text'])
 
-        file_name = self.merge_audio_buffers(
+        file_cid = self.merge_audio_buffers(
             audio_buffers=[b for b in audio_buffers if b],
             voice=voice,
             text=text,
         )
-        return file_name
+        return file_cid
 
     async def fetch_audio(
             self,
@@ -101,8 +116,8 @@ class AudioGenerate:
         for buffer in valid_buffers:
             hasher.update(buffer)
 
-        file_name = hasher.hexdigest() + ".wav"
-        output_path = f"{config.data_dir}/audios/{file_name}"
+        file_cid = hasher.hexdigest()
+        output_path = f"{config.data_dir}/audios/{file_cid}.wav"
 
         combined = None
         for i, buffer in enumerate(audio_buffers):
@@ -125,4 +140,4 @@ class AudioGenerate:
         else:
             logger.error(f'{BOLD}{voice}{RESET} - {RED}No valid audio data to merge{RESET} for {BOLD}{text[0:16]}{RESET}...')
             raise Exception('Invalid audio')
-        return file_name
+        return file_cid
