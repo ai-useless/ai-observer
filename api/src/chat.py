@@ -83,3 +83,4 @@ async def chat(
                         content += chat_response.choices[0].message.content
 
     logger.error(f'{BOLD}{model}{RESET} {RED}You should not be here{RESET} ... {BOLD}{time.time() - start_time}{RESET}s')
+    raise Exception(f'Invalid response: {content}')
