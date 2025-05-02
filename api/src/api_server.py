@@ -130,11 +130,11 @@ async def speak_async(
 
     return {'audio_uid': audio_uid}
 
-@app.get('/api/v1/audios/{audio_cid}', response_model=QueryAudioResponse)
+@app.get('/api/v1/audios/{audio_uid}', response_model=QueryAudioResponse)
 async def query_audio(audio_uid: str):
     audio = db.get_audio(audio_uid)
     return {
-        'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav' if len(audio['audio_file_cid']) > 0 else None,
+        'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav' if audio['audio_file_cid'] is not None and len(audio['audio_file_cid']) > 0 else None,
         'settled': audio['settled'],
         'error': audio['error']
     }
