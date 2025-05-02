@@ -89,7 +89,7 @@ class AudioGenerate:
                 async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
                     response.raise_for_status()
                     audio_bytes = await response.read()
-                    logger.error(f'{BOLD}{url}{RESET} {GREEN}Request success{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
+                    logger.error(f'{BOLD}{url}{RESET} {GREEN}Request success{RESET} ... {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                     return audio_bytes
             except Exception as e:
                 logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
