@@ -133,6 +133,10 @@ const typing = () => {
 
   // If we have a message in typing, finish it
   if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
+    if (lastDisplayMessage.value.message.length > 0 && audioPlayer.value && !audioPlayer.value.playing) {
+      lastDisplayMessage.value.message = typingMessage.value.message
+      return
+    }
     const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
     const appendLen = matches[0] ? matches[0].length + 1 : 1
     lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
@@ -203,7 +207,7 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
 
   const player = {
     context: context,
-    playing: false,
+    playing: true,
     duration: context.duration
   } as AudioPlayer
 
@@ -218,7 +222,6 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
     })
     context.onCanplay(() => {
       context.play()
-      player.playing = true
 
       player.durationTicker = window.setInterval(() => {
         if (context.duration) {
