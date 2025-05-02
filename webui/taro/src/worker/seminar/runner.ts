@@ -3,7 +3,7 @@ import { constants } from '../../constant'
 import { dbBridge } from '../../bridge'
 import { Intent, Prompt } from './prompt'
 import { dbModel } from '../../model'
-import { purify } from 'src/utils'
+import { delay, purify } from 'src/utils'
 
 export enum SeminarEventType {
   CHAT_REQUEST = 'ChatRequest',
@@ -311,13 +311,27 @@ export class SeminarRunner {
         (textResp.data as Record<string, string>).content
       )
       const voice = await SeminarRunner.speakerVoice(participatorId)
-      const audioResp = await axios.post(constants.TEXT2SPEECH_API, {
+      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_API, {
         text: speechContent,
         voice
       })
+
+      let audioUrl = undefined as unknown as string
+
+      while (true) {
+        const queryResp = await axios.get(`${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`)
+        const resp = queryResp.data as Record<string, string>
+        if (!resp.settled && !resp.error) {
+          await delay.delay(10000)
+          continue
+        }
+        audioUrl = resp.audio_url
+        break
+      }
+
       return {
         text: (textResp.data as Record<string, string>).content,
-        audio: (audioResp.data as Record<string, string>).audio_url
+        audio: audioUrl
       }
     } catch {
       return {

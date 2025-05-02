@@ -1,5 +1,7 @@
-export const FALLBACK_API = 'http://47.117.36.214:8091/api/v1/chat'
+export const CHAT_API = 'http://47.117.36.214:8091/api/v1/chat'
 export const TEXT2SPEECH_API = 'http://47.117.36.214:8091/api/v1/speak'
+export const TEXT2SPEECH_ASYNC_API = 'http://47.117.36.214:8091/api/v1/speak_async'
+export const QUERY_AUDIO_API = 'http://47.117.36.214:8091/api/v1/audios'
 export const COOK_SIMULATOR_API =
   'http://47.117.36.214:8091/api/v1/cook_simulator'
 export const COUNT_SIMULATORS_API =
