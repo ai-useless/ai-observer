@@ -177,6 +177,10 @@ const typing = () => {
       console.log(`Failed play audio: ${e}`)
       typingTicker.value = window.setInterval(typing, typingInterval.value)
     })
+  } else {
+    window.clearInterval(typingTicker.value)
+    typingInterval.value = 40
+    typingTicker.value = window.setInterval(typing, typingInterval.value)
   }
 
   displayMessages.value.forEach((el) => {
