@@ -20,10 +20,10 @@ class AudioGenerate:
             audio_file_cid = await self.generate_audio(text, voice, max_concurrency)
             db.update_audio(audio_uid, audio_file_cid, None)
         except Exception as e:
-            db.update_audio(audio_uid, None, str(e))
+            db.update_audio(audio_uid, None, repr(e))
 
     async def generate_audio_async(self, text: str, voice: str, max_concurrency: int) -> str:
-        audio_uid = uuid.uuid4()
+        audio_uid = f'{uuid.uuid4()}'
         db.new_audio(audio_uid)
 
         asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice, max_concurrency))
@@ -80,7 +80,7 @@ class AudioGenerate:
         start_time = time.time()
         logger.info(f'{BOLD}{url}{RESET} {BOLD}Requesting{RESET} ... {_uid}')
 
-        timeout = aiohttp.ClientTimeout(connect=10, total=59)
+        timeout = aiohttp.ClientTimeout(connect=10, total=300)
         async with semaphore:
             try:
                 delay_seconds = random.uniform(min_delay_ms, max_delay_ms) / 1000 * (index + 1)

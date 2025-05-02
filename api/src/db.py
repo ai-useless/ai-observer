@@ -300,9 +300,9 @@ class Db:
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_audios}
-                (audio_uid, timestamp) VALUES (%s, %s)
+                (audio_uid, settled, timestamp) VALUES (%s, %s, %s)
             ''',
-            (audio_uid, int(time.time()))
+            (audio_uid, 0, int(time.time()))
         )
         self.connection.commit()
 
@@ -315,11 +315,11 @@ class Db:
                     WHERE audio_uid="{audio_uid}"
                 '''
             )
-        if error is noe None:
+        if error is not None:
             self.cursor.execute(
                 f'''
                     UPDATE TABLE {self.table_audios}
-                    SET error="{error}"
+                    SET error='{error}'
                     WHERE audio_uid="{audio_uid}"
                 '''
             )
@@ -327,8 +327,8 @@ class Db:
         self.connection.commit()
 
     def get_audio(self, audio_uid):
-        self.cursor_cidt.execute(
-            f'SELECT FROM {self.table_audios} WHERE audio_uid="{audio_uid}"'
+        self.cursor_dict.execute(
+            f'SELECT * FROM {self.table_audios} WHERE audio_uid="{audio_uid}"'
         )
         return self.cursor_dict.fetchone()
 
