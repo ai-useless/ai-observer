@@ -34,6 +34,15 @@ class SpeakResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
 
+class SpeakAsyncResponse(BaseModel):
+    audio_uid: str | None = None
+    error: str | None = None
+
+class QueryAudioResponse(BaseModel):
+    settled: bool = False
+    audio_url: str | None = None
+    error: str | None = None
+
 class CookSimulatorResponse(BaseModel):
     audio_url: str | None = None
     error: str | None = None
@@ -107,9 +116,28 @@ async def speak(
     voice: str = Body(...),
 ):
     generator = AudioGenerate()
-    audio_name = await generator.generate_audio(text, voice, max_concurrency=5)
+    audio_file_cid = await generator.generate_audio(text, voice, max_concurrency=5)
 
-    return {'audio_url': f'{config.file_server}/audios/{audio_name}'}
+    return {'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav'}
+
+@app.post('/api/v1/speak_async', response_model=SpeakAsyncResponse)
+async def speak_async(
+    text: str = Body(...),
+    voice: str = Body(...),
+):
+    generator = AudioGenerate()
+    audio_uid = await generator.generate_audio_async(text, voice, max_concurrency=5)
+
+    return {'audio_uid': audio_uid}
+
+@app.get('/api/v1/audios/{audio_cid}', response_model=QueryAudioResponse)
+async def query_audio(audio_uid: str):
+    audio = db.get_audio(audio_uid)
+    return {
+        'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav' if len(audio['audio_file_cid']) > 0 else None,
+        'settled': audio['settled'],
+        'error': audio['error']
+    }
 
 
 def get_client_host(request: Request) -> str:

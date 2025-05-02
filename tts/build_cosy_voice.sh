@@ -23,7 +23,7 @@ chown 1000:1000 $OUTPUT_DIR/cache -R
 mkdir $OUTPUT_DIR/pretrained_models -p
 chown 1000:1000 $OUTPUT_DIR/pretrained_models -R
 
-docker run --gpus all --rm -it -v $OUTPUT_DIR/cache:/home/chutes/.cache -v $OUTPUT_DIR/pretrained_models:/app/pretrained_models --user 1000:1000 -e CHUTES_EXECUTION_CONTEXT=REMOTE -p 8800:8000 cosy-voice-tts:0.0.3 chutes run cosy_voice_tts:chute --port 8000 --dev
+# docker run --gpus all --rm -it -v $OUTPUT_DIR/cache:/home/chutes/.cache -v $OUTPUT_DIR/pretrained_models:/app/pretrained_models --user 1000:1000 -e CHUTES_EXECUTION_CONTEXT=REMOTE -p 8800:8000 cosy-voice-tts:0.0.3 chutes run cosy_voice_tts:chute --port 8000 --dev
 
 chutes build cosy_voice_tts:chute --public --wait --debug
-chutes deploy cosy_voice_tts:chute --public
+# chutes deploy cosy_voice_tts:chute --public

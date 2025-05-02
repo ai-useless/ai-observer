@@ -13,6 +13,7 @@ class Db:
         self.table_simulators = 'simulators'
         self.table_users = 'users'
         self.table_models = 'models'
+        self.table_audios = 'audios'
 
         self.config = {
             'user': config.mysql_user,
@@ -120,6 +121,19 @@ class Db:
                     timestamp INT UNSIGNED,
                     PRIMARY KEY (id),
                     UNIQUE KEY vendor_model (name, vendor)
+                )
+            ''')
+            self.connection.commit()
+
+        if self.table_audios not in tables:
+            self.cursor.execute(f'''
+                CREATE TABLE IF NOT EXISTS {self.table_audios} (
+                    audio_uid VARCHAR(64),
+                    audio_file_cid VARCHAR(256),
+                    settled TINYINT,
+                    error VARCHAR(256),
+                    timestamp INT UNSIGNED,
+                    PRIMARY KEY (audio_uid)
                 )
             ''')
             self.connection.commit()
@@ -281,5 +295,41 @@ class Db:
             '''
         )
         return self.cursor_dict.fetchall()
+
+    def new_audio(self, audio_uid):
+        self.cursor.execute(
+            f'''
+                INSERT INTO {self.table_audios}
+                (audio_uid, timestamp) VALUES (%s, %s)
+            ''',
+            (audio_uid, int(time.time()))
+        )
+        self.connection.commit()
+
+    def update_audio(self, audio_uid, audio_file_cid, error):
+        if audio_file_cid is not None:
+            self.cursor.execute(
+                f'''
+                    UPDATE TABLE {self.table_audios}
+                    SET audio_file_cid="{audio_file_cid}", settled=1
+                    WHERE audio_uid="{audio_uid}"
+                '''
+            )
+        if error is noe None:
+            self.cursor.execute(
+                f'''
+                    UPDATE TABLE {self.table_audios}
+                    SET error="{error}"
+                    WHERE audio_uid="{audio_uid}"
+                '''
+            )
+
+        self.connection.commit()
+
+    def get_audio(self, audio_uid):
+        self.cursor_cidt.execute(
+            f'SELECT FROM {self.table_audios} WHERE audio_uid="{audio_uid}"'
+        )
+        return self.cursor_dict.fetchone()
 
 db = Db()
