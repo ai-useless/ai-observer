@@ -179,7 +179,7 @@ class Db:
     def update_simulator(self, simulator, state):
         self.cursor.execute(
             f'''
-                UPDATE TABLE {self.table_simulators}
+                UPDATE {self.table_simulators}
                 SET state="{state}"
                 WHERE simulator="{simulator}"
             '''
@@ -232,7 +232,7 @@ class Db:
     def resolve_ban(self, wechat_openid, ban_by_id):
         self.cursor.execute(
             f'''
-                UPDATE TABLE {self.table_bans}
+                UPDATE {self.table_bans}
                 SET resolved=1
                 WHERE wechat_openid="{wechat_openid}"
                 AND ban_by_id="{ban_by_id}"
@@ -310,18 +310,20 @@ class Db:
         if audio_file_cid is not None:
             self.cursor.execute(
                 f'''
-                    UPDATE TABLE {self.table_audios}
-                    SET audio_file_cid="{audio_file_cid}", settled=1
+                    UPDATE {self.table_audios}
+                    SET audio_file_cid = %s, settled = %s
                     WHERE audio_uid="{audio_uid}"
-                '''
+                ''',
+                (audio_file_cid, 1)
             )
         if error is not None:
             self.cursor.execute(
                 f'''
-                    UPDATE TABLE {self.table_audios}
-                    SET error='{error}'
+                    UPDATE {self.table_audios}
+                    SET error = %s
                     WHERE audio_uid="{audio_uid}"
-                '''
+                ''',
+                (error, )
             )
 
         self.connection.commit()
