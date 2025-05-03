@@ -323,7 +323,7 @@ class Db:
                     SET error = %s
                     WHERE audio_uid="{audio_uid}"
                 ''',
-                (error, )
+                (error[0:256], )
             )
 
         self.connection.commit()
