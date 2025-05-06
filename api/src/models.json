@@ -60,7 +60,7 @@
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": true
+    "hostModel": false
 }, {
     "name": "Qwen/Qwen2.5-VL-72B-Instruct",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -123,7 +123,7 @@
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": false
+    "hostModel": true
 }, {
     "name": "shisa-ai/shisa-v2-llama3.3-70b",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -303,7 +303,7 @@
     "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": true
+    "hostModel": false
 }, {
     "name": "unsloth/Mistral-Nemo-Instruct-2407",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -357,7 +357,7 @@
     "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": true
+    "hostModel": false
 }, {
     "name": "unsloth/gemma-3-12b-it",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -474,7 +474,7 @@
     "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": true
+    "hostModel": false
 }, {
     "name": "THUDM/GLM-Z1-32B-0414",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
