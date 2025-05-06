@@ -299,8 +299,8 @@
     "name": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
     "vendor": "Chutes",
-    "author": "Alibaba Cloud",
-    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": false
@@ -317,8 +317,8 @@
     "name": "ArliAI/QwQ-32B-ArliAI-RpR-v1",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
     "vendor": "Chutes",
-    "author": "ArliAI",
-    "authorLogo": "https://www.arliai.com/arli_black.svg",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": false
@@ -470,8 +470,8 @@
     "name": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
     "vendor": "Chutes",
-    "author": "Alibaba Cloud",
-    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": false
