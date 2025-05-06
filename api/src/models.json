@@ -22,7 +22,7 @@
     "vendor": "Chutes",
     "author": "High-Flyer",
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
-    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": true
 }, {
@@ -31,7 +31,7 @@
     "vendor": "Chutes",
     "author": "Meta",
     "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
-    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mvrck.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": true
 }, {
@@ -50,6 +50,528 @@
     "author": "High-Flyer",
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "deepseek-ai/DeepSeek-R1-Zero",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen2.5-VL-72B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen2.5-72B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "deepseek-ai/DeepSeek-V3",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "deepseek-ai/DeepSeek-V3-Base",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen2.5-VL-32B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "NousResearch/DeepHermes-3-Llama-3-8B-Preview",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "tngtech/DeepSeek-R1T-Chimera",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": true
+}, {
+    "name": "shisa-ai/shisa-v2-llama3.3-70b",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "cognitivecomputations/Dolphin3.0-R1-Mistral-24B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Mistral AI",
+    "authorLogo": "https://img-blog.csdnimg.cn/direct/ae51fcbd18004bfe90aee1f30d99613f.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "microsoft/MAI-DS-R1-FP8",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Microsoft",
+    "authorLogo": "https://iknow-pic.cdn.bcebos.com/3ac79f3df8dcd1004af71c17708b4710b9122f99",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/phi.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen3-30B-A3B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "chutesai/Llama-4-Scout-17B-16E-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/sct.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen2.5-Coder-32B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen3-32B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/gemma-3-27b-it",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Google",
+    "authorLogo": "https://img0.baidu.com/it/u=1949615176,3216656098&fm=253&fmt=auto&app=138&f=JPEG?w=357&h=365",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/gemma.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "open-r1/OlympicCoder-32B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Hugging Face",
+    "authorLogo": "https://waimao21.com/wp-content/uploads/2023/03/61949-huggingface.co.png",
+    "modelLogo": "https://logos.chutes.ai/logos/5dea239b-1f00-4a73-b955-6be864059a12.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "mrfakename/mistral-small-3.1-24b-instruct-2503-hf",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Mistral AI",
+    "authorLogo": "https://img-blog.csdnimg.cn/direct/ae51fcbd18004bfe90aee1f30d99613f.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "agentica-org/DeepCoder-14B-Preview",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Agentica",
+    "authorLogo": "https://agentica-project.com/images/agentica_logo/agentica_logo_dark.png",
+    "modelLogo": "https://logos.chutes.ai/logos/413f48e1-ff93-432c-a201-6c072ba8619a.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://logos.chutes.ai/logos/d74143c8-c47a-4416-a71a-500eb5561b6b.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "cognitivecomputations/Dolphin3.0-Mistral-24B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Mistral AI",
+    "authorLogo": "https://img-blog.csdnimg.cn/direct/ae51fcbd18004bfe90aee1f30d99613f.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/gemma-3-4b-it",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Google",
+    "authorLogo": "https://img0.baidu.com/it/u=1949615176,3216656098&fm=253&fmt=auto&app=138&f=JPEG?w=357&h=365",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/gemma.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "THUDM/GLM-4-32B-0414",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "ZHIPU",
+    "authorLogo": "https://pic4.zhimg.com/v2-a7e622e970c0795295338e1761463a83_r.jpg",
+    "modelLogo": "https://logos.chutes.ai/logos/ac57aca6-f401-438a-982e-ddc05e36d04d.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen3-14B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen3-8B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen2.5-VL-3B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/Mistral-Nemo-Instruct-2407",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Mistral AI",
+    "authorLogo": "https://img-blog.csdnimg.cn/direct/ae51fcbd18004bfe90aee1f30d99613f.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "ArliAI/QwQ-32B-ArliAI-RpR-v1",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/gemma-2-9b-it",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Google",
+    "authorLogo": "https://img0.baidu.com/it/u=1949615176,3216656098&fm=253&fmt=auto&app=138&f=JPEG?w=357&h=365",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/gemma.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "nvidia/Llama-3_3-Nemotron-Super-49B-v1",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://logos.chutes.ai/logos/0fd9aab9-dd8c-4297-b845-b90547207bd9.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "moonshotai/Kimi-VL-A3B-Thinking",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Moonshot AI",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/moonshot.png",
+    "modelLogo": "https://logos.chutes.ai/logos/64dc4a1d-ea3b-44da-bba7-2c74fecd7b63.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/gemma-3-12b-it",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Google",
+    "authorLogo": "https://img0.baidu.com/it/u=1949615176,3216656098&fm=253&fmt=auto&app=138&f=JPEG?w=357&h=365",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/gemma.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/Qwen2.5-VL-7B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/gemma-3-1b-it",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Google",
+    "authorLogo": "https://img0.baidu.com/it/u=1949615176,3216656098&fm=253&fmt=auto&app=138&f=JPEG?w=357&h=365",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/gemma.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/Mistral-Small-24B-Instruct-2501",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Mistral AI",
+    "authorLogo": "https://img-blog.csdnimg.cn/direct/ae51fcbd18004bfe90aee1f30d99613f.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "RekaAI/reka-flash-3",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Reka AI",
+    "authorLogo": "https://www.productivboost.com/wp-content/uploads/2024/05/Reka-AI.png",
+    "modelLogo": "https://logos.chutes.ai/logos/f35448ce-464f-4224-9971-61e957414576.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "moonshotai/Moonlight-16B-A3B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Moonshot AI",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/moonshot.png",
+    "modelLogo": "https://logos.chutes.ai/logos/8624e661-59f9-4f5e-930d-1dca0eb200d4.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/QwQ-32B-Preview",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/Llama-3.2-1B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "bytedance-research/UI-TARS-72B-DPO",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "ByteDance",
+    "authorLogo": "https://resources.jsmo.xin/templates/upload/9508/201808/1533521533723.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/bytedance.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/Meta-Llama-3.1-8B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/Llama-3.2-3B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "deepcogito/cogito-v1-preview-qwen-32B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "High-Flyer",
+    "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "THUDM/GLM-Z1-32B-0414",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "ZHIPU",
+    "authorLogo": "https://pic4.zhimg.com/v2-a7e622e970c0795295338e1761463a83_r.jpg",
+    "modelLogo": "https://logos.chutes.ai/logos/3c4f493a-aec1-43fc-86b1-fc6ab2bd2a46.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "chutesai/Llama-3.1-405B-FP8",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "Qwen/QwQ-32B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Alibaba Cloud",
+    "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "allenai/Molmo-7B-D-0924",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Allen AI",
+    "authorLogo": "https://huggingface.co/allenai/Molmo-7B-D-0924/resolve/main/molmo_logo.png",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/allenai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "unsloth/Llama-3.3-70B-Instruct",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "codellama/CodeLlama-70b-Instruct-hf",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/metaai.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "microsoft/Phi-4-reasoning",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Microsoft",
+    "authorLogo": "https://iknow-pic.cdn.bcebos.com/3ac79f3df8dcd1004af71c17708b4710b9122f99",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/phi.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "microsoft/Phi-4-reasoning-plus",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Microsoft",
+    "authorLogo": "https://iknow-pic.cdn.bcebos.com/3ac79f3df8dcd1004af71c17708b4710b9122f99",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/phi.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "jondurbin/bagel-8b-v1.0",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "Meta",
+    "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
+    "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/bagel.webp",
+    "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
+    "hostModel": false
+}, {
+    "name": "LGAI-EXAONE/EXAONE-Deep-32B",
+    "endpoint": "https://llm.chutes.ai/v1/chat/completions",
+    "vendor": "Chutes",
+    "author": "LG AI",
+    "authorLogo": "https://www.lgresearch.ai/img/common/logo_en.png",
+    "modelLogo": "https://rayon-labs.b-cdn.net/chutes/hash/3.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
     "hostModel": false
 }]
