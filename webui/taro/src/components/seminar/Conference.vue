@@ -325,7 +325,7 @@ const onOutline = (json: Record<string, unknown>) => {
 const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
   const messages = new Map<string, seminarWorker.HistoryMessage[]>()
 
-  displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle).forEach((el) => {
+  displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle && el.subTopic === lastTopic.value).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
     _messages.push({
       participatorId: el.participator.id as number,
@@ -333,7 +333,7 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
     })
     messages.set(el.subTopic, _messages)
   })
-  waitMessages.value.forEach((el) => {
+  waitMessages.value.filter((el) => el.subTopic === lastTopic.value).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
     _messages.push({
       participatorId: el.participator.id as number,

@@ -42,7 +42,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.IDENT_2_SPACE,
     (() =>
-      ') 分级资料按照2个空格缩进，参考资料独立成行并用方括号括起来的数字开头') as RequirementFunc
+      ') 分级资料按照2个空格缩进，参考资料、文献、链接独立成行并用方括号括起来的数字开头') as RequirementFunc
   ],
   [
     PromptType.WITH_HTML,
