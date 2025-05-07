@@ -116,7 +116,7 @@ async def speak(
     voice: str = Body(...),
 ):
     generator = AudioGenerate()
-    audio_file_cid = await generator.generate_audio(text, voice, max_concurrency=5)
+    audio_file_cid = await generator.generate_audio(text, voice)
 
     return {'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav'}
 
@@ -126,7 +126,7 @@ async def speak_async(
     voice: str = Body(...),
 ):
     generator = AudioGenerate()
-    audio_uid = await generator.generate_audio_async(text, voice, max_concurrency=5)
+    audio_uid = await generator.generate_audio_async(text, voice)
 
     return {'audio_uid': audio_uid}
 
@@ -155,7 +155,7 @@ async def timeout_exception_handler(request: Request, e: asyncio.TimeoutError):
     with mutex:
         errors += 1
     logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Read or connect timeout{RESET} ... {errors}')
-    return JSONResponse({'error': f'{e}'}, status_code=502)
+    return JSONResponse({'error': f'{repr(e)}'}, status_code=502)
 
 @app.exception_handler(aiohttp.client_exceptions.ClientConnectorError)
 async def connector_error_handler(request: Request, e: aiohttp.client_exceptions.ClientConnectorError):
@@ -163,8 +163,8 @@ async def connector_error_handler(request: Request, e: aiohttp.client_exceptions
     host = get_client_host(request)
     with mutex:
         errors += 1
-    logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Connection error{RESET} ... {errors}')
-    return JSONResponse({'error': f'{e}'}, status_code=502)
+    logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Connection error: {repr(e)}{RESET} ... {errors}')
+    return JSONResponse({'error': f'{repr(e)}'}, status_code=502)
 
 @app.exception_handler(aiohttp.client_exceptions.ClientResponseError)
 async def connector_error_handler(request: Request, e: aiohttp.client_exceptions.ClientResponseError):
@@ -172,8 +172,8 @@ async def connector_error_handler(request: Request, e: aiohttp.client_exceptions
     host = get_client_host(request)
     with mutex:
         errors += 1
-    logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Response error{RESET} ... {errors}')
-    return JSONResponse({'error': f'{e}'}, status_code=502)
+    logger.error(f'{host} - {BOLD}{request.url.path}{RESET} {RED}Response error: {repr(e)}{RESET} ... {errors}')
+    return JSONResponse({'error': f'{repr(e)}'}, status_code=502)
 
 class ApiElapseMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -203,7 +203,7 @@ class ApiElapseMiddleware(BaseHTTPMiddleware):
             with mutex:
                 errors += 1
             logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}')
-            return JSONResponse({'error': f'{e}'}, status_code=502)
+            return JSONResponse({'error': f'{repr(e)}'}, status_code=502)
 
 def ignore_ssl_close_notify(loop):
     orig_handler = loop.get_exception_handler()

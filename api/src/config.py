@@ -20,6 +20,7 @@ parser.add_argument('--simulators-file', type=str, default='./simulators.json', 
 parser.add_argument('--clean-database', action='store_true', help='Clean database')
 parser.add_argument('--ignore-api-token', action='store_true', help='Ignore api token')
 parser.add_argument('--kikakkz-wechat-openid', type=str, default='', help='WeChat openid of kikakkz')
+parser.add_argument('--concurrent-audio-requests', type=int, default=5, help='Concurrent audio requests')
 
 config = parser.parse_args()
 
