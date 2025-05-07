@@ -116,7 +116,7 @@ async def speak(
     voice: str = Body(...),
 ):
     generator = AudioGenerate()
-    audio_file_cid = await generator.generate_audio(text, voice, max_concurrency=5)
+    audio_file_cid = await generator.generate_audio(text, voice)
 
     return {'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav'}
 
@@ -126,7 +126,7 @@ async def speak_async(
     voice: str = Body(...),
 ):
     generator = AudioGenerate()
-    audio_uid = await generator.generate_audio_async(text, voice, max_concurrency=5)
+    audio_uid = await generator.generate_audio_async(text, voice)
 
     return {'audio_uid': audio_uid}
 
