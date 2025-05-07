@@ -41,7 +41,7 @@ async def chat(
             {'role': 'user', 'content': prompt}
         ],
         'stream': True,
-        'max_tokens': 1024,
+        'max_tokens': 40960,
     }
     headers = {
         'Authorization': f'Bearer {config.api_token}',
@@ -53,6 +53,7 @@ async def chat(
 
     timeout = aiohttp.ClientTimeout(connect=10, total=59)
     content = ''
+    line_content = ''
 
     async with aiohttp.ClientSession(timeout=timeout) as session:
         async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
@@ -60,13 +61,20 @@ async def chat(
                 try:
                     text = chunk.decode('utf-8').strip()
                 except Exception as e:
-                    logger.warn(f'{BOLD}{model}{RESET} {RED}{chunk[-32:]}{RESET} ... {e}')
+                    logger.warn(f'{BOLD}{model}{RESET} {RED}{chunk}{RESET} ... {e}')
                     continue
 
                 for line in text.splitlines():
+                    line = line.strip()
+
+                    if len(line) == 0:
+                        continue
+
                     if line.startswith('data:'):
+                        line_content = ''
+
                         json_str = line[len('data:'):].strip()
-                        if json_str == '[DONE]':
+                        if 'DONE' in json_str:
                             logger.info(f'{BOLD}{model}{RESET} {BOLD}Response {content[0:16]}{RESET} ...')
                             return content
 
@@ -74,6 +82,7 @@ async def chat(
                             obj = json.loads(json_str)
                         except Exception as e:
                             logger.warn(f'{BOLD}{model}{RESET} {RED}{json_str}{RESET} ... {e}')
+                            line_content += json_str
                             continue
 
                         chat_response = ModelChatResponse(obj)
@@ -86,6 +95,18 @@ async def chat(
                         if choice.message is None or choice.message.content is None:
                             continue
                         content += chat_response.choices[0].message.content
+                    else:
+                        try:
+                            obj = json.loads(line)
+                        except Exception as e:
+                            line_content += line
+                            continue
 
-    logger.error(f'{BOLD}{model}{RESET} {RED}You should not be here{RESET} ... {BOLD}{time.time() - start_time}{RESET}s')
+                        if 'object' in obj and obj['object'] == 'error':
+                            logger.error(f'{BOLD}{model}{RESET} {RED}{obj["message"]}{RESET}')
+                            raise Exception(f'Response error: {obj["message"]}')
+
+                        logger.warn(f'Object without data or error: {line}')
+
+    logger.error(f'{BOLD}{model}{RESET} {RED}You should not be here{RESET} ... {content}{BOLD}{time.time() - start_time}{RESET}s')
     raise Exception(f'Invalid response: {content}')
