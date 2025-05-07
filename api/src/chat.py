@@ -57,7 +57,12 @@ async def chat(
     async with aiohttp.ClientSession(timeout=timeout) as session:
         async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
             async for chunk in response.content.iter_any():
-                text = chunk.decode('utf-8').strip()
+                try:
+                    text = chunk.decode('utf-8').strip()
+                except Exception as e:
+                    logger.debug(f'{BOLD}{model}{RESET} {RED}{chunk}{RESET} ... {e}')
+                    continue
+
                 for line in text.splitlines():
                     if line.startswith('data:'):
                         json_str = line[len('data:'):].strip()
