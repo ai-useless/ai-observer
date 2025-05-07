@@ -60,7 +60,7 @@ async def chat(
                 try:
                     text = chunk.decode('utf-8').strip()
                 except Exception as e:
-                    logger.warn(f'{BOLD}{model}{RESET} {RED}{chunk[0:32]}{RESET} ... {e}')
+                    logger.warn(f'{BOLD}{model}{RESET} {RED}{chunk[-32:]}{RESET} ... {e}')
                     continue
 
                 for line in text.splitlines():
@@ -73,7 +73,7 @@ async def chat(
                         try:
                             obj = json.loads(json_str)
                         except Exception as e:
-                            logger.error(f'{BOLD}{model}{RESET} {RED}{json_str}{RESET} ... {e}')
+                            logger.warn(f'{BOLD}{model}{RESET} {RED}{json_str}{RESET} ... {e}')
                             continue
 
                         chat_response = ModelChatResponse(obj)
