@@ -26,11 +26,18 @@ class AudioGenerate:
             db.update_audio(audio_uid, None, repr(e))
             logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
 
+    def on_generate_audio_done(self, audio_uid):
+        try:
+            task.result()
+        except Exception as e:
+            logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ...')
+
     async def generate_audio_async(self, text: str, voice: str) -> str:
         audio_uid = f'{uuid.uuid4()}'
         db.new_audio(audio_uid)
 
-        asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice))
+        task = asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice))
+        task.add_done_callback(lambda t: self.on_generate_audio_done(t, audio_uid))
 
         return audio_uid
 
