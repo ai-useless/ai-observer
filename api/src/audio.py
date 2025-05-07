@@ -37,7 +37,7 @@ class AudioGenerate:
         db.new_audio(audio_uid)
 
         task = asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice))
-        task.add_done_callback(lambda t: self.on_generate_audio_done(t, audio_uid))
+        task.add_done_callback(lambda: self.on_generate_audio_done(audio_uid))
 
         return audio_uid
 
