@@ -101,7 +101,7 @@ class AudioGenerate:
 
     async def concurrent_audio_requests(self, chunks: list[str], voice: str, max_concurrency: int, voice_audio_b64: str, voice_audio_text: str) -> list[bytes]:
         semaphore = asyncio.Semaphore(max_concurrency)
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(raise_for_status=True) as session:
             tasks = []
             for idx, text in enumerate(chunks):
                 task = asyncio.create_task(self.fetch_audio(text, voice, session, semaphore, idx, voice_audio_b64, voice_audio_text))
