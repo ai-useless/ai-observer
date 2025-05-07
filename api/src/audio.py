@@ -15,26 +15,26 @@ from config import config
 from db import db
 
 class AudioGenerate:
-    async def generate_audio_with_uid(self, audio_uid: str, text: str, voice: str, max_concurrency: int):
+    async def generate_audio_with_uid(self, audio_uid: str, text: str, voice: str):
         try:
             logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating{RESET} ...')
             start_time = time.time()
-            audio_file_cid = await self.generate_audio(text, voice, max_concurrency)
+            audio_file_cid = await self.generate_audio(text, voice)
             db.update_audio(audio_uid, audio_file_cid, None)
             logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generate success{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
         except Exception as e:
             db.update_audio(audio_uid, None, repr(e))
             logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
 
-    async def generate_audio_async(self, text: str, voice: str, max_concurrency: int) -> str:
+    async def generate_audio_async(self, text: str, voice: str) -> str:
         audio_uid = f'{uuid.uuid4()}'
         db.new_audio(audio_uid)
 
-        asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice, max_concurrency))
+        asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice))
 
         return audio_uid
 
-    async def generate_audio(self, text: str, voice: str, max_concurrency: int) -> str:
+    async def generate_audio(self, text: str, voice: str) -> str:
         simulator = db.get_simulator_with_audio_id(voice)
         if simulator is None:
             raise Exception('Invalid voice')
@@ -48,7 +48,7 @@ class AudioGenerate:
 
         cleaned_text = purify_text(text)
         chunks = chunk_text(cleaned_text)
-        audio_buffers = await self.concurrent_audio_requests(chunks, voice, max_concurrency, audio_b64, simulator['text'])
+        audio_buffers = await self.concurrent_audio_requests(chunks, voice, audio_b64, simulator['text'])
 
         file_cid = self.merge_audio_buffers(
             audio_buffers=[b for b in audio_buffers if b],
@@ -99,8 +99,8 @@ class AudioGenerate:
                 logger.error(f'{BOLD}{url}{RESET} {RED}Request exception{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                 raise Exception(repr(e))
 
-    async def concurrent_audio_requests(self, chunks: list[str], voice: str, max_concurrency: int, voice_audio_b64: str, voice_audio_text: str) -> list[bytes]:
-        semaphore = asyncio.Semaphore(max_concurrency)
+    async def concurrent_audio_requests(self, chunks: list[str], voice: str, voice_audio_b64: str, voice_audio_text: str) -> list[bytes]:
+        semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
         async with aiohttp.ClientSession(raise_for_status=True) as session:
             tasks = []
             for idx, text in enumerate(chunks):
