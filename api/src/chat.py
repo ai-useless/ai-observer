@@ -70,7 +70,7 @@ async def chat(
                 try:
                     text = chunk.decode('utf-8').strip()
                 except Exception as e:
-                    logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{chunk}{RESET} ... {e}')
+                    # logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{chunk}{RESET} ... {e}')
                     raw_chunk += chunk
                     continue
 
@@ -99,14 +99,14 @@ async def chat(
                         try:
                             obj = json.loads(json_str)
                         except Exception as e:
-                            logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{json_str}{RESET} ... {e}')
+                            # logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{json_str}{RESET} ... {e}')
                             raw_chunk += chunk
                             continue
 
                         chat_response = ModelChatResponse(obj)
 
                         if chat_response.choices is None or len(chat_response.choices) == 0:
-                            logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{json_str}{RESET} ... Invalid message')
+                            # logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{json_str}{RESET} ... Invalid message')
                             continue
 
                         choice = chat_response.choices[0]
