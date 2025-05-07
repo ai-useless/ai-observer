@@ -138,6 +138,11 @@ class Db:
             ''')
             self.connection.commit()
 
+        self.cursor.execute(f'''
+            UPDATE {self.table_audios} SET settled=1, error="Canceled by restart" where settled=0
+        ''')
+        self.connection.commit()
+
         threading.Thread(target=self.keep_alive, daemon=True).start()
 
     def keep_alive(self):
