@@ -60,7 +60,7 @@ async def chat(
                 try:
                     text = chunk.decode('utf-8').strip()
                 except Exception as e:
-                    logger.debug(f'{BOLD}{model}{RESET} {RED}{chunk}{RESET} ... {e}')
+                    logger.warn(f'{BOLD}{model}{RESET} {RED}{chunk[0:32]}{RESET} ... {e}')
                     continue
 
                 for line in text.splitlines():
@@ -79,7 +79,7 @@ async def chat(
                         chat_response = ModelChatResponse(obj)
 
                         if chat_response.choices is None or len(chat_response.choices) == 0:
-                            logger.error(f'{BOLD}{model}{RESET} {RED}{json_str}{RESET} ... Invalid message')
+                            logger.warn(f'{BOLD}{model}{RESET} {RED}{json_str}{RESET} ... Invalid message')
                             continue
 
                         choice = chat_response.choices[0]
