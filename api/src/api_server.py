@@ -205,8 +205,29 @@ class ApiElapseMiddleware(BaseHTTPMiddleware):
             logger.info(f'{host} - {BOLD}{request.url.path}{RESET} take {BOLD}{time.time() - start_at}{RESET}s {RED}FAIL{RESET} ... {errors}')
             return JSONResponse({'error': f'{e}'}, status_code=502)
 
+def ignore_ssl_close_notify(loop):
+    orig_handler = loop.get_exception_handler()
+
+    def handler(loop, context):
+        exc = context.get("exception")
+        if (
+            isinstance(exc, ssl.SSLError) and
+            exc.reason == "APPLICATION_DATA_AFTER_CLOSE_NOTIFY"
+        ):
+            if loop.get_debug():
+                logger.info("Ignoring SSL APPLICATION_DATA_AFTER_CLOSE_NOTIFY error")
+                return
+        if orig_handler is not None:
+            orig_handler(loop, context)
+        else:
+            loop.default_exception_handler(context)
+
+    loop.set_exception_handler(handler)
+
 if __name__ == '__main__':
     app.add_middleware(ApiElapseMiddleware)
     app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'], max_age=3600)
+
+    ignore_ssl_close_notify(asyncio.get_event_loop())
 
     uvicorn.run(app, host='0.0.0.0', port=config.port)
