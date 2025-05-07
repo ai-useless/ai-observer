@@ -26,7 +26,7 @@ class AudioGenerate:
             db.update_audio(audio_uid, None, repr(e))
             logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
 
-    def on_generate_audio_done(self, audio_uid):
+    def on_generate_audio_done(self, task, audio_uid):
         try:
             task.result()
         except Exception as e:
@@ -37,7 +37,7 @@ class AudioGenerate:
         db.new_audio(audio_uid)
 
         task = asyncio.create_task(self.generate_audio_with_uid(audio_uid, text, voice))
-        task.add_done_callback(lambda: self.on_generate_audio_done(audio_uid))
+        task.add_done_callback(lambda t: self.on_generate_audio_done(t, audio_uid))
 
         return audio_uid
 
