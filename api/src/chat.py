@@ -60,16 +60,29 @@ async def chat(
 
     timeout = aiohttp.ClientTimeout(connect=10, total=59)
     content = ''
-    line_content = ''
+    raw_chunk = b''
+    raw_chunks = b''
 
     async with aiohttp.ClientSession(timeout=timeout, raise_for_status=True) as session:
         async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
             async for chunk in response.content.iter_any():
+                raw_chunks += chunk
                 try:
                     text = chunk.decode('utf-8').strip()
                 except Exception as e:
                     logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{chunk}{RESET} ... {e}')
+                    raw_chunk += chunk
                     continue
+
+                if len(raw_chunk) > 0:
+                    raw_text = ''
+                    try:
+                        raw_text = chunk.decode('utf-8').strip() + '\n'
+                    except:
+                        logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}Discard chunk{RESET}: {raw_chunk}')
+
+                    text = raw_chunk + text
+                    raw_chunk = b''
 
                 for line in text.splitlines():
                     line = line.strip()
@@ -78,8 +91,6 @@ async def chat(
                         continue
 
                     if line.startswith('data:'):
-                        line_content = ''
-
                         json_str = line[len('data:'):].strip()
                         if 'DONE' in json_str:
                             logger.info(f'{BOLD}{model} - {chat_uid}{RESET} {BOLD}Response {content[0:16]}{RESET} ...')
@@ -89,7 +100,7 @@ async def chat(
                             obj = json.loads(json_str)
                         except Exception as e:
                             logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{json_str}{RESET} ... {e}')
-                            line_content += json_str
+                            raw_chunk += chunk
                             continue
 
                         chat_response = ModelChatResponse(obj)
@@ -106,7 +117,7 @@ async def chat(
                         try:
                             obj = json.loads(line)
                         except Exception as e:
-                            line_content += line
+                            raw_chunk += chunk
                             continue
 
                         if 'object' in obj and obj['object'] == 'error':
@@ -119,4 +130,5 @@ async def chat(
                         logger.warn(f'Object without {BOLD}data{RESET} or {BOLD}error{RESET}: {line}')
 
     logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}You should not be here{RESET} ... {content}{BOLD}{time.time() - start_time}{RESET}s')
+    logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {BOLD}Raw{RESET}: {raw_chunks} ...')
     raise Exception(f'Invalid response: {content}')
