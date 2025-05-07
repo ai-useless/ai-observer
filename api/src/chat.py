@@ -81,7 +81,7 @@ async def chat(
                     except:
                         logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}Discard chunk{RESET}: {raw_chunk}')
 
-                    text = raw_chunk + text
+                    text = raw_text + text
                     raw_chunk = b''
 
                 for line in text.splitlines():
