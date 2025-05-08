@@ -377,7 +377,7 @@ export class ESeminar {
         console.log(`Failed guest request: ${e}, retrying ...`)
         setTimeout(() => {
           this.guestRequest(subTopic, participatorId, intent)
-        }, 1000)
+        }, 60000)
       })
   }
 

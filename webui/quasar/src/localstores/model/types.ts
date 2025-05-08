@@ -12,4 +12,5 @@ export interface _Model {
   vendor: string
   // eslint-disable-next-line camelcase
   vendor_logo_url: string
+  disabled: boolean
 }

@@ -6,7 +6,10 @@ import { dbBridge } from 'src/bridge'
 
 export const useModelStore = defineStore('model', {
   state: () => ({
-    models: [] as _Model[]
+    models: [] as _Model[],
+    blacklist: [
+      'Qwen/Qwen3-235B-A22B'
+    ]
   }),
   actions: {
     getModels(done?: (error: boolean, rows?: _Model[]) => void) {
@@ -23,6 +26,7 @@ export const useModelStore = defineStore('model', {
     },
     async appendModels(models: _Model[]) {
       models.forEach((model) => {
+        model.disabled = this.blacklist.includes(model.name)
         const index = this.models.findIndex((el) => el.name === model.name)
         this.models.splice(index >= 0 ? index : 0, index >= 0 ? 1 : 0, model)
       })

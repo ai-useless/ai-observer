@@ -5,7 +5,10 @@ import { _Model } from './types'
 
 export const useModelStore = defineStore('model', {
   state: () => ({
-    models: [] as _Model[]
+    models: [] as _Model[],
+    blacklist: [
+      'Qwen/Qwen3-235B-A22B'
+    ]
   }),
   actions: {
     getModels(done?: (error: boolean, rows?: unknown[]) => void) {
@@ -22,6 +25,7 @@ export const useModelStore = defineStore('model', {
     },
     appendModels(models: _Model[]) {
       models.forEach((model) => {
+        if (this.blacklist.includes(model.name)) return
         const index = this.models.findIndex((el) => el.name === model.name)
         this.models.splice(index >= 0 ? index : 0, index >= 0 ? 1 : 0, model)
       })
