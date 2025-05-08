@@ -9,6 +9,7 @@ export const purifyText = (html: string): string => {
     .trim()
     .replace(/^\[\d\].*$/gm, '')
     .replace('```html', '')
+    .replace('```plaintext', '')
     .replace('```', '')
 }
 
@@ -17,5 +18,6 @@ export const purifyThink = (html: string): string => {
   $('think').remove()
   return $.html()
     .replace('```html', '')
+    .replace('```plaintext', '')
     .replace('```', '')
 }

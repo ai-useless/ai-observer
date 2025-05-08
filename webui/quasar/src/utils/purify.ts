@@ -8,10 +8,16 @@ export const purifyText = (html: string): string => {
   return $.text()
     .trim()
     .replace(/^\[\d\].*$/gm, '')
+    .replace('```html', '')
+    .replace('```plaintext', '')
+    .replace('```', '')
 }
 
 export const purifyThink = (html: string): string => {
   const $ = cheerio.load(html)
   $('think').remove()
   return $.html()
+    .replace('```html', '')
+    .replace('```plaintext', '')
+    .replace('```', '')
 }
