@@ -66,7 +66,7 @@ class CosyVoiceGenerator:
         CACHE_ROOT = Path(os.getenv('HF_HOME', '/app')).resolve()
         PROMPT_CACHE_ROOT = (Path(CACHE_ROOT) / 'xukaknmwla-prompt-audios').resolve()
 
-        os.makedirs(PROMPT_CACHE_ROOT, exists_ok=True)
+        os.makedirs(PROMPT_CACHE_ROOT, exist_ok=True)
         return (Path(PROMPT_CACHE_ROOT) / f'{prompt_audio_hash}.wav').resolve()
 
     def try_read_prompt_audio_b64(self, prompt_audio_file):
