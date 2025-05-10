@@ -141,7 +141,7 @@ async def initialize(self):
     stream=False,
     output_content_type="audio/wav",
 )
-async def speak(self, args: V1InputArgs) -> Response:
+async def speak_v1(self, args: V1InputArgs) -> Response:
     from purify_text import purify_text
     """
     Generate SSE audio chunks from input text.
@@ -172,7 +172,7 @@ async def speak(self, args: V1InputArgs) -> Response:
     stream=False,
     output_content_type="audio/wav",
 )
-async def speak(self, args: V2InputArgs) -> Response:
+async def speak_v2(self, args: V2InputArgs) -> Response:
     from purify_text import purify_text
     """
     Generate SSE audio chunks from input text.
