@@ -50,6 +50,8 @@ def fetch_audio_then_save(audio_url: str):
     with open(audio_path, 'wb') as f:
         f.write(audio_bytes)
 
+    # TODO: upload to aws s3
+
     audio_b64_bytes = base64.b64encode(audio_bytes)
     audio_b64 = audio_b64_bytes.decode('utf-8')
 

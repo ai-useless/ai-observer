@@ -6,3 +6,4 @@ scipy
 pydub
 bs4
 mysql-connector-python
+boto3

@@ -104,7 +104,7 @@ class CosyVoiceGenerator:
 
         prompt_audio_file = self.construct_prompt_audio_cache_filename(prompt_audio_hash)
         # Else fetch it and store in cache
-        async with aiohttp.ClientSession(raise_for_status=True) as session:
+        async with aiohttp.ClientSession(raise_for_status=True, trust_env=True) as session:
             async with session.get(prompt_audio_url) as response:
                 with open(prompt_audio_file, 'wb') as f:
                     async for chunk in response.content.iter_chunked(1024):

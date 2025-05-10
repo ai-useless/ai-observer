@@ -54,6 +54,7 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
     with open(file_path, 'wb') as f:
         f.write(audio_bytes)
 
+    # TODO: upload to aws S3 too
 
     simulator_avatar_b64_bytes = simulator_avatar.encode("utf-8")
     simulator_avatar_cid = hashlib.sha256(simulator_avatar_b64_bytes).hexdigest()

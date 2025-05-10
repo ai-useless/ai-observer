@@ -21,6 +21,10 @@ parser.add_argument('--clean-database', action='store_true', help='Clean databas
 parser.add_argument('--ignore-api-token', action='store_true', help='Ignore api token')
 parser.add_argument('--kikakkz-wechat-openid', type=str, default='', help='WeChat openid of kikakkz')
 parser.add_argument('--concurrent-audio-requests', type=int, default=5, help='Concurrent audio requests')
+parser.add_argument('--aws-access-key', type=str, default='', help='AWS S3 access key')
+parser.add_argument('--aws-secret-key', type=str, default='', help='AWS S3 secret key')
+parser.add_argument('--aws-region', type=str, default='', help='AWS S3 region')
+parser.add_argument('--aws-bucket', type=str, default='', help='AWS S3 bucket')
 
 config = parser.parse_args()
 
