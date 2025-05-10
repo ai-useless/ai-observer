@@ -1,6 +1,9 @@
 class CosyVoiceGenerator:
     def __init__(self, model_path='pretrained_models/CosyVoice2-0.5B'):
         from cosyvoice.cli.cosyvoice import CosyVoice2
+        import logging
+
+        logging.getLogger('numba').setLevel(logging.WARNING)
         self.cosyvoice = CosyVoice2(model_path)
 
     def _merge_audio_segments(self, waveforms):
@@ -69,9 +72,11 @@ class CosyVoiceGenerator:
         os.makedirs(PROMPT_CACHE_ROOT, exist_ok=True)
         return (Path(PROMPT_CACHE_ROOT) / f'{prompt_audio_hash}.wav').resolve()
 
-    def try_read_prompt_audio_b64(self, prompt_audio_file):
+    def try_read_prompt_audio_b64(self, prompt_audio_hash):
         import hashlib
         import base64
+
+        prompt_audio_file = self.construct_prompt_audio_cache_filename(prompt_audio_hash)
 
         hasher = hashlib.new('sha256')
         audio_bytes = bytearray()
@@ -91,14 +96,13 @@ class CosyVoiceGenerator:
     async def prepare_prompt_audio(self, prompt_audio_hash, prompt_audio_url):
         import aiohttp
 
-        prompt_audio_file = self.construct_prompt_audio_cache_filename(prompt_audio_hash)
-
         # If we have correct audio file in cache, use it
         try:
-            return self.try_read_prompt_audio_b64(prompt_audio_file)
+            return self.try_read_prompt_audio_b64(prompt_audio_hash)
         except:
             pass
 
+        prompt_audio_file = self.construct_prompt_audio_cache_filename(prompt_audio_hash)
         # Else fetch it and store in cache
         async with aiohttp.ClientSession(raise_for_status=True) as session:
             async with session.get(prompt_audio_url) as response:
@@ -107,7 +111,7 @@ class CosyVoiceGenerator:
                         f.write(chunk)
 
         try:
-            return self.try_read_prompt_audio_b64(prompt_audio_file)
+            return self.try_read_prompt_audio_b64(prompt_audio_hash)
         except Exception as e:
             raise ValueError(f'Prompt audio not exists: {str(e)}')
 
