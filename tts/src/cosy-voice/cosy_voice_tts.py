@@ -20,9 +20,6 @@ image = (
     .set_user("chutes")
     .run_command("pip install --upgrade pip")
     .run_command("pip install setuptools==75.8.0")
-    # .add("local_whl/*", "/app/")
-    # .run_command("pip install --user /app/Cython-3.0.12-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
-    # .run_command("pip install --user /app/pynini-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
     .run_command("pip install Cython==3.0.12")
     .run_command("pip install pynini==2.1.5")
     .run_command(
@@ -109,10 +106,17 @@ import sys
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append('{}/third_party/Matcha-TTS'.format(ROOT_DIR))
 
-class InputArgs(BaseModel):
+class V1InputArgs(BaseModel):
     text: str
     speed: float = 1.0
     prompt_audio_b64: str
+    prompt_audio_text: str
+
+class V2InputArgs(BaseModel):
+    text: str
+    speed: float = 1.0
+    prompt_audio_hash: str
+    prompt_audio_url: str
     prompt_audio_text: str
 
 @chute.on_startup()
@@ -137,7 +141,7 @@ async def initialize(self):
     stream=False,
     output_content_type="audio/wav",
 )
-async def speak(self, args: InputArgs) -> Response:
+async def speak(self, args: V1InputArgs) -> Response:
     from purify_text import purify_text
     """
     Generate SSE audio chunks from input text.
@@ -146,6 +150,43 @@ async def speak(self, args: InputArgs) -> Response:
     audio_bytes = self.generator.generate_speech(
         target_text=text,
         prompt_audio_b64=args.prompt_audio_b64,
+        prompt_audio_text=args.prompt_audio_text
+    )
+
+    if audio_bytes:
+        buffer = io.BytesIO(audio_bytes)
+
+    buffer.seek(0)
+    filename = f"{str(uuid.uuid4())}.wav"
+    return Response(
+        content=buffer.getvalue(),
+        media_type="audio/wav",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+@chute.cord(
+    path="/v2/speak",
+    passthrough_path="/v2/speak",
+    public_api_path="/v2/speak",
+    public_api_method="POST",
+    stream=False,
+    output_content_type="audio/wav",
+)
+async def speak(self, args: V2InputArgs) -> Response:
+    from purify_text import purify_text
+    """
+    Generate SSE audio chunks from input text.
+    """
+
+    prompt_audio_b64 = await self.generator.prepare_prompt_audio(
+        prompt_audio_hash=args.prompt_audio_hash,
+        prompt_audio_url=args.prompt_audio_url,
+    )
+
+    text = purify_text(args.text)
+    audio_bytes = self.generator.generate_speech(
+        target_text=text,
+        prompt_audio_b64=prompt_audio_b64,
         prompt_audio_text=args.prompt_audio_text
     )
 
