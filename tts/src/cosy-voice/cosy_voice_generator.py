@@ -61,6 +61,7 @@ class CosyVoiceGenerator:
 
     def construct_prompt_audio_cache_filename(self, prompt_audio_hash):
         import os
+        from pathlib import Path
 
         CACHE_ROOT = Path(os.getenv('HF_HOME', '/app')).resolve()
         PROMPT_CACHE_ROOT = (Path(CACHE_ROOT) / 'xukaknmwla-prompt-audios').resolve()
