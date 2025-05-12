@@ -109,6 +109,8 @@ class CosyVoiceGenerator:
                         f.write(chunk)
 
     async def safe_prepare_prompt_audio(self, prompt_audio_hash, prompt_audio_url):
+        import threading
+
         # If we have correct audio file in cache, use it
         try:
             return self.try_read_prompt_audio_b64(prompt_audio_hash)
@@ -125,7 +127,10 @@ class CosyVoiceGenerator:
                 return self.try_read_prompt_audio_b64(prompt_audio_hash)
             except:
                 pass
-            return self.fetch_prompt_audio_to_cache(prompt_audio_hash, prompt_audio_url)
+            try:
+                await self.fetch_prompt_audio_to_cache(prompt_audio_hash, prompt_audio_url)
+            except Exception as e:
+                raise ValueError(f'Failed fetch audio: {str(e)}')
 
         try:
             return self.try_read_prompt_audio_b64(prompt_audio_hash)
