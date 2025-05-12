@@ -121,7 +121,7 @@ async def speak(
     return {'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav'}
 
 @app.post('/api/v1/speak_async', response_model=SpeakAsyncResponse)
-async def speak_async(
+async def speak_async_v1(
     text: str = Body(...),
     voice: str = Body(...),
 ):
@@ -131,7 +131,7 @@ async def speak_async(
     return {'audio_uid': audio_uid}
 
 @app.post('/api/v2/speak_async', response_model=SpeakAsyncResponse)
-async def speak_async(
+async def speak_async_v2(
     text: str = Body(...),
     voice: str = Body(...),
 ):
