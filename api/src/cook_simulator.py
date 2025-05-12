@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from config import config
 import aiohttp
 from db import db
@@ -6,6 +7,18 @@ import base64
 from include import *
 import json
 
+=======
+import aiohttp
+import hashlib
+import base64
+import json
+
+from config import config
+from db import db
+from include import *
+from aws_uploader import uploader
+
+>>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 async def audio_2_text(audio_b64: str) -> str:
     url = 'https://kikakkz-whisper-stt.chutes.ai/v1/transcribe'
 
@@ -54,6 +67,10 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
     with open(file_path, 'wb') as f:
         f.write(audio_bytes)
 
+<<<<<<< HEAD
+=======
+    audio_s3_url = uploader.upload('materials', audio_bytes, f'{file_name}')
+>>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 
     simulator_avatar_b64_bytes = simulator_avatar.encode("utf-8")
     simulator_avatar_cid = hashlib.sha256(simulator_avatar_b64_bytes).hexdigest()
@@ -73,7 +90,11 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
     simulator_archetype = '有来有去' if simulator_archetype is None else simulator_archetype
     simulator_title = '巡山的小妖怪' if simulator_title is None else simulator_title
 
+<<<<<<< HEAD
     db.new_simulator(openid, username, wechat_avatar_cid, simulator, file_cid, text, simulator, simulator_avatar_cid, personality, simulator_archetype, simulator_title, False)
+=======
+    db.new_simulator(openid, username, wechat_avatar_cid, simulator, file_cid, audio_s3_url, text, simulator, simulator_avatar_cid, personality, simulator_archetype, simulator_title, False)
+>>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
     db.new_user(openid, username, wechat_avatar_cid)
 
     # TODO: automatically review audio by another AI

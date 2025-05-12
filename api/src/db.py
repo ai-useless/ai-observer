@@ -80,6 +80,10 @@ class Db:
                     wechat_avatar VARCHAR(1024),
                     audio_id VARCHAR(64),
                     audio_file_cid VARCHAR(256) UNIQUE,
+<<<<<<< HEAD
+=======
+                    audio_url VARCHAR(1024),
+>>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
                     text VARCHAR(512),
                     simulator VARCHAR(32) UNIQUE,
                     simulator_avatar_cid VARCHAR(64) UNIQUE,
@@ -155,12 +159,21 @@ class Db:
             time.sleep(3600)
 
 
+<<<<<<< HEAD
     def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, text, simulator, simulator_avatar_cid, personality, archetype, title, host):
         self.cursor.execute(
             f'''
                 INSERT INTO {self.table_simulators}
                 (wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+=======
+    def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, personality, archetype, title, host):
+        self.cursor.execute(
+            f'''
+                INSERT INTO {self.table_simulators}
+                (wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+>>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
                 ON DUPLICATE KEY UPDATE
                 wechat_avatar=alias.wechat_avatar
             ''',
@@ -169,6 +182,11 @@ class Db:
              wechat_avatar,
              audio_id,
              audio_file_cid,
+<<<<<<< HEAD
+=======
+             # AWS S3 url
+             audio_url,
+>>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
              text,
              simulator,
              simulator_avatar_cid,

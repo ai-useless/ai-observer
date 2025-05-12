@@ -311,7 +311,7 @@ export class SeminarRunner {
         (textResp.data as Record<string, string>).content
       )
       const voice = await SeminarRunner.speakerVoice(participatorId)
-      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_API, {
+      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
         text: speechContent,
         voice
       })

@@ -7,9 +7,7 @@ import { dbBridge } from 'src/bridge'
 export const useModelStore = defineStore('model', {
   state: () => ({
     models: [] as _Model[],
-    blacklist: [
-      'Qwen/Qwen3-235B-A22B'
-    ]
+    blacklist: [] as string[]
   }),
   actions: {
     getModels(done?: (error: boolean, rows?: _Model[]) => void) {
