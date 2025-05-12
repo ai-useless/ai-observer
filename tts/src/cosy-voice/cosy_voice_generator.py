@@ -2,9 +2,13 @@ class CosyVoiceGenerator:
     def __init__(self, model_path='pretrained_models/CosyVoice2-0.5B'):
         from cosyvoice.cli.cosyvoice import CosyVoice2
         import logging
+        import threading
 
         logging.getLogger('numba').setLevel(logging.WARNING)
         self.cosyvoice = CosyVoice2(model_path)
+
+        self.locks = {}
+        self.manager_lock = threading.Lock()
 
     def _merge_audio_segments(self, waveforms):
         import torch
@@ -93,14 +97,8 @@ class CosyVoiceGenerator:
 
         raise Exception('Prompt audio not exists')
 
-    async def prepare_prompt_audio(self, prompt_audio_hash, prompt_audio_url):
+    async def fetch_prompt_audio_to_cache(self, prompt_audio_hash, prompt_audio_url):
         import aiohttp
-
-        # If we have correct audio file in cache, use it
-        try:
-            return self.try_read_prompt_audio_b64(prompt_audio_hash)
-        except:
-            pass
 
         prompt_audio_file = self.construct_prompt_audio_cache_filename(prompt_audio_hash)
         # Else fetch it and store in cache
@@ -110,10 +108,27 @@ class CosyVoiceGenerator:
                     async for chunk in response.content.iter_chunked(1024):
                         f.write(chunk)
 
+    async def safe_prepare_prompt_audio(self, prompt_audio_hash, prompt_audio_url):
+        # If we have correct audio file in cache, use it
+        try:
+            return self.try_read_prompt_audio_b64(prompt_audio_hash)
+        except:
+            pass
+
+        with self.manager_lock:
+            if prompt_audio_hash not in self.locks:
+                self.locks[prompt_audio_hash] = threading.Lock()
+
+        with self.locks[prompt_audio_hash]:
+            # Someone may already fetch the audio
+            try:
+                return self.try_read_prompt_audio_b64(prompt_audio_hash)
+            except:
+                pass
+            return self.fetch_prompt_audio_to_cache(prompt_audio_hash, prompt_audio_url)
+
         try:
             return self.try_read_prompt_audio_b64(prompt_audio_hash)
         except Exception as e:
             raise ValueError(f'Prompt audio not exists: {str(e)}')
-
-
 

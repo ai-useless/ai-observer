@@ -178,7 +178,7 @@ async def speak_v2(self, args: V2InputArgs) -> Response:
     Generate SSE audio chunks from input text.
     """
 
-    prompt_audio_b64 = await self.generator.prepare_prompt_audio(
+    prompt_audio_b64 = await self.generator.safe_prepare_prompt_audio(
         prompt_audio_hash=args.prompt_audio_hash,
         prompt_audio_url=args.prompt_audio_url,
     )
