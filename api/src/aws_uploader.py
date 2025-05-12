@@ -3,7 +3,7 @@ from boto3.session import Session
 from config import config
 
 class AwsS3Uploader:
-    def __init__():
+    def __init__(self):
         session = Session(
             aws_access_key_id=config.aws_access_key,
             aws_secret_access_key=config.aws_secret_key,

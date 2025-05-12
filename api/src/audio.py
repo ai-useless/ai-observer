@@ -140,10 +140,10 @@ class AudioGenerate:
                 async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
                     response.raise_for_status()
                     audio_bytes = await response.read()
-                    logger.info(f'{BOLD}{url} - {audio_uid}{RESET} {GREEN}Request success{RESET} ... {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
+                    logger.info(f'{BOLD}{url} - {audio_uid}{RESET} {GREEN}Request SUCCESS{RESET} ... {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                     return audio_bytes
             except Exception as e:
-                logger.error(f'{BOLD}{url} - {audio_uid}{RESET} {RED}Request exception{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
+                logger.error(f'{BOLD}{url} - {audio_uid}{RESET} {RED}Request EXCEPTION{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                 raise Exception(repr(e))
 
     async def fetch_audio_v2(
@@ -184,10 +184,11 @@ class AudioGenerate:
                 async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
                     response.raise_for_status()
                     audio_bytes = await response.read()
-                    logger.info(f'{BOLD}{url} - {audio_uid}{RESET} {GREEN}Request success{RESET} ... {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
+                    logger.info(f'{BOLD}{url} - {audio_uid}{RESET} {GREEN}Request SUCCESS{RESET} ... {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                     return audio_bytes
             except Exception as e:
-                logger.error(f'{BOLD}{url} - {audio_uid}{RESET} {RED}Request exception{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
+                logger.info(f'{payload}')
+                logger.error(f'{BOLD}{url} - {audio_uid}{RESET} {RED}Request EXCEPTION{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                 raise Exception(repr(e))
 
     async def concurrent_audio_requests(self, chunks: list[str], voice_audio_b64: str, voice_audio_text: str, audio_uid: str) -> list[bytes]:
