@@ -27,6 +27,7 @@ parser.add_argument('--aws-region', type=str, default='', help='AWS S3 region')
 parser.add_argument('--aws-bucket', type=str, default='', help='AWS S3 bucket')
 
 config = parser.parse_args()
+config.aws_s3_base = f'https://{config.aws_bucket}.s3.amazonaws.com'
 
 os.makedirs(f'{config.data_dir}/audios', exist_ok=True)
 os.makedirs(f'{config.data_dir}/materials', exist_ok=True)

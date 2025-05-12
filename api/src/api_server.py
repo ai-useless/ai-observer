@@ -130,6 +130,16 @@ async def speak_async(
 
     return {'audio_uid': audio_uid}
 
+@app.post('/api/v2/speak_async', response_model=SpeakAsyncResponse)
+async def speak_async(
+    text: str = Body(...),
+    voice: str = Body(...),
+):
+    generator = AudioGenerate()
+    audio_uid = await generator.generate_audio_async_v2(text, voice)
+
+    return {'audio_uid': audio_uid}
+
 @app.get('/api/v1/audios/{audio_uid}', response_model=QueryAudioResponse)
 async def query_audio(audio_uid: str):
     audio = db.get_audio(audio_uid)

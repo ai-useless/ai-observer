@@ -13,4 +13,6 @@ class AwsS3Uploader:
 
     def upload(self, prefix, data, key):
         self.s3.put_object(Bucket=config.aws_bucket, Key=f'{prefix}/{key}', Body=data)
-        # Return S3 url
+        return f'{config.aws_s3_base}/{prefix}/{key}'
+
+uploader = AwsS3Uploader()
