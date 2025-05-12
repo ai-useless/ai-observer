@@ -228,7 +228,7 @@ class AudioGenerator:
         semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
 
         async with aiohttp.ClientSession(raise_for_status=True) as session:
-            return  self.fetch_audio_v2(text, session, semaphore, 0, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid)
+            return  await self.fetch_audio_v2(text, session, semaphore, 0, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid)
 
     def merge_audio_buffers(self, audio_buffers: list[bytes], voice: str, text=str) -> str:
         valid_buffers = [b for b in audio_buffers if b]
