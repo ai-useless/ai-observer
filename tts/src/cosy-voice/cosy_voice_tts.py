@@ -9,11 +9,7 @@ image = (
     Image(
         username="kikakkz",
         name="cosy-voice-tts",
-<<<<<<< HEAD
-        tag="0.0.4",
-=======
         tag="0.0.6",
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
         readme="## Text-to-speech using FunAudioLLM/CosyVoice",
     )
     .from_base("parachutes/base-python:3.10.17")
@@ -24,12 +20,6 @@ image = (
     .set_user("chutes")
     .run_command("pip install --upgrade pip")
     .run_command("pip install setuptools==75.8.0")
-<<<<<<< HEAD
-    # .add("local_whl/*", "/app/")
-    # .run_command("pip install --user /app/Cython-3.0.12-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
-    # .run_command("pip install --user /app/pynini-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl")
-=======
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
     .run_command("pip install Cython==3.0.12")
     .run_command("pip install pynini==2.1.5")
     .run_command(
@@ -116,18 +106,12 @@ import sys
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append('{}/third_party/Matcha-TTS'.format(ROOT_DIR))
 
-<<<<<<< HEAD
-class InputArgs(BaseModel):
-=======
 class V1InputArgs(BaseModel):
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
     text: str
     speed: float = 1.0
     prompt_audio_b64: str
     prompt_audio_text: str
 
-<<<<<<< HEAD
-=======
 class V2InputArgs(BaseModel):
     text: str
     speed: float = 1.0
@@ -135,7 +119,6 @@ class V2InputArgs(BaseModel):
     prompt_audio_url: str
     prompt_audio_text: str
 
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 @chute.on_startup()
 async def initialize(self):
     import os
@@ -158,11 +141,7 @@ async def initialize(self):
     stream=False,
     output_content_type="audio/wav",
 )
-<<<<<<< HEAD
-async def speak(self, args: InputArgs) -> Response:
-=======
 async def speak_v1(self, args: V1InputArgs) -> Response:
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
     from purify_text import purify_text
     """
     Generate SSE audio chunks from input text.
@@ -184,8 +163,6 @@ async def speak_v1(self, args: V1InputArgs) -> Response:
         media_type="audio/wav",
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
-<<<<<<< HEAD
-=======
 
 @chute.cord(
     path="/v2/speak",
@@ -224,4 +201,3 @@ async def speak_v2(self, args: V2InputArgs) -> Response:
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
 
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca

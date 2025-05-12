@@ -6,10 +6,7 @@ import base64
 from config import config
 from db import db
 from include import *
-<<<<<<< HEAD
-=======
 from aws_uploader import uploader
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 
 def fetch_avatar_then_save(avatar_url: str, target: str):
     print(f'    Downloading {BOLD}{avatar_url}{RESET}')
@@ -54,20 +51,12 @@ def fetch_audio_then_save(audio_url: str):
     with open(audio_path, 'wb') as f:
         f.write(audio_bytes)
 
-<<<<<<< HEAD
-    audio_b64_bytes = base64.b64encode(audio_bytes)
-    audio_b64 = audio_b64_bytes.decode('utf-8')
-
-    return (audio_cid, audio_b64)
-=======
-    # TODO: upload to aws s3
     audio_url = uploader.upload('materials', audio_bytes, f'{audio_cid}.wav')
 
     audio_b64_bytes = base64.b64encode(audio_bytes)
     audio_b64 = audio_b64_bytes.decode('utf-8')
 
     return (audio_cid, audio_b64, audio_url)
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 
 def fetch_kikakkz_avatar():
     url = 'https://avatars.githubusercontent.com/u/13128505?v=4&size=40'
@@ -83,11 +72,7 @@ def main():
         print(f'\n\nImporting {BOLD}{simulator["name"]}{RESET} ...')
 
         avatar_cid = fetch_avatar_then_save(simulator['avatar'], 'simulator')
-<<<<<<< HEAD
-        (audio_cid, audio_b64) = fetch_audio_then_save(simulator['audio'])
-=======
         (audio_cid, audio_b64, audio_url) = fetch_audio_then_save(simulator['audio'])
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
         audio_text = audio_2_text(audio_b64)
 
         db.new_simulator(
@@ -96,10 +81,7 @@ def main():
             kikakkz_avatar_cid,
             simulator['audio_id'],
             audio_cid,
-<<<<<<< HEAD
-=======
             audio_url,
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
             audio_text,
             simulator['name'],
             avatar_cid,

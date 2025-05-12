@@ -41,8 +41,6 @@ class AudioGenerate:
 
         return audio_uid
 
-<<<<<<< HEAD
-=======
     async def generate_audio_with_uid_v2(self, audio_uid: str, text: str, voice: str):
         try:
             logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating{RESET} ...')
@@ -63,7 +61,6 @@ class AudioGenerate:
 
         return audio_uid
 
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
     async def generate_audio(self, text: str, voice: str, audio_uid: str) -> str:
         simulator = db.get_simulator_with_audio_id(voice)
         if simulator is None:
@@ -87,12 +84,6 @@ class AudioGenerate:
         )
         return file_cid
 
-<<<<<<< HEAD
-    async def fetch_audio(
-        self,
-        text: str,
-        voice: str,
-=======
     async def generate_audio_v2(self, text: str, voice: str, audio_uid: str) -> str:
         simulator = db.get_simulator_with_audio_id(voice)
         if simulator is None:
@@ -116,7 +107,6 @@ class AudioGenerate:
     async def fetch_audio(
         self,
         text: str,
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
         session: aiohttp.ClientSession,
         semaphore: asyncio.Semaphore,
         index: int,
@@ -156,9 +146,6 @@ class AudioGenerate:
                 logger.error(f'{BOLD}{url} - {audio_uid}{RESET} {RED}Request exception{RESET} ... {repr(e)} - {BOLD}{_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                 raise Exception(repr(e))
 
-<<<<<<< HEAD
-    async def concurrent_audio_requests(self, chunks: list[str], voice: str, voice_audio_b64: str, voice_audio_text: str, audio_uid: str) -> list[bytes]:
-=======
     async def fetch_audio_v2(
         self,
         text: str,
@@ -204,16 +191,11 @@ class AudioGenerate:
                 raise Exception(repr(e))
 
     async def concurrent_audio_requests(self, chunks: list[str], voice_audio_b64: str, voice_audio_text: str, audio_uid: str) -> list[bytes]:
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
         semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
         async with aiohttp.ClientSession(raise_for_status=True) as session:
             tasks = []
             for idx, text in enumerate(chunks):
-<<<<<<< HEAD
-                task = asyncio.create_task(self.fetch_audio(text, voice, session, semaphore, idx, voice_audio_b64, voice_audio_text, audio_uid))
-=======
                 task = asyncio.create_task(self.fetch_audio(text, session, semaphore, idx, voice_audio_b64, voice_audio_text, audio_uid))
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
                 task.index = idx
                 tasks.append(task)
 
@@ -224,8 +206,6 @@ class AudioGenerate:
                 sorted_results[task.index] = results[tasks.index(task)]
             return sorted_results
 
-<<<<<<< HEAD
-=======
     async def concurrent_audio_requests_v2(self, chunks: list[str], voice_audio_hash: str, voice_audio_url: str, voice_audio_text: str, audio_uid: str) -> list[bytes]:
         semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
         async with aiohttp.ClientSession(raise_for_status=True) as session:
@@ -243,7 +223,6 @@ class AudioGenerate:
             return sorted_results
 
 
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
     def merge_audio_buffers(self, audio_buffers: list[bytes], voice: str, text=str) -> str:
         valid_buffers = [b for b in audio_buffers if b]
         hasher = hashlib.sha256()

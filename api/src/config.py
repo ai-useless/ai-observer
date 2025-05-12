@@ -21,10 +21,6 @@ parser.add_argument('--clean-database', action='store_true', help='Clean databas
 parser.add_argument('--ignore-api-token', action='store_true', help='Ignore api token')
 parser.add_argument('--kikakkz-wechat-openid', type=str, default='', help='WeChat openid of kikakkz')
 parser.add_argument('--concurrent-audio-requests', type=int, default=5, help='Concurrent audio requests')
-<<<<<<< HEAD
-
-config = parser.parse_args()
-=======
 parser.add_argument('--aws-access-key', type=str, default='', help='AWS S3 access key')
 parser.add_argument('--aws-secret-key', type=str, default='', help='AWS S3 secret key')
 parser.add_argument('--aws-region', type=str, default='', help='AWS S3 region')
@@ -32,7 +28,6 @@ parser.add_argument('--aws-bucket', type=str, default='', help='AWS S3 bucket')
 
 config = parser.parse_args()
 config.aws_s3_base = f'https://{config.aws_bucket}.s3.amazonaws.com'
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 
 os.makedirs(f'{config.data_dir}/audios', exist_ok=True)
 os.makedirs(f'{config.data_dir}/materials', exist_ok=True)

@@ -1,14 +1,4 @@
 class CosyVoiceGenerator:
-<<<<<<< HEAD
-    def __init__(self, model_path="pretrained_models/CosyVoice2-0.5B"):
-        from cosyvoice.cli.cosyvoice import CosyVoice2
-        self.cosyvoice = CosyVoice2(model_path)
-
-    def _merge_audio_segments(self, waveforms):
-        import torch
-        if any(wave.dim() != 2 for wave in waveforms):
-            raise ValueError("Invalid audio dimension, expected 2D tensor")
-=======
     def __init__(self, model_path='pretrained_models/CosyVoice2-0.5B'):
         from cosyvoice.cli.cosyvoice import CosyVoice2
         import logging
@@ -24,7 +14,6 @@ class CosyVoiceGenerator:
         import torch
         if any(wave.dim() != 2 for wave in waveforms):
             raise ValueError('Invalid audio dimension, expected 2D tensor')
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 
         return torch.cat(waveforms, dim=1)
 
@@ -36,13 +25,8 @@ class CosyVoiceGenerator:
             buffer,
             waveform,
             self.cosyvoice.sample_rate,
-<<<<<<< HEAD
-            format="wav",
-            encoding="PCM_S",
-=======
             format='wav',
             encoding='PCM_S',
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
             bits_per_sample=16
         )
         buffer.seek(0)
@@ -56,24 +40,15 @@ class CosyVoiceGenerator:
         import librosa
         import torch
         try:
-<<<<<<< HEAD
-            if "base64," in base64_str:
-                base64_str = base64_str.split("base64,", 1)[1]
-=======
             if 'base64,' in base64_str:
                 base64_str = base64_str.split('base64,', 1)[1]
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
             audio_bytes = base64.b64decode(base64_str)
             audio_stream = io.BytesIO(audio_bytes)
             audio, sr = librosa.load(audio_stream, sr=16000, mono=True)
             audio_tensor = torch.FloatTensor(audio).unsqueeze(0)
             return audio_tensor
         except Exception as e:
-<<<<<<< HEAD
-            raise ValueError(f"Audio processing failed: {str(e)}")
-=======
             raise ValueError(f'Audio processing failed: {str(e)}')
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 
     def generate_speech(self, target_text, prompt_audio_b64, prompt_audio_text):
         prompt_speech = self.base64_to_audio_tensor(prompt_audio_b64)
@@ -86,12 +61,6 @@ class CosyVoiceGenerator:
         )
 
         merged_waveform = self._merge_audio_segments(
-<<<<<<< HEAD
-            [result["tts_speech"] for result in results]
-        )
-
-        return self._waveform_to_bytes(merged_waveform)
-=======
             [result['tts_speech'] for result in results]
         )
 
@@ -168,4 +137,3 @@ class CosyVoiceGenerator:
         except Exception as e:
             raise ValueError(f'Prompt audio not exists: {str(e)}')
 
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca

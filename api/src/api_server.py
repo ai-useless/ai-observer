@@ -121,11 +121,7 @@ async def speak(
     return {'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav'}
 
 @app.post('/api/v1/speak_async', response_model=SpeakAsyncResponse)
-<<<<<<< HEAD
-async def speak_async(
-=======
 async def speak_async_v1(
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
     text: str = Body(...),
     voice: str = Body(...),
 ):
@@ -134,8 +130,6 @@ async def speak_async_v1(
 
     return {'audio_uid': audio_uid}
 
-<<<<<<< HEAD
-=======
 @app.post('/api/v2/speak_async', response_model=SpeakAsyncResponse)
 async def speak_async_v2(
     text: str = Body(...),
@@ -146,7 +140,6 @@ async def speak_async_v2(
 
     return {'audio_uid': audio_uid}
 
->>>>>>> 1bfe8209e3e31ec69acb42c0fddfc13eca4bb5ca
 @app.get('/api/v1/audios/{audio_uid}', response_model=QueryAudioResponse)
 async def query_audio(audio_uid: str):
     audio = db.get_audio(audio_uid)
