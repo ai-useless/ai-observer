@@ -14,7 +14,7 @@ from include import *
 from config import config
 from db import db
 
-class AudioGenerate:
+class AudioGenerator:
     async def generate_audio_with_uid(self, audio_uid: str, text: str, voice: str):
         try:
             logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating{RESET} ...')
@@ -223,6 +223,12 @@ class AudioGenerate:
                 sorted_results[task.index] = results[tasks.index(task)]
             return sorted_results
 
+    async def audio_request_one(self, text: str, voice_audio_hash: str, voice_audio_url: str, voice_audio_text: str) -> bytes:
+        audio_uid = f'{uuid.uuid4()}'
+        semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
+
+        async with aiohttp.ClientSession(raise_for_status=True) as session:
+            return  self.fetch_audio_v2(text, session, semaphore, 0, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid))
 
     def merge_audio_buffers(self, audio_buffers: list[bytes], voice: str, text=str) -> str:
         valid_buffers = [b for b in audio_buffers if b]
@@ -255,3 +261,5 @@ class AudioGenerate:
             logger.error(f'{BOLD}{voice}{RESET} - {RED}No valid audio data to merge{RESET} for {BOLD}{text[0:16]}{RESET}...')
             raise Exception('Invalid audio')
         return file_cid
+
+generator = AudioGenerator()

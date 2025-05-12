@@ -12,7 +12,7 @@ import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 
-from audio import AudioGenerate
+from audio import generator
 from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
@@ -115,7 +115,6 @@ async def speak(
     text: str = Body(...),
     voice: str = Body(...),
 ):
-    generator = AudioGenerate()
     audio_file_cid = await generator.generate_audio(text, voice)
 
     return {'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav'}
@@ -125,7 +124,6 @@ async def speak_async_v1(
     text: str = Body(...),
     voice: str = Body(...),
 ):
-    generator = AudioGenerate()
     audio_uid = await generator.generate_audio_async(text, voice)
 
     return {'audio_uid': audio_uid}
@@ -135,7 +133,6 @@ async def speak_async_v2(
     text: str = Body(...),
     voice: str = Body(...),
 ):
-    generator = AudioGenerate()
     audio_uid = await generator.generate_audio_async_v2(text, voice)
 
     return {'audio_uid': audio_uid}

@@ -3,6 +3,7 @@ import hashlib
 import base64
 import json
 
+from audio import generator
 from config import config
 from db import db
 from include import *
@@ -57,6 +58,11 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
         f.write(audio_bytes)
 
     audio_s3_url = uploader.upload('materials', audio_bytes, f'{file_name}')
+
+    try:
+        await generator.audio_request_one(text, file_cid, audio_s3_url, simulator['text'])
+    except Exception as e:
+        raise Exception(repr(e))
 
     simulator_avatar_b64_bytes = simulator_avatar.encode("utf-8")
     simulator_avatar_cid = hashlib.sha256(simulator_avatar_b64_bytes).hexdigest()
