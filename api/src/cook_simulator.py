@@ -48,11 +48,11 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
         logger.error(f'{BOLD}Audio2Text{RESET} {RED}{e}{RESET}')
         raise Exception(repr(e))
 
-    file_cid = hashlib.sha256(audio_b64.encode("utf-8")).hexdigest()
+    audio_bytes = base64.b64decode(audio_b64)
+    file_cid = hashlib.sha256(audio_bytes).hexdigest()
     file_name = f'{file_cid}.wav'
     file_path = f'{config.data_dir}/materials/{file_name}'
 
-    audio_bytes = base64.b64decode(audio_b64)
     with open(file_path, 'wb') as f:
         f.write(audio_bytes)
 
