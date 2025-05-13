@@ -92,7 +92,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     Intent.GENERATE,
     ((
       historyMessages: string[]
-    ) => `你是一个比李诞还棒的搞笑段子创作者，请创作5个符合中国人笑点的不同领域不同题材的像内涵段子和糗事百科一样的搞笑段子。每个段子字数60字以内，包含没有序号的标题，段子内容需要包含人物、事件以及过程。
+    ) => `你是一个比李诞还棒的搞笑段子创作者，请创作5个符合中国人笑点的不同领域不同题材的像内涵段子和糗事百科一样的搞笑段子，可以尝试试用谐音梗、生活观察、反转等元素，
+          关注潜台词解码、逻辑颠覆和热点捕捉。每个段子字数60字以内，包含没有序号的标题，段子内容需要包含人物、事件以及过程。
           不同的段子单独一段，标题单独一行，需要HTML格式，标题居中，段子之间相隔16px。要求: ${intentRequirements(Intent.GENERATE, historyMessages)}`) as IntentFunc
   ]
 ])
