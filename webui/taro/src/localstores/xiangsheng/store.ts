@@ -16,13 +16,14 @@ const xiangsheng = useXiangshengStore()
 export class Xiangsheng {
   static xiangsheng = () => xiangsheng.uid
 
-  static setXiangsheng = (v: string) => xiangsheng.uid = v
+  static setXiangsheng = (v: string) => (xiangsheng.uid = v)
 
   static topic = () => xiangsheng.topic
 
-  static setTopic = (v: string) => xiangsheng.topic = v
+  static setTopic = (v: string) => (xiangsheng.topic = v)
 
   static xiangshengMessages = () => xiangsheng.messages
 
-  static appendXiangshengMessage = (v: XiangshengMessage) => xiangsheng.messages.push(v)
+  static appendXiangshengMessage = (v: XiangshengMessage) =>
+    xiangsheng.messages.push(v)
 }

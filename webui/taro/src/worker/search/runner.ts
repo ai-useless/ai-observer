@@ -31,9 +31,7 @@ export interface SearchResponsePayload {
 
 export interface SearchEvent {
   type: SearchEventType
-  payload:
-    | SearchRequestPayload
-    | SearchResponsePayload
+  payload: SearchRequestPayload | SearchResponsePayload
 }
 
 export type ErrorResponsePayload = {
@@ -49,12 +47,7 @@ export class SearchRunner {
     message: string,
     modelId: number
   ) => {
-    dbBridge.SearchResult.create(
-      topic,
-      prompt,
-      modelId,
-      message
-    )
+    dbBridge.SearchResult.create(topic, prompt, modelId, message)
   }
 
   static speakerVoice = async (simulatorId: number) => {
@@ -110,9 +103,9 @@ export class SearchRunner {
       prompt: purify.purifyText(_prompt || '')
     })
 
-    const _generateAudio = await dbBridge._Setting.get(
+    const _generateAudio = (await dbBridge._Setting.get(
       dbModel.SettingKey.GENERATE_AUDIO
-    ) as boolean
+    )) as boolean
     if (
       (generateAudio !== undefined && !generateAudio) ||
       (_generateAudio !== undefined && !_generateAudio) ||
@@ -137,7 +130,9 @@ export class SearchRunner {
       let audioUrl = undefined as unknown as string
 
       while (true) {
-        const queryResp = await axios.get(`${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`)
+        const queryResp = await axios.get(
+          `${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`
+        )
         const resp = queryResp.data as Record<string, string>
         if (!resp.settled && !resp.error) {
           await delay.delay(10000)
@@ -168,7 +163,7 @@ export class SearchRunner {
       generateAudio,
       prompt,
       simulatorId,
-      modelId,
+      modelId
     } = payload
 
     const response = await SearchRunner.requestSearch(

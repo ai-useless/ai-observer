@@ -13,7 +13,10 @@ type MessageFunc = (
 ) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
-type HistoryMessagesFunc = () => Map<string, { content: string, participatorId: number }[]>
+type HistoryMessagesFunc = () => Map<
+  string,
+  { content: string; participatorId: number }[]
+>
 
 export class ESeminar {
   private seminar = undefined as unknown as dbModel.Seminar
@@ -182,7 +185,8 @@ export class ESeminar {
         topicMaterial: this.topicMaterial,
         generateAudio: true,
         guests: simulators.map(
-          (el) => el.simulator.simulator + ', ' + el.simulator.origin_personality
+          (el) =>
+            el.simulator.simulator + ', ' + el.simulator.origin_personality
         ),
         archetype: dbBridge._Simulator.archetypeWithId(
           host.simulator ? host.simulator.id : 0

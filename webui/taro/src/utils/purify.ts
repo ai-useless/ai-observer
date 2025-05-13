@@ -37,3 +37,7 @@ export const purifyThink = (html: string): string => {
     .replace(/<\/head>/gi, '')
     .trim()
 }
+
+export const purifyBracket = (html: string): string => {
+  return html.replace(/\(.*?\)/g, '')
+}

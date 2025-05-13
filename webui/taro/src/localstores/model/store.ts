@@ -6,9 +6,7 @@ import { _Model } from './types'
 export const useModelStore = defineStore('model', {
   state: () => ({
     models: [] as _Model[],
-    blacklist: [
-      'Qwen/Qwen3-235B-A22B'
-    ]
+    blacklist: ['Qwen/Qwen3-235B-A22B']
   }),
   actions: {
     getModels(done?: (error: boolean, rows?: unknown[]) => void) {
@@ -37,7 +35,8 @@ export const useModelStore = defineStore('model', {
 const model = useModelStore()
 
 export class Model {
-  static getModels = (done?: (error: boolean, rows?: unknown[]) => void) => model.getModels(done)
+  static getModels = (done?: (error: boolean, rows?: unknown[]) => void) =>
+    model.getModels(done)
 
   static models = () => model.models
 }

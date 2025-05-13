@@ -45,10 +45,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     (() =>
       ') 资料分级采用两个空格缩进，参考文献、链接独立成行并用方括号加数字标识；') as RequirementFunc
   ],
-  [
-    PromptType.WITH_HTML,
-    (() => ') 输出格式为纯HTML；') as RequirementFunc
-  ],
+  [PromptType.WITH_HTML, (() => ') 输出格式为纯HTML；') as RequirementFunc],
   [
     PromptType.HTML_STYLE,
     (() =>
@@ -57,8 +54,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.SEGMENT, (() => ') 根据语义合理分段；') as RequirementFunc],
   [
     PromptType.NO_EMOJI,
-    (() =>
-      ') 不包含表情、标签、换行符或额外提示；') as RequirementFunc
+    (() => ') 不包含表情、标签、换行符或额外提示；') as RequirementFunc
   ],
   [
     PromptType.DURATION,
@@ -72,7 +68,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.EMOTION,
-    (() => ') 人物情绪理性客观中立，带有各自社群特征，观点鲜明；') as RequirementFunc
+    (() =>
+      ') 人物情绪理性客观中立，带有各自社群特征，观点鲜明；') as RequirementFunc
   ],
   [
     PromptType.NO_ANALYSIS,
@@ -95,7 +92,8 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.DONT_DESCRIBE_PERSONALITY,
-    (() => ') 不要生硬地将讨论话题和自己的人设联系，过渡要自然；') as RequirementFunc
+    (() =>
+      ') 不要生硬地将讨论话题和自己的人设联系，过渡要自然；') as RequirementFunc
   ],
   [
     PromptType.NO_VIRTUAL_WORDS,
@@ -135,8 +133,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.MUST_OBEY,
-    (() =>
-      '请严格遵守以上要求，结构清晰，内容完整。') as RequirementFunc
+    (() => '请严格遵守以上要求，结构清晰，内容完整。') as RequirementFunc
   ]
 ])
 

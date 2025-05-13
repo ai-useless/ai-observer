@@ -25,10 +25,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     (() =>
       ') 资料分级采用两个空格缩进，参考文献、链接独立成行并用方括号加数字标识，链接可以点击跳转；') as RequirementFunc
   ],
-  [
-    PromptType.WITH_HTML,
-    (() => ') 输出格式为纯HTML；') as RequirementFunc
-  ],
+  [PromptType.WITH_HTML, (() => ') 输出格式为纯HTML；') as RequirementFunc],
   [
     PromptType.HTML_STYLE,
     (() =>
@@ -37,8 +34,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.SEGMENT, (() => ') 根据语义合理分段；') as RequirementFunc],
   [
     PromptType.NO_EMOJI,
-    (() =>
-      ') 不包含表情、标签、换行符或额外提示；') as RequirementFunc
+    (() => ') 不包含表情、标签、换行符或额外提示；') as RequirementFunc
   ],
   [
     PromptType.MERGE_SPACES,
@@ -53,7 +49,9 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     PromptType.WITH_HISTORY_ANALYSIS,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ((historyMessages: string[]) =>
-      historyMessages.length ? `) 用户已经获取到下列内容 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}; ` : '') as RequirementFunc
+      historyMessages.length
+        ? `) 用户已经获取到下列内容 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}; `
+        : '') as RequirementFunc
   ],
   [
     PromptType.WITHOUT_POLITICAL,
@@ -62,8 +60,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.MUST_OBEY,
-    (() =>
-      '请严格遵守以上要求，结构清晰，内容完整。') as RequirementFunc
+    (() => '请严格遵守以上要求，结构清晰，内容完整。') as RequirementFunc
   ]
 ])
 

@@ -18,7 +18,7 @@ export class SearchWorker {
 
   // eslint-disable-next-line func-call-spacing
   private _listeners: Map<XiangshengEventType, ListenerFunc[]> = new Map<
-  XiangshengEventType,
+    XiangshengEventType,
     ListenerFunc[]
   >()
 
@@ -54,16 +54,14 @@ export class SearchWorker {
   }
 
   public static on = (type: XiangshengEventType, listener: ListenerFunc) => {
-    const listeners =
-      SearchWorker.getSearchWorker()._listeners.get(type) || []
+    const listeners = SearchWorker.getSearchWorker()._listeners.get(type) || []
     listeners.push(listener)
     SearchWorker.getSearchWorker()._listeners.set(type, listeners)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static off = (type: XiangshengEventType, listener: ListenerFunc) => {
-    const listeners =
-      SearchWorker.getSearchWorker()._listeners.get(type) || []
+    const listeners = SearchWorker.getSearchWorker()._listeners.get(type) || []
     const index = listeners.findIndex((el) => el === listener)
     if (index < 0) return
     listeners.splice(index, 1)

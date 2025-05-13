@@ -4,7 +4,10 @@ import { dbBridge } from '..'
 import { EParticipator } from './participator'
 
 type MessageFunc = (
-  xiangshengUid: string, participatorId: number, text: string, audio: string
+  xiangshengUid: string,
+  participatorId: number,
+  text: string,
+  audio: string
 ) => void | Promise<void>
 type HistoryMessagesFunc = () => xiangshengWorker.HistoryMessage[]
 
@@ -31,20 +34,20 @@ export class EXiangsheng {
   }
 
   onChatResponse = (message: xiangshengWorker.ChatResponsePayload) => {
-    const { xiangshengUid, participatorId, text, audio } =
-      message
+    const { xiangshengUid, participatorId, text, audio } = message
 
-    void this.onMessage(
-      xiangshengUid,
-      participatorId,
-      text,
-      audio
-    )
+    void this.onMessage(xiangshengUid, participatorId, text, audio)
   }
 
   next = (role: string) => {
-    const host = dbBridge._Participator.host(this.xiangsheng.uid) as dbModel.Participator
-    const guest = (dbBridge._Participator.guests(this.xiangsheng.uid) as dbModel.Participator[])[0]
+    const host = dbBridge._Participator.host(
+      this.xiangsheng.uid
+    ) as dbModel.Participator
+    const guest = (
+      dbBridge._Participator.guests(
+        this.xiangsheng.uid
+      ) as dbModel.Participator[]
+    )[0]
 
     const hostSimulator = EParticipator.simulator(host)
     const guestSimulator = EParticipator.simulator(guest)
@@ -54,14 +57,23 @@ export class EXiangsheng {
       topic: this.xiangsheng.topic,
       historyMessages,
       xiangshengUid: this.xiangsheng.uid,
-      participatorId: role === '捧哏' ? guestSimulator.participatorId : hostSimulator.participatorId,
+      participatorId:
+        role === '捧哏'
+          ? guestSimulator.participatorId
+          : hostSimulator.participatorId,
       modelId: host.modelId,
       role,
-      partner: role === '逗哏' ? guestSimulator.simulator.simulator : hostSimulator.simulator.simulator,
-      mySelf: role === '捧哏' ? guestSimulator.simulator.simulator : hostSimulator.simulator.simulator
+      partner:
+        role === '逗哏'
+          ? guestSimulator.simulator.simulator
+          : hostSimulator.simulator.simulator,
+      mySelf:
+        role === '捧哏'
+          ? guestSimulator.simulator.simulator
+          : hostSimulator.simulator.simulator
     })
       .then((payload) => {
-        if (payload)  {
+        if (payload) {
           this.onChatResponse(payload)
           this.next(role === '逗哏' ? '捧哏' : '逗哏')
         } else

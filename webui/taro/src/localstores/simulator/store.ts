@@ -70,7 +70,10 @@ export class Simulator {
   static setAvatar = (v: number) => (simulator.mySimulatorsCount = v)
 
   static countSimulators = (code?: string) => simulator.countSimulators(code)
-  static getSimulators = (code?: string, done?: (error: boolean, rows?: unknown[]) => void) => simulator.getSimulators(code, done)
+  static getSimulators = (
+    code?: string,
+    done?: (error: boolean, rows?: unknown[]) => void
+  ) => simulator.getSimulators(code, done)
 
   static mySimulators = () => simulator.simulators.filter((el) => el.mine)
   static allSimulators = () => simulator.simulators

@@ -129,13 +129,7 @@ export class SeminarRunner {
     content: string,
     audio: string
   ) => {
-    dbBridge._Message.create(
-      seminarId,
-      participatorId,
-      prompt,
-      content,
-      audio
-    )
+    dbBridge._Message.create(seminarId, participatorId, prompt, content, audio)
   }
 
   static speakerVoice = async (participatorId: number) => {
@@ -319,7 +313,9 @@ export class SeminarRunner {
       let audioUrl = undefined as unknown as string
 
       while (true) {
-        const queryResp = await axios.get(`${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`)
+        const queryResp = await axios.get(
+          `${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`
+        )
         const resp = queryResp.data as Record<string, string>
         if (!resp.settled && !resp.error) {
           await delay.delay(10000)

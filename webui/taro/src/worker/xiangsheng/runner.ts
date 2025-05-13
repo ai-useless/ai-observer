@@ -36,9 +36,7 @@ export interface ChatResponsePayload {
 
 export interface XiangshengEvent {
   type: XiangshengEventType
-  payload:
-    | ChatRequestPayload
-    | ChatResponsePayload
+  payload: ChatRequestPayload | ChatResponsePayload
 }
 
 export type ErrorResponsePayload = {
@@ -53,11 +51,7 @@ export class XiangshengRunner {
     message: string,
     modelId: number
   ) => {
-    dbBridge.XiangshengMessage.create(
-      topic,
-      modelId,
-      message
-    )
+    dbBridge.XiangshengMessage.create(topic, modelId, message)
   }
 
   static speakerVoice = async (simulatorId: number) => {
@@ -122,9 +116,7 @@ export class XiangshengRunner {
       prompt: purify.purifyText(_prompt || '')
     })
 
-    if (
-      !(textResp.data as Record<string, string>).content
-    ) {
+    if (!(textResp.data as Record<string, string>).content) {
       return {
         text: (textResp.data as Record<string, string>).content,
         audio: ''
@@ -132,10 +124,12 @@ export class XiangshengRunner {
     }
 
     try {
-      const speechContent = purify.purifyText(
-        (textResp.data as Record<string, string>).content
+      const speechContent = purify.purifyBracket(
+        purify.purifyText((textResp.data as Record<string, string>).content)
       )
-      const voice = await XiangshengRunner.speakerVoice(participator.simulatorId)
+      const voice = await XiangshengRunner.speakerVoice(
+        participator.simulatorId
+      )
       const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
         text: speechContent,
         voice
@@ -144,7 +138,9 @@ export class XiangshengRunner {
       let audioUrl = undefined as unknown as string
 
       while (true) {
-        const queryResp = await axios.get(`${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`)
+        const queryResp = await axios.get(
+          `${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`
+        )
         const resp = queryResp.data as Record<string, string>
         if (!resp.settled && !resp.error) {
           await delay.delay(10000)
@@ -191,11 +187,7 @@ export class XiangshengRunner {
     )
     if (!response || !response.text) return
 
-    await XiangshengRunner.saveMessage(
-      topic,
-      response.text,
-      modelId
-    )
+    await XiangshengRunner.saveMessage(topic, response.text, modelId)
 
     return {
       ...response,
