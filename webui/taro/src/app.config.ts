@@ -10,7 +10,8 @@ export default {
     'pages/model/ModelsPage',
     'pages/search/SearchPage',
     'pages/xiangsheng/XiangshengPage',
-    'pages/xiangsheng/role/RolesPage'
+    'pages/xiangsheng/role/RolesPage',
+    'pages/duanzi/DuanziPage'
   ],
   workers: 'worker',
   window: {
@@ -25,6 +26,7 @@ export default {
       { pagePath: 'pages/index/IndexPage', text: '首页' },
       { pagePath: 'pages/seminar/SeminarPage', text: 'AGI观点' },
       { pagePath: 'pages/xiangsheng/XiangshengPage', text: 'AGI相声' },
+      { pagePath: 'pages/duanzi/DuanziPage', text: 'AGI段子' },
       { pagePath: 'pages/user/UserPage', text: '我的' }
     ]
   }

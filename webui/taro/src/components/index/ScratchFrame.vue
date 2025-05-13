@@ -34,6 +34,20 @@
         AGI相声
       </Button>
       <Button
+        @click='onStartDuanziClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
+      >
+        AGI段子
+      </Button>
+      <Button
+        @click='onStartStoryClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
+      >
+        AGI故事会
+      </Button>
+      <Button
         v-if='false'
         @click='onStartDiscussClick'
         size='mini'
@@ -190,6 +204,22 @@ const startXiangsheng = () => {
 
 const onStartXiangshengClick = () => {
   startXiangsheng()
+}
+
+const startDuanzi = () => {
+  Taro.switchTab({ url: '/pages/duanzi/DuanziPage' })
+}
+
+const onStartDuanziClick = () => {
+  startDuanzi()
+}
+
+const startStory = () => {
+  // TODO:
+}
+
+const onStartStoryClick = () => {
+  startStory()
 }
 
 const onTopicClick = (_topic: string) => {
