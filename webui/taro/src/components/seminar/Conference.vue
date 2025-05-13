@@ -51,14 +51,17 @@
     </scroll-view>
     <View style='display: flex; flex-direction: row-reverse; align-items: center; width: calc(100% - 32px); margin-top: -8px; height: 24px;'>
       <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
-        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;'>
+        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
           <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
-        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;'>
+        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
           <Image :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
-        <View :style='{ height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
+        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
           <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+        <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
+          <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
       </View>
     </View>
@@ -80,7 +83,7 @@ import { seminarWorker } from 'src/worker'
 import Outline from './Outline.vue'
 import MessageCard from './MessageCard.vue'
 
-import { gotoBottom, gotoTop, manualScrollGray } from 'src/assets'
+import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp } from 'src/assets'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -91,6 +94,7 @@ const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
 const autoScroll = ref(true)
+const enablePlay = ref(true)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -140,6 +144,20 @@ watch(lastMessageText, async () => {
 
 const onAutoScrollClick = () => {
   autoScroll.value = !autoScroll.value
+}
+
+const onGotoBottomClick = () => {
+  autoScroll.value = true
+  scrollTop.value = 999999
+}
+
+const onGotoTopClick = () => {
+  autoScroll.value = false
+  scrollTop.value = 0
+}
+
+const onPlayClick = () => {
+  enablePlay.value = !enablePlay.value
 }
 
 const calculateTypingInterval = (duration: number) => {
@@ -197,12 +215,12 @@ const typing = () => {
       _subTopic = typingMessage.value.subTopic
     }
     setTimeout(() => {
-      void eSeminar.value.nextGuests(_subTopic)
+      void eSeminar.value.nextGuests(_subTopic, enablePlay.value)
     }, 100)
     requesting.value = true
   }
 
-  if (typingMessage.value.audio && typingMessage.value.audio.length) {
+  if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)
     playAudio(typingMessage.value.audio).then((player: AudioPlayer) => {
       if (player && player.duration > 0) {

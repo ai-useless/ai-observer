@@ -1,7 +1,7 @@
 <template>
   <View>
     <Text style='width: 100%;' class='title'>
-      您想让AGI讨论点儿什么呢 ?
+      您想让AGI做点儿什么呢 ?
     </Text>
     <Textarea
       type='textarea'
@@ -14,11 +14,48 @@
     <Button
       @click='onStartDiscussClick'
       size='mini'
-      style='width: calc(100% - 32px); margin-top: 16px; border-radius: 8px; color: blue;'
+      style='border-radius: 8px; color: blue; width: calc(100% - 32px); margin-top: 16px;'
     >
-      选择AGI主持人和嘉宾讨论
+      选择AGI主持人和嘉宾开始圆桌论坛
     </Button>
-    <View style='margin-top: 16px; width: calc(100% - 32px);' class='container'>
+    <View style='width: calc(100% - 32px);'>
+      <Button
+        @click='onStartDiscussClick'
+        size='mini'
+        style='border-radius: 8px; color: blue;'
+      >
+        随便问一下
+      </Button>
+      <Button
+        @click='onStartDiscussClick'
+        size='mini'
+        style='border-radius: 8px; color: blue;'
+      >
+        AGI相声
+      </Button>
+      <Button
+        @click='onStartDiscussClick'
+        size='mini'
+        style='border-radius: 8px; color: blue;'
+      >
+        AGI脱口秀
+      </Button>
+      <Button
+        @click='onStartDiscussClick'
+        size='mini'
+        style='border-radius: 8px; color: blue;'
+      >
+        AGI小品
+      </Button>
+      <Button
+        @click='onStartDiscussClick'
+        size='mini'
+        style='border-radius: 8px; color: blue;'
+      >
+        AGI舞台剧
+      </Button>
+    </View>
+    <View style='margin-top: 16px; width: calc(100% - 32px);'>
       <Button
         size='mini'
         v-for='clazz in presetClasses'

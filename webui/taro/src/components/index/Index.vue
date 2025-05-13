@@ -7,5 +7,5 @@
 <script setup lang='ts'>
 import { View } from '@tarojs/components'
 
-import ScratchFrame from '../seminar/ScratchFrame.vue'
+import ScratchFrame from './ScratchFrame.vue'
 </script>

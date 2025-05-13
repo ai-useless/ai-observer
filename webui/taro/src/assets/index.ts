@@ -11,6 +11,8 @@ import threeDotsVertical from './ThreeDotsVertical.svg'
 import gotoBottom from './GotoBottom.svg'
 import gotoTop from './GotoTop.svg'
 import manualScrollGray from './ManualScrollGray.svg'
+import volumeUp from './VolumeUp.svg'
+import volumeOff from './VolumeOff.svg'
 
 export {
   chevronRight,
@@ -25,5 +27,7 @@ export {
   threeDotsVertical,
   gotoBottom,
   gotoTop,
-  manualScrollGray
+  manualScrollGray,
+  volumeUp,
+  volumeOff
 }
