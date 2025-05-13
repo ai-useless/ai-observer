@@ -1,6 +1,5 @@
 <template>
   <View
-    v-if='!message.subTopicTitle'
     :stamp='message.datetime'
     :text='[message.message]'
     text-color='grey-9'
@@ -22,9 +21,6 @@
       </View>
     </View>
     <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px;' />
-  </View>
-  <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600;'>
-    {{ message.subTopic }}
   </View>
 </template>
 

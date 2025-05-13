@@ -10,7 +10,6 @@ enum PromptType {
   SEGMENT,
   NO_EMOJI,
   MERGE_SPACES,
-  WITH_EVENT,
   WITH_HISTORY_ANALYSIS,
   WITHOUT_POLITICAL,
   MUST_OBEY
@@ -43,11 +42,6 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.MERGE_SPACES,
     (() => ') 行首无多余空格，连续空格合并为一个；') as RequirementFunc
-  ],
-  [
-    PromptType.WITH_EVENT,
-    (() =>
-      ') 若资料含具体事例，列出带链接的上标，鼠标悬停显示链接，点击可跳转；') as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_ANALYSIS,
@@ -114,7 +108,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       partner?: string,
       mySelf?: string
     ) => `你是相声演员${mySelf}，你作为${role}和${partner}正在表演一个主题为${topic}的相声节目，节目时长大约5分钟，请根据节目表演进程创建你这个角色的下一段内容。
-          你和你的表演伙伴是交替生成内容，你只需要生成当前这一段你表演的内容即可。要求: ${intentRequirements(Intent.CHAT, historyMessages)}`) as IntentFunc
+          你和你的表演伙伴是交替生成内容，你只需要生成当前这一段你表演的内容即可。注意，你和你的伙伴是交替发言的，你们的表演交流需要有互动和趣味性。
+          要求: ${intentRequirements(Intent.CHAT, historyMessages)}`) as IntentFunc
   ]
 ])
 
