@@ -49,6 +49,19 @@
       </View>
       <View id='scrollBottomView'  />
     </scroll-view>
+    <View style='display: flex; flex-direction: row-reverse; align-items: center; width: calc(100% - 32px); margin-top: -8px; height: 24px;'>
+      <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
+        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;'>
+          <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;'>
+          <Image :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+        <View :style='{ height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
+          <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+      </View>
+    </View>
   </View>
 </template>
 
@@ -58,14 +71,16 @@ import { seminar, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
-import { View, ScrollView, Text } from '@tarojs/components'
+import { View, ScrollView, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
+import { seminarWorker } from 'src/worker'
 
 import Outline from './Outline.vue'
 import MessageCard from './MessageCard.vue'
-import { seminarWorker } from 'src/worker'
+
+import { gotoBottom, gotoTop, manualScrollGray } from 'src/assets'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -75,6 +90,7 @@ const simulators = ref([] as entityBridge.PSimulator[])
 const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
+const autoScroll = ref(true)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -117,9 +133,14 @@ watch(messageCount, () => {
 })
 
 watch(lastMessageText, async () => {
+  if (!autoScroll.value) return
   await nextTick()
   scrollTop.value += 1
 })
+
+const onAutoScrollClick = () => {
+  autoScroll.value = !autoScroll.value
+}
 
 const calculateTypingInterval = (duration: number) => {
   if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {

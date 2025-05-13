@@ -8,6 +8,9 @@ import warnCircle from './WarnCircle.svg'
 import playCircle from './PlayCircle.svg'
 import stopCircle from './StopCircle.svg'
 import threeDotsVertical from './ThreeDotsVertical.svg'
+import gotoBottom from './GotoBottom.svg'
+import gotoTop from './GotoTop.svg'
+import manualScrollGray from './ManualScrollGray.svg'
 
 export {
   chevronRight,
@@ -19,5 +22,8 @@ export {
   warnCircle,
   playCircle,
   stopCircle,
-  threeDotsVertical
+  threeDotsVertical,
+  gotoBottom,
+  gotoTop,
+  manualScrollGray
 }
