@@ -193,7 +193,9 @@ class AudioGenerator:
 
     async def concurrent_audio_requests(self, chunks: list[str], voice_audio_b64: str, voice_audio_text: str, audio_uid: str) -> list[bytes]:
         semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
-        async with aiohttp.ClientSession(raise_for_status=True) as session:
+        connector = aiohttp.TCPConnector(enable_cleanup_closed=True)
+
+        async with aiohttp.ClientSession(connector=connector, raise_for_status=True) as session:
             tasks = []
             for idx, text in enumerate(chunks):
                 task = asyncio.create_task(self.fetch_audio(text, session, semaphore, idx, voice_audio_b64, voice_audio_text, audio_uid))
@@ -209,7 +211,9 @@ class AudioGenerator:
 
     async def concurrent_audio_requests_v2(self, chunks: list[str], voice_audio_hash: str, voice_audio_url: str, voice_audio_text: str, audio_uid: str) -> list[bytes]:
         semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
-        async with aiohttp.ClientSession(raise_for_status=True) as session:
+        connector = aiohttp.TCPConnector(enable_cleanup_closed=True)
+
+        async with aiohttp.ClientSession(connector=connector, raise_for_status=True) as session:
             tasks = []
             for idx, text in enumerate(chunks):
                 task = asyncio.create_task(self.fetch_audio_v2(text, session, semaphore, idx, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid))
@@ -226,8 +230,9 @@ class AudioGenerator:
     async def audio_request_one(self, text: str, voice_audio_hash: str, voice_audio_url: str, voice_audio_text: str) -> bytes:
         audio_uid = f'{uuid.uuid4()}'
         semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
+        connector = aiohttp.TCPConnector(enable_cleanup_closed=True)
 
-        async with aiohttp.ClientSession(raise_for_status=True) as session:
+        async with aiohttp.ClientSession(connector=connector, raise_for_status=True) as session:
             return  await self.fetch_audio_v2(text, session, semaphore, 0, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid)
 
     def merge_audio_buffers(self, audio_buffers: list[bytes], voice: str, text=str) -> str:
