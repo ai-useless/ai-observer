@@ -4,7 +4,6 @@ export enum Intent {
 
 enum PromptType {
   NO_HEAD_SPACE,
-  IDENT_2_SPACE,
   WITH_HTML,
   HTML_STYLE,
   SEGMENT,
@@ -19,11 +18,6 @@ type RequirementFunc = (...args: (string | number | string[])[]) => string
 
 const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格；') as RequirementFunc],
-  [
-    PromptType.IDENT_2_SPACE,
-    (() =>
-      ') 资料分级采用两个空格缩进，参考文献、链接独立成行并用方括号加数字标识，链接可以点击跳转；') as RequirementFunc
-  ],
   [PromptType.WITH_HTML, (() => ') 输出格式为纯HTML；') as RequirementFunc],
   [
     PromptType.HTML_STYLE,
@@ -65,7 +59,6 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     Intent.CHAT,
     [
       PromptType.NO_EMOJI,
-      PromptType.IDENT_2_SPACE,
       PromptType.WITH_HTML,
       PromptType.HTML_STYLE,
       PromptType.SEGMENT,
@@ -104,9 +97,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       role?: string,
       partner?: string,
       mySelf?: string
-    ) => `你是相声演员${mySelf}，你作为${role}和${partner}正在表演一个主题为${topic}的相声节目，节目时长大约5分钟，请根据节目表演进程创建你这个角色的下一段内容。
-          你和你的表演伙伴是交替生成内容，你只需要生成当前这一段你表演的内容即可。注意，你和你的伙伴是交替发言的，你们的表演交流需要有互动和趣味性。
-          要求: ${intentRequirements(Intent.CHAT, historyMessages)}`) as IntentFunc
+    ) => `你是相声演员${mySelf}，你作为${role}和${partner}正在表演一个主题为${topic}的相声音频节目，节目时长大约5分钟，请根据节目表演进程创建你这个角色的下一段内容。
+          你和你的表演伙伴是交替生成内容，你只需要生成当前这一段你表演的内容即可，不要生成你的伙伴的内容。注意，你和你的伙伴是交替发言的，你们的表演交流需要有互动和趣味性。
+          听众看不到你的动作，只能听到声音，因此不需要生成动作相关剧本。此外，文本中不需要包含你自己的名字。要求: ${intentRequirements(Intent.CHAT, historyMessages)}`) as IntentFunc
   ]
 ])
 
