@@ -70,7 +70,7 @@
     "personality": "执拗的非著名程序员，好读书不求甚解，脾气炸裂，人届中年一事无成，无才大叔",
     "host": false,
     "audio_id": "zhaokk",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xiaoxin_1746522040707.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/shanghaiayi_1746523543983.wav",
     "archetype": "赵KK",
     "title": "著名的非著名程序员"
 }, {
@@ -79,7 +79,7 @@
     "personality": "优秀的网络工程师，社会花边新闻热心观众，立志成为山西电厂保安大爷的男人",
     "host": false,
     "audio_id": "wangdaye",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xiongda_1746521873498.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xiaoxin_1746522040707.wav",
     "archetype": "王大爷",
     "title": "立志成为电厂保安的网络工程师"
 }, {
@@ -88,7 +88,43 @@
     "personality": "四川唐门暗器唯一传人，百步之外飞花摘叶伤人于无形，拥有丰富的毒药和暗器知识",
     "host": false,
     "audio_id": "tangsan",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/ziwei_1746522090875.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/fengbaobao_1746523556883.wav",
     "archetype": "唐三",
     "title": "四川唐门唯一传人"
+}, {
+    "name": "唐长老",
+    "avatar": "https://preview.qiantucdn.com/58pic/72/17/80/45258PIC6iwXzqzwTvYXA_origin_PIC2018.png!w1024_new_small_1",
+    "personality": "唐僧，原名陈玄奘，是中国古代著名高僧，《西游记》中的主要人物，西行取经、坚定信仰、慈悲为怀。",
+    "host": false,
+    "audio_id": "tangseng",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/tangseng.wav",
+    "archetype": "唐僧",
+    "title": "西行取经人"
+}, {
+    "name": "猴哥",
+    "avatar": "https://preview.qiantucdn.com/58pic/ali_magnify/Ao/fj/QZ/1G/db6yserjv52gxqlatpu9icmhz7n0o3k1_PIC2018.png!w1024_new_small_1",
+    "personality": "《西游记》中的齐天大圣，神通广大、桀骜不驯，护送唐僧西天取经、降妖伏魔",
+    "host": false,
+    "audio_id": "wukong",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/houge.wav",
+    "archetype": "孙悟空",
+    "title": "齐天大圣"
+}, {
+    "name": "猪老弟",
+    "avatar": "https://preview.qiantucdn.com/58pic/35/53/25/27a58PIC3QbB6jf5DzfFZ_PIC2018.png!w1024_new_small_1",
+    "personality": "外表猪形，性格憨厚、贪吃好色，负责护送唐僧西天取经，时而搞笑、时而忠诚。",
+    "host": false,
+    "audio_id": "bajie",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/bajie.wav",
+    "archetype": "八戒",
+    "title": "天蓬元帅"
+}, {
+    "name": "沙师弟",
+    "avatar": "https://preview.qiantucdn.com/58pic/72/17/80/72n58PICmGVyeuyPvUSZK_origin_PIC2018.png!w1024_new_small_1",
+    "personality": "原名沙悟净，担任唐僧的护法僧人，性格忠诚、勇敢，负责保护团队在西天取经路上的安全。",
+    "host": false,
+    "audio_id": "shaseng",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/shaseng.mp3",
+    "archetype": "沙僧",
+    "title": "忠诚勇敢的西行护法僧人"
 }]
