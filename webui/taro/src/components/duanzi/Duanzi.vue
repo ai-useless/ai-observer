@@ -9,14 +9,21 @@
       showsVerticalScrollIndicator={false}
       :scroll-with-animation='true'
     >
-      <View v-for='(message, index) in messages' :key='index' :style='{borderBottom : index < messages.length - 1 ? "1px solid gray" : "", padding: "16px 0"}'>
+      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : index < displayMessages.length - 1 ? "1px solid gray" : "", padding: "16px 0"}'>
         <View style='display: flex;'>
           <Image :src='modelLogo(message.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
           <View style='font-weight: 600;'>{{ modelName(message.modelId) }}</View>
         </View>
         <rich-text user-select :nodes='message.text' style='margin-left: 8px; font-size: 12px;' />
       </View>
-      <View v-if='!messages.length || generating' style='text-align: center; font-size: 12px; padding: 0 0 16px 0;'>
+      <View v-if='lastDisplayMessage' :style='{borderTop : "1px solid gray", padding: "16px 0"}'>
+        <View style='display: flex;'>
+          <Image :src='modelLogo(lastDisplayMessage.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
+          <View style='font-weight: 600;'>{{ modelName(lastDisplayMessage.modelId) }}</View>
+        </View>
+        <rich-text user-select :nodes='lastDisplayMessage.text' style='margin-left: 8px; font-size: 12px;' :key='lastDisplayMessage.text' />
+      </View>
+      <View v-if='generating' style='text-align: center; font-size: 12px; padding: 0 0 16px 0;'>
         {{ models.length }}个AGI正在创作 ...
       </View>
     </scroll-view>
@@ -57,7 +64,12 @@ interface Message {
 }
 
 const models = computed(() => model.Model.models())
-const messages = ref([] as Message[])
+
+const displayMessages = ref([] as Message[])
+const waitMessages = ref([] as Message[])
+const lastDisplayMessage = ref(undefined as unknown as Message)
+const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.text : undefined)
+const typingMessage = ref(undefined as unknown as Message)
 
 const duanziContentHeight = ref(0)
 const scrollTop = ref(999999)
@@ -80,8 +92,9 @@ const generate = () => {
 
   models.value.forEach((model) => {
     const simulator = dbBridge._Simulator.randomPeek()
-    entityBridge.Duanzi.generate(messages.value.map((el) => el.text), model.id, simulator.id, true).then((payload) => {
-      messages.value.push({
+    const messages = [...displayMessages.value, ...waitMessages.value]
+    entityBridge.Duanzi.generate(messages.map((el) => el.text), model.id, simulator.id, true).then((payload) => {
+      waitMessages.value.push({
         modelId: payload.modelId,
         text: purify.purifyThink(payload.text),
         audio: payload.audio
@@ -121,12 +134,6 @@ class AudioPlayer {
   duration: number
   durationTicker: number
 }
-
-const displayMessages = ref([] as Message[])
-const waitMessages = ref([] as Message[])
-const lastDisplayMessage = ref(undefined as unknown as Message)
-const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.text : undefined)
-const typingMessage = ref(undefined as unknown as Message)
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
