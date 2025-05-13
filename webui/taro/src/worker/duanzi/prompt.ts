@@ -4,7 +4,6 @@ export enum Intent {
 
 enum PromptType {
   NO_HEAD_SPACE,
-  IDENT_2_SPACE,
   WITH_HTML,
   HTML_STYLE,
   SEGMENT,
@@ -19,11 +18,6 @@ type RequirementFunc = (...args: (string | number | string[])[]) => string
 
 const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格；') as RequirementFunc],
-  [
-    PromptType.IDENT_2_SPACE,
-    (() =>
-      ') 资料分级采用两个空格缩进，参考文献、链接独立成行并用方括号加数字标识，链接可以点击跳转；') as RequirementFunc
-  ],
   [PromptType.WITH_HTML, (() => ') 输出格式为纯HTML；') as RequirementFunc],
   [
     PromptType.HTML_STYLE,
@@ -65,7 +59,6 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     Intent.GENERATE,
     [
       PromptType.NO_EMOJI,
-      PromptType.IDENT_2_SPACE,
       PromptType.WITH_HTML,
       PromptType.HTML_STYLE,
       PromptType.SEGMENT,
