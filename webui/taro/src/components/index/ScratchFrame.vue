@@ -11,22 +11,23 @@
       class='section-margin'
       @input='handleInput'
     />
-    <Button
-      @click='onStartDiscussClick'
-      size='mini'
-      style='border-radius: 8px; color: blue; width: calc(100% - 32px); margin-top: 16px;'
-    >
-      选择AGI主持人和嘉宾开始圆桌论坛
-    </Button>
     <View style='width: calc(100% - 32px);'>
+      <Button
+        @click='onStartDiscussClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: calc(100% - 112px); margin-top: 16px;'
+      >
+        选择AGI主持人和嘉宾开始圆桌论坛
+      </Button>
       <Button
         @click='onAskClick'
         size='mini'
-        style='border-radius: 8px; color: blue; width: 33.3%;'
+        style='border-radius: 8px; color: blue; width: 112px;'
       >
         随便问一下
       </Button>
       <Button
+        v-if='false'
         @click='onStartDiscussClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
@@ -34,6 +35,7 @@
         AGI相声
       </Button>
       <Button
+        v-if='false'
         @click='onStartDiscussClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
@@ -41,6 +43,7 @@
         AGI脱口秀
       </Button>
       <Button
+        v-if='false'
         @click='onStartDiscussClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
@@ -48,6 +51,7 @@
         AGI小品
       </Button>
       <Button
+        v-if='false'
         @click='onStartDiscussClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
@@ -55,6 +59,7 @@
         AGI舞台剧
       </Button>
       <Button
+        v-if='false'
         @click='onStartDiscussClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'

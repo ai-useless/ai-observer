@@ -11,6 +11,14 @@ export const purifyText = (html: string): string => {
     .replace('```html', '')
     .replace('```plaintext', '')
     .replace('```', '')
+    .replace(/<!DOCTYPE html[^>]*>/gi, '')
+    .replace(/<html[^>]*>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<body[^>]*>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .replace(/<head[^>]*>/gi, '')
+    .replace(/<\/head>/gi, '')
+    .trim()
 }
 
 export const purifyThink = (html: string): string => {
@@ -20,4 +28,12 @@ export const purifyThink = (html: string): string => {
     .replace('```html', '')
     .replace('```plaintext', '')
     .replace('```', '')
+    .replace(/<!DOCTYPE html[^>]*>/gi, '')
+    .replace(/<html[^>]*>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<body[^>]*>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .replace(/<head[^>]*>/gi, '')
+    .replace(/<\/head>/gi, '')
+    .trim()
 }

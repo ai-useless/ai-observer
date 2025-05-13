@@ -4,7 +4,6 @@
       scrollY={true}
       :scroll-with-animation='true'
       :style='{ height: chatBoxHeight + "px" }'
-      ref='chatBox'
       :scroll-top='scrollTop'
       showScrollbar={false}
       enhanced={true}
@@ -90,7 +89,6 @@ const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
-const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
 const autoScroll = ref(true)
@@ -295,18 +293,6 @@ watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
-const strip = (html: string): string => {
-  return  html
-    .replace(/<!DOCTYPE html[^>]*>/gi, '')
-    .replace(/<html[^>]*>/gi, '')
-    .replace(/<\/html>/gi, '')
-    .replace(/<body[^>]*>/gi, '')
-    .replace(/<\/body>/gi, '')
-    .replace(/<head[^>]*>/gi, '')
-    .replace(/<\/head>/gi, '')
-    .trim()
-}
-
 const onMessage = async (seminarUid: string, subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
   if (seminarUid !== _uid.value) return
 
@@ -333,7 +319,7 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
 
   waitMessages.value.push({
     round,
-    message: strip(purify.purifyThink(message)),
+    message: purify.purifyThink(message),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as simulator._Simulator,
     model: dbBridge._Model.model(participator.modelId) as model._Model,

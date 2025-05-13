@@ -13,6 +13,7 @@ import gotoTop from './GotoTop.svg'
 import manualScrollGray from './ManualScrollGray.svg'
 import volumeUp from './VolumeUp.svg'
 import volumeOff from './VolumeOff.svg'
+import search from './Search.svg'
 
 export {
   chevronRight,
@@ -29,5 +30,6 @@ export {
   gotoTop,
   manualScrollGray,
   volumeUp,
-  volumeOff
+  volumeOff,
+  search
 }

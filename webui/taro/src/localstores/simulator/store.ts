@@ -18,9 +18,9 @@ export const useSimulatorStore = defineStore('simulator', {
       axios
         .get(url)
         .then((resp) => {
-          if (done) done(false, resp.data)
           if (code) this.mySimulatorsCount = resp.data
           else this.allSimulatorsCount = resp.data
+          if (done) done(false, resp.data)
         })
         .catch((e) => {
           console.log(`Failed count simulators: ${JSON.stringify(e)}`)
@@ -35,8 +35,8 @@ export const useSimulatorStore = defineStore('simulator', {
       axios
         .get(url)
         .then((resp) => {
-          if (done) done(false, resp.data)
           this.appendSimulators(resp.data, code !== undefined)
+          if (done) done(false, resp.data)
         })
         .catch((e) => {
           console.log(`Failed get simulators: ${JSON.stringify(e)}`)
@@ -70,7 +70,7 @@ export class Simulator {
   static setAvatar = (v: number) => (simulator.mySimulatorsCount = v)
 
   static countSimulators = (code?: string) => simulator.countSimulators(code)
-  static getSimulators = (code?: string) => simulator.getSimulators(code)
+  static getSimulators = (code?: string, done?: (error: boolean, rows?: unknown[]) => void) => simulator.getSimulators(code, done)
 
   static mySimulators = () => simulator.simulators.filter((el) => el.mine)
   static allSimulators = () => simulator.simulators
