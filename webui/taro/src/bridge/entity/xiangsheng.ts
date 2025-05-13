@@ -61,8 +61,10 @@ export class EXiangsheng {
       mySelf: role === '捧哏' ? guestSimulator.simulator.simulator : hostSimulator.simulator.simulator
     })
       .then((payload) => {
-        if (payload) this.onChatResponse(payload)
-        else
+        if (payload)  {
+          this.onChatResponse(payload)
+          this.next(role === '逗哏' ? '捧哏' : '逗哏')
+        } else
           setTimeout(() => {
             this.next(role)
           }, 1000)
