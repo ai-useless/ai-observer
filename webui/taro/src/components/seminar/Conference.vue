@@ -10,7 +10,7 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray;'>
+      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray; width: calc(100% - 32px); padding-bottom: 4px;'>
         {{ topic }}
       </View>
       <View style='transition: 500ms'>
@@ -42,7 +42,7 @@
       </View>
       <Outline :json='outline' :active-topic='activeTopic || ""' />
       <View style='margin-top: 16px;'>
-        <View v-for='(message, index) in displayMessages' :key='index' style='width: calc(100% - 32px)'>
+        <View v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
           <MessageCard :message='message' />
         </View>
         <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />

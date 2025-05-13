@@ -356,7 +356,7 @@ export class ESeminar {
     seminarWorker.SeminarRunner.handleChatRequest({
       seminarId: id as number,
       subTopic,
-      participatorId: participatorId,
+      participatorId,
       intent,
       round: this.round,
       subRound: this.subRound,

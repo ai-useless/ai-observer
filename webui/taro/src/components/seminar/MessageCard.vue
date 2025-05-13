@@ -1,7 +1,6 @@
 <template>
   <View
     v-if='!message.subTopicTitle'
-    :name='message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name'
     :stamp='message.datetime'
     :text='[message.message]'
     text-color='grey-9'
