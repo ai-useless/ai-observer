@@ -20,39 +20,46 @@
     </Button>
     <View style='width: calc(100% - 32px);'>
       <Button
-        @click='onStartDiscussClick'
+        @click='onAskClick'
         size='mini'
-        style='border-radius: 8px; color: blue;'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         随便问一下
       </Button>
       <Button
         @click='onStartDiscussClick'
         size='mini'
-        style='border-radius: 8px; color: blue;'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         AGI相声
       </Button>
       <Button
         @click='onStartDiscussClick'
         size='mini'
-        style='border-radius: 8px; color: blue;'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         AGI脱口秀
       </Button>
       <Button
         @click='onStartDiscussClick'
         size='mini'
-        style='border-radius: 8px; color: blue;'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         AGI小品
       </Button>
       <Button
         @click='onStartDiscussClick'
         size='mini'
-        style='border-radius: 8px; color: blue;'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         AGI舞台剧
+      </Button>
+      <Button
+        @click='onStartDiscussClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
+      >
+        AGI小说
       </Button>
     </View>
     <View style='margin-top: 16px; width: calc(100% - 32px);'>
@@ -88,7 +95,7 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { seminar } from 'src/localstores'
+import { search, seminar } from 'src/localstores'
 import { ref, watch, computed, onMounted } from 'vue'
 import { View, Button, Text, Textarea } from '@tarojs/components'
 import Taro from '@tarojs/taro'
@@ -159,6 +166,16 @@ const startSeminar = () => {
 
 const onStartDiscussClick = () => {
   startSeminar()
+}
+
+const startSearch = () => {
+  // TODO: check if it's a valid topic
+  search.Search.setTopic(topic.value)
+  Taro.navigateTo({ url: '/pages/search/SearchPage' })
+}
+
+const onAskClick = () => {
+  startSearch()
 }
 
 const onTopicClick = (_topic: string) => {
