@@ -8,6 +8,12 @@ import warnCircle from './WarnCircle.svg'
 import playCircle from './PlayCircle.svg'
 import stopCircle from './StopCircle.svg'
 import threeDotsVertical from './ThreeDotsVertical.svg'
+import gotoBottom from './GotoBottom.svg'
+import gotoTop from './GotoTop.svg'
+import manualScrollGray from './ManualScrollGray.svg'
+import volumeUp from './VolumeUp.svg'
+import volumeOff from './VolumeOff.svg'
+import search from './Search.svg'
 
 export {
   chevronRight,
@@ -19,5 +25,11 @@ export {
   warnCircle,
   playCircle,
   stopCircle,
-  threeDotsVertical
+  threeDotsVertical,
+  gotoBottom,
+  gotoTop,
+  manualScrollGray,
+  volumeUp,
+  volumeOff,
+  search
 }

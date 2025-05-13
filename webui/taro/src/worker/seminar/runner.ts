@@ -129,7 +129,7 @@ export class SeminarRunner {
     content: string,
     audio: string
   ) => {
-    await dbBridge._Message.create(
+    dbBridge._Message.create(
       seminarId,
       participatorId,
       prompt,

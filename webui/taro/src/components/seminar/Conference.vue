@@ -4,13 +4,12 @@
       scrollY={true}
       :scroll-with-animation='true'
       :style='{ height: chatBoxHeight + "px" }'
-      ref='chatBox'
       :scroll-top='scrollTop'
       showScrollbar={false}
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray;'>
+      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray; width: calc(100% - 32px); padding-bottom: 4px;'>
         {{ topic }}
       </View>
       <View style='transition: 500ms'>
@@ -42,13 +41,29 @@
       </View>
       <Outline :json='outline' :active-topic='activeTopic || ""' />
       <View style='margin-top: 16px;'>
-        <View v-for='(message, index) in displayMessages' :key='index' style='width: calc(100% - 32px)'>
+        <View v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
           <MessageCard :message='message' />
         </View>
         <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
       </View>
       <View id='scrollBottomView'  />
     </scroll-view>
+    <View style='display: flex; flex-direction: row-reverse; align-items: center; width: calc(100% - 32px); margin-top: -8px; height: 24px;'>
+      <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
+        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
+          <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
+          <Image :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
+          <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+        <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
+          <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+      </View>
+    </View>
   </View>
 </template>
 
@@ -58,23 +73,26 @@ import { seminar, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
-import { View, ScrollView, Text } from '@tarojs/components'
+import { View, ScrollView, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
+import { seminarWorker } from 'src/worker'
 
 import Outline from './Outline.vue'
 import MessageCard from './MessageCard.vue'
-import { seminarWorker } from 'src/worker'
+
+import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp } from 'src/assets'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
-const chatBox = ref<typeof View>()
 const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
+const autoScroll = ref(true)
+const enablePlay = ref(true)
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -117,9 +135,28 @@ watch(messageCount, () => {
 })
 
 watch(lastMessageText, async () => {
+  if (!autoScroll.value) return
   await nextTick()
   scrollTop.value += 1
 })
+
+const onAutoScrollClick = () => {
+  autoScroll.value = !autoScroll.value
+}
+
+const onGotoBottomClick = () => {
+  autoScroll.value = true
+  scrollTop.value = 999999
+}
+
+const onGotoTopClick = () => {
+  autoScroll.value = false
+  scrollTop.value = 0
+}
+
+const onPlayClick = () => {
+  enablePlay.value = !enablePlay.value
+}
 
 const calculateTypingInterval = (duration: number) => {
   if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
@@ -176,12 +213,12 @@ const typing = () => {
       _subTopic = typingMessage.value.subTopic
     }
     setTimeout(() => {
-      void eSeminar.value.nextGuests(_subTopic)
+      void eSeminar.value.nextGuests(_subTopic, enablePlay.value)
     }, 100)
     requesting.value = true
   }
 
-  if (typingMessage.value.audio && typingMessage.value.audio.length) {
+  if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)
     playAudio(typingMessage.value.audio).then((player: AudioPlayer) => {
       if (player && player.duration > 0) {
@@ -256,18 +293,6 @@ watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
-const strip = (html: string): string => {
-  return  html
-    .replace(/<!DOCTYPE html[^>]*>/gi, '')
-    .replace(/<html[^>]*>/gi, '')
-    .replace(/<\/html>/gi, '')
-    .replace(/<body[^>]*>/gi, '')
-    .replace(/<\/body>/gi, '')
-    .replace(/<head[^>]*>/gi, '')
-    .replace(/<\/head>/gi, '')
-    .trim()
-}
-
 const onMessage = async (seminarUid: string, subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
   if (seminarUid !== _uid.value) return
 
@@ -294,7 +319,7 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
 
   waitMessages.value.push({
     round,
-    message: strip(purify.purifyThink(message)),
+    message: purify.purifyThink(message),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as simulator._Simulator,
     model: dbBridge._Model.model(participator.modelId) as model._Model,

@@ -32,105 +32,111 @@ enum PromptType {
   WITH_HISTORY_CONCLUSION,
   WITH_HUMAN_WORDS,
   WITHOUT_ABSENT_GUESTS,
-  WITHOUT_POLITICAL
+  WITHOUT_POLITICAL,
+  MUST_OBEY
 }
 
 type RequirementFunc = (...args: (string | number | string[])[]) => string
 
 const Requirements = new Map<PromptType, RequirementFunc>([
-  [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格') as RequirementFunc],
+  [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格；') as RequirementFunc],
   [
     PromptType.IDENT_2_SPACE,
     (() =>
-      ') 分级资料按照2个空格缩进，参考资料、文献、链接独立成行并用方括号括起来的数字开头') as RequirementFunc
+      ') 资料分级采用两个空格缩进，参考文献、链接独立成行并用方括号加数字标识；') as RequirementFunc
   ],
   [
     PromptType.WITH_HTML,
-    (() => ') 要html格式，不要返回markdown') as RequirementFunc
+    (() => ') 输出格式为纯HTML；') as RequirementFunc
   ],
   [
     PromptType.HTML_STYLE,
     (() =>
-      ') 不要默认加粗第一段文字，没有标题不要加粗，一级标题用14px字加粗，二级标题用12px字加粗，普通内容不加粗，字号为12px，行高1.5em') as RequirementFunc
+      ') 一级标题字体14px加粗，二级标题12px加粗，正文12px常规字体，行高1.5em；') as RequirementFunc
   ],
-  [PromptType.SEGMENT, (() => ') 根据语义需要分段') as RequirementFunc],
+  [PromptType.SEGMENT, (() => ') 根据语义合理分段；') as RequirementFunc],
   [
     PromptType.NO_EMOJI,
     (() =>
-      ') 只把发言内容输出出来，不允许有表情，标签，换行符和提示') as RequirementFunc
+      ') 不包含表情、标签、换行符或额外提示；') as RequirementFunc
   ],
   [
     PromptType.DURATION,
     ((speakDuration: number, letters: number) =>
-      `) 发言时间≤${speakDuration}秒，小于${letters}字`) as RequirementFunc
+      `) 发言时间≤${speakDuration}秒，小于${letters}字；`) as RequirementFunc
   ],
   [
     PromptType.PERSONALITY,
     (() =>
-      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例，包含具体事例链接。引用内容符合人物原型，不允许编造事实') as RequirementFunc
+      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例，包含具体事例链接。引用内容符合人物原型，禁止编造事实；') as RequirementFunc
   ],
   [
     PromptType.EMOTION,
-    (() => ') 人物情绪普遍理性客观中立，但带有各自社群特征') as RequirementFunc
+    (() => ') 人物情绪理性客观中立，带有各自社群特征，观点鲜明；') as RequirementFunc
   ],
   [
     PromptType.NO_ANALYSIS,
     (() =>
-      ') 不要包含分析过程，不要使用总的来说这一类的遣词造句') as RequirementFunc
+      ') 不要包含分析过程，不要使用总的来说这一类的遣词造句；') as RequirementFunc
   ],
   [
     PromptType.MERGE_SPACES,
-    (() => ') 把连续多个空格合并成一个') as RequirementFunc
+    (() => ') 行首无多余空格，连续空格合并为一个；') as RequirementFunc
   ],
   [
     PromptType.DONT_START_WITH_TOPIC,
     (() =>
-      ') 不要生硬的重复主题，用谈话的形式，不要用写文章的形式，这是一个多个人的聊天节目，不是写文章，因此不要总结分析，要用自然的口吻说话') as RequirementFunc
+      ') 这是一个多人的聊天节目，要用和人一样的自然的口吻说话，不要以写文章的形式呈现；') as RequirementFunc
   ],
   [
     PromptType.AS_HOST,
     (() =>
-      ') 作为主持人，你主要是串联调和嘉宾发言和叙述资料，以及串联讨论环节。你不可以点名不在场的嘉宾发言。') as RequirementFunc
+      ') 作为主持人，串联和调和嘉宾发言及资料，串联讨论环节，不点名未出席嘉宾') as RequirementFunc
   ],
   [
     PromptType.DONT_DESCRIBE_PERSONALITY,
-    (() => ') 不要描述自己的人设。不要生硬地将讨论话题和自己的人设联系，过渡要自然。') as RequirementFunc
+    (() => ') 不要生硬地将讨论话题和自己的人设联系，过渡要自然；') as RequirementFunc
   ],
   [
     PromptType.NO_VIRTUAL_WORDS,
     (() =>
-      ') 禁止使用用主题开头的语句，禁止使用类似于深远影响的虚拟词汇') as RequirementFunc
+      ') 禁止使用用主题开头的语句，禁止使用类似于深远影响的虚拟词汇；') as RequirementFunc
   ],
   [
     PromptType.WITH_EVENT,
     (() =>
-      ') 如果资料中包含具体事例，列举出具体事例链接，作为事例上标，鼠标hover后显示链接，该上标可以点击跳转') as RequirementFunc
+      ') 若资料含具体事例，列出带链接的上标，鼠标悬停显示链接，点击可跳转；') as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_ANALYSIS,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ((_speakDuration: number, _letters: number, historyMessages: string[]) =>
-      `) 你前面的嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。如果有必要，分析他们的观点并发表自己的观点`) as RequirementFunc
+      `) 你前面的嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。如果有必要，分析他们的观点并发表自己的观点; `) as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_CONCLUSION,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ((_speakDuration: number, _letters: number, historyMessages: string[]) =>
-      `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾`) as RequirementFunc
+      `) 本轮嘉宾发表了下列观点 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}。作为主持人，总结他们的观点作为本轮的结尾; `) as RequirementFunc
   ],
   [
     PromptType.WITH_HUMAN_WORDS,
-    (() => ') 用人的语言说话，不要说车轱辘话') as RequirementFunc
+    (() => ') 用人的语言说话，不要说车轱辘话; ') as RequirementFunc
   ],
   [
     PromptType.WITHOUT_ABSENT_GUESTS,
     (() =>
-      ') 如果嘉宾及其观点没有出现在本轮讨论，不要邀请他们回答，也不要将其作为在场嘉宾加以分析，但是你可以引用不在场的嘉宾的观点') as RequirementFunc
+      ') 不邀请或分析未出席嘉宾观点，但可引用其公开观点; ') as RequirementFunc
   ],
   [
     PromptType.WITHOUT_POLITICAL,
     (() =>
-      '不要出现跟国家政要相关的事情，不要出现跟国家政策相悖的言论') as RequirementFunc
+      ') 不涉及国家领导人及相关政策内容，确保符合公序良俗和现行法规; ') as RequirementFunc
+  ],
+  [
+    PromptType.MUST_OBEY,
+    (() =>
+      '请严格遵守以上要求，结构清晰，内容完整。') as RequirementFunc
   ]
 ])
 
@@ -150,7 +156,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ],
   [
@@ -173,7 +180,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_HISTORY_ANALYSIS,
       PromptType.WITH_HUMAN_WORDS,
       PromptType.WITHOUT_ABSENT_GUESTS,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ],
   [
@@ -191,7 +199,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ],
   [
@@ -210,7 +219,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ],
   [
@@ -229,7 +239,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ],
   [
@@ -249,7 +260,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_CONCLUSION,
       PromptType.WITHOUT_ABSENT_GUESTS,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ],
   [
@@ -268,7 +280,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.AS_HOST,
       PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ],
   [
@@ -288,7 +301,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_CONCLUSION,
       PromptType.WITHOUT_ABSENT_GUESTS,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ],
   [
@@ -301,7 +315,8 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.NO_HEAD_SPACE,
       PromptType.MERGE_SPACES,
       PromptType.WITH_HISTORY_CONCLUSION,
-      PromptType.WITHOUT_POLITICAL
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
     ]
   ]
 ])
@@ -331,8 +346,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       rounds: number,
       archetype: string
     ) => `作为主持人，你的人物原型是${archetype}，请你就“${topic}”这个主题，拆解出最多${rounds || 5}个递进层次的小主题。如果该主题不符合公序良俗，
-          跟国家领导人相关，或者违背国家现行政策，返回请求主题不支持。要求只输出主题和主题相关素材（格式如下：本期主题：xxxxx (1).xxxxx 素材：xxxx
-          (2).xxxxxxx 素材：xxxxxxx。标题独立一行，主题独立一行，素材独立一行。独立一行表示用html的p标签包裹。要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
+          跟国家领导人相关，或者违背国家现行政策，返回请求主题不支持。仅输出主题标题和对应素材内容（格式如下：本期主题：xxxxx (1).xxxxx 素材：xxxx
+          (2).xxxxxxx 素材：xxxxxxx。标题独立一行，主题独立一行，素材独立一行。要求: ${intentRequirements(Intent.OUTLINE)}`) as IntentFunc
   ],
   [
     Intent.DISCUSS,
@@ -360,7 +375,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       archetype: string
     ) => `作为主持人，你的人物原型是${archetype}，你的人设是${personality}，现在是节目的开始，本期节目的主要内容为：${topicMaterial}
           到场的嘉宾有 ${guests.map((el, index) => index.toString() + ') ' + el).join('; ')}
-          你需要先对本期讨论目标和材料做简单解读，然后介绍到场嘉宾，最后过渡到第一个小主题。你不应该直接邀请嘉宾表达观点，这个环节你只是叙述材料。
+          你需要先对本期讨论目标和材料做简单解读，然后介绍到场嘉宾，如果嘉宾的介绍语包含不好的经历，用美化的语言表达，
+          最后过渡到第一个小主题。你不应该直接邀请嘉宾表达观点，这个环节你只是叙述材料。
           要求：${intentRequirements(Intent.START_TOPIC, speakDuration, 300)}`) as IntentFunc
   ],
   [

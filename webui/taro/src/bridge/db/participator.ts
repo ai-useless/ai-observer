@@ -12,13 +12,13 @@ export class _Participator {
   static guests = (seminarUid: string) => {
     return _Participator
       .participators(seminarUid)
-      .filter((el) => (el.role = dbModel.Role.GUEST))
+      .filter((el) => el.role === dbModel.Role.GUEST)
   }
 
   static host = (seminarUid: string) => {
     return _Participator
       .participators(seminarUid)
-      .find((el) => (el.role = dbModel.Role.HOST))
+      .find((el) => el.role === dbModel.Role.HOST)
   }
 
   static createParticipators = async (

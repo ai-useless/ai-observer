@@ -7,7 +7,8 @@ export default {
     'pages/simulator/MySimulatorsPage',
     'pages/simulator/AllSimulatorsPage',
     'pages/guest/GuestsPage',
-    'pages/model/ModelsPage'
+    'pages/model/ModelsPage',
+    'pages/search/SearchPage'
   ],
   workers: 'worker',
   window: {

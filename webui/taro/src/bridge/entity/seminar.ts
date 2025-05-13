@@ -345,7 +345,8 @@ export class ESeminar {
   guestRequest = (
     subTopic: string,
     participatorId: number,
-    intent: seminarWorker.Intent
+    intent: seminarWorker.Intent,
+    generateAudio: boolean
   ) => {
     const { id } = this.seminar
     const historyMessages = this.historyMessages().get(subTopic) || []
@@ -356,13 +357,13 @@ export class ESeminar {
     seminarWorker.SeminarRunner.handleChatRequest({
       seminarId: id as number,
       subTopic,
-      participatorId: participatorId,
+      participatorId,
       intent,
       round: this.round,
       subRound: this.subRound,
       prompts: {
         topicMaterial: this.topicMaterial,
-        generateAudio: true,
+        generateAudio,
         historyMessages,
         archetype: dbBridge._Simulator.archetypeWithId(
           simulator.simulator.id as number
@@ -376,12 +377,12 @@ export class ESeminar {
       .catch((e) => {
         console.log(`Failed guest request: ${e}, retrying ...`)
         setTimeout(() => {
-          this.guestRequest(subTopic, participatorId, intent)
+          this.guestRequest(subTopic, participatorId, intent, generateAudio)
         }, 60000)
       })
   }
 
-  nextGuests = async (subTopic: string) => {
+  nextGuests = async (subTopic: string, generateAudio: boolean) => {
     const participators = this.participators()
 
     const guests = Math.max(Math.ceil(Math.random() * participators.length), 2)
@@ -409,7 +410,8 @@ export class ESeminar {
       this.guestRequest(
         subTopic,
         host.participatorId,
-        seminarWorker.Intent.HOST_CHALLENGE
+        seminarWorker.Intent.HOST_CHALLENGE,
+        generateAudio
       )
       return
     }
@@ -426,7 +428,8 @@ export class ESeminar {
       this.guestRequest(
         subTopic,
         speaker.participatorId,
-        seminarWorker.Intent.DISCUSS
+        seminarWorker.Intent.DISCUSS,
+        generateAudio
       )
     }
   }

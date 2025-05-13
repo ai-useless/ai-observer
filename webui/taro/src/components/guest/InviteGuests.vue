@@ -136,7 +136,7 @@ const onRandomGuestClick = () => {
 }
 
 onMounted(() => {
-  const count = Math.floor(Math.random() * 3) + 7
+  const count = Math.floor(Math.random() * 3) + 4
   for (let i = 0; i < count; i++) {
     guests.value.push(undefined as unknown as simulator._Simulator)
     _models.value.push(undefined as unknown as model._Model)
