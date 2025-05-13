@@ -67,8 +67,8 @@ import { dbModel } from 'src/model'
 
 import { personCircle } from 'src/assets'
 
-import SimulatorCard from '../simulator/SimulatorCard.vue'
-import ModelCard from '../model/ModelCard.vue'
+import SimulatorCard from '../../simulator/SimulatorCard.vue'
+import ModelCard from '../../model/ModelCard.vue'
 import GuestCard from './GuestCard.vue'
 
 const selectingSimulatorIndex = ref(0)

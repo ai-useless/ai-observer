@@ -1,13 +1,13 @@
 <template>
   <View style='width: 100%; padding: 0 16px;'>
-    <InviteGuests />
+    <InviteRoles />
   </View>
 </template>
 
 <script setup lang='ts'>
 
 import { View } from '@tarojs/components'
-import InviteGuests from 'src/components/guest/InviteGuests.vue'
+import InviteRoles from 'src/components/xiangsheng/role/InviteRoles.vue'
 
 </script>
 

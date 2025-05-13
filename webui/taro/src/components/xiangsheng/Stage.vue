@@ -12,18 +12,21 @@
       <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray; width: calc(100% - 32px); padding-bottom: 4px;'>
         {{ topic }}
       </View>
-      <View style='transition: 500ms'>
-        <View v-if='host && host.simulator' style='font-size: 14px;'>
-          <View style='width: 64px'>
-            主持人：
-          </View>
-          <View style='color: blue'>
-            {{ host.simulator.simulator }}
+      <View style='transition: 500ms; display: flex;'>
+        <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
+          <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
+          <View style='margin-left: 8px;'>
+            <View style='width: 64px'>
+              逗哏：
+            </View>
+            <View style='color: blue'>
+              {{ host.simulator.simulator }}
+            </View>
           </View>
         </View>
         <View style='font-size: 14px;'>
           <View style='width: 64px'>
-            嘉宾：
+            捧哏：
           </View>
           <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: blue'>
             <Text
@@ -39,7 +42,6 @@
           </View>
         </View>
       </View>
-      <Outline :json='outline' :active-topic='activeTopic || ""' />
       <View style='margin-top: 16px;'>
         <View v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
           <MessageCard :message='message' />
@@ -69,7 +71,7 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { seminar, model, simulator } from 'src/localstores'
+import { xiangsheng, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
@@ -77,15 +79,14 @@ import { View, ScrollView, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
-import { seminarWorker } from 'src/worker'
+import { xiangshengWorker } from 'src/worker'
 
-import Outline from './Outline.vue'
 import MessageCard from './MessageCard.vue'
 
 import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp } from 'src/assets'
 
-const _uid = computed(() => seminar.Seminar.seminar())
-const _seminar = ref(undefined as unknown as dbModel.Seminar)
+const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
+const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
@@ -94,26 +95,19 @@ const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
 
-const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
+const topic = computed(() => _xiangsheng.value ? _xiangsheng.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
 const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
 const displayMessages = ref([] as Message[])
 const loading = ref(false)
-const messageCount = computed(() => displayMessages.value.length)
+const messageCount = computed(() => displayMessages.value.length + waitMessages.value.length + (lastDisplayMessage.value ? 1 : 0))
 const waitMessages = ref([] as Message[])
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.message : undefined)
 const typingMessage = ref(undefined as unknown as Message)
-const lastRound = ref(0)
-const requesting = ref(false)
-const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
-const outline = ref({
-  titles: []
-} as unknown as Record<string, unknown>)
-const activeTopic = ref('')
-const lastTopic = ref(undefined as unknown as string)
+const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
@@ -195,29 +189,6 @@ const typing = () => {
   typingMessage.value = waitMessages.value[0]
   waitMessages.value = waitMessages.value.slice(1)
 
-  seminar.Seminar.speak(typingMessage.value.participator.id as number)
-  if (typingMessage.value.subTopic !== activeTopic.value) {
-    displayMessages.value.push({
-      ...typingMessage.value,
-      subTopicTitle: true
-    })
-    activeTopic.value = typingMessage.value.subTopic
-  }
-
-  if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
-    let _subTopic = lastTopic.value
-    if (!_subTopic && waitMessages.value[waitMessages.value.length - 1]) {
-      _subTopic = waitMessages.value[waitMessages.value.length - 1].subTopic
-    }
-    if (!_subTopic && typingMessage.value.subTopic) {
-      _subTopic = typingMessage.value.subTopic
-    }
-    setTimeout(() => {
-      void eSeminar.value.nextGuests(_subTopic, enablePlay.value)
-    }, 100)
-    requesting.value = true
-  }
-
   if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)
     playAudio(typingMessage.value.audio).then((player: AudioPlayer) => {
@@ -282,52 +253,31 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
 
 watch(_uid, () => {
   if (!_uid.value) return
-  _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
+  _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng
 })
 
-watch(_seminar, () => {
-  participators.value = dbBridge._Participator.participators(_seminar.value.uid)
+watch(_xiangsheng, () => {
+  participators.value = dbBridge._Participator.participators(_xiangsheng.value.uid)
 })
 
 watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
-const onMessage = async (seminarUid: string, subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
-  if (seminarUid !== _uid.value) return
-
-  seminar.Seminar.stopThink(participatorId)
+const onMessage = async (xiangshengUid: string, participatorId: number, text: string, audio: string) => {
+  if (xiangshengUid !== _uid.value) return
 
   const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
-  requesting.value = false
-
-  // Discard topic after conclude: order here is important
-  const messages = [...(typingMessage.value ? [typingMessage.value] : []), ...displayMessages.value, ...waitMessages.value]
-  if (
-    messages.length &&
-    messages[messages.length - 1].subTopic !== subTopic &&
-    messages.findIndex((el) => el.subTopic === subTopic) >= 0
-  ) {
-    console.log('Discard message', subTopic, message)
-    return
-  }
-
-  lastRound.value = round
-  lastTopic.value = subTopic
-
   waitMessages.value.push({
-    round,
-    message: purify.purifyThink(message),
+    message: purify.purifyThink(text),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as simulator._Simulator,
     model: dbBridge._Model.model(participator.modelId) as model._Model,
     timestamp: Date.now(),
     datetime: timestamp,
-    audio,
-    subTopicTitle: false,
-    subTopic
+    audio
   })
 
   waitMessages.value = waitMessages.value.map((el) => {
@@ -336,49 +286,30 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
   })
 }
 
-const onThinking = (participatorId: number) => {
-  seminar.Seminar.startThink(participatorId)
-}
+const historyMessages = (): xiangshengWorker.HistoryMessage[] => {
+  const messages = [] as xiangshengWorker.HistoryMessage[]
 
-const onOutline = (json: Record<string, unknown>) => {
-  Taro.setNavigationBarTitle({
-    title: json.topic as string
-  })
-  outline.value = json
-}
-
-const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
-  const messages = new Map<string, seminarWorker.HistoryMessage[]>()
-
-  displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle && el.subTopic === lastTopic.value).forEach((el) => {
-    const _messages = messages.get(el.subTopic) || []
-    _messages.push({
+  displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length).forEach((el) => {
+    messages.push({
       participatorId: el.participator.id as number,
-      content: el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
+      message: el.simulator.simulator + '发言: ' + purify.purifyText(el.message)
     })
-    messages.set(el.subTopic, _messages)
   })
-  waitMessages.value.filter((el) => el.subTopic === lastTopic.value).forEach((el) => {
-    const _messages = messages.get(el.subTopic) || []
-    _messages.push({
+  waitMessages.value.forEach((el) => {
+    messages.push({
       participatorId: el.participator.id as number,
-      content: purify.purifyText(el.message)
+      message: purify.purifyText(el.message)
     })
-    messages.set(el.subTopic, _messages)
   })
 
   return messages
 }
 
-const startSeminar = async () => {
+const startXiangsheng = async () => {
   displayMessages.value = []
   waitMessages.value = []
   typingMessage.value = undefined as unknown as Message
   lastDisplayMessage.value = undefined as unknown as Message
-  lastRound.value = 0
-  outline.value = {
-    titles: []
-  }
 
   if (typingTicker.value >= 0) window.clearInterval(typingTicker.value)
   typingTicker.value = -1
@@ -388,35 +319,35 @@ const startSeminar = async () => {
   if (audioPlayer.value) audioPlayer.value.context.stop()
 
   Taro.showLoading({
-    title: '主持人正在准备台本'
+    title: '演员正在候台'
   })
 
-  _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
+  _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng
 
-  eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
+  eXiangsheng.value = new entityBridge.EXiangsheng(_xiangsheng.value, onMessage, historyMessages)
   loading.value = true
-  eSeminar.value.start()
+  eXiangsheng.value.start()
 
   typingTicker.value = window.setInterval(typing, 100)
 }
 
 watch(_uid, () => {
-  startSeminar()
+  startXiangsheng()
 })
 
 onMounted(async () => {
   Taro.setNavigationBarTitle({
-    title: 'AGI观点'
+    title: 'AGI相声'
   })
 
   if (Taro.getWindowInfo()) {
     chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 20
   }
-  startSeminar()
+  startXiangsheng()
 })
 
 onBeforeUnmount(() => {
-  if (eSeminar.value) eSeminar.value.stop()
+  if (eXiangsheng.value) eXiangsheng.value.stop()
   if (typingTicker.value) window.clearInterval(typingTicker.value)
 })
 </script>

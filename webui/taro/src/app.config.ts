@@ -6,9 +6,11 @@ export default {
     'pages/simulator/CookSimulatorPage',
     'pages/simulator/MySimulatorsPage',
     'pages/simulator/AllSimulatorsPage',
-    'pages/guest/GuestsPage',
+    'pages/seminar/guest/GuestsPage',
     'pages/model/ModelsPage',
-    'pages/search/SearchPage'
+    'pages/search/SearchPage',
+    'pages/xiangsheng/XiangshengPage',
+    'pages/xiangsheng/role/RolesPage'
   ],
   workers: 'worker',
   window: {
@@ -22,6 +24,7 @@ export default {
     list: [
       { pagePath: 'pages/index/IndexPage', text: '首页' },
       { pagePath: 'pages/seminar/SeminarPage', text: 'AGI观点' },
+      { pagePath: 'pages/xiangsheng/XiangshengPage', text: 'AGI相声' },
       { pagePath: 'pages/user/UserPage', text: '我的' }
     ]
   }

@@ -1,5 +1,5 @@
 export enum Intent {
-  SEARCH = 'Search'
+  CHAT = 'Chat'
 }
 
 enum PromptType {
@@ -53,7 +53,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     PromptType.WITH_HISTORY_ANALYSIS,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ((historyMessages: string[]) =>
-      historyMessages.length ? `) 用户已经获取到下列内容 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}; ` : '') as RequirementFunc
+      historyMessages.length ? `) 你和你的伙伴已经表演了下列内容 ${historyMessages.map((el, index) => index.toString() + ') ' + el).join('; ')}; ` : '你需要有一个引起观众注意的开场；') as RequirementFunc
   ],
   [
     PromptType.WITHOUT_POLITICAL,
@@ -71,7 +71,7 @@ type IntentFunc = (...args: (string | number | string[])[]) => string
 
 const IntentRequirements = new Map<Intent, PromptType[]>([
   [
-    Intent.SEARCH,
+    Intent.CHAT,
     [
       PromptType.NO_EMOJI,
       PromptType.IDENT_2_SPACE,
@@ -80,6 +80,7 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.SEGMENT,
       PromptType.NO_HEAD_SPACE,
       PromptType.MERGE_SPACES,
+      PromptType.WITH_HISTORY_ANALYSIS,
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
     ]
@@ -105,13 +106,15 @@ const intentRequirements = (
 
 export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
-    Intent.SEARCH,
+    Intent.CHAT,
     ((
       topic: string,
       historyMessages: string[],
-      prompt?: string
-    ) => `你是一个搜索引擎，用户需要搜索${topic}相关的资料，${prompt && prompt.length ? '结合用户已经获得的内容为用户的新问题' + prompt : '这是用户第一次搜索'}， 返回搜索结果。
-          要求: ${intentRequirements(Intent.SEARCH, historyMessages)}`) as IntentFunc
+      role?: string,
+      partner?: string,
+      mySelf?: string
+    ) => `你是相声演员${mySelf}，你作为${role}和${partner}正在表演一个主题为${topic}的相声节目，节目时长大约5分钟，请根据节目表演进程创建你这个角色的下一段内容。
+          你和你的表演伙伴是交替生成内容，你只需要生成当前这一段你表演的内容即可。要求: ${intentRequirements(Intent.CHAT, historyMessages)}`) as IntentFunc
   ]
 ])
 

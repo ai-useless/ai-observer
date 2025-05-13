@@ -34,6 +34,12 @@ export interface Seminar {
   topic: string
 }
 
+export interface Xiangsheng {
+  id?: number
+  uid: string
+  topic: string
+}
+
 export interface Participator {
   id?: number
   seminarUid: string

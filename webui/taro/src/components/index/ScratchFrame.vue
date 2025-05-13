@@ -11,24 +11,23 @@
       class='section-margin'
       @input='handleInput'
     />
+    <Button
+      @click='onStartDiscussClick'
+      size='mini'
+      style='border-radius: 8px; color: blue; width: calc(100% - 32px); margin-top: 16px;'
+    >
+      选择AGI成员开始圆桌论坛
+    </Button>
     <View style='width: calc(100% - 32px);'>
-      <Button
-        @click='onStartDiscussClick'
-        size='mini'
-        style='border-radius: 8px; color: blue; width: calc(100% - 112px); margin-top: 16px;'
-      >
-        选择AGI成员开始圆桌论坛
-      </Button>
       <Button
         @click='onAskClick'
         size='mini'
-        style='border-radius: 8px; color: blue; width: 112px;'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         随便问一下
       </Button>
       <Button
-        v-if='false'
-        @click='onStartDiscussClick'
+        @click='onStartXiangshengClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
@@ -100,7 +99,7 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { search, seminar } from 'src/localstores'
+import { search, seminar, xiangsheng } from 'src/localstores'
 import { ref, watch, computed, onMounted } from 'vue'
 import { View, Button, Text, Textarea } from '@tarojs/components'
 import Taro from '@tarojs/taro'
@@ -166,7 +165,7 @@ watch(topic, () => {
 const startSeminar = () => {
   // TODO: check if it's a valid topic
   seminar.Seminar.setTopic(topic.value)
-  Taro.navigateTo({ url: '/pages/guest/GuestsPage' })
+  Taro.navigateTo({ url: '/pages/seminar/guest/GuestsPage' })
 }
 
 const onStartDiscussClick = () => {
@@ -181,6 +180,16 @@ const startSearch = () => {
 
 const onAskClick = () => {
   startSearch()
+}
+
+const startXiangsheng = () => {
+  // TODO: check if it's a valid topic
+  xiangsheng.Xiangsheng.setTopic(topic.value)
+  Taro.navigateTo({ url: '/pages/xiangsheng/role/RolesPage' })
+}
+
+const onStartXiangshengClick = () => {
+  startXiangsheng()
 }
 
 const onTopicClick = (_topic: string) => {

@@ -1,2 +1,3 @@
 export * as seminarWorker from './seminar'
 export * as searchWorker from './search'
+export * as xiangshengWorker from './xiangsheng'
