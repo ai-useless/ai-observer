@@ -30,6 +30,8 @@
         @input='handleInput'
         autoHeight={false}
         @linechange='handleLineChange'
+        :show-confirm-bar='false'
+        :cursor-spacing='16'
       />
       <View style='height: 32px; width: 32px; padding: 7px 0 7px 4px;' @click='onSearchClick'>
         <Image :src='searchIcon' style='width: 18px; height: 18px;' />
