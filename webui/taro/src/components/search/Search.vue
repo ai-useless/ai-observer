@@ -16,7 +16,7 @@
         </View>
         <rich-text user-select :nodes='result.message' style='margin-left: 8px; font-size: 12px;' />
       </View>
-      <View v-if='!searchResults.length || searching' style='text-align: center; font-size: 12px; margin: 8px 0 16px 0;'>
+      <View v-if='!searchResults.length || searching' style='text-align: center; font-size: 12px; padding: 0 0 16px 0;'>
         {{ models.length }}个AGI正在搜索 ...
       </View>
     </scroll-view>
@@ -25,10 +25,11 @@
         type='textarea'
         :value='prompt'
         placeholder='继续搜索'
-        style='width: calc(100% - 16px); font-size: 14px; min-height: 18px; border: 1px solid gray; border-radius: 8px; padding: 8px;'
+        :style='{width: "calc(100% - 16px)", fontSize: "14px", height: searchInputHeight + "px", border: "1px solid gray", borderRadius: "8px", padding: "8px"}'
         class='section-margin'
         @input='handleInput'
-        autoHeight={true}
+        autoHeight={false}
+        @linechange='handleLineChange'
       />
       <View style='height: 32px; width: 32px; padding: 7px 0 7px 4px;' @click='onSearchClick'>
         <Image :src='searchIcon' style='width: 18px; height: 18px;' />
@@ -55,6 +56,7 @@ const topic = computed(() => search.Search.topic())
 const prompt = ref(topic.value)
 
 const searchContentHeight = ref(0)
+const searchInputHeight = ref(18)
 const scrollTop = ref(999999)
 const searching = ref(true)
 
@@ -64,16 +66,35 @@ watch(searchResultCount, async () => {
 })
 
 const modelLogo = (modelId: number) => {
-  return models.value.find((el) => el.id === modelId)?.model_logo_url
+  const model = models.value.find((el) => el.id === modelId)
+  return model ? model.model_logo_url : ''
 }
 
 const modelName = (modelId: number) => {
-  return models.value.find((el) => el.id === modelId)?.name
+  const model = models.value.find((el) => el.id === modelId)
+  return model ? model.name : ''
 }
 
 const handleInput = (e: { detail: { value: string } }) => {
   prompt.value = e.detail.value
 }
+
+const handleLineChange = (e: { detail: { lineCount: any } }) => {
+  let lineCount = e.detail.lineCount
+  if (prompt.value === topic.value) lineCount = 1
+  const lineHeight = 18
+  const maxLines = 4
+  searchInputHeight.value = Math.min(maxLines, lineCount) * lineHeight
+  if (Taro.getWindowInfo()) {
+    searchContentHeight.value = Taro.getWindowInfo().windowHeight - 32 - searchInputHeight.value
+  }
+}
+
+watch(searchInputHeight, () => {
+  if (Taro.getWindowInfo()) {
+    searchContentHeight.value = Taro.getWindowInfo().windowHeight - 32 - searchInputHeight.value
+  }
+})
 
 const searchDo = (initial: boolean) => {
   searching.value = true
@@ -109,7 +130,7 @@ onMounted(() => {
   })
 
   if (Taro.getWindowInfo()) {
-    searchContentHeight.value = Taro.getWindowInfo().windowHeight - 22
+    searchContentHeight.value = Taro.getWindowInfo().windowHeight - 32 - 32
   }
 })
 </script>

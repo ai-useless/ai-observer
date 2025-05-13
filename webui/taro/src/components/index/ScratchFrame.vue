@@ -17,7 +17,7 @@
         size='mini'
         style='border-radius: 8px; color: blue; width: calc(100% - 112px); margin-top: 16px;'
       >
-        选择AGI主持人和嘉宾开始圆桌论坛
+        选择AGI成员开始圆桌论坛
       </Button>
       <Button
         @click='onAskClick'
