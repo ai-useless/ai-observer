@@ -53,7 +53,7 @@ export class EXiangsheng {
 
     xiangshengWorker.XiangshengRunner.handleSpeakRequest({
       participatorId,
-      text: text.replace('逗哏:', '').replace('捧哏:', '')
+      text: text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, '')
     }).then((payload) => {
       const { audio } = payload as xiangshengWorker.SpeakResponsePayload
       void this.onMessage(this.xiangsheng.uid, participatorId, text, audio)
