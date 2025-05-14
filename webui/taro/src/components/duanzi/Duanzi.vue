@@ -27,8 +27,7 @@
         {{ models.length }}个AGI正在创作 ...
       </View>
     </scroll-view>
-    <View style='display: flex; flex-direction: row; align-items: center; width: 100%; margin-top: -8px; height: 24px;'>
-      <Button size='mini' style='width: 100%;' @click='onMoreClick'>更多段子</Button>
+    <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; margin-top: -8px; height: 24px;'>
       <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
         <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
           <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
@@ -39,8 +38,11 @@
         <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
           <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
-        <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
+        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
           <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
+        <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onMoreClick'>
+          <Image :src='threeDotsVertical' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
       </View>
     </View>
@@ -48,14 +50,14 @@
 </template>
 
 <script setup lang='ts'>
-import { View, Image, ScrollView, Button } from '@tarojs/components'
+import { View, Image, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { model, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
 import { computed, onMounted, ref, watch, nextTick } from 'vue'
 
-import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp } from 'src/assets'
+import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, threeDotsVertical } from 'src/assets'
 
 interface Message {
   text: string
