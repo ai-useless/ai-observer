@@ -24,7 +24,7 @@
             </View>
           </View>
         </View>
-        <View style='font-size: 14px;'>
+        <View style='font-size: 14px; display: flex;'>
           <Image v-if='guests.length' :src='guests[0].simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
           <View style='margin-left: 8px;'>
             <View style='width: 64px'>
