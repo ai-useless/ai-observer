@@ -34,10 +34,7 @@
               <Text
                 style='margin-right: 16px;'
                 v-for='(guest, index) in guests'
-                :simulator='guest.simulator'
-                :small='true'
                 :key='index'
-                :is-host='false'
               >
                 {{ guest.simulator.simulator }}
               </Text>
