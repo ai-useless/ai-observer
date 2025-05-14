@@ -187,11 +187,12 @@ const typing = () => {
   // If audio is still playing, do nothing
   if (audioPlayer.value && audioPlayer.value.playing) return
 
-  typingMessage.value = waitMessages.value.find((el) => el.index === typingIndex.value) as Message
-  if (!typingMessage.value) return
+  const index = waitMessages.value.findIndex((el) => el.index === typingIndex.value)
+  if (index < 0) return
 
+  typingMessage.value = waitMessages.value[index]
   typingIndex.value += 1
-  waitMessages.value = waitMessages.value.slice(1)
+  waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
 
   if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)
