@@ -57,7 +57,7 @@ export class EXiangsheng {
       text: text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, '')
     }).then((payload) => {
       const { audio } = payload as xiangshengWorker.SpeakResponsePayload
-      void this.onMessage(this.xiangsheng.uid, participatorId, text, audio, index)
+      void this.onMessage(this.xiangsheng.uid, participatorId, text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, ''), audio, index)
       this.speak(texts, index + steps, steps)
     }).catch((e) => {
       console.log(`Failed speak: ${e}`)

@@ -9,7 +9,7 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray; width: calc(100% - 32px); padding-bottom: 4px;'>
+      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid lightgray; width: calc(100% - 32px); padding-bottom: 4px;'>
         {{ topic }}
       </View>
       <View style='transition: 500ms; display: flex;'>
@@ -25,20 +25,23 @@
           </View>
         </View>
         <View style='font-size: 14px;'>
-          <View style='width: 64px'>
-            捧哏：
-          </View>
-          <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: blue'>
-            <Text
-              style='margin-right: 16px;'
-              v-for='(guest, index) in guests'
-              :simulator='guest.simulator'
-              :small='true'
-              :key='index'
-              :is-host='false'
-            >
-              {{ guest.simulator.simulator }}
-            </Text>
+          <Image v-if='guests.length' :src='guests[0].simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
+          <View style='margin-left: 8px;'>
+            <View style='width: 64px'>
+              捧哏：
+            </View>
+            <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: blue'>
+              <Text
+                style='margin-right: 16px;'
+                v-for='(guest, index) in guests'
+                :simulator='guest.simulator'
+                :small='true'
+                :key='index'
+                :is-host='false'
+              >
+                {{ guest.simulator.simulator }}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
