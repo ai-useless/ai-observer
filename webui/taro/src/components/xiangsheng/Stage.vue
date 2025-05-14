@@ -173,6 +173,7 @@ const typing = () => {
   }
 
   if (lastDisplayMessage.value) {
+    lastDisplayMessage.value.typing = false
     displayMessages.value.push(lastDisplayMessage.value)
     lastDisplayMessage.value = undefined as unknown as Message
   }
@@ -282,7 +283,8 @@ const onMessage = async (xiangshengUid: string, participatorId: number, text: st
     datetime: timestamp,
     audio,
     index,
-    last
+    last,
+    typing: false
   })
 
   waitMessages.value = waitMessages.value.map((el) => {

@@ -12,4 +12,5 @@ export interface Message {
   audio: string
   index: number
   last: boolean
+  typing: boolean
 }

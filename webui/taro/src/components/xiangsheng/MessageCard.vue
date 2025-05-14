@@ -17,7 +17,7 @@
       </View>
     </View>
     <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px;' />
-    <View v-if='message.last' style='font-size: 20px; color: gray; padding: 16px 0;'>
+    <View v-if='message.last && !message.typing' style='font-size: 20px; color: gray; padding: 16px 0;'>
       谢谢观看！下一场表演更精彩！
     </View>
   </View>
