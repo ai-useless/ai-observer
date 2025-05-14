@@ -2,6 +2,7 @@ import { model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 
 export interface Message {
+  topic: string
   message: string
   participator: dbModel.Participator
   simulator: simulator._Simulator
@@ -10,4 +11,5 @@ export interface Message {
   timestamp: number
   audio: string
   index: number
+  last: boolean
 }

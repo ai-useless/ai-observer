@@ -6,6 +6,9 @@
     bg-color='grey-2'
     style='width: calc(100% - 32px);'
   >
+    <View v-if='message.index === 0' style='font-size: 20px; padding: 16px 0; font-weight: 600;'>
+      {{ message.topic }}
+    </View>
     <View style='padding-bottom: 4px; line-height: 24px; border-top: 1px solid lightgray; margin-top: 8px; padding-top: 4px; padding-bottom: 8px;'>
       <View style='display: flex; height: 24px;'>
         <View>{{ message.participator.role === dbModel.Role.HOST ? '逗哏' : '捧哏' }}</View>
@@ -14,6 +17,9 @@
       </View>
     </View>
     <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px;' />
+    <View v-if='message.last' style='font-size: 20px; color: gray; padding: 16px 0;'>
+      谢谢观看！下一场表演更精彩！
+    </View>
   </View>
 </template>
 

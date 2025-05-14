@@ -8,7 +8,8 @@ type MessageFunc = (
   participatorId: number,
   text: string,
   audio: string,
-  index: number
+  index: number,
+  last: boolean
 ) => void | Promise<void>
 type HistoryMessagesFunc = () => xiangshengWorker.HistoryMessage[]
 
@@ -57,7 +58,7 @@ export class EXiangsheng {
       text: text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, '')
     }).then((payload) => {
       const { audio } = payload as xiangshengWorker.SpeakResponsePayload
-      void this.onMessage(this.xiangsheng.uid, participatorId, text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, ''), audio, index)
+      void this.onMessage(this.xiangsheng.uid, participatorId, text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, ''), audio, index, index === texts.length - 1)
       this.speak(texts, index + steps, steps)
     }).catch((e) => {
       console.log(`Failed speak: ${e}`)

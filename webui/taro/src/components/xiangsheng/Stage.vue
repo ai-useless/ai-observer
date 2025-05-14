@@ -9,9 +9,6 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid lightgray; width: calc(100% - 32px); padding-bottom: 4px;'>
-        {{ topic }}
-      </View>
       <View style='transition: 500ms; display: flex;'>
         <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
           <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
@@ -269,13 +266,14 @@ watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
-const onMessage = async (xiangshengUid: string, participatorId: number, text: string, audio: string, index: number) => {
+const onMessage = async (xiangshengUid: string, participatorId: number, text: string, audio: string, index: number, last: boolean) => {
   if (xiangshengUid !== _uid.value) return
 
   const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
   waitMessages.value.push({
+    topic: topic.value as string,
     message: purify.purifyThink(text),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as simulator._Simulator,
@@ -283,7 +281,8 @@ const onMessage = async (xiangshengUid: string, participatorId: number, text: st
     timestamp: Date.now(),
     datetime: timestamp,
     audio,
-    index
+    index,
+    last
   })
 
   waitMessages.value = waitMessages.value.map((el) => {
