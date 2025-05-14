@@ -208,7 +208,8 @@ const typing = () => {
 
   lastDisplayMessage.value = {
     ...typingMessage.value,
-    message: ''
+    message: '',
+    typing: true
   }
 }
 
