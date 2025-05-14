@@ -1,13 +1,13 @@
 import Taro from '@tarojs/taro'
 import {
-  ChatRequestPayload,
-  ChatResponsePayload,
+  GenerateRequestPayload,
+  GenerateResponsePayload,
   ErrorResponsePayload,
   XiangshengEvent,
   XiangshengEventType
 } from './runner'
 
-type SearchResponseType = ChatResponsePayload | ErrorResponsePayload
+type SearchResponseType = GenerateResponsePayload | ErrorResponsePayload
 export type ListenerFunc = (payload: SearchResponseType) => void
 
 export class SearchWorker {
@@ -23,7 +23,7 @@ export class SearchWorker {
   >()
 
   private constructor() {
-    this._worker = Taro.createWorker('worker/worker/search/worker.js')
+    this._worker = Taro.createWorker('worker/worker/xiangsheng/worker.js')
 
     this._worker.onMessage((payload: Taro.Worker.OnMessageCallbackResult) => {
       const event = payload.message as XiangshengEvent
@@ -43,7 +43,7 @@ export class SearchWorker {
 
   public static send = (
     type: XiangshengEventType,
-    payload?: ChatRequestPayload
+    payload?: GenerateRequestPayload
   ) => {
     const worker = SearchWorker.getSearchWorker()._worker
     if (!worker) return

@@ -33,13 +33,11 @@ export class EXiangsheng {
     )
   }
 
-  onChatResponse = (message: xiangshengWorker.ChatResponsePayload) => {
-    const { xiangshengUid, participatorId, text, audio } = message
+  speak = (texts: string[], index: number) => {
+    if (index >= texts.length) return
 
-    void this.onMessage(xiangshengUid, participatorId, text, audio)
-  }
+    const text = texts[index]
 
-  next = (role: string) => {
     const host = dbBridge._Participator.host(
       this.xiangsheng.uid
     ) as dbModel.Participator
@@ -51,46 +49,53 @@ export class EXiangsheng {
 
     const hostSimulator = EParticipator.simulator(host)
     const guestSimulator = EParticipator.simulator(guest)
-    const historyMessages = this.historyMessages()
+    const participatorId = text.startsWith('逗哏') ? hostSimulator.participatorId : guestSimulator.participatorId
 
-    xiangshengWorker.XiangshengRunner.handleChatRequest({
-      topic: this.xiangsheng.topic,
-      historyMessages,
-      xiangshengUid: this.xiangsheng.uid,
-      participatorId:
-        role === '捧哏'
-          ? guestSimulator.participatorId
-          : hostSimulator.participatorId,
-      modelId: host.modelId,
-      role,
-      partner:
-        role === '逗哏'
-          ? guestSimulator.simulator.simulator
-          : hostSimulator.simulator.simulator,
-      mySelf:
-        role === '捧哏'
-          ? guestSimulator.simulator.simulator
-          : hostSimulator.simulator.simulator
+    xiangshengWorker.XiangshengRunner.handleSpeakRequest({
+      participatorId,
+      text: text.replace('逗哏:', '').replace('捧哏:', '')
+    }).then((payload) => {
+      const { audio } = payload as xiangshengWorker.SpeakResponsePayload
+      void this.onMessage(this.xiangsheng.uid, participatorId, text, audio)
+      this.speak(texts, index + 1)
+    }).catch((e) => {
+      console.log(`Failed speak: ${e}`)
+      this.speak(texts, index)
     })
-      .then((payload) => {
-        if (payload) {
-          this.onChatResponse(payload)
-          this.next(role === '逗哏' ? '捧哏' : '逗哏')
-        } else
-          setTimeout(() => {
-            this.next(role)
-          }, 1000)
-      })
-      .catch((e) => {
-        console.log(`Failed continue xiangsheng: ${e}`)
-        setTimeout(() => {
-          this.next(role)
-        }, 1000)
-      })
+  }
+
+  onGenerateResponse = (message: xiangshengWorker.GenerateResponsePayload) => {
+    const { texts } = message
+    this.speak(texts, 0)
   }
 
   start = () => {
-    this.next('逗哏')
+    const host = dbBridge._Participator.host(
+      this.xiangsheng.uid
+    ) as dbModel.Participator
+
+    const historyMessages = this.historyMessages()
+
+    xiangshengWorker.XiangshengRunner.handleGenerateRequest({
+      topic: this.xiangsheng.topic,
+      historyMessages,
+      xiangshengUid: this.xiangsheng.uid,
+      modelId: host.modelId
+    })
+      .then((payload) => {
+        if (payload) {
+          this.onGenerateResponse(payload)
+        } else
+          setTimeout(() => {
+            this.start()
+          }, 1000)
+      })
+      .catch((e) => {
+        console.log(`Failed start xiangsheng: ${e}`)
+        setTimeout(() => {
+          this.start()
+        }, 1000)
+      })
   }
 
   stop = () => {}

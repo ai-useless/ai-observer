@@ -41,13 +41,6 @@
         AGI段子
       </Button>
       <Button
-        @click='onStartStoryClick'
-        size='mini'
-        style='border-radius: 8px; color: blue; width: 33.3%;'
-      >
-        AGI故事会
-      </Button>
-      <Button
         @click='onStartChatClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
@@ -60,6 +53,13 @@
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         AGI梗图
+      </Button>
+      <Button
+        @click='onStartChatClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
+      >
+        AGI心情
       </Button>
       <Button
         v-if='false'
@@ -226,14 +226,6 @@ const startDuanzi = () => {
 
 const onStartDuanziClick = () => {
   startDuanzi()
-}
-
-const startStory = () => {
-  // TODO:
-}
-
-const onStartStoryClick = () => {
-  startStory()
 }
 
 const startChat = () => {

@@ -1,5 +1,6 @@
 import {
-  ChatRequestPayload,
+  GenerateRequestPayload,
+  SpeakRequestPayload,
   XiangshengEvent,
   XiangshengEventType,
   XiangshengRunner
@@ -12,9 +13,13 @@ console.trace = () => {
 self.onmessage = async (message: MessageEvent) => {
   const event = message.data as XiangshengEvent
   switch (event.type) {
-    case XiangshengEventType.CHAT_REQUEST:
-      return await XiangshengRunner.handleChatRequest(
-        event.payload as ChatRequestPayload
+    case XiangshengEventType.GENERATE_REQUEST:
+      return await XiangshengRunner.handleGenerateRequest(
+        event.payload as GenerateRequestPayload
+      )
+    case XiangshengEventType.SPEAK_REQUEST:
+      return await XiangshengRunner.handleSpeakRequest(
+        event.payload as SpeakRequestPayload
       )
   }
 }

@@ -5,55 +5,52 @@ import { Intent, Prompt } from './prompt'
 import { delay, purify } from 'src/utils'
 
 export enum XiangshengEventType {
-  CHAT_REQUEST = 'ChatRequest',
-  CHAT_RESPONSE = 'ChatResponse',
+  GENERATE_REQUEST = 'GenerateRequest',
+  GENERATE_RESPONSE = 'GenerateResponse',
+
+  SPEAK_REQUEST = 'SpeakRequest',
+  SPEAK_RESPONSE = 'SpeakResponse',
 
   ERROR = 'Error'
 }
 
 export interface HistoryMessage {
-  participatorId: number
   message: string
 }
 
-export interface ChatRequestPayload {
+export interface GenerateRequestPayload {
   topic: string
   historyMessages?: HistoryMessage[]
   xiangshengUid: string
-  participatorId: number
   modelId: number
-  role: string
-  partner: string
-  mySelf: string
 }
 
-export interface ChatResponsePayload {
+export interface GenerateResponsePayload {
   xiangshengUid: string
+  texts: string[]
+}
+
+export interface SpeakRequestPayload {
   participatorId: number
   text: string
+}
+
+export interface SpeakResponsePayload {
   audio: string
 }
 
 export interface XiangshengEvent {
   type: XiangshengEventType
-  payload: ChatRequestPayload | ChatResponsePayload
+  payload: GenerateRequestPayload | GenerateResponsePayload | SpeakRequestPayload | SpeakResponsePayload
 }
 
 export type ErrorResponsePayload = {
   error: string
   type: XiangshengEventType
-  payload: ChatRequestPayload
+  payload: GenerateRequestPayload | SpeakRequestPayload
 }
 
 export class XiangshengRunner {
-  static saveMessage = async (
-    topic: string,
-    message: string,
-    modelId: number
-  ) => {
-    dbBridge.XiangshengMessage.create(topic, modelId, message)
-  }
-
   static speakerVoice = async (simulatorId: number) => {
     const simulator = dbBridge._Simulator.simulator(simulatorId)
     if (!simulator) return
@@ -62,47 +59,23 @@ export class XiangshengRunner {
   }
 
   static prompt = (
-    topic: string,
-    simulatorId: number,
     historyMessages?: HistoryMessage[],
-    role?: string,
-    partner?: string,
-    mySelf?: string
   ) => {
-    const simulator = dbBridge._Simulator.simulator(simulatorId)
-    if (!simulator) return
-
     return Prompt.prompt(
-      Intent.CHAT,
-      topic,
-      (historyMessages || []).map((el) => el.message),
-      role as string,
-      partner as string,
-      mySelf as string
+      Intent.GENERATE,
+      (historyMessages || []).map((el) => el.message)
     )
   }
 
-  static requestChat = async (
-    topic: string,
-    participatorId: number,
+  static requestGenerate = async (
     historyMessages?: HistoryMessage[],
     modelId?: number,
-    role?: string,
-    partner?: string,
-    mySelf?: string
   ) => {
     const model = dbBridge._Model.model(modelId as number)
     if (!model) return
-    const participator = dbBridge._Participator.participator(participatorId)
-    if (!participator) return
 
     const _prompt = XiangshengRunner.prompt(
-      topic,
-      participator.simulatorId,
       historyMessages,
-      role,
-      partner,
-      mySelf
     )
 
     const textResp = await axios.post(constants.FALLBACK_API, {
@@ -116,83 +89,73 @@ export class XiangshengRunner {
       prompt: purify.purifyText(_prompt || '')
     })
 
-    if (!(textResp.data as Record<string, string>).content) {
+    if ((textResp.data as Record<string, string>).content) {
       return {
-        text: (textResp.data as Record<string, string>).content,
-        audio: ''
-      }
-    }
-
-    try {
-      const speechContent = purify.purifyBracket(
-        purify.purifyText((textResp.data as Record<string, string>).content)
-      )
-      const voice = await XiangshengRunner.speakerVoice(
-        participator.simulatorId
-      )
-      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
-        text: speechContent,
-        voice
-      })
-
-      let audioUrl = undefined as unknown as string
-
-      while (true) {
-        const queryResp = await axios.get(
-          `${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`
-        )
-        const resp = queryResp.data as Record<string, string>
-        if (!resp.settled && !resp.error) {
-          await delay.delay(10000)
-          continue
-        }
-        audioUrl = resp.audio_url
-        break
-      }
-
-      return {
-        text: (textResp.data as Record<string, string>).content,
-        audio: audioUrl
-      }
-    } catch {
-      return {
-        text: (textResp.data as Record<string, string>).content,
-        audio: ''
+        texts: Prompt.postProcess(purify.purifyText((textResp.data as Record<string, string>).content))
       }
     }
   }
 
-  static handleChatRequest = async (
-    payload: ChatRequestPayload
-  ): Promise<ChatResponsePayload | undefined> => {
+  static handleGenerateRequest = async (
+    payload: GenerateRequestPayload
+  ): Promise<GenerateResponsePayload | undefined> => {
     const {
-      topic,
       historyMessages,
       xiangshengUid,
-      participatorId,
       modelId,
-      role,
-      partner,
-      mySelf
     } = payload
 
-    const response = await XiangshengRunner.requestChat(
-      topic,
-      participatorId,
+    const response = await XiangshengRunner.requestGenerate(
       historyMessages,
-      modelId,
-      role,
-      partner,
-      mySelf
+      modelId
     )
-    if (!response || !response.text) return
-
-    await XiangshengRunner.saveMessage(topic, response.text, modelId)
+    if (!response || !response.texts || !response.texts.length) return
 
     return {
       ...response,
-      xiangshengUid,
-      participatorId
+      xiangshengUid
     }
+  }
+
+  static requestSpeak = async (participatorId: number, text: string) => {
+    const participator = dbBridge._Participator.participator(participatorId)
+    if (!participator) return
+    const simulator = dbBridge._Simulator.simulator(participator.simulatorId)
+    if (!simulator) return
+
+    const speechContent = purify.purifyBracket(
+      purify.purifyText(text)
+    )
+    const voice = await XiangshengRunner.speakerVoice(
+      participator.simulatorId
+    )
+    const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
+      text: speechContent,
+      voice
+    })
+
+    let audioUrl = undefined as unknown as string
+
+    while (true) {
+      const queryResp = await axios.get(
+        `${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`
+      )
+      const resp = queryResp.data as Record<string, string>
+      if (!resp.settled && !resp.error) {
+        await delay.delay(10000)
+        continue
+      }
+      audioUrl = resp.audio_url
+      break
+    }
+
+    return {
+      audio: audioUrl
+    }
+  }
+
+  static handleSpeakRequest = async (payload: SpeakRequestPayload): Promise<SpeakResponsePayload | undefined> => {
+    const { participatorId, text } = payload
+    return await XiangshengRunner.requestSpeak(participatorId, text)
   }
 }
