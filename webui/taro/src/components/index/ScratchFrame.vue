@@ -48,6 +48,20 @@
         AGI故事会
       </Button>
       <Button
+        @click='onStartChatClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
+      >
+        AGI私聊
+      </Button>
+      <Button
+        @click='onStartChatClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
+      >
+        AGI梗图
+      </Button>
+      <Button
         v-if='false'
         @click='onStartDiscussClick'
         size='mini'
@@ -220,6 +234,14 @@ const startStory = () => {
 
 const onStartStoryClick = () => {
   startStory()
+}
+
+const startChat = () => {
+
+}
+
+const onStartChatClick = () => {
+  startChat()
 }
 
 const onTopicClick = (_topic: string) => {
