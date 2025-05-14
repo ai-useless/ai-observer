@@ -7,7 +7,8 @@ type MessageFunc = (
   xiangshengUid: string,
   participatorId: number,
   text: string,
-  audio: string
+  audio: string,
+  index: number
 ) => void | Promise<void>
 type HistoryMessagesFunc = () => xiangshengWorker.HistoryMessage[]
 
@@ -33,7 +34,7 @@ export class EXiangsheng {
     )
   }
 
-  speak = (texts: string[], index: number) => {
+  speak = (texts: string[], index: number, steps: number) => {
     if (index >= texts.length) return
 
     const text = texts[index]
@@ -56,17 +57,20 @@ export class EXiangsheng {
       text: text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, '')
     }).then((payload) => {
       const { audio } = payload as xiangshengWorker.SpeakResponsePayload
-      void this.onMessage(this.xiangsheng.uid, participatorId, text, audio)
-      this.speak(texts, index + 1)
+      void this.onMessage(this.xiangsheng.uid, participatorId, text, audio, index)
+      this.speak(texts, index + steps, steps)
     }).catch((e) => {
       console.log(`Failed speak: ${e}`)
-      this.speak(texts, index)
+      this.speak(texts, index, steps)
     })
   }
 
   onGenerateResponse = (message: xiangshengWorker.GenerateResponsePayload) => {
     const { texts } = message
-    this.speak(texts, 0)
+    const steps = 5
+    for (let i = 0; i < steps; i++) {
+      this.speak(texts, i, steps)
+    }
   }
 
   start = () => {

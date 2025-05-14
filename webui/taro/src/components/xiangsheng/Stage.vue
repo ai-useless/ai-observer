@@ -108,6 +108,7 @@ const lastDisplayMessage = ref(undefined as unknown as Message)
 const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.message : undefined)
 const typingMessage = ref(undefined as unknown as Message)
 const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
+const typingIndex = ref(0)
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
@@ -186,7 +187,10 @@ const typing = () => {
   // If audio is still playing, do nothing
   if (audioPlayer.value && audioPlayer.value.playing) return
 
-  typingMessage.value = waitMessages.value[0]
+  typingMessage.value = waitMessages.value.find((el) => el.index === typingIndex.value) as Message
+  if (!typingMessage.value) return
+
+  typingIndex.value += 1
   waitMessages.value = waitMessages.value.slice(1)
 
   if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
@@ -264,7 +268,7 @@ watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
-const onMessage = async (xiangshengUid: string, participatorId: number, text: string, audio: string) => {
+const onMessage = async (xiangshengUid: string, participatorId: number, text: string, audio: string, index: number) => {
   if (xiangshengUid !== _uid.value) return
 
   const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
@@ -277,7 +281,8 @@ const onMessage = async (xiangshengUid: string, participatorId: number, text: st
     model: dbBridge._Model.model(participator.modelId) as model._Model,
     timestamp: Date.now(),
     datetime: timestamp,
-    audio
+    audio,
+    index
   })
 
   waitMessages.value = waitMessages.value.map((el) => {
@@ -291,13 +296,11 @@ const historyMessages = (): xiangshengWorker.HistoryMessage[] => {
 
   displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length).forEach((el) => {
     messages.push({
-      participatorId: el.participator.id as number,
       message: el.simulator.simulator + '发言: ' + purify.purifyText(el.message)
     })
   })
   waitMessages.value.forEach((el) => {
     messages.push({
-      participatorId: el.participator.id as number,
       message: purify.purifyText(el.message)
     })
   })

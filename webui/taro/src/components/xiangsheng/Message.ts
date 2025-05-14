@@ -9,4 +9,5 @@ export interface Message {
   datetime: string
   timestamp: number
   audio: string
+  index: number
 }
