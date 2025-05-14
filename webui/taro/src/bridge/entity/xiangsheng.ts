@@ -77,11 +77,21 @@ export class EXiangsheng {
     const host = dbBridge._Participator.host(
       this.xiangsheng.uid
     ) as dbModel.Participator
+    const guest = (
+      dbBridge._Participator.guests(
+        this.xiangsheng.uid
+      ) as dbModel.Participator[]
+    )[0]
+
+    const hostSimulator = EParticipator.simulator(host)
+    const guestSimulator = EParticipator.simulator(guest)
 
     const historyMessages = this.historyMessages()
 
     xiangshengWorker.XiangshengRunner.handleGenerateRequest({
       topic: this.xiangsheng.topic,
+      host: hostSimulator.simulator.simulator,
+      guest: guestSimulator.simulator.simulator,
       historyMessages,
       xiangshengUid: this.xiangsheng.uid,
       modelId: host.modelId

@@ -323,7 +323,7 @@ const startXiangsheng = async () => {
   if (audioPlayer.value) audioPlayer.value.context.stop()
 
   Taro.showLoading({
-    title: '演员正在候台'
+    title: '演员正在候场'
   })
 
   _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng

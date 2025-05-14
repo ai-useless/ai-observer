@@ -20,6 +20,8 @@ export interface HistoryMessage {
 
 export interface GenerateRequestPayload {
   topic: string
+  host: string,
+  guest: string,
   historyMessages?: HistoryMessage[]
   xiangshengUid: string
   modelId: number
@@ -59,15 +61,24 @@ export class XiangshengRunner {
   }
 
   static prompt = (
+    topic: string,
+    host: string,
+    guest: string,
     historyMessages?: HistoryMessage[],
   ) => {
     return Prompt.prompt(
       Intent.GENERATE,
+      topic,
+      host,
+      guest,
       (historyMessages || []).map((el) => el.message)
     )
   }
 
   static requestGenerate = async (
+    topic: string,
+    host: string,
+    guest: string,
     historyMessages?: HistoryMessage[],
     modelId?: number,
   ) => {
@@ -75,6 +86,9 @@ export class XiangshengRunner {
     if (!model) return
 
     const _prompt = XiangshengRunner.prompt(
+      topic,
+      host,
+      guest,
       historyMessages,
     )
 
@@ -100,12 +114,18 @@ export class XiangshengRunner {
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
     const {
+      topic,
+      host,
+      guest,
       historyMessages,
       xiangshengUid,
       modelId,
     } = payload
 
     const response = await XiangshengRunner.requestGenerate(
+      topic,
+      host,
+      guest,
       historyMessages,
       modelId
     )
