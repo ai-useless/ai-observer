@@ -41,7 +41,7 @@ export class EXiangsheng {
       return
     }
 
-    const text = texts[index]
+    const text = texts[index].replace('#', '').replace('*', '').replace(' ', '')
 
     const host = dbBridge._Participator.host(
       this.xiangsheng.uid
@@ -54,7 +54,7 @@ export class EXiangsheng {
 
     const hostSimulator = EParticipator.simulator(host)
     const guestSimulator = EParticipator.simulator(guest)
-    const participatorId = text.startsWith('逗哏')
+    const participatorId = text.startsWith('逗')
       ? hostSimulator.participatorId
       : guestSimulator.participatorId
 
