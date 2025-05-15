@@ -126,8 +126,6 @@ export class EXiangsheng {
   start = (_subTopicIndex?: number) => {
     if (this.generating) return
 
-    this.generating = true
-
     const host = dbBridge._Participator.host(
       this.xiangsheng.uid
     ) as dbModel.Participator
@@ -141,6 +139,8 @@ export class EXiangsheng {
       this.generateTopics()
       if (this.subTopicIndex < 0) return
     }
+
+    this.generating = true
 
     const hostSimulator = EParticipator.simulator(host)
     const guestSimulator = EParticipator.simulator(guest)
