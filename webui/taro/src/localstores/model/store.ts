@@ -13,8 +13,8 @@ export const useModelStore = defineStore('model', {
       axios
         .get(constants.GET_MODELS_API)
         .then((resp) => {
-          if (done) done(false, resp.data)
           this.appendModels(resp.data)
+          if (done) done(false, resp.data)
         })
         .catch((e) => {
           console.log(`Failed get models: ${JSON.stringify(e)}`)

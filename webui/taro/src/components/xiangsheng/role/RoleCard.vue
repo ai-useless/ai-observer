@@ -20,18 +20,14 @@
         </View>
       </View>
       <View style='font-size: 12px; color: gray;'>{{ _simulator.origin_personality }}</View>
-      <View style='display: flex; align-items: center; margin-top: 4px;'>
-        <Image :src='_model.model_logo_url' style='width: 24px; height: 24px; border-radius: 50%;' />
-        <Text style='font-size: 12px; color: gray; font-weight: 600; margin-left: 4px;'>{{ _model.name }}</Text>
-      </View>
     </View>
   </View>
 </template>
 
 <script setup lang='ts'>
 import { toRef } from 'vue'
-import { View, Image, Text } from '@tarojs/components'
-import { model, simulator } from 'src/localstores'
+import { View, Image } from '@tarojs/components'
+import { simulator } from 'src/localstores'
 
 import { threeDotsVertical, playCircle } from 'src/assets'
 
@@ -39,12 +35,10 @@ import { threeDotsVertical, playCircle } from 'src/assets'
 
 interface Props {
   simulator: simulator._Simulator
-  model: model._Model
   role: string
 }
 const props = defineProps<Props>()
 const _simulator = toRef(props, 'simulator')
-const _model = toRef(props, 'model')
 const role = toRef(props, 'role')
 
 </script>
