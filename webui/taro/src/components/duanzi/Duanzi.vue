@@ -10,16 +10,16 @@
       :scroll-with-animation='true'
     >
       <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: message.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
-        <View v-if='message.showModel' style='display: flex; border-bottom: 1px solid gray; padding-bottom: 8px; margin-bottom: 16px;'>
+        <View v-if='message.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 24px;'>
           <Image :src='modelLogo(message.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
-          <View style='font-weight: 600;'>{{ modelName(message.modelId) }}</View>
+          <View style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(message.modelId) }}</View>
         </View>
         <View :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>{{ message.text }}</View>
       </View>
       <View v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: lastDisplayMessage.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
-        <View v-if='lastDisplayMessage.showModel' style='display: flex;'>
+        <View v-if='lastDisplayMessage.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 24px;'>
           <Image :src='modelLogo(lastDisplayMessage.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
-          <View style='font-weight: 600;'>{{ modelName(lastDisplayMessage.modelId) }}</View>
+          <View style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(lastDisplayMessage.modelId) }}</View>
         </View>
         <View :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>{{ lastDisplayMessage.text }}</View>
       </View>
@@ -65,7 +65,6 @@ interface Message {
   audio: string
   modelId: number
   index: number
-  showModel: boolean
 }
 
 const models = computed(() => model.Model.models())
@@ -92,15 +91,15 @@ const modelName = (modelId: number) => {
   return model ? model.name : ''
 }
 
-const generate = () => {
+const generate = async () => {
   generating.value = true
 
   nextTick().then(() => scrollTop.value += 1)
 
-  models.value.forEach((model) => {
+  for (const model of models.value) {
     const simulator = dbBridge._Simulator.randomPeek()
     const messages = [...displayMessages.value, ...waitMessages.value]
-    entityBridge.Duanzi.generate(messages.map((el) => el.text), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
+    await entityBridge.Duanzi.generate(messages.map((el) => el.text), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
       generating.value = false
 
       waitMessages.value.push({
@@ -108,21 +107,20 @@ const generate = () => {
         text: purify.purifyThink(text),
         isTitle,
         audio: audio || '',
-        index,
-        showModel: false
+        index
       })
 
       Taro.hideLoading()
     }, true)
-  })
+  }
 }
 
-const onMoreClick = () => {
+const onMoreClick = async () => {
   if (generating.value) return
-  generate()
+  await generate()
 }
 
-onMounted(() => {
+onMounted(async () => {
   Taro.setNavigationBarTitle({
     title: 'AGI段子'
   })
@@ -131,8 +129,8 @@ onMounted(() => {
     Taro.showLoading({
       title: `${models.value.length}个AGI正在创作！`
     })
-    simulator.Simulator.getSimulators(undefined, () => {
-      generate()
+    simulator.Simulator.getSimulators(undefined, async () => {
+      await generate()
     })
   })
 
@@ -219,10 +217,9 @@ const typing = () => {
   waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1)]
   typingMessageIndex.value += 1
 
-  if (typingMessage.value.modelId !== lastModelId.value) typingMessage.value.showModel = true
   lastModelId.value = typingMessage.value.modelId
 
-  if (waitMessages.value.length <= 3) generate()
+  if (waitMessages.value.length <= 3) void generate()
 
   if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)

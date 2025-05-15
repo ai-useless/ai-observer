@@ -3,8 +3,7 @@ import { duanziWorker, speakWorker } from 'src/worker'
 export class Duanzi {
   private static baseTextIndex = 0
 
-  static generateAudio = (texts: string[], simulatorId: number, index: number, steps: number, onMessage: (text: string, isTitle: boolean, index: number, audio?: string) => void) => {
-    if (index === texts.length) Duanzi.baseTextIndex += texts.length
+  static generateAudio = (texts: string[], simulatorId: number, baseIndex: number, index: number, steps: number, onMessage: (text: string, isTitle: boolean, index: number, audio?: string) => void) => {
     if (index >= texts.length) return
 
     let text = texts[index]
@@ -18,51 +17,49 @@ export class Duanzi {
       simulatorId
     }).then((payload) => {
       if (!payload) {
-        onMessage(text, isTitle, Duanzi.baseTextIndex + index, undefined)
-        Duanzi.generateAudio(texts, simulatorId, index + steps, steps, onMessage)
+        onMessage(text, isTitle, baseIndex + index, undefined)
+        Duanzi.generateAudio(texts, simulatorId, baseIndex, index + steps, steps, onMessage)
         return
       }
-      onMessage(text, isTitle, Duanzi.baseTextIndex + index, payload.audio)
-      Duanzi.generateAudio(texts, simulatorId, index + steps, steps, onMessage)
+      onMessage(text, isTitle, baseIndex + index, payload.audio)
+      Duanzi.generateAudio(texts, simulatorId, baseIndex, index + steps, steps, onMessage)
     }).catch((e) => {
       console.log(`Failed generate audio: ${e}`)
-      onMessage(text, isTitle, Duanzi.baseTextIndex + index, undefined)
-      Duanzi.generateAudio(texts, simulatorId, index + steps, steps, onMessage)
+      onMessage(text, isTitle, baseIndex + index, undefined)
+      Duanzi.generateAudio(texts, simulatorId, baseIndex, index + steps, steps, onMessage)
     })
   }
 
-  static generate = (
+  static generate = async (
     historyMessages: string[],
     modelId: number,
     simulatorId: number,
     onMessage: (text: string, isTitle: boolean, index: number, audio?: string) => void,
     generateAudio?: boolean
   ) => {
-    duanziWorker.DuanziRunner.handleGenerateRequest({
-      historyMessages,
-      modelId
-    })
-      .then(async (payload) => {
-        if (!payload) {
-          return
-        }
-
-        if (generateAudio === false) {
-          for (let i = 0; i < payload.texts.length; i++) {
-            const text = payload.texts[i]
-            onMessage(text, text.startsWith('标题'), Duanzi.baseTextIndex + i, undefined)
-            Duanzi.baseTextIndex += payload.texts.length
-          }
-          return
-        }
-
-        const steps = 5
-        for (let i = 0; i < 5; i++) {
-          Duanzi.generateAudio(payload.texts, simulatorId, i, steps, onMessage)
-        }
+    try {
+      const payload = await duanziWorker.DuanziRunner.handleGenerateRequest({
+        historyMessages,
+        modelId
       })
-      .catch((e) => {
-        console.log(`Failed generate: ${e}`)
-      })
+      if (!payload) return
+
+      if (generateAudio === false) {
+        for (let i = 0; i < payload.texts.length; i++) {
+          const text = payload.texts[i].replace('*', '').replace('#', '').replace(' ', '')
+          onMessage(text, text.startsWith('标题'), Duanzi.baseTextIndex + i, undefined)
+          Duanzi.baseTextIndex += payload.texts.length
+        }
+        return
+      }
+
+      const steps = 5
+      for (let i = 0; i < 5; i++) {
+        Duanzi.generateAudio(payload.texts, simulatorId, Duanzi.baseTextIndex, i, steps, onMessage)
+      }
+      Duanzi.baseTextIndex += payload.texts.length
+    } catch (e) {
+      console.log(`Failed generate: ${e}`)
+    }
   }
 }
