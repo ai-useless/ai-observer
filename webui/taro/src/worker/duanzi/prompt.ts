@@ -4,8 +4,6 @@ export enum Intent {
 
 enum PromptType {
   NO_HEAD_SPACE,
-  WITH_HTML,
-  HTML_STYLE,
   SEGMENT,
   NO_EMOJI,
   MERGE_SPACES,
@@ -18,12 +16,6 @@ type RequirementFunc = (...args: (string | number | string[])[]) => string
 
 const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格；') as RequirementFunc],
-  [PromptType.WITH_HTML, (() => ') 输出格式为纯HTML；') as RequirementFunc],
-  [
-    PromptType.HTML_STYLE,
-    (() =>
-      ') 一级标题字体14px加粗，二级标题12px加粗，正文12px常规字体，行高1.5em；') as RequirementFunc
-  ],
   [PromptType.SEGMENT, (() => ') 根据语义合理分段；') as RequirementFunc],
   [
     PromptType.NO_EMOJI,
@@ -59,8 +51,6 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     Intent.GENERATE,
     [
       PromptType.NO_EMOJI,
-      PromptType.WITH_HTML,
-      PromptType.HTML_STYLE,
       PromptType.SEGMENT,
       PromptType.NO_HEAD_SPACE,
       PromptType.MERGE_SPACES,
@@ -101,7 +91,11 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
           示例：
           1. 你知道一年365日男的女的都最怕哪一日吗？男的怕1月31日，女的怕12月1日。
           2. 工资涨不动，发际线跌不停。
-          请基于以上风格生成新的段子。不同的段子有单独标题，单独一段，标题单独一行，需要HTML格式，标题居中，段子之间相隔16px。
+          请基于以上风格生成新的段子。不同的段子有单独标题，单独一段，标题单独一行，返回纯文本。返回格式为：
+          标题：xxxx
+          内容：xxxxxxxxxxx
+          标题：xxxx
+          内容：xxxxxxxxxxx
           要求: ${intentRequirements(Intent.GENERATE, historyMessages)}`) as IntentFunc
   ]
 ])
@@ -112,5 +106,9 @@ export class Prompt {
     const intentPrompt = IntentPrompt.get(intent)
     if (!intentPrompt) throw Error('Invalid intent')
     return intentPrompt(..._args)
+  }
+
+  static postProcess = (text: string) => {
+    return text.split('\n').filter((el) => el.length > 0)
   }
 }

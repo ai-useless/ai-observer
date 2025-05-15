@@ -2,8 +2,7 @@ import axios from 'taro-axios'
 import { constants } from '../../constant'
 import { dbBridge } from '../../bridge'
 import { Intent, Prompt } from './prompt'
-import { dbModel } from '../../model'
-import { delay, purify } from 'src/utils'
+import { purify } from 'src/utils'
 
 export enum DuanziEventType {
   GENERATE_REQUEST = 'GenerateRequest',
@@ -14,15 +13,12 @@ export enum DuanziEventType {
 
 export interface GenerateRequestPayload {
   historyMessages?: string[]
-  generateAudio?: boolean
-  simulatorId: number
   modelId: number
 }
 
 export interface GenerateResponsePayload {
   modelId: number
-  text: string
-  audio: string
+  texts: string[]
 }
 
 export interface DuanziEvent {
@@ -44,23 +40,18 @@ export class DuanziRunner {
     return simulator.audio_id
   }
 
-  static prompt = (simulatorId: number, historyMessages?: string[]) => {
-    const simulator = dbBridge._Simulator.simulator(simulatorId)
-    if (!simulator) return
-
+  static prompt = (historyMessages?: string[]) => {
     return Prompt.prompt(Intent.GENERATE, historyMessages || [])
   }
 
-  static requestSearch = async (
-    simulatorId: number,
+  static requestGenerate = async (
     historyMessages?: string[],
-    generateAudio?: boolean,
     modelId?: number
   ) => {
     const model = dbBridge._Model.model(modelId as number)
     if (!model) return
 
-    const _prompt = DuanziRunner.prompt(simulatorId, historyMessages)
+    const _prompt = DuanziRunner.prompt(historyMessages)
 
     const textResp = await axios.post(constants.FALLBACK_API, {
       model: model.name,
@@ -72,70 +63,28 @@ export class DuanziRunner {
       }),
       prompt: purify.purifyText(_prompt || '')
     })
-
-    const _generateAudio = (await dbBridge._Setting.get(
-      dbModel.SettingKey.GENERATE_AUDIO
-    )) as boolean
-    if (
-      (generateAudio !== undefined && !generateAudio) ||
-      (_generateAudio !== undefined && !_generateAudio) ||
-      !(textResp.data as Record<string, string>).content
-    ) {
+    if (!(textResp.data as Record<string, string>).content) {
       return {
-        text: (textResp.data as Record<string, string>).content,
-        audio: ''
+        texts: []
       }
     }
 
-    try {
-      const speechContent = purify.purifyText(
-        (textResp.data as Record<string, string>).content
-      )
-      const voice = await DuanziRunner.speakerVoice(simulatorId)
-      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
-        text: speechContent,
-        voice
-      })
-
-      let audioUrl = undefined as unknown as string
-
-      while (true) {
-        const queryResp = await axios.get(
-          `${constants.QUERY_AUDIO_API}/${(audioResp.data as Record<string, string>).audio_uid}`
-        )
-        const resp = queryResp.data as Record<string, string>
-        if (!resp.settled && !resp.error) {
-          await delay.delay(10000)
-          continue
-        }
-        audioUrl = resp.audio_url
-        break
-      }
-
-      return {
-        text: (textResp.data as Record<string, string>).content,
-        audio: audioUrl
-      }
-    } catch {
-      return {
-        text: (textResp.data as Record<string, string>).content,
-        audio: ''
-      }
+    const texts = Prompt.postProcess((textResp.data as Record<string, string>).content)
+    return {
+      texts
     }
   }
 
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const { historyMessages, generateAudio, simulatorId, modelId } = payload
+    const { historyMessages, modelId } = payload
 
-    const response = await DuanziRunner.requestSearch(
-      simulatorId,
+    const response = await DuanziRunner.requestGenerate(
       historyMessages,
-      generateAudio,
       modelId
     )
-    if (!response || !response.text) return
+    if (!response || !response.texts || !response.texts.length) return
 
     return {
       modelId,
