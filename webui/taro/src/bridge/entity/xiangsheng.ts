@@ -91,7 +91,6 @@ export class EXiangsheng {
 
   onTopicsResponse = (message: xiangshengWorker.TopicsResponsePayload) => {
     this.subTopics.push(...message.topics)
-    console.log(this.subTopicIndex, 1111, message.topic)
     if (this.subTopicIndex < 0) this.start()
   }
 
