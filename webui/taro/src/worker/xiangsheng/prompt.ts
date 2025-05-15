@@ -1,6 +1,7 @@
 export enum Intent {
   GENERATE = 'Generate',
-  TOPICS = 'Topics'
+  TOPICS = 'Topics',
+  CLASSIC_TOPICS = 'ClassicTopics'
 }
 
 enum PromptType {
@@ -56,6 +57,17 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
   ],
   [
     Intent.TOPICS,
+    [
+      PromptType.NO_EMOJI,
+      PromptType.NO_HEAD_SPACE,
+      PromptType.MERGE_SPACES,
+      PromptType.WITH_HISTORY_ANALYSIS,
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
+    ]
+  ],
+  [
+    Intent.CLASSIC_TOPICS,
     [
       PromptType.NO_EMOJI,
       PromptType.NO_HEAD_SPACE,
@@ -127,6 +139,13 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       `你是相声剧本创作者，请你拟定3个${topic}相关的轻松诙谐或讽刺等相声主题，需要排除用户已经观看过的主题。
        返回纯文本，不同主题单独一行。
        要求: ${intentRequirements(Intent.TOPICS, historyTopics)}`) as IntentFunc
+  ],
+  [
+    Intent.CLASSIC_TOPICS,
+    ((historyTopics: string[]) =>
+      `你是相声资料大全图书馆，请你准备10个不同素材的经典相声大主题，这些主题将会被作为中心生成更小的相声剧本题目，需要排除用户已经观看过的主题。
+       例如，乱弹东周作为大的主题，下面会生成东周人物相关的剧本。返回纯文本，不同主题单独一行。
+       要求: ${intentRequirements(Intent.CLASSIC_TOPICS, historyTopics)}`) as IntentFunc
   ]
 ])
 

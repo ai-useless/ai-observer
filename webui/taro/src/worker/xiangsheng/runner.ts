@@ -5,6 +5,9 @@ import { Intent, Prompt } from './prompt'
 import { delay, purify } from 'src/utils'
 
 export enum XiangshengEventType {
+  CLASSIC_TOPICS_REQUEST = 'ClassicTopicsRequest',
+  CLASSIC_TOPICS_RESPONSE = 'ClassicTopicsResponse',
+
   TOPICS_REQUEST = 'TopicsRequest',
   TOPICS_RESPONSE = 'TopicsResponse',
 
@@ -19,6 +22,15 @@ export enum XiangshengEventType {
 
 export interface HistoryMessage {
   message: string
+}
+
+export interface ClassicTopicsRequestPayload {
+  historyTopics: HistoryMessage[]
+  modelId: number
+}
+
+export interface ClassicTopicsResponsePayload {
+  topics: string[]
 }
 
 export interface TopicsRequestPayload {
@@ -70,12 +82,14 @@ export interface XiangshengEvent {
     | SpeakResponsePayload
     | TopicsRequestPayload
     | TopicsResponsePayload
+    | ClassicTopicsRequestPayload
+    | ClassicTopicsResponsePayload
 }
 
 export type ErrorResponsePayload = {
   error: string
   type: XiangshengEventType
-  payload: GenerateRequestPayload | SpeakRequestPayload
+  payload: GenerateRequestPayload | SpeakRequestPayload | TopicsRequestPayload | ClassicTopicsRequestPayload
 }
 
 export class XiangshengRunner {
@@ -103,6 +117,8 @@ export class XiangshengRunner {
         )
       case Intent.TOPICS:
         return Prompt.prompt(intent, topic, (historyMessages || []).map((el) => el.message))
+      case Intent.CLASSIC_TOPICS:
+        return Prompt.prompt(intent, (historyMessages || []).map((el) => el.message))
     }
   }
 
@@ -184,6 +200,26 @@ export class XiangshengRunner {
       topic,
       topics: response.texts,
       xiangshengUid
+    }
+  }
+
+  static handleClassicTopicsRequest = async (
+    payload: ClassicTopicsRequestPayload
+  ): Promise<ClassicTopicsResponsePayload | undefined> => {
+    const { historyTopics, modelId } = payload
+
+    const response = await XiangshengRunner.requestGenerate(
+      Intent.CLASSIC_TOPICS,
+      undefined as unknown as string,
+      undefined as unknown as string,
+      undefined as unknown as string,
+      historyTopics,
+      modelId
+    )
+    if (!response || !response.texts || !response.texts.length) return
+
+    return {
+      topics: response.texts
     }
   }
 

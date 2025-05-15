@@ -18,4 +18,9 @@ export class _Model {
   static _topicModel = () => {
     return _Model.topicModel
   }
+
+  static topicModelId = () => {
+    const topicModel = model.Model.models().find((el) => el.name === _Model.topicModel)
+    return topicModel ? topicModel.id : 0
+  }
 }

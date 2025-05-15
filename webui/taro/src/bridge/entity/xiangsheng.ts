@@ -183,4 +183,13 @@ export class EXiangsheng {
   }
 
   stop = () => {}
+
+  static prepareTopics = async (historyTopics: string[]) => {
+    return await xiangshengWorker.XiangshengRunner.handleClassicTopicsRequest({
+      historyTopics: historyTopics.map((el) => {
+        return { message: el }
+      }),
+      modelId: dbBridge._Model.topicModelId()
+    })
+  }
 }

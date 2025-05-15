@@ -24,42 +24,42 @@
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
-        随便问一下
+        AGI问一问
       </Button>
       <Button
         @click='onStartXiangshengClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
-        AGI相声
+        AGI相声社
       </Button>
       <Button
         @click='onStartDuanziClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
-        AGI段子
+        AGI有内涵
       </Button>
       <Button
         @click='onStartChatClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
-        AGI私聊
+        AGI轻松聊
       </Button>
       <Button
         @click='onStartChatClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
-        AGI梗图
+        AGI超有梗
       </Button>
       <Button
         @click='onStartChatClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
-        AGI心情
+        AGI圈帮手
       </Button>
       <Button
         v-if='false'

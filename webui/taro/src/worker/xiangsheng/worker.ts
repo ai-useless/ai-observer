@@ -1,4 +1,5 @@
 import {
+  ClassicTopicsRequestPayload,
   GenerateRequestPayload,
   SpeakRequestPayload,
   TopicsRequestPayload,
@@ -25,6 +26,10 @@ self.onmessage = async (message: MessageEvent) => {
     case XiangshengEventType.TOPICS_REQUEST:
       return await XiangshengRunner.handleTopicsRequest(
         event.payload as TopicsRequestPayload
+      )
+    case XiangshengEventType.CLASSIC_TOPICS_REQUEST:
+      return await XiangshengRunner.handleClassicTopicsRequest(
+        event.payload as ClassicTopicsRequestPayload
       )
   }
 }

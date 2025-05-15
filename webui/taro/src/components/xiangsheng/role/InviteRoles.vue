@@ -1,8 +1,10 @@
 <template>
   <View>
-    <View style='display: flex;'>
+    <View style='font-size: 12px; color: gray;'>表演主题</View>
+    <Input :value='topic' style='border: 1px solid lightgray; border-radius: 4px; width: calc(100% - 48px); padding: 4px 8px; margin-top: 8px;' @input='onTopicInput' />
+    <View style='display: flex; margin-top: 16px;'>
       <View style='font-size: 12px; color: gray;'>选择相声演员或</View>
-      <View style='font-size: 12px; color: blue;' @click='onRandomGuestClick'>随机</View>
+      <View style='font-size: 12px; color: blue;' @click='onRandomGuestClick'>随机安排</View>
     </View>
     <View style='margin-top: 8px;'>
       <View v-for='(guest, index) in guests' :key='index' style='padding: 8px 0; border-bottom: 1px solid gray; width: calc(100% - 32px);'>
@@ -26,6 +28,22 @@
     >
       开始表演
     </Button>
+    <View style='margin-top: 16px;'>
+      <View style=' width: calc(100% - 32px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid gray;'>
+        <View class='title'>你可能会喜欢</View>
+        <View>
+          <Button class='title plain-btn' size='mini' plain style='color: blue;' @click='onChangeTopicsClick' :loading='generating'>{{ generating ? '生成中...' : '换一批' }}</Button>
+        </View>
+      </View>
+      <View v-if='topics.length' style='margin-top: 8px; width: calc(100% - 32px);'>
+        <View v-for='_topic in topics' style='font-size: 14px; color: blue;' @click='onTopicClick(_topic)'>
+          {{ _topic }}
+        </View>
+      </View>
+      <View v-else class='title' style='height: 200px; display: flex; justify-content: center; align-items: center; width: calc(100% - 32px);'>
+        AGI正在为您生成相声主题...
+      </View>
+    </View>
   </View>
   <AtModal :is-opened='selectingSimulator' @close='onSimulatorSelectorClose'>
     <AtModalHeader>选择{{ selectingSimulatorIndex === 0 ? '逗哏' : '捧哏' }}模拟器</AtModalHeader>
@@ -60,8 +78,8 @@ import Taro from '@tarojs/taro'
 import { computed, onMounted, ref } from 'vue'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { model, xiangsheng, setting, simulator } from 'src/localstores'
-import { View, Button, Image } from '@tarojs/components'
-import { dbBridge } from 'src/bridge'
+import { View, Button, Image, Input } from '@tarojs/components'
+import { dbBridge, entityBridge } from 'src/bridge'
 import { uuid } from 'src/utils'
 import { dbModel } from 'src/model'
 
@@ -82,6 +100,40 @@ const models = computed(() => model.Model.models())
 const simulators = computed(() => simulator.Simulator.allSimulators().filter((el) => guests.value.findIndex((_el) => _el && _el.simulator === el.simulator) < 0))
 
 const topic = computed(() => xiangsheng.Xiangsheng.topic())
+const historyTopics = ref([] as string[])
+const topics = ref([] as string[])
+const generating = ref(true)
+
+const generateTopics = () => {
+  generating.value = true
+  entityBridge.EXiangsheng.prepareTopics(historyTopics.value).then((_topics) => {
+    generating.value = false
+    if (!_topics || !_topics.topics.length) {
+      setTimeout(() => generateTopics(), 1000)
+      return
+    }
+    historyTopics.value.push(...topics.value)
+    topics.value = _topics.topics
+  }).catch((e) => {
+    console.log(`Failed change topics: ${e}`)
+    generating.value = false
+    setTimeout(() => generateTopics(), 1000)
+  })
+}
+
+const onChangeTopicsClick = () => {
+  generateTopics()
+}
+
+const onTopicClick = (_topic: string) => {
+  xiangsheng.Xiangsheng.setTopic(_topic)
+  if (guests.value.findIndex((el) => !el) >= 0) return
+  startXiangsheng()
+}
+
+const onTopicInput = (e: { detail: { value: string } }) => {
+  xiangsheng.Xiangsheng.setTopic(e.detail.value)
+}
 
 const startXiangsheng = () => {
   const _uid = uuid.newUuid()
@@ -136,11 +188,17 @@ const onRandomGuestClick = () => {
 }
 
 onMounted(() => {
+  Taro.setNavigationBarTitle({
+    title: 'AGI相声'
+  })
+
   for (let i = 0; i < 2; i++) {
     guests.value.push(undefined as unknown as simulator._Simulator)
     _models.value.push(undefined as unknown as model._Model)
   }
-  model.Model.getModels()
+  model.Model.getModels(() => {
+    generateTopics()
+  })
   simulator.Simulator.getSimulators()
 })
 
@@ -177,3 +235,20 @@ const onCancelSelectModelClick = () => {
 }
 
 </script>
+
+<stype lang='sass'>
+.title
+  font-size: 24px
+  font-weight: 400
+  color: gray
+
+.plain-btn
+  border: none !important
+  background-color: transparent
+  box-shadow: none !important
+  padding: 0 !important
+
+.plain-btn::after
+  border: none !important
+  content: none !important
+</stype>

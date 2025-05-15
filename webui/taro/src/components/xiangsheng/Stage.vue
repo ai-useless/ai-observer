@@ -104,11 +104,11 @@ const hostParticipator = computed(() => participators.value.find((el) => el.role
 const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
-const topic = ref(xiangsheng.Xiangsheng.topic())
+const topic = computed(() => xiangsheng.Xiangsheng.topic())
 const editing = ref(false)
 
 const onTopicInput = (e: { detail: { value: string } }) => {
-  topic.value = e.detail.value
+  xiangsheng.Xiangsheng.setTopic(e.detail.value)
 }
 
 const displayMessages = ref([] as Message[])
