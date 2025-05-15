@@ -12,7 +12,7 @@
     <View style='padding-bottom: 4px; line-height: 24px; border-top: 1px solid lightgray; margin-top: 8px; padding-top: 4px; padding-bottom: 8px;'>
       <View style='display: flex; height: 24px;'>
         <View>{{ message.participator.role === dbModel.Role.HOST ? '逗哏' : '捧哏' }}</View>
-        <Image :src='message.simulator.simulator_avatar_url' mode='widthFix' style='margin-left: 4px; width: 24px; border-radius: 50%;' />
+        <Image :src='message.simulator.simulator_avatar_url' mode='widthFix' style='margin-left: 4px; height: 24px; width: 24px; border-radius: 50%;' />
         <View style='color: blue; font-weight: 600; margin-left: 8px;'>{{ message.simulator.simulator }}</View>
       </View>
     </View>
