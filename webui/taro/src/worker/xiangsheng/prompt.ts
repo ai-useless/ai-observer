@@ -124,7 +124,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.TOPICS,
     ((topic: string, historyTopics: string[]) =>
-      `你是相声剧本创作者，请你拟定3个${topic}相关的相声主题，需要排除用户已经观看过的主题。
+      `你是相声剧本创作者，请你拟定3个${topic}相关的轻松诙谐或讽刺等相声主题，需要排除用户已经观看过的主题。
        返回纯文本，不同主题单独一行。
        要求: ${intentRequirements(Intent.TOPICS, historyTopics)}`) as IntentFunc
   ]
