@@ -44,17 +44,11 @@ export class DuanziRunner {
     return simulator.audio_id
   }
 
-  static prompt = (
-    simulatorId: number,
-    historyMessages?: string[]
-  ) => {
+  static prompt = (simulatorId: number, historyMessages?: string[]) => {
     const simulator = dbBridge._Simulator.simulator(simulatorId)
     if (!simulator) return
 
-    return Prompt.prompt(
-      Intent.GENERATE,
-      historyMessages || []
-    )
+    return Prompt.prompt(Intent.GENERATE, historyMessages || [])
   }
 
   static requestSearch = async (
@@ -66,10 +60,7 @@ export class DuanziRunner {
     const model = dbBridge._Model.model(modelId as number)
     if (!model) return
 
-    const _prompt = DuanziRunner.prompt(
-      simulatorId,
-      historyMessages
-    )
+    const _prompt = DuanziRunner.prompt(simulatorId, historyMessages)
 
     const textResp = await axios.post(constants.FALLBACK_API, {
       model: model.name,
@@ -136,12 +127,7 @@ export class DuanziRunner {
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const {
-      historyMessages,
-      generateAudio,
-      simulatorId,
-      modelId
-    } = payload
+    const { historyMessages, generateAudio, simulatorId, modelId } = payload
 
     const response = await DuanziRunner.requestSearch(
       simulatorId,

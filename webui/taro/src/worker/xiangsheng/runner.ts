@@ -5,6 +5,9 @@ import { Intent, Prompt } from './prompt'
 import { delay, purify } from 'src/utils'
 
 export enum XiangshengEventType {
+  TOPICS_REQUEST = 'TopicsRequest',
+  TOPICS_RESPONSE = 'TopicsResponse',
+
   GENERATE_REQUEST = 'GenerateRequest',
   GENERATE_RESPONSE = 'GenerateResponse',
 
@@ -18,16 +21,29 @@ export interface HistoryMessage {
   message: string
 }
 
+export interface TopicsRequestPayload {
+  topic: string
+  historySubTopics: HistoryMessage[]
+  xiangshengUid: string
+  modelId: number
+}
+
+export interface TopicsResponsePayload {
+  topics: string[]
+  xiangshengUid: string
+}
+
 export interface GenerateRequestPayload {
   topic: string
-  host: string,
-  guest: string,
-  historyMessages?: HistoryMessage[]
+  subTopicIndex: number
+  host: string
+  guest: string
   xiangshengUid: string
   modelId: number
 }
 
 export interface GenerateResponsePayload {
+  subTopicIndex: number
   xiangshengUid: string
   texts: string[]
 }
@@ -43,7 +59,13 @@ export interface SpeakResponsePayload {
 
 export interface XiangshengEvent {
   type: XiangshengEventType
-  payload: GenerateRequestPayload | GenerateResponsePayload | SpeakRequestPayload | SpeakResponsePayload
+  payload:
+    | GenerateRequestPayload
+    | GenerateResponsePayload
+    | SpeakRequestPayload
+    | SpeakResponsePayload
+    | TopicsRequestPayload
+    | TopicsResponsePayload
 }
 
 export type ErrorResponsePayload = {
@@ -61,36 +83,37 @@ export class XiangshengRunner {
   }
 
   static prompt = (
+    intent: Intent,
     topic: string,
     host: string,
     guest: string,
-    historyMessages?: HistoryMessage[],
+    historyMessages?: HistoryMessage[]
   ) => {
-    return Prompt.prompt(
-      Intent.GENERATE,
-      topic,
-      host,
-      guest,
-      (historyMessages || []).map((el) => el.message)
-    )
+    switch (intent) {
+      case Intent.GENERATE:
+        return Prompt.prompt(
+          intent,
+          topic,
+          host,
+          guest
+        )
+      case Intent.TOPICS:
+        return Prompt.prompt(intent, topic, (historyMessages || []).map((el) => el.message))
+    }
   }
 
   static requestGenerate = async (
+    intent: Intent,
     topic: string,
     host: string,
     guest: string,
     historyMessages?: HistoryMessage[],
-    modelId?: number,
+    modelId?: number
   ) => {
     const model = dbBridge._Model.model(modelId as number)
     if (!model) return
 
-    const _prompt = XiangshengRunner.prompt(
-      topic,
-      host,
-      guest,
-      historyMessages,
-    )
+    const _prompt = XiangshengRunner.prompt(intent, topic, host, guest, historyMessages)
 
     const textResp = await axios.post(constants.FALLBACK_API, {
       model: model.name,
@@ -105,7 +128,9 @@ export class XiangshengRunner {
 
     if ((textResp.data as Record<string, string>).content) {
       return {
-        texts: Prompt.postProcess(purify.purifyText((textResp.data as Record<string, string>).content))
+        texts: Prompt.postProcess(
+          purify.purifyText((textResp.data as Record<string, string>).content)
+        )
       }
     }
   }
@@ -113,26 +138,44 @@ export class XiangshengRunner {
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const {
-      topic,
-      host,
-      guest,
-      historyMessages,
-      xiangshengUid,
-      modelId,
-    } = payload
+    const { topic, host, guest, xiangshengUid, modelId, subTopicIndex } =
+      payload
 
     const response = await XiangshengRunner.requestGenerate(
+      Intent.GENERATE,
       topic,
       host,
       guest,
-      historyMessages,
+      [],
       modelId
     )
     if (!response || !response.texts || !response.texts.length) return
 
     return {
       ...response,
+      subTopicIndex,
+      xiangshengUid
+    }
+  }
+
+  static handleTopicsRequest = async (
+    payload: TopicsRequestPayload
+  ): Promise<TopicsResponsePayload | undefined> => {
+    const { topic, xiangshengUid, modelId, historySubTopics } =
+      payload
+
+    const response = await XiangshengRunner.requestGenerate(
+      Intent.TOPICS,
+      topic,
+      undefined as unknown as string,
+      undefined as unknown as string,
+      historySubTopics,
+      modelId
+    )
+    if (!response || !response.texts || !response.texts.length) return
+
+    return {
+      topics: response.texts,
       xiangshengUid
     }
   }
@@ -143,12 +186,8 @@ export class XiangshengRunner {
     const simulator = dbBridge._Simulator.simulator(participator.simulatorId)
     if (!simulator) return
 
-    const speechContent = purify.purifyBracket(
-      purify.purifyText(text)
-    )
-    const voice = await XiangshengRunner.speakerVoice(
-      participator.simulatorId
-    )
+    const speechContent = purify.purifyBracket(purify.purifyText(text))
+    const voice = await XiangshengRunner.speakerVoice(participator.simulatorId)
     const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
       text: speechContent,
       voice
@@ -174,7 +213,9 @@ export class XiangshengRunner {
     }
   }
 
-  static handleSpeakRequest = async (payload: SpeakRequestPayload): Promise<SpeakResponsePayload | undefined> => {
+  static handleSpeakRequest = async (
+    payload: SpeakRequestPayload
+  ): Promise<SpeakResponsePayload | undefined> => {
     const { participatorId, text } = payload
     return await XiangshengRunner.requestSpeak(participatorId, text)
   }

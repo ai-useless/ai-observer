@@ -1,5 +1,6 @@
 export enum Intent {
-  GENERATE = 'Generate'
+  GENERATE = 'Generate',
+  TOPICS = 'Topics'
 }
 
 enum PromptType {
@@ -49,6 +50,16 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.NO_EMOJI,
       PromptType.NO_HEAD_SPACE,
       PromptType.MERGE_SPACES,
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
+    ]
+  ],
+  [
+    Intent.TOPICS,
+    [
+      PromptType.NO_EMOJI,
+      PromptType.NO_HEAD_SPACE,
+      PromptType.MERGE_SPACES,
       PromptType.WITH_HISTORY_ANALYSIS,
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
@@ -79,8 +90,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     ((
       topic: string,
       host: string,
-      guest: string,
-      historyMessages: string[],
+      guest: string
     ) => `你是相声剧本创作者，请创作一段主题为${topic}德云社风格的相声，需要排除用户已经观看过的节目。
           逗哏为相声演员${host}，捧哏为相声演员${guest}。剧本应该包含合理的开场和谢场部分，不要突兀开始或结束。
           返回纯文本，分别用“逗哏”和“捧哏”标识表演双方，本行角色表示和内容之间不换行，不同角色的内容单独一行
@@ -109,7 +119,14 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
           于谦：看着钱谁乐呀。
           郭德纲：你看着它你要乐出来，你那个病五百治不好，是吧。
           于谦：改神经了。
-          要求: ${intentRequirements(Intent.GENERATE, historyMessages)}`) as IntentFunc
+          要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
+  ],
+  [
+    Intent.TOPICS,
+    ((topic: string, historyTopics: string[]) =>
+      `你是相声剧本创作者，请你拟定3个${topic}相关的相声主题，需要排除用户已经观看过的主题。
+       返回纯文本，不同主题单独一行。
+       要求: ${intentRequirements(Intent.TOPICS, historyTopics)}`) as IntentFunc
   ]
 ])
 

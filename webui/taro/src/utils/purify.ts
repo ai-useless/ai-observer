@@ -40,5 +40,5 @@ export const purifyThink = (html: string): string => {
 }
 
 export const purifyBracket = (html: string): string => {
-  return html.replace(/\(.*?\)/g, '')
+  return html.replace(/[\(\（].*?[\)\）]/g, '')
 }

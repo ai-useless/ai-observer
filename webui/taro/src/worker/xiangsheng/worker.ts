@@ -1,6 +1,7 @@
 import {
   GenerateRequestPayload,
   SpeakRequestPayload,
+  TopicsRequestPayload,
   XiangshengEvent,
   XiangshengEventType,
   XiangshengRunner
@@ -20,6 +21,10 @@ self.onmessage = async (message: MessageEvent) => {
     case XiangshengEventType.SPEAK_REQUEST:
       return await XiangshengRunner.handleSpeakRequest(
         event.payload as SpeakRequestPayload
+      )
+    case XiangshengEventType.TOPICS_REQUEST:
+      return await XiangshengRunner.handleTopicsRequest(
+        event.payload as TopicsRequestPayload
       )
   }
 }
