@@ -171,6 +171,9 @@ const onEditTopicClick = () => {
   if (topic.value !== _xiangsheng.value.topic) {
     eXiangsheng.value.changeTopic(topic.value)
   }
+  Taro.setNavigationBarTitle({
+    title: topic.value
+  })
   _xiangsheng.value.topic = topic.value
 }
 
@@ -355,7 +358,7 @@ watch(_uid, () => {
 
 onMounted(async () => {
   Taro.setNavigationBarTitle({
-    title: 'AGI相声'
+    title: topic.value
   })
 
   if (Taro.getWindowInfo()) {
