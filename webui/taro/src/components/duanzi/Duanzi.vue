@@ -109,6 +109,7 @@ const generate = () => {
 }
 
 const onMoreClick = () => {
+  if (generating.value) return
   generate()
 }
 
