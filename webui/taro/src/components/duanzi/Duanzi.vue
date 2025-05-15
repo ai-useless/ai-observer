@@ -23,9 +23,6 @@
         </View>
         <rich-text user-select :nodes='lastDisplayMessage.text' style='margin-left: 8px; font-size: 12px;' :key='lastDisplayMessage.text' />
       </View>
-      <View v-if='generating' style='text-align: center; font-size: 12px; padding: 0 0 16px 0;'>
-        {{ models.length }}个AGI正在创作 ...
-      </View>
     </scroll-view>
     <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; margin-top: -8px; height: 24px;'>
       <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
@@ -44,6 +41,9 @@
         <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onMoreClick'>
           <Image :src='threeDotsVertical' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
+      </View>
+      <View v-if='generating' style='text-align: center; font-size: 12px; padding: 4px 0 4px 0; color: lightgray; height: 18px; margin-right: 16px;'>
+        {{ models.length }}个AGI正在创作 ...
       </View>
     </View>
   </View>
@@ -102,8 +102,11 @@ const generate = () => {
         audio: payload.audio
       })
       generating.value = false
+
+      Taro.hideLoading()
     }).catch((e) => {
-      console.log(`Failed search: ${e}`)
+      console.log(`Failed generate: ${e}`)
+      Taro.hideLoading()
     })
   })
 }
@@ -119,6 +122,9 @@ onMounted(() => {
   })
 
   model.Model.getModels(() => {
+    Taro.showLoading({
+      title: `${models.value.length}个AGI正在创作！`
+    })
     simulator.Simulator.getSimulators(undefined, () => {
       generate()
     })
