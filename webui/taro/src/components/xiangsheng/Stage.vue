@@ -92,7 +92,6 @@ const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
 
-const topic = computed(() => _xiangsheng.value ? _xiangsheng.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
 const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
@@ -105,7 +104,7 @@ const lastDisplayMessage = ref(undefined as unknown as Message)
 const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.message : undefined)
 const typingMessage = ref(undefined as unknown as Message)
 const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
-const typingIndex = ref(0)
+const typingMessageIndex = ref(0)
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
@@ -185,12 +184,16 @@ const typing = () => {
   // If audio is still playing, do nothing
   if (audioPlayer.value && audioPlayer.value.playing) return
 
-  const index = waitMessages.value.findIndex((el) => el.index === typingIndex.value)
+  const index = waitMessages.value.findIndex((el) => el.index === typingMessageIndex.value)
   if (index < 0) return
 
   typingMessage.value = waitMessages.value[index]
-  typingIndex.value += 1
   waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
+
+  if (waitMessages.value.length < 10) eXiangsheng.value.start()
+
+  typingMessageIndex.value += 1
+  if (typingMessage.value.last) typingMessageIndex.value = 0
 
   if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)
@@ -267,14 +270,12 @@ watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
-const onMessage = async (xiangshengUid: string, participatorId: number, text: string, audio: string, index: number, last: boolean) => {
-  if (xiangshengUid !== _uid.value) return
-
+const onMessage = async (topic: string, participatorId: number, text: string, audio: string, index: number, first: boolean, last: boolean) => {
   const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
   waitMessages.value.push({
-    topic: topic.value as string,
+    topic,
     message: purify.purifyThink(text),
     participator,
     simulator: dbBridge._Simulator.simulator(participator.simulatorId) as simulator._Simulator,
@@ -283,6 +284,7 @@ const onMessage = async (xiangshengUid: string, participatorId: number, text: st
     datetime: timestamp,
     audio,
     index,
+    first,
     last,
     typing: false
   })

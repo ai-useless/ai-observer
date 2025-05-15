@@ -11,6 +11,7 @@ export interface Message {
   timestamp: number
   audio: string
   index: number
+  first: boolean
   last: boolean
   typing: boolean
 }

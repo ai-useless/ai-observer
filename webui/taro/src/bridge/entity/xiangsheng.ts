@@ -9,12 +9,14 @@ type MessageFunc = (
   text: string,
   audio: string,
   index: number,
+  first: boolean,
   last: boolean
 ) => void | Promise<void>
 type HistoryMessagesFunc = () => xiangshengWorker.HistoryMessage[]
 
 export class EXiangsheng {
   private xiangsheng = undefined as unknown as dbModel.Xiangsheng
+  private currentTopic = undefined as unknown as string
 
   private onMessage = undefined as unknown as MessageFunc
   private historyMessages = undefined as unknown as HistoryMessagesFunc
@@ -58,7 +60,7 @@ export class EXiangsheng {
       text: text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, '')
     }).then((payload) => {
       const { audio } = payload as xiangshengWorker.SpeakResponsePayload
-      void this.onMessage(this.xiangsheng.uid, participatorId, text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, ''), audio, index, index === texts.length - 1)
+      void this.onMessage(this.currentTopic, participatorId, text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, ''), audio, index, index === 0, index === texts.length - 1)
       this.speak(texts, index + steps, steps)
     }).catch((e) => {
       console.log(`Failed speak: ${e}`)
@@ -74,7 +76,7 @@ export class EXiangsheng {
     }
   }
 
-  start = () => {
+  start = (topic?: string) => {
     const host = dbBridge._Participator.host(
       this.xiangsheng.uid
     ) as dbModel.Participator
@@ -84,13 +86,15 @@ export class EXiangsheng {
       ) as dbModel.Participator[]
     )[0]
 
+    this.currentTopic = topic || this.xiangsheng.topic
+
     const hostSimulator = EParticipator.simulator(host)
     const guestSimulator = EParticipator.simulator(guest)
 
     const historyMessages = this.historyMessages()
 
     xiangshengWorker.XiangshengRunner.handleGenerateRequest({
-      topic: this.xiangsheng.topic,
+      topic: this.currentTopic,
       host: hostSimulator.simulator.simulator,
       guest: guestSimulator.simulator.simulator,
       historyMessages,

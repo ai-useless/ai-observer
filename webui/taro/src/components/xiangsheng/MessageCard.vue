@@ -6,7 +6,7 @@
     bg-color='grey-2'
     style='width: calc(100% - 32px);'
   >
-    <View v-if='message.index === 0' style='font-size: 20px; padding: 16px 0; font-weight: 600;'>
+    <View v-if='message.first' style='font-size: 20px; padding: 16px 0; font-weight: 600;'>
       {{ message.topic }}
     </View>
     <View style='padding-bottom: 4px; line-height: 24px; border-top: 1px solid lightgray; margin-top: 8px; padding-top: 4px; padding-bottom: 8px;'>
