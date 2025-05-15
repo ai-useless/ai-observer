@@ -9,8 +9,8 @@
       showsVerticalScrollIndicator={false}
       :scroll-with-animation='true'
     >
-      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: "16px 0"}'>
-        <View v-if='message.showModel' style='display: flex; border-bottom: 1px solid gray;'>
+      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: "8px 0"}'>
+        <View v-if='message.showModel' style='display: flex; border-bottom: 1px solid gray; padding-bottom: 8px; margin-bottom: 16px;'>
           <Image :src='modelLogo(message.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
           <View style='font-weight: 600;'>{{ modelName(message.modelId) }}</View>
         </View>
