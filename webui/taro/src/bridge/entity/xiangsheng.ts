@@ -12,7 +12,6 @@ type MessageFunc = (
   first: boolean,
   last: boolean
 ) => void | Promise<void>
-type HistoryMessagesFunc = () => xiangshengWorker.HistoryMessage[]
 
 export class EXiangsheng {
   private xiangsheng = undefined as unknown as dbModel.Xiangsheng
@@ -20,16 +19,13 @@ export class EXiangsheng {
   private subTopics = [] as string[]
 
   private onMessage = undefined as unknown as MessageFunc
-  private historyMessages = undefined as unknown as HistoryMessagesFunc
 
   constructor(
     xiangsheng: dbModel.Xiangsheng,
-    onMessage: MessageFunc,
-    historyMessages: HistoryMessagesFunc
+    onMessage: MessageFunc
   ) {
     this.xiangsheng = xiangsheng
     this.onMessage = onMessage
-    this.historyMessages = historyMessages
   }
 
   participators = () => {
@@ -133,7 +129,7 @@ export class EXiangsheng {
       ) as dbModel.Participator[]
     )[0]
 
-    if (this.subTopicIndex < 0 && this.subTopics.length - this.subTopicIndex <= 1) {
+    if (this.subTopics.length - this.subTopicIndex <= 1) {
       this.generateTopics()
       if (this.subTopicIndex < 0) return
     }

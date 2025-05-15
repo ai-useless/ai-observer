@@ -105,6 +105,7 @@ const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMes
 const typingMessage = ref(undefined as unknown as Message)
 const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
 const typingMessageIndex = ref(0)
+const currentTopic = ref(undefined as unknown as string)
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
@@ -184,13 +185,13 @@ const typing = () => {
   // If audio is still playing, do nothing
   if (audioPlayer.value && audioPlayer.value.playing) return
 
-  const index = waitMessages.value.findIndex((el) => el.index === typingMessageIndex.value)
+  const index = waitMessages.value.findIndex((el) => el.index === typingMessageIndex.value && (!currentTopic.value || el.topic === currentTopic.value || el.first))
   if (index < 0) return
-
   typingMessage.value = waitMessages.value[index]
-  waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
 
-  if (waitMessages.value.length < 10) eXiangsheng.value.start()
+  if (typingMessageIndex.value === 0 && typingMessage.value.first) currentTopic.value = typingMessage.value.topic
+
+  waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
 
   typingMessageIndex.value += 1
   if (typingMessage.value.last) typingMessageIndex.value = 0
@@ -332,7 +333,7 @@ const startXiangsheng = async () => {
 
   _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng
 
-  eXiangsheng.value = new entityBridge.EXiangsheng(_xiangsheng.value, onMessage, historyMessages)
+  eXiangsheng.value = new entityBridge.EXiangsheng(_xiangsheng.value, onMessage)
   loading.value = true
   eXiangsheng.value.start()
 
