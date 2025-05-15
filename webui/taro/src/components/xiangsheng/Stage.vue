@@ -69,7 +69,7 @@
         v-if='editing'
         :value='topic'
         @input='onTopicInput'
-        :style='{fontSize: "14px", height: "18px", border: "1px solid gray", borderRadius: "4px", padding: "0 8px", marginRight: "8px"}'
+        style='font-size: 14px; height: 18px; border: 1px solid gray; border-radius: 4px; padding: 0 8px; margin-right: 8px; background-color: rgba(160, 160, 160, 0.5);'
       />
     </View>
   </View>
