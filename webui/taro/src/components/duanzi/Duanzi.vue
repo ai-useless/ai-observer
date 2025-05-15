@@ -9,19 +9,19 @@
       showsVerticalScrollIndicator={false}
       :scroll-with-animation='true'
     >
-      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : index < displayMessages.length - 1 ? "1px solid gray" : "", padding: "16px 0"}'>
-        <View style='display: flex;'>
+      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : index < displayMessages.length - 1 && !message.isTitle ? "1px solid gray" : "", padding: "16px 0"}'>
+        <View v-if='message.showModel' style='display: flex;'>
           <Image :src='modelLogo(message.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
           <View style='font-weight: 600;'>{{ modelName(message.modelId) }}</View>
         </View>
-        <rich-text user-select :nodes='message.text' style='margin-left: 8px; font-size: 12px;' />
+        <View :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>{{ message.text }}</View>
       </View>
-      <View v-if='lastDisplayMessage' :style='{borderTop : "1px solid gray", padding: "16px 0"}'>
-        <View style='display: flex;'>
+      <View v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "" : "1px solid gray", padding: "16px 0"}'>
+        <View v-if='lastDisplayMessage.showModel' style='display: flex;'>
           <Image :src='modelLogo(lastDisplayMessage.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
           <View style='font-weight: 600;'>{{ modelName(lastDisplayMessage.modelId) }}</View>
         </View>
-        <rich-text user-select :nodes='lastDisplayMessage.text' style='margin-left: 8px; font-size: 12px;' :key='lastDisplayMessage.text' />
+        <View :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>{{ lastDisplayMessage.text }}</View>
       </View>
     </scroll-view>
     <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; margin-top: -8px; height: 24px;'>
@@ -61,8 +61,11 @@ import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, threeDotsVe
 
 interface Message {
   text: string
+  isTitle: boolean
   audio: string
   modelId: number
+  index: number
+  showModel: boolean
 }
 
 const models = computed(() => model.Model.models())
@@ -72,6 +75,8 @@ const waitMessages = ref([] as Message[])
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.text : undefined)
 const typingMessage = ref(undefined as unknown as Message)
+const typingMessageIndex = ref(0)
+const lastModelId = ref(-1 as unknown as number)
 
 const duanziContentHeight = ref(0)
 const scrollTop = ref(999999)
@@ -95,19 +100,20 @@ const generate = () => {
   models.value.forEach((model) => {
     const simulator = dbBridge._Simulator.randomPeek()
     const messages = [...displayMessages.value, ...waitMessages.value]
-    entityBridge.Duanzi.generate(messages.map((el) => el.text), model.id, simulator.id, true).then((payload) => {
-      waitMessages.value.push({
-        modelId: payload.modelId,
-        text: purify.purifyThink(payload.text),
-        audio: payload.audio
-      })
+    entityBridge.Duanzi.generate(messages.map((el) => el.text), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
       generating.value = false
 
+      waitMessages.value.push({
+        modelId: model.id,
+        text: purify.purifyThink(text),
+        isTitle,
+        audio: audio || '',
+        index,
+        showModel: false
+      })
+
       Taro.hideLoading()
-    }).catch((e) => {
-      console.log(`Failed generate: ${e}`)
-      Taro.hideLoading()
-    })
+    }, true)
   })
 }
 
@@ -206,8 +212,15 @@ const typing = () => {
   // If audio is still playing, do nothing
   if (audioPlayer.value && audioPlayer.value.playing) return
 
-  typingMessage.value = waitMessages.value[0]
-  waitMessages.value = waitMessages.value.slice(1)
+  const index = waitMessages.value.findIndex((el) => el.index === typingMessageIndex.value)
+  if (index < 0) return
+
+  typingMessage.value = waitMessages.value[index]
+  waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1)]
+  typingMessageIndex.value += 1
+
+  if (typingMessage.value.modelId !== lastModelId.value) typingMessage.value.showModel = true
+  lastModelId.value = typingMessage.value.modelId
 
   if (waitMessages.value.length <= 3) generate()
 
