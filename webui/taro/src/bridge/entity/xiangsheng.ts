@@ -91,7 +91,7 @@ export class EXiangsheng {
 
   onTopicsResponse = (message: xiangshengWorker.TopicsResponsePayload) => {
     this.subTopics.push(...message.topics)
-    if (this.subTopicIndex < 0) this.start()
+    if (this.subTopicIndex < 0 || this.subTopics.length <= this.subTopicIndex) this.start()
   }
 
   generateTopics = () => {
@@ -145,7 +145,7 @@ export class EXiangsheng {
 
     if (this.subTopics.length - this.subTopicIndex <= 1) {
       this.generateTopics()
-      if (this.subTopicIndex < 0) return
+      if (this.subTopicIndex < 0 || this.subTopics.length <= this.subTopicIndex) return
     }
 
     this.generating = true
