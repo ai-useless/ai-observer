@@ -17,6 +17,7 @@ export class EXiangsheng {
   private xiangsheng = undefined as unknown as dbModel.Xiangsheng
   private subTopicIndex = -1
   private subTopics = [] as string[]
+  private generating = false
 
   private onMessage = undefined as unknown as MessageFunc
 
@@ -35,7 +36,10 @@ export class EXiangsheng {
   }
 
   speak = (subTopicIndex: number, texts: string[], index: number, steps: number) => {
-    if (index >= texts.length) return
+    if (index >= texts.length) {
+      this.generating = false
+      return
+    }
 
     const text = texts[index]
 
@@ -120,6 +124,10 @@ export class EXiangsheng {
   }
 
   start = (_subTopicIndex?: number) => {
+    if (this.generating) return
+
+    this.generating = true
+
     const host = dbBridge._Participator.host(
       this.xiangsheng.uid
     ) as dbModel.Participator

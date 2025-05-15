@@ -299,23 +299,6 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
   })
 }
 
-const historyMessages = (): xiangshengWorker.HistoryMessage[] => {
-  const messages = [] as xiangshengWorker.HistoryMessage[]
-
-  displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length).forEach((el) => {
-    messages.push({
-      message: el.simulator.simulator + '发言: ' + purify.purifyText(el.message)
-    })
-  })
-  waitMessages.value.forEach((el) => {
-    messages.push({
-      message: purify.purifyText(el.message)
-    })
-  })
-
-  return messages
-}
-
 const startXiangsheng = async () => {
   displayMessages.value = []
   waitMessages.value = []
