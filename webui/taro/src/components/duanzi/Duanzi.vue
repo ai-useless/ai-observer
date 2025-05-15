@@ -9,14 +9,14 @@
       showsVerticalScrollIndicator={false}
       :scroll-with-animation='true'
     >
-      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: "8px 0"}'>
+      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: message.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
         <View v-if='message.showModel' style='display: flex; border-bottom: 1px solid gray; padding-bottom: 8px; margin-bottom: 16px;'>
           <Image :src='modelLogo(message.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
           <View style='font-weight: 600;'>{{ modelName(message.modelId) }}</View>
         </View>
         <View :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>{{ message.text }}</View>
       </View>
-      <View v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: "16px 0"}'>
+      <View v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: lastDisplayMessage.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
         <View v-if='lastDisplayMessage.showModel' style='display: flex;'>
           <Image :src='modelLogo(lastDisplayMessage.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
           <View style='font-weight: 600;'>{{ modelName(lastDisplayMessage.modelId) }}</View>
