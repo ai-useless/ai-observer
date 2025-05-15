@@ -76,7 +76,6 @@ import { View, ScrollView, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
-import { xiangshengWorker } from 'src/worker'
 
 import MessageCard from './MessageCard.vue'
 
@@ -193,7 +192,7 @@ const typing = () => {
 
   waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
 
-  if (waitMessages.value.length < 10 && waitMessages.value.findIndex((el) => el.last) >= 0) eXiangsheng.value.start()
+  if (waitMessages.value.length < 10 && waitMessages.value.findIndex((el) => el.last) >= 0 && autoScroll.value) eXiangsheng.value.start()
 
   typingMessageIndex.value += 1
   if (typingMessage.value.last) typingMessageIndex.value = 0

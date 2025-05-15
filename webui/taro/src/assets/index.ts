@@ -14,6 +14,7 @@ import manualScrollGray from './ManualScrollGray.svg'
 import volumeUp from './VolumeUp.svg'
 import volumeOff from './VolumeOff.svg'
 import search from './Search.svg'
+import autoPlay from './AutoPlay.svg'
 
 export {
   chevronRight,
@@ -31,5 +32,6 @@ export {
   manualScrollGray,
   volumeUp,
   volumeOff,
-  search
+  search,
+  autoPlay
 }
