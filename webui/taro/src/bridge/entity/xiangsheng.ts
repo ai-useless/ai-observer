@@ -91,7 +91,7 @@ export class EXiangsheng {
 
   onTopicsResponse = (message: xiangshengWorker.TopicsResponsePayload) => {
     this.subTopics.push(...message.topics)
-    if (this.subTopicIndex < 0 || this.subTopics.length <= this.subTopicIndex) this.start()
+    if (this.subTopicIndex < 0 || this.subTopics.length - 1 <= this.subTopicIndex) this.start()
   }
 
   generateTopics = () => {
@@ -131,7 +131,7 @@ export class EXiangsheng {
     this.generateTopics()
   }
 
-  start = (_subTopicIndex?: number) => {
+  start = () => {
     if (this.generating) return
 
     const host = dbBridge._Participator.host(
@@ -145,7 +145,7 @@ export class EXiangsheng {
 
     if (this.subTopics.length - this.subTopicIndex <= 1) {
       this.generateTopics()
-      if (this.subTopicIndex < 0 || this.subTopics.length <= this.subTopicIndex) return
+      if (this.subTopicIndex < 0 || this.subTopics.length - 1 <= this.subTopicIndex) return
     }
 
     this.generating = true
@@ -153,7 +153,7 @@ export class EXiangsheng {
     const hostSimulator = EParticipator.simulator(host)
     const guestSimulator = EParticipator.simulator(guest)
 
-    const subTopicIndex = _subTopicIndex === undefined ? (this.subTopicIndex + 1) : _subTopicIndex
+    const subTopicIndex = this.subTopicIndex + 1
     this.subTopicIndex = subTopicIndex
 
     xiangshengWorker.XiangshengRunner.handleGenerateRequest({
