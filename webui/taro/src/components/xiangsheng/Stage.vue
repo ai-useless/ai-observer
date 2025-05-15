@@ -193,7 +193,7 @@ const typing = () => {
 
   waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
 
-  if (waitMessages.value.length < 10) eXiangsheng.value.start()
+  if (waitMessages.value.length < 10 && waitMessages.value.findIndex((el) => el.last) >= 0) eXiangsheng.value.start()
 
   typingMessageIndex.value += 1
   if (typingMessage.value.last) typingMessageIndex.value = 0
