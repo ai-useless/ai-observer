@@ -168,8 +168,10 @@ const onPlayClick = () => {
 const onEditTopicClick = () => {
   editing.value = !editing.value
   xiangsheng.Xiangsheng.setTopic(topic.value)
+  if (topic.value !== _xiangsheng.value.topic) {
+    eXiangsheng.value.changeTopic(topic.value)
+  }
   _xiangsheng.value.topic = topic.value
-  eXiangsheng.value.setTopic(topic.value)
 }
 
 const calculateTypingInterval = (duration: number) => {

@@ -123,8 +123,7 @@ export class EXiangsheng {
       })
   }
 
-  setTopic = (topic: string) => {
-    if (this.xiangsheng.topic === topic) return
+  changeTopic = (topic: string) => {
     this.xiangsheng.topic = topic
     this.subTopics = []
     this.subTopicIndex = -1
