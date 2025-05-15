@@ -56,14 +56,14 @@ export class EXiangsheng {
 
     xiangshengWorker.XiangshengRunner.handleSpeakRequest({
       participatorId,
-      text: text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, '')
+      text: text.replace(/逗哏\s*[:：]*\s*/, '').replace(/捧哏\s*[:：]*\s*/, '')
     })
       .then((payload) => {
         const { audio } = payload as xiangshengWorker.SpeakResponsePayload
         void this.onMessage(
           `${this.xiangsheng.topic}之${this.subTopics[subTopicIndex]}`,
           participatorId,
-          text.replace(/逗哏\s*[:：]\s*/, '').replace(/捧哏\s*[:：]\s*/, ''),
+          text.replace(/逗哏\s*[:：]*\s*/, '').replace(/捧哏\s*[:：]*\s*/, ''),
           audio,
           index,
           index === 0,
