@@ -9,7 +9,7 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View style='transition: 500ms; display: flex;'>
+      <View style='width: calc(100% - 32px); transition: 500ms; display: flex; border-top: 1px solid lightgray; border-bottom: 1px solid lightgray; padding: 8px 0;'>
         <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
           <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
           <View style='margin-left: 8px;'>
@@ -49,6 +49,9 @@
     </scroll-view>
     <View style='display: flex; flex-direction: row-reverse; align-items: center; width: calc(100% - 32px); margin-top: -8px; height: 24px;'>
       <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
+        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: editing ? 1 : 0.4, backgroundColor: "white" }' @click='onEditTopicClick'>
+          <Image :src='editing ? arrowForward : editSquare' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
         <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
           <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
@@ -62,6 +65,12 @@
           <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
       </View>
+      <Input
+        v-if='editing'
+        :value='topic'
+        @input='onTopicInput'
+        :style='{fontSize: "14px", height: "18px", border: "1px solid gray", borderRadius: "4px", padding: "0 8px", marginRight: "8px"}'
+      />
     </View>
   </View>
 </template>
@@ -72,14 +81,14 @@ import { xiangsheng, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
-import { View, ScrollView, Text, Image } from '@tarojs/components'
+import { View, ScrollView, Text, Image, Input } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
 
 import MessageCard from './MessageCard.vue'
 
-import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp } from 'src/assets'
+import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, editSquare, arrowForward } from 'src/assets'
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
@@ -94,6 +103,13 @@ const enablePlay = ref(true)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
 const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
+
+const topic = ref(xiangsheng.Xiangsheng.topic())
+const editing = ref(false)
+
+const onTopicInput = (e: { detail: { value: string } }) => {
+  topic.value = e.detail.value
+}
 
 const displayMessages = ref([] as Message[])
 const loading = ref(false)
@@ -147,6 +163,13 @@ const onGotoTopClick = () => {
 
 const onPlayClick = () => {
   enablePlay.value = !enablePlay.value
+}
+
+const onEditTopicClick = () => {
+  editing.value = !editing.value
+  xiangsheng.Xiangsheng.setTopic(topic.value)
+  _xiangsheng.value.topic = topic.value
+  eXiangsheng.value.setTopic(topic.value)
 }
 
 const calculateTypingInterval = (duration: number) => {

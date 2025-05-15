@@ -15,6 +15,8 @@ import volumeUp from './VolumeUp.svg'
 import volumeOff from './VolumeOff.svg'
 import search from './Search.svg'
 import autoPlay from './AutoPlay.svg'
+import editSquare from './EditSquare.svg'
+import arrowForward from './ArrowForward.svg'
 
 export {
   chevronRight,
@@ -33,5 +35,7 @@ export {
   volumeUp,
   volumeOff,
   search,
-  autoPlay
+  autoPlay,
+  editSquare,
+  arrowForward
 }

@@ -123,6 +123,13 @@ export class EXiangsheng {
       })
   }
 
+  setTopic = (topic: string) => {
+    this.xiangsheng.topic = topic
+    this.subTopics = []
+    this.subTopicIndex = -1
+    this.generateTopics()
+  }
+
   start = (_subTopicIndex?: number) => {
     if (this.generating) return
 
