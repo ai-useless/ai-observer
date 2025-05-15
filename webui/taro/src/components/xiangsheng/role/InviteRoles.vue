@@ -52,6 +52,9 @@
         </View>
       </View>
       <View v-if='topics.length' style='margin-top: 8px; width: calc(100% - 32px);'>
+        <View style='font-size: 14px; color: gray;' @click='onTopicClick("各领域的经典相声")'>
+          各领域的经典相声
+        </View>
         <View v-for='_topic in topics' style='font-size: 14px; color: blue;' @click='onTopicClick(_topic)'>
           {{ _topic }}
         </View>
