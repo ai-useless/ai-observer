@@ -35,7 +35,7 @@ export class EXiangsheng {
     )
   }
 
-  speak = (subTopicIndex: number, texts: string[], index: number, steps: number) => {
+  speak = (topic: string, subTopic: string, subTopicIndex: number, texts: string[], index: number, steps: number) => {
     if (index >= texts.length) {
       this.generating = false
       return
@@ -65,7 +65,7 @@ export class EXiangsheng {
       .then((payload) => {
         const { audio } = payload as xiangshengWorker.SpeakResponsePayload
         void this.onMessage(
-          `${this.xiangsheng.topic}之${this.subTopics[subTopicIndex]}`,
+          `${topic}之${subTopic}`,
           participatorId,
           text.replace(/逗[哏哙哭哐]\s*[:：]*\s*/, '').replace(/捧[哏哙哭哐]\s*[:：]*\s*/, ''),
           audio,
@@ -73,24 +73,25 @@ export class EXiangsheng {
           index === 0,
           index === texts.length - 1
         )
-        this.speak(subTopicIndex, texts, index + steps, steps)
+        this.speak(topic, subTopic, subTopicIndex, texts, index + steps, steps)
       })
       .catch((e) => {
         console.log(`Failed speak: ${e}`)
-        this.speak(subTopicIndex, texts, index, steps)
+        this.speak(topic, subTopic, subTopicIndex, texts, index, steps)
       })
   }
 
   onGenerateResponse = (message: xiangshengWorker.GenerateResponsePayload) => {
-    const { texts, subTopicIndex } = message
+    const { texts, subTopicIndex, topic, subTopic } = message
     const steps = 5
     for (let i = 0; i < steps; i++) {
-      this.speak(subTopicIndex, texts, i, steps)
+      this.speak(topic, subTopic, subTopicIndex, texts, i, steps)
     }
   }
 
   onTopicsResponse = (message: xiangshengWorker.TopicsResponsePayload) => {
     this.subTopics.push(...message.topics)
+    console.log(this.subTopicIndex, 1111, message.topic)
     if (this.subTopicIndex < 0) this.start()
   }
 
@@ -127,6 +128,7 @@ export class EXiangsheng {
     this.xiangsheng.topic = topic
     this.subTopics = []
     this.subTopicIndex = -1
+    this.generating = false
     this.generateTopics()
   }
 
@@ -156,7 +158,8 @@ export class EXiangsheng {
     this.subTopicIndex = subTopicIndex
 
     xiangshengWorker.XiangshengRunner.handleGenerateRequest({
-      topic: this.subTopics[subTopicIndex],
+      topic: this.xiangsheng.topic,
+      subTopic: this.subTopics[subTopicIndex],
       subTopicIndex,
       host: hostSimulator.simulator.simulator,
       guest: guestSimulator.simulator.simulator,

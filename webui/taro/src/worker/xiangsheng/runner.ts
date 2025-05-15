@@ -29,12 +29,14 @@ export interface TopicsRequestPayload {
 }
 
 export interface TopicsResponsePayload {
+  topic: string
   topics: string[]
   xiangshengUid: string
 }
 
 export interface GenerateRequestPayload {
   topic: string
+  subTopic: string
   subTopicIndex: number
   host: string
   guest: string
@@ -43,6 +45,8 @@ export interface GenerateRequestPayload {
 }
 
 export interface GenerateResponsePayload {
+  topic: string
+  subTopic: string
   subTopicIndex: number
   xiangshengUid: string
   texts: string[]
@@ -138,12 +142,12 @@ export class XiangshengRunner {
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const { topic, host, guest, xiangshengUid, modelId, subTopicIndex } =
+    const { topic, subTopic, host, guest, xiangshengUid, modelId, subTopicIndex } =
       payload
 
     const response = await XiangshengRunner.requestGenerate(
       Intent.GENERATE,
-      topic,
+      subTopic,
       host,
       guest,
       [],
@@ -153,6 +157,8 @@ export class XiangshengRunner {
 
     return {
       ...response,
+      topic,
+      subTopic,
       subTopicIndex,
       xiangshengUid
     }
@@ -175,6 +181,7 @@ export class XiangshengRunner {
     if (!response || !response.texts || !response.texts.length) return
 
     return {
+      topic,
       topics: response.texts,
       xiangshengUid
     }
