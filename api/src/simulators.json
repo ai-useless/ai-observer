@@ -127,4 +127,22 @@
     "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/shaseng.mp3",
     "archetype": "沙僧",
     "title": "忠诚勇敢的西行护法僧人"
+}, {
+    "name": "大月子",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xiaoyueyue.jpg",
+    "personality": "大月子，AGI没谱社相声演员，以憨厚幽默风格走红，深受观众喜爱",
+    "host": false,
+    "audio_id": "xiaoyueyue",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xiaoyueyue.wav",
+    "archetype": "小岳岳",
+    "title": "喜剧演员 大月子"
+}, {
+    "name": "孙小刀",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/sunyue.jpg",
+    "personality": "孙小刀，没谱社相声演员，捧哏名家，以稳重幽默风格广受喜爱。",
+    "host": false,
+    "audio_id": "xiaoyueyue",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/sunyue.wav",
+    "archetype": "孙越",
+    "title": "AGI没谱社资深捧哏演员"
 }]
