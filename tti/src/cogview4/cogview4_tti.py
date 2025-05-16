@@ -20,7 +20,7 @@ image = (
     .run_command("git clone https://github.com/THUDM/CogView4.git")
     .run_command("cd CogView4; git checkout 1f21551ad1a00fec276c01e8bbf98b38d9590108")
     .run_command("pip install --upgrade pip")
-    .run_command("pip install -r inference/requirements.txt")
+    .run_command("cd CogView4; pip install -r inference/requirements.txt")
     .run_command("pip install modelscope==1.20.0")
     .run_command("git lfs install")
 )
