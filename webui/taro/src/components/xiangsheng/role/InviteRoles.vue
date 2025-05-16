@@ -45,10 +45,10 @@
       开始表演
     </Button>
     <View style='display: flex; width: calc(100% - 32px);'>
-      <Button size='mini' :style='{fontSize: "14px", color: ready ? "blue" : "gray", width: "50%;"}' @click='onScriptsClick()' :disabled='!ready'>
+      <Button size='mini' :style='{fontSize: "14px", color: ready ? "blue" : "gray", width: "50%"}' @click='onScriptsClick()' :disabled='!ready'>
         表演经典相声原剧本
       </Button>
-      <Button size='mini' :style='{fontSize: "14px", color: ready ? "blue" : "gray", width: "50%;"}' @click='onTopicClick("不同领域的经典相声")' :disabled='!ready'>
+      <Button size='mini' :style='{fontSize: "14px", color: ready ? "blue" : "gray", width: "50%"}' @click='onTopicClick("不同领域的经典相声")' :disabled='!ready'>
         创作传统相声
       </Button>
     </View>

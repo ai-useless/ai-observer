@@ -59,7 +59,7 @@
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
-        AGI圈帮手
+        AGI超有才
       </Button>
       <Button
         @click='onStartChatClick'
@@ -67,6 +67,13 @@
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         AGI妙音坊
+      </Button>
+      <Button
+        @click='onStartChatClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
+      >
+        AGI英语角
       </Button>
       <Button
         v-if='false'
