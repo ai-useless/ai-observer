@@ -21,7 +21,7 @@ class ImageGenerator:
         image_uid = f'{uuid.uuid4()}'
         db.new_image(image_uid)
 
-        task = asyncio.create_task(self.generate_image_with_uid(image_uid, prompt))
+        task = asyncio.create_task(self.generate_image_and_save(image_uid, prompt))
         task.add_done_callback(lambda t: self.on_generate_image_done(t, image_uid))
 
         return image_uid
