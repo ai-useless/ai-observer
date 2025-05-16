@@ -168,7 +168,7 @@ async def generate_image_async(
 async def query_image(image_uid: str):
     image = db.get_image(image_uid)
     return {
-        'image_url': f'{config.file_server}/images/{image["image_file_cid"]}.wav' if image['image_file_cid'] is not None and len(image['image_file_cid']) > 0 else None,
+        'image_url': f'{config.file_server}/images/{image["image_file_cid"]}.png' if image['image_file_cid'] is not None and len(image['image_file_cid']) > 0 else None,
         'settled': image['settled'],
         'error': image['error']
     }

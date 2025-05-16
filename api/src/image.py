@@ -35,7 +35,7 @@ class ImageGenerator:
 
             file_cid = hashlib.sha256(image_bytes).hexdigest()
             output_dir = f'{config.data_dir}/images'
-            output_path = f'{output_dir}/{file_cid}.wav'
+            output_path = f'{output_dir}/{file_cid}.png'
 
             os.makedirs(output_dir, exist_ok=True)
 
