@@ -187,6 +187,7 @@ export class EXiangsheng {
           }, 1000)
       })
       .catch((e) => {
+        this.generating = true
         console.log(`Failed start xiangsheng: ${e}`)
         setTimeout(() => {
           this.start()
@@ -214,6 +215,7 @@ export class EXiangsheng {
           }, 1000)
       })
       .catch((e) => {
+        this.generating = true
         console.log(`Failed start scripts: ${e}`)
         setTimeout(() => {
           this.startScripts()
