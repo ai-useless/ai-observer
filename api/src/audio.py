@@ -17,7 +17,7 @@ from db import db
 class AudioGenerator:
     async def generate_audio_with_uid(self, audio_uid: str, text: str, voice: str):
         try:
-            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating{RESET} ...')
+            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating audio{RESET} ...')
             start_time = time.time()
             audio_file_cid = await self.generate_audio(text, voice, audio_uid)
             db.update_audio(audio_uid, audio_file_cid, None)

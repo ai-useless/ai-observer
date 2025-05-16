@@ -158,7 +158,7 @@ async def query_audio(audio_uid: str):
 
 @app.post('/api/v1/generate_image_async', response_model=GenerateImageAsyncResponse)
 async def generate_image_async(
-    prompt: str = Body(...),
+    prompt: str = Body(..., embed=True),
 ):
     image_uid = await image_generator.generate_image_async(prompt)
 
