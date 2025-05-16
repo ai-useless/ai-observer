@@ -564,9 +564,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
         '郭 丹',
         '曹曙光'
       ]
-      const actorIndex = Math.ceil(Math.random() * actors.length)
+      const actorIndex = Math.floor(Math.random() * actors.length)
       const actor = actors[actorIndex]
-      const scriptIndex = Math.ceil(Math.random() * 20)
+      const scriptIndex = Math.floor(Math.random() * 20)
       return `你是相声剧本大全图书馆，用户需要你寻找你的数据集中${actor}表演的20个台词字数超过3000个中文字的对口相声剧本。
        记住，用户不需要你搜索实时数据，从你的数据集中寻找即可。如果下面用户观看列表不为空，不包含该列表中给出的节目，
        从这些剧本中选取第${scriptIndex}个剧本返回全部文本，返回应包含开场、过渡、展开、谢场等剧本必须部分，
