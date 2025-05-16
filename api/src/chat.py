@@ -47,6 +47,7 @@ async def chat(
         ],
         'stream': True,
         'max_tokens': max_tokens,
+        'temperature': 0.8
     }
     headers = {
         'Authorization': f'Bearer {config.api_token}',

@@ -12,7 +12,8 @@ import asyncio
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 
-from audio import generator
+from audio import generator as audio_generator
+from image import generator as image_generator
 from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
@@ -38,9 +39,18 @@ class SpeakAsyncResponse(BaseModel):
     audio_uid: str | None = None
     error: str | None = None
 
+class GenerateAsyncResponse(BaseModel):
+    image_uid: str | None = None
+    error: str | None = None
+
 class QueryAudioResponse(BaseModel):
     settled: bool = False
     audio_url: str | None = None
+    error: str | None = None
+
+class QueryImageResponse(BaseModel):
+    settled: bool = False
+    image_url: str | None = None
     error: str | None = None
 
 class CookSimulatorResponse(BaseModel):
@@ -115,7 +125,7 @@ async def speak(
     text: str = Body(...),
     voice: str = Body(...),
 ):
-    audio_file_cid = await generator.generate_audio(text, voice)
+    audio_file_cid = await audio_generator.generate_audio(text, voice)
 
     return {'audio_url': f'{config.file_server}/audios/{audio_file_cid}.wav'}
 
@@ -124,7 +134,7 @@ async def speak_async_v1(
     text: str = Body(...),
     voice: str = Body(...),
 ):
-    audio_uid = await generator.generate_audio_async(text, voice)
+    audio_uid = await audio_generator.generate_audio_async(text, voice)
 
     return {'audio_uid': audio_uid}
 
@@ -133,7 +143,7 @@ async def speak_async_v2(
     text: str = Body(...),
     voice: str = Body(...),
 ):
-    audio_uid = await generator.generate_audio_async_v2(text, voice)
+    audio_uid = await audio_generator.generate_audio_async_v2(text, voice)
 
     return {'audio_uid': audio_uid}
 
@@ -146,6 +156,22 @@ async def query_audio(audio_uid: str):
         'error': audio['error']
     }
 
+@app.post('/api/v2/generate_async', response_model=GenerateAsyncResponse)
+async def generate_async(
+    prompt: str = Body(...),
+):
+    image_uid = await image_generator.generate_image_async(text)
+
+    return {'image_uid': image_uid}
+
+@app.get('/api/v1/images/{image_uid}', response_model=QueryImageResponse)
+async def query_image(image_uid: str):
+    image = db.get_image(image_uid)
+    return {
+        'image_url': f'{config.file_server}/images/{image["image_file_cid"]}.wav' if image['image_file_cid'] is not None and len(image['image_file_cid']) > 0 else None,
+        'settled': image['settled'],
+        'error': image['error']
+    }
 
 def get_client_host(request: Request) -> str:
     x_forwarded_for = request.headers.get("x-forwarded-for")

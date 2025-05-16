@@ -21,16 +21,16 @@ class AudioGenerator:
             start_time = time.time()
             audio_file_cid = await self.generate_audio(text, voice, audio_uid)
             db.update_audio(audio_uid, audio_file_cid, None)
-            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generate success{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
+            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generate audio SUCCESS{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
         except Exception as e:
             db.update_audio(audio_uid, None, repr(e))
-            logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
+            logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate audio FAIL{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
 
     def on_generate_audio_done(self, task, audio_uid):
         try:
             task.result()
         except Exception as e:
-            logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ...')
+            logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate audio FAIL{RESET} ...')
 
     async def generate_audio_async(self, text: str, voice: str) -> str:
         audio_uid = f'{uuid.uuid4()}'

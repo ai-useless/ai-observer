@@ -14,6 +14,7 @@ class Db:
         self.table_users = 'users'
         self.table_models = 'models'
         self.table_audios = 'audios'
+        self.table_images = 'images'
 
         self.config = {
             'user': config.mysql_user,
@@ -27,39 +28,38 @@ class Db:
         warnings.filterwarnings("ignore", category=UserWarning)
 
         self.connection = mysql.connector.connect(**self.config)
-        self.cursor = self.connection.cursor()
+        cursor = self.connection.cursor()
 
-        self.cursor.execute('SHOW DATABASES')
-        databases = [row[0] for row in self.cursor.fetchall()]
+        cursor.execute('SHOW DATABASES')
+        databases = [row[0] for row in cursor.fetchall()]
 
         if config.clean_database is True:
             if self.db_name in databases:
-                self.cursor.execute(f'DROP DATABASE {self.db_name}')
+                cursor.execute(f'DROP DATABASE {self.db_name}')
                 self.connection.commit()
 
-        self.cursor.execute('SHOW DATABASES')
-        databases = [row[0] for row in self.cursor.fetchall()]
+        cursor.execute('SHOW DATABASES')
+        databases = [row[0] for row in cursor.fetchall()]
 
         if self.db_name not in databases:
-            self.cursor.execute(f'CREATE DATABASE IF NOT EXISTS {self.db_name}')
+            cursor.execute(f'CREATE DATABASE IF NOT EXISTS {self.db_name}')
             self.connection.commit()
 
-        self.cursor.close()
+        cursor.close()
         self.connection.close()
 
         self.config['database'] = self.db_name
 
         self.connection = mysql.connector.connect(**self.config)
-        self.cursor = self.connection.cursor()
-        self.cursor_dict = self.connection.cursor(dictionary=True)
+        cursor = self.connection.cursor()
 
-        self.cursor.execute('SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;')
+        cursor.execute('SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;')
 
-        self.cursor.execute('SHOW TABLES')
-        tables = [row[0] for row in self.cursor.fetchall()]
+        cursor.execute('SHOW TABLES')
+        tables = [row[0] for row in cursor.fetchall()]
 
         if self.table_bans not in tables:
-            self.cursor.execute(f'''
+            cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_bans} (
                     wechat_openid VARCHAR(32),
                     ban_by_reason VARCHAR(16),
@@ -72,13 +72,13 @@ class Db:
             self.connection.commit()
 
         if self.table_simulators not in tables:
-            self.cursor.execute(f'''
+            cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_simulators} (
                     id INT AUTO_INCREMENT NOT NULL,
                     wechat_openid VARCHAR(32),
                     wechat_username VARCHAR(128),
                     wechat_avatar VARCHAR(1024),
-                    audio_id VARCHAR(64),
+                    audio_id VARCHAR(64) UNIQUE,
                     audio_file_cid VARCHAR(256) UNIQUE,
                     audio_url VARCHAR(1024),
                     text VARCHAR(512),
@@ -96,7 +96,7 @@ class Db:
             self.connection.commit()
 
         if self.table_users not in tables:
-            self.cursor.execute(f'''
+            cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_users} (
                     wechat_openid VARCHAR(32),
                     wechat_username VARCHAR(128),
@@ -108,7 +108,7 @@ class Db:
             self.connection.commit()
 
         if self.table_models not in tables:
-            self.cursor.execute(f'''
+            cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_models} (
                     id INT AUTO_INCREMENT NOT NULL,
                     name VARCHAR(256),
@@ -125,9 +125,8 @@ class Db:
                 )
             ''')
             self.connection.commit()
-
         if self.table_audios not in tables:
-            self.cursor.execute(f'''
+            cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_audios} (
                     audio_uid VARCHAR(64),
                     audio_file_cid VARCHAR(256),
@@ -139,25 +138,51 @@ class Db:
             ''')
             self.connection.commit()
 
-        self.cursor.execute(f'''
+        cursor.execute(f'''
             UPDATE {self.table_audios} SET settled=1, error="Canceled by restart" where settled=0
         ''')
         self.connection.commit()
+
+
+        if self.table_images not in tables:
+            cursor.execute(f'''
+                CREATE TABLE IF NOT EXISTS {self.table_images} (
+                    image_uid VARCHAR(64),
+                    image_file_cid VARCHAR(256),
+                    settled TINYINT,
+                    error VARCHAR(256),
+                    timestamp INT UNSIGNED,
+                    PRIMARY KEY (image_uid)
+                )
+            ''')
+            self.connection.commit()
+
+        cursor.execute(f'''
+            UPDATE {self.table_images} SET settled=1, error="Canceled by restart" where settled=0
+        ''')
+        self.connection.commit()
+
+
+        cursor.close()
 
         threading.Thread(target=self.keep_alive, daemon=True).start()
 
     def keep_alive(self):
         while True:
             try:
-                self.cursor.execute(f'SELECT 1')
-                self.cursor.fetchall()
+                cursor = self.connection.cursor()
+                cursor.execute(f'SELECT 1')
+                cursor.fetchall()
             except Exception:
                 self.connection.ping(reconnect=True)
+            finally:
+                cursor.close()
             time.sleep(3600)
 
 
     def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, personality, archetype, title, host):
-        self.cursor.execute(
+        cursor = self.connection.cursor()
+        cursor.execute(
             f'''
                 INSERT INTO {self.table_simulators}
                 (wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host)
@@ -183,9 +208,11 @@ class Db:
              host)
         )
         self.connection.commit()
+        cursor.close()
 
     def update_simulator(self, simulator, state):
-        self.cursor.execute(
+        cursor = self.connection.cursor()
+        cursor.execute(
             f'''
                 UPDATE {self.table_simulators}
                 SET state="{state}"
@@ -193,6 +220,7 @@ class Db:
             '''
         )
         self.connection.commit()
+        cursor.close()
 
     def approve_simulator(self, simulator):
         self.update_simulator(simulator, 'APPROVED')
@@ -203,28 +231,45 @@ class Db:
     def count_simulators(self, wechat_openid: str | None):
         query = f'SELECT COUNT(*) FROM {self.table_simulators}'
         query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
-        self.cursor.execute(query)
-        return int(self.cursor.fetchone()[0])
+
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        count = int(cursor.fetchone()[0])
+        cursor.close()
+
+        return count
 
     def get_simulators(self, wechat_openid: str | None, offset: int, limit: int):
         query = f'SELECT * FROM {self.table_simulators}'
         query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
         query += ' ORDER BY timestamp DESC'
         query += f' LIMIT {limit} OFFSET {offset}'
-        self.cursor_dict.execute(query)
-        return self.cursor_dict.fetchall()
+
+        cursor_dict = self.connection.cursor(dictionary=True)
+        cursor_dict.execute(query)
+
+        results = cursor_dict.fetchall()
+        cursor_dict.close()
+
+        return results
 
     def get_simulator_with_audio_id(self, audio_id):
-        self.cursor_dict.execute(
+        cursor_dict = self.connection.cursor(dictionary=True)
+
+        cursor_dict.execute(
             f'''
                 SELECT * FROM {self.table_simulators}
                 WHERE audio_id="{audio_id}"
             '''
         )
-        return self.cursor_dict.fetchone()
+        results = cursor_dict.fetchone()
+        cursor_dict.close()
+
+        return results
 
     def ban(self, wechat_openid, ban_by_reason, ban_by_id):
-        self.cursor.execute(
+        cursor = self.connection.cursor()
+        cursor.execute(
             f'''
                 INSERT INTO {self.table_bans}
                 VALUES (%s, %s, %s, %s, %s)
@@ -236,9 +281,11 @@ class Db:
              0)
         )
         self.connection.commit()
+        cursor.close()
 
     def resolve_ban(self, wechat_openid, ban_by_id):
-        self.cursor.execute(
+        cursor = self.connection.cursor()
+        cursor.execute(
             f'''
                 UPDATE {self.table_bans}
                 SET resolved=1
@@ -247,9 +294,11 @@ class Db:
             '''
         )
         self.connection.commit()
+        cursor.close()
 
     def new_user(self, wechat_openid, wechat_username, wechat_avatar):
-        self.cursor.execute(
+        cursor = self.connection.cursor()
+        cursor.execute(
             f'''
                 INSERT INTO {self.table_users}
                 VALUES (%s, %s, %s, %s) as alias
@@ -263,18 +312,25 @@ class Db:
              int(time.time()))
         )
         self.connection.commit()
+        cursor.close()
 
     def get_user(self, wechat_openid):
-        self.cursor_dict.execute(
+        cursor_dict = self.connection.cursor(dictionary=True)
+
+        cursor_dict.execute(
             f'''
                 SELECT * FROM {self.table_users}
                 WHERE wechat_openid="{wechat_openid}"
             '''
         )
-        return self.cursor_dict.fetchone()
+        retults = cursor_dict.fetchone()
+        cursor_dict.close()
+
+        return results
 
     def new_model(self, name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model):
-        self.cursor.execute(
+        cursor = self.connection.cursor()
+        cursor.execute(
             f'''
                 INSERT INTO {self.table_models}
                 (name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model, timestamp)
@@ -293,19 +349,26 @@ class Db:
              int(time.time()))
         )
         self.connection.commit()
+        cursor.close()
 
     def get_models(self, offset: int, limit: int):
-        self.cursor_dict.execute(
+        cursor_dict = self.connection.cursor(dictionary=True)
+
+        cursor_dict.execute(
             f'''
                 SELECT * FROM {self.table_models}
                 ORDER BY timestamp DESC
                 LIMIT {limit} OFFSET {offset}
             '''
         )
-        return self.cursor_dict.fetchall()
+        results = cursor_dict.fetchall()
+        cursor_dict.close()
+
+        return results
 
     def new_audio(self, audio_uid):
-        self.cursor.execute(
+        cursor = self.connection.cursor()
+        cursor.execute(
             f'''
                 INSERT INTO {self.table_audios}
                 (audio_uid, settled, timestamp) VALUES (%s, %s, %s)
@@ -313,10 +376,12 @@ class Db:
             (audio_uid, 0, int(time.time()))
         )
         self.connection.commit()
+        cursor.close()
 
     def update_audio(self, audio_uid, audio_file_cid, error):
+        cursor = self.connection.cursor()
         if audio_file_cid is not None:
-            self.cursor.execute(
+            cursor.execute(
                 f'''
                     UPDATE {self.table_audios}
                     SET audio_file_cid = %s, settled = %s
@@ -325,7 +390,7 @@ class Db:
                 (audio_file_cid, 1)
             )
         if error is not None:
-            self.cursor.execute(
+            cursor.execute(
                 f'''
                     UPDATE {self.table_audios}
                     SET error = %s
@@ -335,11 +400,64 @@ class Db:
             )
 
         self.connection.commit()
+        cursor.close()
 
     def get_audio(self, audio_uid):
-        self.cursor_dict.execute(
+        cursor_dict = self.connection.cursor(dictionary=True)
+
+        cursor_dict.execute(
             f'SELECT * FROM {self.table_audios} WHERE audio_uid="{audio_uid}"'
         )
-        return self.cursor_dict.fetchone()
+        result = cursor_dict.fetchone()
+        cursor_dict.close()
+
+        return result
+
+    def new_image(self, image_uid):
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f'''
+                INSERT INTO {self.table_images}
+                (image_uid, settled, timestamp) VALUES (%s, %s, %s)
+            ''',
+            (image_uid, 0, int(time.time()))
+        )
+        self.connection.commit()
+        cursor.close()
+
+    def update_image(self, image_uid, image_file_cid, error):
+        cursor = self.connection.cursor()
+        if image_file_cid is not None:
+            cursor.execute(
+                f'''
+                    UPDATE {self.table_images}
+                    SET image_file_cid = %s, settled = %s
+                    WHERE image_uid="{image_uid}"
+                ''',
+                (image_file_cid, 1)
+            )
+        if error is not None:
+            cursor.execute(
+                f'''
+                    UPDATE {self.table_images}
+                    SET error = %s
+                    WHERE image_uid="{image_uid}"
+                ''',
+                (error[0:256], )
+            )
+
+        self.connection.commit()
+        cursor.close()
+
+    def get_image(self, image_uid):
+        cursor_dict = self.connection.cursor(dictionary=True)
+
+        cursor_dict.execute(
+            f'SELECT * FROM {self.table_images} WHERE image_uid="{image_uid}"'
+        )
+        result = cursor_dict.fetchone()
+        cursor_dict.close()
+
+        return result
 
 db = Db()
