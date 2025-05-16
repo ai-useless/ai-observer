@@ -61,7 +61,7 @@
         <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
           <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
-        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: playScripts ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
+        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: playScripts ? 0.4 : 1, backgroundColor: "white" }' @click='onPlayScriptsClick'>
           <Image :src='dominoMask' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
         <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
@@ -154,6 +154,10 @@ watch(lastMessageText, async () => {
 
 const onAutoScrollClick = () => {
   autoScroll.value = !autoScroll.value
+}
+
+const onPlayScriptsClick = () => {
+  playScripts.value = !playScripts.value
 }
 
 const onGotoBottomClick = () => {
