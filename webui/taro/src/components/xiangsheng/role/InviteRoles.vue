@@ -44,6 +44,14 @@
     >
       开始表演
     </Button>
+    <View style='display: flex; width: calc(100% - 32px);'>
+      <Button size='mini' :style='{fontSize: "14px", color: ready ? "blue" : "gray", width: "50%;"}' @click='onScriptsClick()' :disabled='!ready'>
+        表演经典相声原剧本
+      </Button>
+      <Button size='mini' :style='{fontSize: "14px", color: ready ? "blue" : "gray", width: "50%;"}' @click='onTopicClick("不同领域的经典相声")' :disabled='!ready'>
+        创作传统相声
+      </Button>
+    </View>
     <View style='margin-top: 16px;'>
       <View style=' width: calc(100% - 32px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid gray;'>
         <View class='title'>你可能会喜欢</View>
@@ -52,12 +60,6 @@
         </View>
       </View>
       <View style='margin-top: 8px; width: calc(100% - 32px);'>
-        <View style='font-size: 14px; color: gray;' @click='onScriptsClick()'>
-          AGI表演经典相声原剧本
-        </View>
-        <View style='font-size: 14px; color: gray;' @click='onTopicClick("不同领域的经典相声")'>
-          AGI创作不同领域的传统相声
-        </View>
         <View v-if='topics.length'>
           <View v-for='_topic in topics' style='font-size: 14px; color: blue;' @click='onTopicClick(_topic)'>
             {{ _topic }}
