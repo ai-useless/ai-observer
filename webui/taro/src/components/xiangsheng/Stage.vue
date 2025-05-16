@@ -61,7 +61,7 @@
         <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
           <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
-        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: playScripts ? 0.4 : 1, backgroundColor: "white" }' @click='onPlayScriptsClick'>
+        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: playScripts ? 1 : 0.4, backgroundColor: "white" }' @click='onPlayScriptsClick'>
           <Image :src='dominoMask' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
         <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
@@ -158,6 +158,7 @@ const onAutoScrollClick = () => {
 
 const onPlayScriptsClick = () => {
   playScripts.value = !playScripts.value
+  _xiangsheng.value.intent = playScripts.value ? xiangshengWorker.Intent.CLASSIC_SCRIPTS : xiangshengWorker.Intent.GENERATE
 }
 
 const onGotoBottomClick = () => {
