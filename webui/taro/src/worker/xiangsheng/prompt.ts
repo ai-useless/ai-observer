@@ -567,8 +567,9 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       const actorIndex = Math.ceil(Math.random() * actors.length)
       const actor = actors[actorIndex]
       const scriptIndex = Math.ceil(Math.random() * 20)
-      return `你是相声剧本大全图书馆，用户需要你查找${actor}表演的20个台词字数超过2000个中文字的对口相声剧本。注意，不是要你创作，而是查找已经表演过剧本的，
-       其中不包含下面的列表中给出的节目，从这些剧本中选取第${scriptIndex}个剧本返回全部文本，返回应包含开场、过渡、展开、谢场等剧本必须部分，
+      return `你是相声剧本大全图书馆，用户需要你寻找你的数据集中${actor}表演的20个台词字数超过2000个中文字的对口相声剧本。
+       记住，用户不需要你搜索实时数据，从你的数据集中寻找即可。如果下面用户观看列表不为空，不包含该列表中给出的节目，
+       从这些剧本中选取第${scriptIndex}个剧本返回全部文本，返回应包含开场、过渡、展开、谢场等剧本必须部分，
        不要精简任何台词，不要省略任何台词文字。剧本需要包含标题和剧本内容，剧本标题中需要包含表演者名字。剧本内容用逗哏和捧哏标识表演双方。
        返回纯文本，只返回标题和剧本内容，返回格式如下：
        标题：xxxxxxxxxx
