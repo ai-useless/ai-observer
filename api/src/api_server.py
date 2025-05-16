@@ -160,7 +160,7 @@ async def query_audio(audio_uid: str):
 async def generate_image_async(
     prompt: str = Body(...),
 ):
-    image_uid = await image_generator.generate_image_async(text)
+    image_uid = await image_generator.generate_image_async(prompt)
 
     return {'image_uid': image_uid}
 
