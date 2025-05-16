@@ -61,6 +61,9 @@
         <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
           <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
+        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: playScripts ? 1 : 0.4, backgroundColor: "white" }' @click='onPlayScriptsClick'>
+          <Image :src='dominoMask' mode='widthFix' style='width: 24px; height: 24px;' />
+        </View>
         <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
           <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
         </View>
@@ -88,7 +91,8 @@ import { Message } from './Message'
 
 import MessageCard from './MessageCard.vue'
 
-import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, editSquare, arrowForward } from 'src/assets'
+import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, editSquare, arrowForward, dominoMask } from 'src/assets'
+import { xiangshengWorker } from 'src/worker'
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
@@ -99,6 +103,7 @@ const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
+const playScripts = ref(false)
 
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
 const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
@@ -149,6 +154,11 @@ watch(lastMessageText, async () => {
 
 const onAutoScrollClick = () => {
   autoScroll.value = !autoScroll.value
+}
+
+const onPlayScriptsClick = () => {
+  playScripts.value = !playScripts.value
+  _xiangsheng.value.intent = playScripts.value ? xiangshengWorker.Intent.CLASSIC_SCRIPTS : xiangshengWorker.Intent.GENERATE
 }
 
 const onGotoBottomClick = () => {
@@ -220,7 +230,10 @@ const typing = () => {
 
   waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
 
-  if (waitMessages.value.length < 10 && waitMessages.value.findIndex((el) => el.last) >= 0 && autoScroll.value) eXiangsheng.value.start()
+  if (waitMessages.value.length < 10 && waitMessages.value.findIndex((el) => el.last) >= 0 && autoScroll.value) {
+    if (playScripts.value) eXiangsheng.value.startScripts()
+    else eXiangsheng.value.start()
+  }
 
   typingMessageIndex.value += 1
   if (typingMessage.value.last) typingMessageIndex.value = 0
@@ -344,10 +357,13 @@ const startXiangsheng = async () => {
   })
 
   _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng
+  playScripts.value = _xiangsheng.value.intent === xiangshengWorker.Intent.CLASSIC_SCRIPTS
 
   eXiangsheng.value = new entityBridge.EXiangsheng(_xiangsheng.value, onMessage)
   loading.value = true
-  eXiangsheng.value.start()
+
+  if (playScripts.value) eXiangsheng.value.startScripts()
+  else eXiangsheng.value.start()
 
   typingTicker.value = window.setInterval(typing, 100)
 }

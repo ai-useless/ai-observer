@@ -94,6 +94,19 @@ export class EXiangsheng {
     if (this.subTopicIndex < 0 || this.subTopics.length - 1 <= this.subTopicIndex) this.start()
   }
 
+  onScriptsResponse = (message: xiangshengWorker.ClassicScriptsResponsePayload) => {
+    const { texts } = message
+    const steps = 5
+    const subTopic = texts.find((el) => el.replace(' ', '').replace('#', '').replace('*', '').startsWith('标题'))?.replace(/标题[:：]*\s*/, '') as string
+
+    this.subTopics.push(subTopic)
+    this.subTopicIndex += 1
+
+    for (let i = 0; i < steps; i++) {
+      this.speak('经典相声', subTopic, this.subTopicIndex, texts, i, steps)
+    }
+  }
+
   generateTopics = () => {
     const host = dbBridge._Participator.host(
       this.xiangsheng.uid
@@ -174,9 +187,38 @@ export class EXiangsheng {
           }, 1000)
       })
       .catch((e) => {
+        this.generating = true
         console.log(`Failed start xiangsheng: ${e}`)
         setTimeout(() => {
           this.start()
+        }, 1000)
+      })
+  }
+
+  startScripts = () => {
+    if (this.generating) return
+
+    this.generating = true
+
+    xiangshengWorker.XiangshengRunner.handleClassicScriptsRequest({
+      historyTopics: this.subTopics.map((el) => {
+        return { message: el }
+      }),
+      modelId: dbBridge._Model.topicModelId()
+    })
+      .then((payload) => {
+        if (payload) {
+          this.onScriptsResponse(payload)
+        } else
+          setTimeout(() => {
+            this.startScripts()
+          }, 1000)
+      })
+      .catch((e) => {
+        this.generating = true
+        console.log(`Failed start scripts: ${e}`)
+        setTimeout(() => {
+          this.startScripts()
         }, 1000)
       })
   }

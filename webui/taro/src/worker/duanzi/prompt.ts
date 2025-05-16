@@ -82,7 +82,51 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
     Intent.GENERATE,
     ((
       historyMessages: string[]
-    ) => `你是一个比李诞还棒的搞笑段子创作者，请生成5个“内涵段子”风格的幽默搞笑段子或冷笑话，要求：
+    ) => {
+      const topics = [
+        '家庭趣事',
+        '上班族烦恼',
+        '购物经历',
+        '吃喝玩乐',
+        '网络热词',
+        '社交尴尬',
+        '城市生活',
+        '社会热点',
+        '恋爱趣事',
+        '婚姻生活',
+        '友情调侃',
+        '单身自嘲',
+        '老板与员工',
+        '同事间的斗嘴',
+        '加班吐槽',
+        '面试经历',
+        '学生趣闻',
+        '考试焦虑',
+        '教师与学生互动',
+        '校园恋爱',
+        '讽刺现实',
+        '讽刺官僚',
+        '讽刺社会不公',
+        '反转结局',
+        '表情包梗',
+        '网红段子',
+        '游戏吐槽',
+        '二次元文化',
+        '古代趣事',
+        '名人轶事',
+        '文化差异',
+        '传统节日',
+        '手机趣事',
+        '互联网段子',
+        'AI与机器人',
+        '科技冷知识',
+        '医院趣闻',
+        '养生误区',
+        '健身趣事',
+        '饮食调侃'
+      ]
+      const topic = topics[Math.floor(Math.random() * topics.length)]
+      return `你是一个比李诞还棒的搞笑段子创作者，请生成5个“内涵段子”风格的主题为${topic}幽默搞笑段子或冷笑话，要求：
           - 包含谐音梗或双关语义等搞笑元素
           - 有生活中的反转和吐槽
           - 结合当前社会热点或网络流行语
@@ -96,7 +140,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
           内容：xxxxxxxxxxx
           标题：xxxx
           内容：xxxxxxxxxxx
-          要求: ${intentRequirements(Intent.GENERATE, historyMessages)}`) as IntentFunc
+          要求: ${intentRequirements(Intent.GENERATE, historyMessages)}`
+      }) as IntentFunc
   ]
 ])
 

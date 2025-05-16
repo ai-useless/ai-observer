@@ -2,6 +2,7 @@ import { _Model } from './model'
 import { _Simulator } from './simulator'
 import { dbModel } from '../../model'
 import { _Participator } from './participator'
+import { xiangshengWorker } from 'src/worker'
 
 export class _Xiangsheng {
   private static xiangshengs = [] as dbModel.Xiangsheng[]
@@ -9,13 +10,15 @@ export class _Xiangsheng {
   static create = (
     _uid: string,
     topic: string,
-    participators: dbModel.Participator[]
+    participators: dbModel.Participator[],
+    intent: xiangshengWorker.Intent
   ) => {
     _Participator.createParticipators(participators)
     _Xiangsheng.xiangshengs.push({
       id: _Xiangsheng.xiangshengs.length,
       uid: _uid,
-      topic: topic
+      topic,
+      intent
     })
 
     return _uid

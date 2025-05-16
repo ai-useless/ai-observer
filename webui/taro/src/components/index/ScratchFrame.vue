@@ -62,6 +62,13 @@
         AGI圈帮手
       </Button>
       <Button
+        @click='onStartChatClick'
+        size='mini'
+        style='border-radius: 8px; color: blue; width: 33.3%;'
+      >
+        AGI妙音坊
+      </Button>
+      <Button
         v-if='false'
         @click='onStartDiscussClick'
         size='mini'

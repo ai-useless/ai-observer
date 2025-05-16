@@ -37,13 +37,21 @@
       </View>
     </View>
     <Button
-      @click='onStartDiscussClick'
+      @click='onStartShowClick'
       size='mini'
       :style='{ width: "calc(100% - 32px)", marginTop: "16px", borderRadius: "8px", color: ready ? "blue" : "gray" }'
       :disabled='!ready'
     >
       开始表演
     </Button>
+    <View style='display: flex; width: calc(100% - 32px);'>
+      <Button size='mini' :style='{fontSize: "14px", color: ready ? "blue" : "gray", width: "50%"}' @click='onScriptsClick()' :disabled='!ready'>
+        表演经典相声原剧本
+      </Button>
+      <Button size='mini' :style='{fontSize: "14px", color: ready ? "blue" : "gray", width: "50%"}' @click='onTopicClick("不同领域的经典相声")' :disabled='!ready'>
+        创作传统相声
+      </Button>
+    </View>
     <View style='margin-top: 16px;'>
       <View style=' width: calc(100% - 32px); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid gray;'>
         <View class='title'>你可能会喜欢</View>
@@ -51,15 +59,14 @@
           <Button class='title plain-btn' size='mini' plain style='color: blue;' @click='onChangeTopicsClick' :loading='generating'>{{ generating ? '生成中...' : '换一批' }}</Button>
         </View>
       </View>
-      <View v-if='topics.length' style='margin-top: 8px; width: calc(100% - 32px);'>
-        <View style='font-size: 14px; color: gray;' @click='onTopicClick("各领域的经典相声")'>
-          各领域的经典相声
-        </View>
-        <View v-for='_topic in topics' style='font-size: 14px; color: blue;' @click='onTopicClick(_topic)'>
-          {{ _topic }}
+      <View style='margin-top: 8px; width: calc(100% - 32px);'>
+        <View v-if='topics.length'>
+          <View v-for='_topic in topics' style='font-size: 14px; color: blue;' @click='onTopicClick(_topic)'>
+            {{ _topic }}
+          </View>
         </View>
       </View>
-      <View v-else class='title' style='height: 200px; display: flex; justify-content: center; align-items: center; width: calc(100% - 32px);'>
+      <View v-if='!topics.length' class='title' style='height: 200px; display: flex; justify-content: center; align-items: center; width: calc(100% - 32px);'>
         AGI正在为您生成相声主题...
       </View>
     </View>
@@ -107,6 +114,7 @@ import { personCircle } from 'src/assets'
 import SimulatorCard from '../../simulator/SimulatorCard.vue'
 import ModelCard from '../../model/ModelCard.vue'
 import RoleCard from './RoleCard.vue'
+import { xiangshengWorker } from 'src/worker'
 
 const selectingSimulatorIndex = ref(0)
 const selectingSimulator = ref(false)
@@ -151,14 +159,20 @@ const onChangeTopicsClick = () => {
 const onTopicClick = (_topic: string) => {
   xiangsheng.Xiangsheng.setTopic(_topic)
   if (!host.value || !guest.value) return
-  startXiangsheng()
+  startXiangsheng(xiangshengWorker.Intent.GENERATE)
+}
+
+const onScriptsClick = () => {
+  xiangsheng.Xiangsheng.setTopic('经典相声原剧本')
+  if (!host.value || !guest.value) return
+  startXiangsheng(xiangshengWorker.Intent.CLASSIC_SCRIPTS)
 }
 
 const onTopicInput = (e: { detail: { value: string } }) => {
   xiangsheng.Xiangsheng.setTopic(e.detail.value)
 }
 
-const startXiangsheng = () => {
+const startXiangsheng = (intent: xiangshengWorker.Intent) => {
   const _uid = uuid.newUuid()
   const participators = [host.value, guest.value].map((el, index) => {
     return {
@@ -171,14 +185,14 @@ const startXiangsheng = () => {
   }) as dbModel.Participator[]
 
   // TODO: check if it's a valid topic
-  dbBridge._Xiangsheng.create(_uid, topic.value, participators)
+  dbBridge._Xiangsheng.create(_uid, topic.value, participators, intent)
   xiangsheng.Xiangsheng.setXiangsheng(_uid)
   setting.Setting.setTabIndex(2)
   Taro.switchTab({ url: '/pages/xiangsheng/XiangshengPage' })
 }
 
-const onStartDiscussClick = () => {
-  startXiangsheng()
+const onStartShowClick = () => {
+  startXiangsheng(xiangshengWorker.Intent.GENERATE)
 }
 
 const randomSelect = () => {

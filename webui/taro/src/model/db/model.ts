@@ -38,6 +38,7 @@ export interface Xiangsheng {
   id?: number
   uid: string
   topic: string
+  intent: string
 }
 
 export interface Participator {
