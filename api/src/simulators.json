@@ -1,4 +1,13 @@
 [{
+    "name": "马二川",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/masanli.jpg",
+    "personality": "中国著名相声表演艺术家，以单口相声见长，风格沉稳幽默。",
+    "host": false,
+    "audio_id": "masanli",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/masanli.mp3",
+    "archetype": "马三立",
+    "title": "单口相声大师"
+}, {
     "name": "清念法师",
     "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/qingnianfashi.jpg",
     "personality": "一位法师，手持念珠，口诵大悲咒，神情宁静庄严，心怀慈悲，普愿众生离苦得乐。",
