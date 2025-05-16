@@ -1,7 +1,8 @@
 export enum Intent {
   GENERATE = 'Generate',
   TOPICS = 'Topics',
-  CLASSIC_TOPICS = 'ClassicTopics'
+  CLASSIC_TOPICS = 'ClassicTopics',
+  CLASSIC_SCRIPTS = 'ClassicScripts'
 }
 
 enum PromptType {
@@ -76,6 +77,16 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
     ]
+  ],
+  [
+    Intent.CLASSIC_SCRIPTS,
+    [
+      PromptType.NO_EMOJI,
+      PromptType.NO_HEAD_SPACE,
+      PromptType.MERGE_SPACES,
+      PromptType.WITH_HISTORY_ANALYSIS,
+      PromptType.MUST_OBEY
+    ]
   ]
 ])
 
@@ -103,50 +114,41 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topic: string,
       host: string,
       guest: string
-    ) => `你是相声剧本创作者，请创作一段主题为${topic}德云社风格的相声，需要排除用户已经观看过的节目。
-          逗哏为相声演员${host}，捧哏为相声演员${guest}。剧本应该包含合理的开场和谢场部分，不要突兀开始或结束。
-          返回纯文本，只能用“逗哏”和“捧哏”标识表演双方，不要用演员名字标识，本行角色标识和内容之间不换行，不同角色的内容单独一行
-          演员的语言轻松诙谐，包含高质量包袱，逗哏和捧哏的句式多变，剧本情节综合运用各种幽默和相声技法。剧本中不要包含德云社名称。
-          剧本风格参考下列片段：
-          郭德纲：我拎着它吧，还有啊，我拿不了这么些个。
-          于谦：我帮您。
-          郭德纲：也不合适，您拎这个。这都什么呀？
-          于谦：还有我的呢。
-          郭德纲：每次演出我都弄得跟进货似的，无以为报，你们老这样不合适，因为你这场你买了，下一场你要不买就……
-          于谦：您还有够没有了。
-          郭德纲：不是，我是站在他们的角度出发的。每次都买，你偶尔有一场不买，多丢人呢。
-          于谦：您要脸不要脸呢。
-          郭德纲：再一个你买了我未必也准爱吃，是不是？你就不如把钱给我。
-          于谦：这还带折现的呢。
-          郭德纲：就是，没多少，是个心意。
-          于谦：什么叫心意？
-          郭德纲：我得感谢现场的朋友们，这好几千人，拿钱买票。
-          于谦：是。
-          郭德纲：你说你们真是有钱，真的。
-          于谦：这叫什么话呀。
-          郭德纲：你们不光有钱，你们还会活着。
-          于谦：会生活。
-          郭德纲：甭管是几百块钱买张票吧，这一晚上哈哈一乐，打心里痛快。
-          于谦：图个乐。
-          郭德纲：这三百、五百、八百，甭管多少钱，你就打五百，这五百在家里边摆在桌子上，你看着，你乐不了。
-          于谦：看着钱谁乐呀。
-          郭德纲：你看着它你要乐出来，你那个病五百治不好，是吧。
-          于谦：改神经了。
+    ) => `你是相声剧本创作者，请创作一段主题为${topic}的相声剧本，字数大于1500中文字，只返回标题和剧本内容。
+          演员的语言轻松诙谐，包含高质量包袱，逗哏和捧哏的句式多变，剧本情节综合运用各种幽默和相声技法，内容有深度。
+          剧本中不要包含具体相声社团名称。剧本开场要自然而引人入胜，可以以和观众聊天的形式，或两个人打趣的形式开始。谢场要有
+          多样性和随机性，不要用过于套路式的谢场。剧本展开过程需要使用诸如磨蔓儿、扒马褂等经典相声技法。
+          逗哏为相声演员${host}，捧哏为相声演员${guest}。剧本应该包含合理的开场和谢场部分。
+          返回纯文本，返回格式如下：
+          标题：xxxxxxxxxx
+          逗哏：xxxxxxxxxxxxxxx
+          捧哏：xxxxxxxxxxxxxxx
           要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
   ],
   [
     Intent.TOPICS,
     ((topic: string, historyTopics: string[]) =>
-      `你是相声剧本创作者，请你拟定3个${topic}相关的轻松诙谐或讽刺等相声主题，需要排除用户已经观看过的主题。
+      `你是相声剧本创作者，请你拟定10个${topic}相关的轻松诙谐或讽刺等相声主题，并随机选取3个返回，需要排除用户已经观看过的主题。
        返回纯文本，不同主题单独一行。
        要求: ${intentRequirements(Intent.TOPICS, historyTopics)}`) as IntentFunc
   ],
   [
     Intent.CLASSIC_TOPICS,
     ((historyTopics: string[]) =>
-      `你是相声资料大全图书馆，请你准备10个不同素材的经典相声大主题，这些主题将会被作为中心生成更小的相声剧本题目，需要排除用户已经观看过的主题。
+      `你是相声资料大全图书馆，请你准备50个不同素材的经典相声大主题，并随机选取3个返回，这些主题将会被作为中心生成更小的相声剧本题目，需要排除用户已经观看过的主题。
        例如，乱弹东周作为大的主题，下面会生成东周人物相关的剧本。返回纯文本，不同主题单独一行。
        要求: ${intentRequirements(Intent.CLASSIC_TOPICS, historyTopics)}`) as IntentFunc
+  ],
+  [
+    Intent.CLASSIC_SCRIPTS,
+    ((historyTopics: string[]) =>
+      `你是相声剧本大全图书馆，用户需要你查找20个互联网收录的台词字数超过2000个中文字的对口相声剧本，注意，不是要你创作，而是查找已经表演过剧本的，
+       其中不包含用户之前已经观看过的节目，并随机选取1个剧本返回全部文本，返回应包含开场、过渡、展开、谢场等剧本必须部分，不要精简任何台词，不要省略任何台词文字。
+       剧本需要包含标题和剧本内容，剧本标题中需要包含表演者名字。剧本内容用逗哏和捧哏标识表演双方。返回纯文本，只返回标题和剧本内容，返回格式如下：
+       标题：xxxxxxxxxx
+       逗哏：xxxxxxxxxxxxxxx
+       捧哏：xxxxxxxxxxxxxxx
+       要求: ${intentRequirements(Intent.CLASSIC_SCRIPTS, historyTopics)}`) as IntentFunc
   ]
 ])
 

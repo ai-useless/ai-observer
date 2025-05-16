@@ -5,6 +5,9 @@ import { Intent, Prompt } from './prompt'
 import { delay, purify } from 'src/utils'
 
 export enum XiangshengEventType {
+  CLASSIC_SCRIPTS_REQUEST = 'ClassicScriptsRequest',
+  CLASSIC_SCRIPTS_RESPONSE = 'ClassicScriptsResponse',
+
   CLASSIC_TOPICS_REQUEST = 'ClassicTopicsRequest',
   CLASSIC_TOPICS_RESPONSE = 'ClassicTopicsResponse',
 
@@ -22,6 +25,15 @@ export enum XiangshengEventType {
 
 export interface HistoryMessage {
   message: string
+}
+
+export interface ClassicScriptsRequestPayload {
+  historyTopics: HistoryMessage[]
+  modelId: number
+}
+
+export interface ClassicScriptsResponsePayload {
+  texts: string[]
 }
 
 export interface ClassicTopicsRequestPayload {
@@ -84,12 +96,14 @@ export interface XiangshengEvent {
     | TopicsResponsePayload
     | ClassicTopicsRequestPayload
     | ClassicTopicsResponsePayload
+    | ClassicScriptsRequestPayload
+    | ClassicScriptsResponsePayload
 }
 
 export type ErrorResponsePayload = {
   error: string
   type: XiangshengEventType
-  payload: GenerateRequestPayload | SpeakRequestPayload | TopicsRequestPayload | ClassicTopicsRequestPayload
+  payload: GenerateRequestPayload | SpeakRequestPayload | TopicsRequestPayload | ClassicTopicsRequestPayload | ClassicScriptsRequestPayload
 }
 
 export class XiangshengRunner {
@@ -118,6 +132,8 @@ export class XiangshengRunner {
       case Intent.TOPICS:
         return Prompt.prompt(intent, topic, (historyMessages || []).map((el) => el.message))
       case Intent.CLASSIC_TOPICS:
+        return Prompt.prompt(intent, (historyMessages || []).map((el) => el.message))
+      case Intent.CLASSIC_SCRIPTS:
         return Prompt.prompt(intent, (historyMessages || []).map((el) => el.message))
     }
   }
@@ -221,6 +237,24 @@ export class XiangshengRunner {
     return {
       topics: response.texts
     }
+  }
+
+  static handleClassicScriptsRequest = async (
+    payload: ClassicScriptsRequestPayload
+  ): Promise<ClassicScriptsResponsePayload | undefined> => {
+    const { historyTopics, modelId } = payload
+
+    const response = await XiangshengRunner.requestGenerate(
+      Intent.CLASSIC_SCRIPTS,
+      undefined as unknown as string,
+      undefined as unknown as string,
+      undefined as unknown as string,
+      historyTopics,
+      modelId
+    )
+    if (!response || !response.texts || !response.texts.length) return
+
+    return response
   }
 
   static requestSpeak = async (participatorId: number, text: string) => {

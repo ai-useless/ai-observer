@@ -17,6 +17,7 @@ import search from './Search.svg'
 import autoPlay from './AutoPlay.svg'
 import editSquare from './EditSquare.svg'
 import arrowForward from './ArrowForward.svg'
+import dominoMask from './DominoMask.svg'
 
 export {
   chevronRight,
@@ -37,5 +38,6 @@ export {
   search,
   autoPlay,
   editSquare,
-  arrowForward
+  arrowForward,
+  dominoMask
 }
