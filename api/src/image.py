@@ -64,3 +64,4 @@ class ImageGenerator:
             async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
                 return await response.read()
 
+generator = ImageGenerator()

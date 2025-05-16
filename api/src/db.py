@@ -55,6 +55,9 @@ class Db:
 
         cursor.execute('SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED;')
 
+        cursor.close()
+        cursor = self.connection.cursor()
+
         cursor.execute('SHOW TABLES')
         tables = [row[0] for row in cursor.fetchall()]
 
@@ -70,6 +73,9 @@ class Db:
                 )
             ''')
             self.connection.commit()
+
+        cursor.close()
+        cursor = self.connection.cursor()
 
         if self.table_simulators not in tables:
             cursor.execute(f'''
@@ -95,6 +101,9 @@ class Db:
             ''')
             self.connection.commit()
 
+        cursor.close()
+        cursor = self.connection.cursor()
+
         if self.table_users not in tables:
             cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_users} (
@@ -106,6 +115,9 @@ class Db:
                 )
             ''')
             self.connection.commit()
+
+        cursor.close()
+        cursor = self.connection.cursor()
 
         if self.table_models not in tables:
             cursor.execute(f'''
@@ -125,6 +137,10 @@ class Db:
                 )
             ''')
             self.connection.commit()
+
+        cursor.close()
+        cursor = self.connection.cursor()
+
         if self.table_audios not in tables:
             cursor.execute(f'''
                 CREATE TABLE IF NOT EXISTS {self.table_audios} (
@@ -138,11 +154,16 @@ class Db:
             ''')
             self.connection.commit()
 
+        cursor.close()
+        cursor = self.connection.cursor()
+
         cursor.execute(f'''
             UPDATE {self.table_audios} SET settled=1, error="Canceled by restart" where settled=0
         ''')
         self.connection.commit()
 
+        cursor.close()
+        cursor = self.connection.cursor()
 
         if self.table_images not in tables:
             cursor.execute(f'''
@@ -157,11 +178,13 @@ class Db:
             ''')
             self.connection.commit()
 
+        cursor.close()
+        cursor = self.connection.cursor()
+
         cursor.execute(f'''
             UPDATE {self.table_images} SET settled=1, error="Canceled by restart" where settled=0
         ''')
         self.connection.commit()
-
 
         cursor.close()
 
