@@ -141,16 +141,19 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
   ],
   [
     Intent.CLASSIC_SCRIPTS,
-    ((historyTopics: string[]) =>
-      `你是相声剧本大全图书馆，用户需要随机选取10组相声演员，从中选取两个演员名字哈希离当前时间戳哈希海明距离最近的一对相声演员，查找他们表演的最少5个，
-       最多20个互联网收录的台词字数超过2000个中文字的对口相声剧本。注意，不是要你创作，而是查找已经表演过剧本的，其中不包含用户之前已经观看过的节目，
-       从这些居中本选取标题哈希离当前时间戳哈希海明距离最近的剧本返回全部文本，返回应包含开场、过渡、展开、谢场等剧本必须部分，不要精简任何台词，
+    ((historyTopics: string[]) => {
+      const actorIndex = Math.random() * 10
+      const scriptIndex = Math.random() * 20
+      return `你是相声剧本大全图书馆，用户需要随机选取10组相声演员，选取第${actorIndex}对相声演员，查找他们表演的20个互联网
+       收录的台词字数超过2000个中文字的对口相声剧本。注意，不是要你创作，而是查找已经表演过剧本的，其中不包含用户之前已经观看过的节目，
+       从这些剧本中选取第${scriptIndex}个剧本返回全部文本，返回应包含开场、过渡、展开、谢场等剧本必须部分，不要精简任何台词，
        不要省略任何台词文字。剧本需要包含标题和剧本内容，剧本标题中需要包含表演者名字。剧本内容用逗哏和捧哏标识表演双方。
        返回纯文本，只返回标题和剧本内容，返回格式如下：
        标题：xxxxxxxxxx
        逗哏：xxxxxxxxxxxxxxx
        捧哏：xxxxxxxxxxxxxxx
-       要求: ${intentRequirements(Intent.CLASSIC_SCRIPTS, historyTopics)}`) as IntentFunc
+       要求: ${intentRequirements(Intent.CLASSIC_SCRIPTS, historyTopics)}`
+    }) as IntentFunc
   ]
 ])
 
