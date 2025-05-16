@@ -39,7 +39,7 @@ class SpeakAsyncResponse(BaseModel):
     audio_uid: str | None = None
     error: str | None = None
 
-class GenerateAsyncResponse(BaseModel):
+class GenerateImageAsyncResponse(BaseModel):
     image_uid: str | None = None
     error: str | None = None
 
@@ -156,8 +156,8 @@ async def query_audio(audio_uid: str):
         'error': audio['error']
     }
 
-@app.post('/api/v2/generate_async', response_model=GenerateAsyncResponse)
-async def generate_async(
+@app.post('/api/v1/generate_image_async', response_model=GenerateImageAsyncResponse)
+async def generate_image_async(
     prompt: str = Body(...),
 ):
     image_uid = await image_generator.generate_image_async(text)
