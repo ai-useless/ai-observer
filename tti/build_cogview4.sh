@@ -7,3 +7,9 @@
 
 # chutes build cogview4_tti:chute --public --wait --debug
 # chutes deploy cogview4_tti:chute --public
+
+# chutes build cogview4:chute --local
+# docker run --gpus all --rm -it -e CHUTES_EXECUTION_CONTEXT=REMOTE -p 8900:8000 cogview4:0.0.1 chutes run cogview4:chute --port 8000 --dev
+
+# chutes build cogview4:chute --public --wait --debug
+# chutes deploy cogview4:chute --public
