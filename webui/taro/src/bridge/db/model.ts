@@ -20,7 +20,9 @@ export class _Model {
   }
 
   static topicModelId = () => {
-    const topicModel = model.Model.models().find((el) => el.name === _Model.topicModel)
+    const topicModel = model.Model.models().find(
+      (el) => el.name === _Model.topicModel
+    )
     return topicModel ? topicModel.id : 0
   }
 }

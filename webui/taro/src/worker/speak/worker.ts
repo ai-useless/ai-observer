@@ -1,4 +1,9 @@
-import { SpeakEvent, SpeakEventType, SpeakRunner, SpeakRequestPayload } from "./runner"
+import {
+  SpeakEvent,
+  SpeakEventType,
+  SpeakRunner,
+  SpeakRequestPayload
+} from './runner'
 
 console.trace = () => {
   // DO NOTHING

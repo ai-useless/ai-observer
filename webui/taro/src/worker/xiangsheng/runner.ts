@@ -103,7 +103,12 @@ export interface XiangshengEvent {
 export type ErrorResponsePayload = {
   error: string
   type: XiangshengEventType
-  payload: GenerateRequestPayload | SpeakRequestPayload | TopicsRequestPayload | ClassicTopicsRequestPayload | ClassicScriptsRequestPayload
+  payload:
+    | GenerateRequestPayload
+    | SpeakRequestPayload
+    | TopicsRequestPayload
+    | ClassicTopicsRequestPayload
+    | ClassicScriptsRequestPayload
 }
 
 export class XiangshengRunner {
@@ -123,18 +128,23 @@ export class XiangshengRunner {
   ) => {
     switch (intent) {
       case Intent.GENERATE:
+        return Prompt.prompt(intent, topic, host, guest)
+      case Intent.TOPICS:
         return Prompt.prompt(
           intent,
           topic,
-          host,
-          guest
+          (historyMessages || []).map((el) => el.message)
         )
-      case Intent.TOPICS:
-        return Prompt.prompt(intent, topic, (historyMessages || []).map((el) => el.message))
       case Intent.CLASSIC_TOPICS:
-        return Prompt.prompt(intent, (historyMessages || []).map((el) => el.message))
+        return Prompt.prompt(
+          intent,
+          (historyMessages || []).map((el) => el.message)
+        )
       case Intent.CLASSIC_SCRIPTS:
-        return Prompt.prompt(intent, (historyMessages || []).map((el) => el.message))
+        return Prompt.prompt(
+          intent,
+          (historyMessages || []).map((el) => el.message)
+        )
     }
   }
 
@@ -149,7 +159,13 @@ export class XiangshengRunner {
     const model = dbBridge._Model.model(modelId as number)
     if (!model) return
 
-    const _prompt = XiangshengRunner.prompt(intent, topic, host, guest, historyMessages)
+    const _prompt = XiangshengRunner.prompt(
+      intent,
+      topic,
+      host,
+      guest,
+      historyMessages
+    )
 
     const textResp = await axios.post(constants.FALLBACK_API, {
       model: model.name,
@@ -174,8 +190,15 @@ export class XiangshengRunner {
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const { topic, subTopic, host, guest, xiangshengUid, modelId, subTopicIndex } =
-      payload
+    const {
+      topic,
+      subTopic,
+      host,
+      guest,
+      xiangshengUid,
+      modelId,
+      subTopicIndex
+    } = payload
 
     const response = await XiangshengRunner.requestGenerate(
       Intent.GENERATE,
@@ -199,8 +222,7 @@ export class XiangshengRunner {
   static handleTopicsRequest = async (
     payload: TopicsRequestPayload
   ): Promise<TopicsResponsePayload | undefined> => {
-    const { topic, xiangshengUid, modelId, historySubTopics } =
-      payload
+    const { topic, xiangshengUid, modelId, historySubTopics } = payload
 
     const response = await XiangshengRunner.requestGenerate(
       Intent.TOPICS,

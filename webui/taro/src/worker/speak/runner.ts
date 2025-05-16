@@ -39,16 +39,11 @@ export class SpeakRunner {
     return simulator.audio_id
   }
 
-  static requestSpeak = async (
-    simulatorId: number,
-    text: string
-  ) => {
+  static requestSpeak = async (simulatorId: number, text: string) => {
     const _generateAudio = (await dbBridge._Setting.get(
       dbModel.SettingKey.GENERATE_AUDIO
     )) as boolean
-    if (
-      (_generateAudio !== undefined && !_generateAudio)
-    ) {
+    if (_generateAudio !== undefined && !_generateAudio) {
       return {
         audio: undefined
       }
@@ -92,10 +87,7 @@ export class SpeakRunner {
   ): Promise<SpeakResponsePayload | undefined> => {
     const { simulatorId, text } = payload
 
-    const response = await SpeakRunner.requestSpeak(
-      simulatorId,
-      text
-    )
+    const response = await SpeakRunner.requestSpeak(simulatorId, text)
     if (!response || !response.audio) return
 
     return response

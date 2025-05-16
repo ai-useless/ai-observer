@@ -14,6 +14,7 @@
           <Image :src='modelLogo(message.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
           <View style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(message.modelId) }}</View>
         </View>
+        <Image v-if='message.image' mode='heightFix' :src='message.image' style='width: 100%; height: 200px;' />
         <View :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>{{ message.text }}</View>
       </View>
       <View v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: lastDisplayMessage.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
@@ -21,6 +22,7 @@
           <Image :src='modelLogo(lastDisplayMessage.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
           <View style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(lastDisplayMessage.modelId) }}</View>
         </View>
+        <Image v-if='lastDisplayMessage.image' mode='heightFix' :src='lastDisplayMessage.image' style='width: 100%; height: 200px;' />
         <View :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>{{ lastDisplayMessage.text }}</View>
       </View>
     </scroll-view>
@@ -65,6 +67,7 @@ interface Message {
   audio: string
   modelId: number
   index: number
+  image?: string
 }
 
 const models = computed(() => model.Model.models())
@@ -111,6 +114,10 @@ const generate = async () => {
       })
 
       Taro.hideLoading()
+    }, (index: number, image?: string) => {
+      const messages = [...displayMessages.value, ...(lastDisplayMessage.value ? [lastDisplayMessage.value] : []), ...(typingMessage.value ? [typingMessage.value] : []), ...waitMessages.value]
+      const message = messages.find((el) => el.index === index)
+      if (message) message.image = image
     }, true)
   }
 }

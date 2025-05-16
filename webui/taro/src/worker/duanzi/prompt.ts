@@ -80,9 +80,7 @@ const intentRequirements = (
 export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.GENERATE,
-    ((
-      historyMessages: string[]
-    ) => {
+    ((historyMessages: string[]) => {
       const topics = [
         '家庭趣事',
         '上班族烦恼',
@@ -141,7 +139,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
           标题：xxxx
           内容：xxxxxxxxxxx
           要求: ${intentRequirements(Intent.GENERATE, historyMessages)}`
-      }) as IntentFunc
+    }) as IntentFunc
   ]
 ])
 

@@ -21,10 +21,7 @@ export class EXiangsheng {
 
   private onMessage = undefined as unknown as MessageFunc
 
-  constructor(
-    xiangsheng: dbModel.Xiangsheng,
-    onMessage: MessageFunc
-  ) {
+  constructor(xiangsheng: dbModel.Xiangsheng, onMessage: MessageFunc) {
     this.xiangsheng = xiangsheng
     this.onMessage = onMessage
   }
@@ -35,7 +32,14 @@ export class EXiangsheng {
     )
   }
 
-  speak = (topic: string, subTopic: string, subTopicIndex: number, texts: string[], index: number, steps: number) => {
+  speak = (
+    topic: string,
+    subTopic: string,
+    subTopicIndex: number,
+    texts: string[],
+    index: number,
+    steps: number
+  ) => {
     if (index >= texts.length) {
       this.generating = false
       return
@@ -60,14 +64,18 @@ export class EXiangsheng {
 
     xiangshengWorker.XiangshengRunner.handleSpeakRequest({
       participatorId,
-      text: text.replace(/^逗[哏哙哭哐]\s*[:：]*\s*/, '').replace(/捧[哏哙哭哐]\s*[:：]*\s*/, '')
+      text: text
+        .replace(/^逗[哏哙哭哐]\s*[:：]*\s*/, '')
+        .replace(/捧[哏哙哭哐]\s*[:：]*\s*/, '')
     })
       .then((payload) => {
         const { audio } = payload as xiangshengWorker.SpeakResponsePayload
         void this.onMessage(
           `${topic}之${subTopic}`,
           participatorId,
-          text.replace(/逗[哏哙哭哐]\s*[:：]*\s*/, '').replace(/捧[哏哙哭哐]\s*[:：]*\s*/, ''),
+          text
+            .replace(/逗[哏哙哭哐]\s*[:：]*\s*/, '')
+            .replace(/捧[哏哙哭哐]\s*[:：]*\s*/, ''),
           audio,
           index,
           index === 0,
@@ -91,13 +99,23 @@ export class EXiangsheng {
 
   onTopicsResponse = (message: xiangshengWorker.TopicsResponsePayload) => {
     this.subTopics.push(...message.topics)
-    if (this.subTopicIndex < 0 || this.subTopics.length - 1 <= this.subTopicIndex) this.start()
+    if (
+      this.subTopicIndex < 0 ||
+      this.subTopics.length - 1 <= this.subTopicIndex
+    )
+      this.start()
   }
 
-  onScriptsResponse = (message: xiangshengWorker.ClassicScriptsResponsePayload) => {
+  onScriptsResponse = (
+    message: xiangshengWorker.ClassicScriptsResponsePayload
+  ) => {
     const { texts } = message
     const steps = 5
-    const subTopic = texts.find((el) => el.replace(' ', '').replace('#', '').replace('*', '').startsWith('标题'))?.replace(/标题[:：]*\s*/, '') as string
+    const topic = texts
+      .find((el) =>
+        el.replace(' ', '').replace('#', '').replace('*', '').startsWith('标题')
+      )
+    const subTopic = topic ? topic.replace(/标题[:：]*\s*/, '') as string : ''
 
     this.subTopics.push(subTopic)
     this.subTopicIndex += 1
@@ -158,7 +176,11 @@ export class EXiangsheng {
 
     if (this.subTopics.length - this.subTopicIndex <= 1) {
       this.generateTopics()
-      if (this.subTopicIndex < 0 || this.subTopics.length - 1 <= this.subTopicIndex) return
+      if (
+        this.subTopicIndex < 0 ||
+        this.subTopics.length - 1 <= this.subTopicIndex
+      )
+        return
     }
 
     this.generating = true

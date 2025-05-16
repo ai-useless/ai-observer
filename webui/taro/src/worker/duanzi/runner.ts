@@ -69,7 +69,9 @@ export class DuanziRunner {
       }
     }
 
-    const texts = Prompt.postProcess(purify.purifyText((textResp.data as Record<string, string>).content))
+    const texts = Prompt.postProcess(
+      purify.purifyText((textResp.data as Record<string, string>).content)
+    )
     return {
       texts
     }
