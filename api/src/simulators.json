@@ -1,4 +1,13 @@
 [{
+    "name": "清念法师",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/qingnianfashi.jpg",
+    "personality": "一位法师，手持念珠，口诵大悲咒，神情宁静庄严，心怀慈悲，普愿众生离苦得乐。",
+    "host": false,
+    "audio_id": "qingnianfashi",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/dabeizhou.mp3",
+    "archetype": "清念法师",
+    "title": "擅长大悲咒的梵唱法师"
+}, {
     "name": "大月子",
     "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xiaoyueyue.jpg",
     "personality": "大月子，AGI没谱社相声演员，以憨厚幽默风格走红，深受观众喜爱",
