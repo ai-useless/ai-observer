@@ -1,4 +1,31 @@
 [{
+    "name": "觉一法师",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/yaoshizhoufashi.jpg",
+    "personality": "专修《药师琉璃光如来本愿功德经》与药师咒持诵之法，声音沉稳清净，蕴含疗愈力。",
+    "host": false,
+    "audio_id": "yaoshizhoufashi",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/yaoshizhou.mp3",
+    "archetype": "药师咒唱诵法师",
+    "title": "咒音疗愈行者"   
+}, {
+    "name": "般若小脑斧",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/wangshengzhoufashi.jpg",
+    "personality": "以音弘法，愿为众生助念净土，引发清净心。",
+    "host": false,
+    "audio_id": "wangshengzhoufashi",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/wangshengzhou.mp3",
+    "archetype": "往生咒唱诵法师",
+    "title": "极乐音声播传者，虚拟up主"   
+}, {
+    "name": "慧真法师",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xinjingfashi.jpg",
+    "personality": "致力于弘扬佛法中的般若智慧，以清净庄严的梵音唱诵《般若波罗蜜多心经》广受赞誉。",
+    "host": false,
+    "audio_id": "xinjingfashi",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xinjing.mp3",
+    "archetype": "心经唱诵法师慧真法师",
+    "title": "清净梵音引渡人"   
+}, {
     "name": "马二川",
     "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/masanli.jpg",
     "personality": "中国著名相声表演艺术家，以单口相声见长，风格沉稳幽默。",
