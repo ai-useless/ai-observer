@@ -58,7 +58,7 @@ const convertAudio = (audioB64: string) => {
     message.value = text
   }).catch((e) => {
     error.value = '您似乎遇到了一个网络错误，请重新录制试试！'
-    console.log(`Failed convert audio: ${e}`)
+    console.log(`Failed convert audio: ${JSON.stringify(e)}`)
   })
 }
 
@@ -75,7 +75,7 @@ const handleRecord = () => {
     },
     fail: (e) => {
       error.value = '您似乎遇到了一个存储错误，请重新录制试试！'
-      console.log(`Failed read: ${e}`)
+      console.log(`Failed read: ${JSON.stringify(e)}`)
     }
   })
 }
@@ -83,9 +83,6 @@ const handleRecord = () => {
 const onTouchEnd = () => {
   recording.value = false
   stopRecord()
-  if (startY.value - endY.value > 50) {
-    handleRecord()
-  }
 }
 
 const onTouchStart = (e: { touches: { clientY: number }[] }) => {
@@ -119,6 +116,9 @@ onMounted(() => {
   recorderManager.onStop((res) => {
     recording.value = false
     audioPath.value = res.tempFilePath
+    if (startY.value - endY.value > 50) {
+      handleRecord()
+    }
   })
   recorderManager.onError((e) => {
     recording.value = false
