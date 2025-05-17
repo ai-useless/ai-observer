@@ -15,7 +15,7 @@
             <Image :src='_message.avatar' style='width: 48px; height: 48px; border-radius: 50%;' />
           </View>
           <View style='margin-left: 8px;'>
-            <View :style='{backgroundColor: _message.hint ? "rgba(160, 160, 160, 0.2)" : _message.send ? "#07c160" : "white", color: _message.send ? "white" : "black", borderRadius: _message.send ? "16px 16px 0 16px" : "16px 16px 16px 0", padding: "8px", border: "1px solid rgba(200, 200, 200, 0.3)"}'>
+            <View :style='{backgroundColor: _message.hint ? "rgba(160, 160, 160, 0.2)" : _message.send ? "#07c160" : "white", color: _message.hint ? "black" : _message.send ? "white" : "black", borderRadius: _message.send ? "16px 16px 0 16px" : "16px 16px 16px 0", padding: "8px", border: "1px solid rgba(200, 200, 200, 0.3)"}'>
               <rich-text :nodes='_message.message' />
             </View>
             <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ timestamp.timestamp2HumanReadable(_message.createdAt) }}</Text>
@@ -100,6 +100,21 @@ watch(message, () => {
     hint: false,
     avatar: userAvatar.value
   })
+})
+
+watch(audioError, () => {
+  if (!inputAudio.value || !audioError.value || !audioError.value.length) return
+
+  messages.value.push({
+    message: audioError.value,
+    send: true,
+    createdAt: Date.now(),
+    displayName: username.value,
+    hint: true,
+    avatar: userAvatar.value
+  })
+
+  audioError.value = ''
 })
 
 const onSelectSimulatorClick = () => {
