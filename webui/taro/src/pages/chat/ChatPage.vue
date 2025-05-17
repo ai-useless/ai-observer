@@ -9,3 +9,9 @@ import { View } from '@tarojs/components'
 
 import Chat from 'src/components/chat/Chat.vue'
 </script>
+
+<style lang='scss'>
+
+@import 'taro-ui-vue3/dist/style/components/modal.scss';
+
+</style>

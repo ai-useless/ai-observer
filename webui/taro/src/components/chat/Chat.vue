@@ -28,15 +28,19 @@
     </scroll-view>
     <View style='display: flex; flex-direction: row; align-items: center; width: 100%; height: 24px;'>
       <View style='height: 24px; background-color: white;' @click='onRecordClick'>
-        <Image :src='volumeUp' mode='widthFix' style='width: 24px; height: 24px;' />
+        <Image :src='inputAudio ? keyboardAlt : volumeUp' mode='widthFix' style='width: 24px; height: 24px;' />
+      </View>
+      <View v-if='inputAudio' style='margin-left: 4px; width: 100%; height: 24px;'>
+        <AudioRecorder />
       </View>
       <Input
+        v-else
         :value='message'
         @input='onChatInput'
         style='font-size: 14px; height: 20px; border: 1px solid gray; border-radius: 4px; padding: 0 8px; width: 100%; margin-left: 4px;'
         placeholder='输入'
       />
-      <View style='height: 24px; background-color: white; margin-left: 4px;' @click='onSendClick'>
+      <View v-if='!inputAudio' style='height: 24px; background-color: white; margin-left: 4px;' @click='onSendClick'>
         <Image :src='send' mode='widthFix' style='width: 24px; height: 24px;' />
       </View>
       <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5); margin-left: 4px;'>
@@ -56,7 +60,9 @@ import { model, simulator } from 'src/localstores'
 import { dbBridge } from 'src/bridge'
 import { timestamp } from 'src/utils'
 
-import { personAvatar, volumeUp, send } from 'src/assets'
+import AudioRecorder from '../recorder/AudioRecorder.vue'
+
+import { personAvatar, volumeUp, send, keyboardAlt } from 'src/assets'
 
 interface Message {
   message: string
@@ -76,12 +82,14 @@ const scrollTop = ref(999999)
 const friend = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
 
+const inputAudio = ref(false)
+
 const onSelectSimulatorClick = () => {
 
 }
 
 const onRecordClick = () => {
-
+  inputAudio.value = !inputAudio.value
 }
 
 const onChatInput = (e: { detail: { value: string } }) => {

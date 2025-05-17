@@ -20,6 +20,7 @@ import arrowForward from './ArrowForward.svg'
 import dominoMask from './DominoMask.svg'
 import personAvatar from './PersonAvatar.svg'
 import send from './Send.svg'
+import keyboardAlt from './KeyboardAlt.svg'
 
 export {
   chevronRight,
@@ -43,5 +44,6 @@ export {
   arrowForward,
   dominoMask,
   personAvatar,
-  send
+  send,
+  keyboardAlt
 }
