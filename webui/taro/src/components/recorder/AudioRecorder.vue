@@ -4,7 +4,7 @@
       {{ recording ? '松开取消' : '长按说话' }}
     </Button>
   </View>
-  <AtModal :is-opened='recording'>
+  <AtModal :is-opened='recording || converting'>
     <AtModalHeader>正在说话...</AtModalHeader>
     <AtModalContent>
       <View v-if='recording' style='display: flex;  height: 80px; justify-content: center; align-items: center;'>
@@ -37,6 +37,9 @@ const recorderManager = Taro.getRecorderManager()
 
 const audioPath = ref('')
 
+const message = defineModel('message')
+const error = defineModel('error')
+
 const updateWave = () => {
   for (let i = 0; i < waveCount.value; i++) {
     waves.value[i] = Math.ceil(Math.random() * 50)
@@ -52,8 +55,9 @@ const onLongPress = () => {
 
 const convertAudio = (audioB64: string) => {
   entityBridge.ESpeech.speech2Text(audioB64).then((text) => {
-    console.log(text)
+    message.value = text
   }).catch((e) => {
+    error.value = '您似乎遇到了一个网络错误，请重新录制试试！'
     console.log(`Failed convert audio: ${e}`)
   })
 }
@@ -70,6 +74,7 @@ const handleRecord = () => {
       convertAudio(audioB64)
     },
     fail: (e) => {
+      error.value = '您似乎遇到了一个存储错误，请重新录制试试！'
       console.log(`Failed read: ${e}`)
     }
   })
@@ -117,6 +122,7 @@ onMounted(() => {
   })
   recorderManager.onError((e) => {
     recording.value = false
+    error.value = '您似乎遇到了一个录制错误，请重新录制试试！'
     console.log(`Failed record: ${JSON.stringify(e)}`)
   })
 })

@@ -31,7 +31,7 @@
         <Image :src='inputAudio ? keyboardAlt : volumeUp' mode='widthFix' style='width: 24px; height: 24px;' />
       </View>
       <View v-if='inputAudio' style='margin-left: 4px; width: 100%; height: 24px;'>
-        <AudioRecorder />
+        <AudioRecorder v-model:message='message' v-model:error='audioError' />
       </View>
       <Input
         v-else
@@ -54,9 +54,9 @@
 
 <script setup lang='ts'>
 import { View, Input, Image, Text } from '@tarojs/components'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import Taro from '@tarojs/taro'
-import { model, simulator } from 'src/localstores'
+import { model, simulator, user } from 'src/localstores'
 import { dbBridge } from 'src/bridge'
 import { timestamp } from 'src/utils'
 
@@ -74,6 +74,8 @@ interface Message {
 }
 
 const message = ref('')
+const audioError = ref('')
+
 const messages = ref([] as Message[])
 
 const chatBoxHeight = ref(0)
@@ -82,7 +84,23 @@ const scrollTop = ref(999999)
 const friend = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
 
+const userAvatar = computed(() => user.User.avatar() || user.User.avatarUrl())
+const username = computed(() => user.User.username())
+
 const inputAudio = ref(false)
+
+watch(message, () => {
+  if (!inputAudio.value || !message.value || !message.value.length) return
+
+  messages.value.push({
+    message: message.value,
+    send: true,
+    createdAt: Date.now(),
+    displayName: username.value,
+    hint: false,
+    avatar: userAvatar.value
+  })
+})
 
 const onSelectSimulatorClick = () => {
 
@@ -97,7 +115,14 @@ const onChatInput = (e: { detail: { value: string } }) => {
 }
 
 const onSendClick = () => {
-
+  messages.value.push({
+    message: message.value,
+    send: true,
+    createdAt: Date.now(),
+    displayName: username.value,
+    hint: false,
+    avatar: userAvatar.value
+  })
 }
 
 watch(friend, () => {
