@@ -37,7 +37,7 @@ export class ImageRunner {
     dialog: boolean
   ) => {
     prompt = `为文字 ${prompt} 生成${style}风格的配图。`
-    if (dialog) prompt += '如果文字中有对话，在图片中添加气泡对话框，对话框的文字用黑体、仿宋、幼圆、楷体或卡通字体中的一种。'
+    if (dialog) prompt += '如果文字中有对话，在图片中添加气泡对话框，对话框的文字用黑体、仿宋、幼圆、楷体或卡通字体中的一种，对话框中的包含清晰的中文对话文本。'
     try {
       const imageResp = await axios.post(constants.GENERATE_IMAGE_ASYNC_API, {
         prompt

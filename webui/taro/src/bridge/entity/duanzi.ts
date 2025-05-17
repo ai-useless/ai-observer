@@ -28,8 +28,8 @@ export class Duanzi {
     if (!isTitle) {
       imageWorker.ImageRunner.handleGenerateRequest({
         prompt: text,
-        style: '漫画',
-        dialog: true
+        style: '内涵无厘头搞笑漫画',
+        dialog: false
       })
         .then((payload) => {
           if (payload && payload.image)
