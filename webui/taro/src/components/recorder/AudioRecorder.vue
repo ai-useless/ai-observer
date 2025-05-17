@@ -83,7 +83,7 @@ const handleRecord = () => {
 const onTouchEnd = () => {
   recording.value = false
   stopRecord()
-  if (endY.value - startY.value > 50) {
+  if (startY.value - endY.value > 50) {
     handleRecord()
   }
 }
