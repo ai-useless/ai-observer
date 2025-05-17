@@ -74,7 +74,7 @@ const generate = (_prompt: string) => {
   Taro.showLoading({
     title: '正在创作...'
   })
-  entityBridge.EImage.generate(prompt.value, 'Meme风格，带有寓意', true, '', (_image: string) => {
+  entityBridge.EImage.generate(prompt.value, 'Meme风格，带有寓意', true, '', false, false, (_image: string) => {
     images.value.push({
       prompt: _prompt,
       image: _image

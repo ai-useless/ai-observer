@@ -9,9 +9,23 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View v-for='([_prompt, _images], index) in images' :key='index' :style='{borderBottom: "1px solid lightgray", padding: "8px 0", display: "flex", width: "100%"}'>
-        <View v-for='(image, index) in _images' :key='index' style='width: 33.3%;'>
-          <Image :src='image' mode='widthFix' style='width: 100%;' />
+      <View v-for='([_prompt, _images], index) in images' :key='index' :style='{borderBottom: "1px solid lightgray", padding: "8px 0", width: "100%"}'>
+        <View style='width: 100%;'>
+          <View style='width: 100%; display: flex;'>
+            <View v-if='_images.length' v-for='(image, index) in _images.slice(0, 3)' :key='index' style='width: 33.3%;'>
+              <Image :src='image' mode='widthFix' style='width: 100%;' />
+            </View>
+          </View>
+          <View style='width: 100%; display: flex;'>
+            <View v-if='_images.length > 3' v-for='(image, index) in _images.slice(3, 6)' :key='index' style='width: 33.3%;'>
+              <Image :src='image' mode='widthFix' style='width: 100%;' />
+            </View>
+          </View>
+          <View style='width: 100%; display: flex;'>
+            <View v-if='_images.length > 6' v-for='(image, index) in _images.slice(6)' :key='index' style='width: 33.3%;'>
+              <Image :src='image' mode='widthFix' style='width: 100%;' />
+            </View>
+          </View>
         </View>
         <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _prompt }}</Text>
       </View>
@@ -74,7 +88,7 @@ watch(imageCount, async () => {
 })
 
 const generate = (_prompt: string) => {
-  entityBridge.EImage.generate(_prompt, '唯美而意境悠远', false, '', (_image: string) => {
+  entityBridge.EImage.generate(_prompt, '唯美而意境悠远', false, '', true, true, (_image: string) => {
     const _images = images.value.get(_prompt) || []
     _images.push(_image)
     images.value.set(_prompt, _images)
