@@ -91,6 +91,7 @@ const onTouchEnd = () => {
 
 const onTouchStart = (e: { touches: { clientY: number }[] }) => {
   startY.value = e.touches[0].clientY
+  endY.value = startY.value
 }
 
 const onTouchMove = (e: { touches: { clientY: number }[] }) => {
