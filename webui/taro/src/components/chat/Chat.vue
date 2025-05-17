@@ -10,8 +10,11 @@
       showsVerticalScrollIndicator={false}
     >
       <View style='font-size: 14px;'>
-        <View v-for='(_message, index) in messages' :key='index' style='display: flex; padding: 4px 0;'>
+        <View v-for='(_message, index) in messages' :key='index' :style='{display: "flex", padding: "4px 0", flexDirection: _message.send ? "row-reverse" : "row"}'>
           <View v-if='!_message.send'>
+            <Image :src='_message.avatar' style='width: 48px; height: 48px; border-radius: 50%;' />
+          </View>
+          <View v-else style='margin-left: 8px;'>
             <Image :src='_message.avatar' style='width: 48px; height: 48px; border-radius: 50%;' />
           </View>
           <View style='margin-left: 8px;'>
@@ -19,9 +22,6 @@
               <rich-text :nodes='_message.message' />
             </View>
             <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ timestamp.timestamp2HumanReadable(_message.createdAt) }}</Text>
-          </View>
-          <View v-if='_message.send' style='margin-left: 8px;'>
-            <Image :src='_message.avatar' style='width: 48px; height: 48px; border-radius: 50%;' />
           </View>
         </View>
       </View>
