@@ -9,7 +9,7 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View style='width: calc(100% - 32px); transition: 500ms; display: flex; border-top: 1px solid lightgray; border-bottom: 1px solid lightgray; padding: 8px 0;'>
+      <View style='width: 100%; transition: 500ms; display: flex; border-top: 1px solid lightgray; border-bottom: 1px solid lightgray; padding: 8px 0;'>
         <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
           <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
           <View style='margin-left: 8px;'>
@@ -47,7 +47,7 @@
       </View>
       <View id='scrollBottomView'  />
     </scroll-view>
-    <View style='display: flex; flex-direction: row-reverse; align-items: center; width: calc(100% - 32px); margin-top: -8px; height: 24px;'>
+    <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; height: 24px;'>
       <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
         <View :style='{borderRight: "1px solid gray", height: "24px", opacity: editing ? 1 : 0.4, backgroundColor: "white" }' @click='onEditTopicClick'>
           <Image :src='editing ? arrowForward : editSquare' mode='widthFix' style='width: 24px; height: 24px;' />
@@ -373,13 +373,19 @@ watch(_uid, () => {
 })
 
 onMounted(async () => {
+  if (Taro.getWindowInfo()) {
+    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 32
+  }
+
+  const participators = dbBridge._Participator.participators(_uid.value)
+  if (!topic.value || !_uid.value || !participators.length) {
+    Taro.navigateTo({ url: '/pages/xiangsheng/role/RolesPage' })
+    return
+  }
+
   Taro.setNavigationBarTitle({
     title: topic.value
   })
-
-  if (Taro.getWindowInfo()) {
-    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 20
-  }
   startXiangsheng()
 })
 

@@ -243,7 +243,7 @@ const onStartDuanziClick = () => {
 }
 
 const startChat = () => {
-
+  Taro.navigateTo({ url: '/pages/chat/ChatPage' })
 }
 
 const onStartChatClick = () => {
