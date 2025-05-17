@@ -48,7 +48,7 @@
         AGI轻松聊
       </Button>
       <Button
-        @click='onStartChatClick'
+        @click='onStartMemeClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
@@ -248,6 +248,14 @@ const startChat = () => {
 
 const onStartChatClick = () => {
   startChat()
+}
+
+const startMeme = () => {
+  Taro.navigateTo({ url: '/pages/meme/MemePage' })
+}
+
+const onStartMemeClick = () => {
+  startMeme()
 }
 
 const startEnglish = () => {

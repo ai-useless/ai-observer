@@ -56,7 +56,7 @@
 
 <script setup lang='ts'>
 import { View, Input, Image, Text } from '@tarojs/components'
-import { computed, onMounted, ref, toRef, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, toRef, watch } from 'vue'
 import Taro from '@tarojs/taro'
 import { model, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
@@ -87,6 +87,7 @@ const message = ref('')
 const audioError = ref('')
 
 const messages = ref([] as Message[])
+const messageCount = computed(() => messages.value.length)
 
 const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
@@ -251,6 +252,10 @@ watch(friend, () => {
   Taro.setNavigationBarTitle({
     title: friend.value.simulator
   })
+})
+
+watch(messageCount, () => {
+  nextTick().then(() => scrollTop.value += 1)
 })
 
 onMounted(async () => {

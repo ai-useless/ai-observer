@@ -13,7 +13,8 @@ export default {
     'pages/xiangsheng/role/RolesPage',
     'pages/duanzi/DuanziPage',
     'pages/chat/ChatPage',
-    'pages/english/EnglishPage'
+    'pages/english/EnglishPage',
+    'pages/meme/MemePage'
   ],
   workers: 'worker',
   window: {
