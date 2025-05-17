@@ -53,8 +53,8 @@ class ImageGenerator:
             'prompt': prompt,
             'scales': 3.5,
             'steps': 20,
-            'width': 512,
-            'height': 384,
+            'width': 720,
+            'height': 320,
         }
 
         url = 'https://kikakkz-cogview4.chutes.ai/v1/generate'
