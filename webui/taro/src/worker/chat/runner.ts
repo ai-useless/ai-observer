@@ -12,11 +12,12 @@ export enum ChatEventType {
 }
 
 export interface GenerateRequestPayload {
-  simulator: string,
-  personality: string,
-  myName: string,
+  simulator: string
+  personality: string
+  myName: string
   historyMessages?: string[]
   modelId: number
+  language: string
 }
 
 export interface GenerateResponsePayload {
@@ -43,21 +44,41 @@ export class ChatRunner {
     return simulator.audio_id
   }
 
-  static prompt = (simulator: string, personality: string, myName: string, historyMessages?: string[]) => {
-    return Prompt.prompt(Intent.GENERATE, simulator, personality, myName, historyMessages || [])
+  static prompt = (
+    simulator: string,
+    personality: string,
+    myName: string,
+    historyMessages?: string[],
+    language?: string
+  ) => {
+    return Prompt.prompt(
+      Intent.GENERATE,
+      simulator,
+      personality,
+      myName,
+      historyMessages || [],
+      language || '中文'
+    )
   }
 
   static requestGenerate = async (
     simulator: string,
     personality: string,
     myName: string,
+    language: string,
     historyMessages?: string[],
     modelId?: number
   ) => {
     const model = dbBridge._Model.model(modelId as number)
     if (!model) return
 
-    const _prompt = ChatRunner.prompt(simulator, personality, myName, historyMessages)
+    const _prompt = ChatRunner.prompt(
+      simulator,
+      personality,
+      myName,
+      historyMessages,
+      language
+    )
 
     const textResp = await axios.post(constants.FALLBACK_API, {
       model: model.name,
@@ -83,10 +104,20 @@ export class ChatRunner {
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const { historyMessages, modelId, simulator, personality, myName } = payload
+    const {
+      historyMessages,
+      modelId,
+      simulator,
+      personality,
+      myName,
+      language
+    } = payload
 
     const response = await ChatRunner.requestGenerate(
-      simulator, personality, myName,
+      simulator,
+      personality,
+      myName,
+      language,
       historyMessages,
       modelId
     )

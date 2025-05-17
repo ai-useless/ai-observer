@@ -12,7 +12,8 @@ export default {
     'pages/xiangsheng/XiangshengPage',
     'pages/xiangsheng/role/RolesPage',
     'pages/duanzi/DuanziPage',
-    'pages/chat/ChatPage'
+    'pages/chat/ChatPage',
+    'pages/english/EnglishPage'
   ],
   workers: 'worker',
   window: {

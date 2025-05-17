@@ -69,7 +69,7 @@
         AGI妙音坊
       </Button>
       <Button
-        @click='onStartChatClick'
+        @click='onStartEnglishClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
@@ -248,6 +248,14 @@ const startChat = () => {
 
 const onStartChatClick = () => {
   startChat()
+}
+
+const startEnglish = () => {
+  Taro.navigateTo({ url: '/pages/english/EnglishPage' })
+}
+
+const onStartEnglishClick = () => {
+  startEnglish()
 }
 
 const onTopicClick = (_topic: string) => {

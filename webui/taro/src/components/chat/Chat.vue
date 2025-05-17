@@ -56,7 +56,7 @@
 
 <script setup lang='ts'>
 import { View, Input, Image, Text } from '@tarojs/components'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, toRef, watch } from 'vue'
 import Taro from '@tarojs/taro'
 import { model, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
@@ -65,6 +65,13 @@ import { timestamp } from 'src/utils'
 import AudioRecorder from '../recorder/AudioRecorder.vue'
 
 import { personAvatar, volumeUp, send, keyboardAlt } from 'src/assets'
+
+interface Props {
+  language: string
+}
+
+const props = defineProps<Props>()
+const language = toRef(props, 'language')
 
 interface Message {
   message: string
@@ -146,7 +153,7 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
 
 const sendToFriend = (_message: string) => {
   friendThinking.value = true
-  entityBridge.EChat.chat(friend.value.id, friend.value.simulator, friend.value.origin_personality, username.value, [...messages.value.map((el) => `${el.send ? friend.value.simulator : username.value}: ${el.message}`), _message], _model.value.id, (_message?: string, audio?: string, error?: string) => {
+  entityBridge.EChat.chat(friend.value.id, friend.value.simulator, friend.value.origin_personality, username.value, [...messages.value.map((el) => `${el.send ? friend.value.simulator : username.value}: ${el.message}`), _message], _model.value.id, language.value || '中文', (_message?: string, audio?: string, error?: string) => {
     friendThinking.value = false
     if (error && error.length) {
       messages.value.push({
@@ -256,7 +263,9 @@ onMounted(async () => {
     simulator.Simulator.getSimulators(undefined, () => {
       friend.value = dbBridge._Simulator.randomPeek(undefined)
       messages.value.push({
-        message: `您好，我是${friend.value.simulator}，是你在AGI世界的伙伴。我的模型是${_model.value.name}。你可以和我聊任何你想聊的话题，记得要健康哦！如果你想和其他伙伴沟通，可以点击对话框旁边的按钮切换伙伴哦！现在，开始我们愉快的聊天吧！`,
+        message: language.value === '中文' ?
+          `您好，我是${friend.value.simulator}，是你在AGI世界的伙伴。我的模型是${_model.value.name}。你可以和我聊任何你想聊的话题，记得要健康哦！如果你想和其他伙伴沟通，可以点击对话框旁边的按钮切换伙伴哦！现在，开始我们愉快的聊天吧！` :
+          `Hello, I'm ${friend.value.simulator}, your friend in AGI world. I'm driven by llm model ${_model.value.name}. Now you can talk with me about any topic. If you would like to chat with other guys, switch with button besides the input box. Now let's go!`,
         send: false,
         createdAt: Date.now(),
         displayName: friend.value.simulator,
