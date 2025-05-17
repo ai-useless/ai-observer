@@ -27,7 +27,9 @@ export class Duanzi {
 
     if (!isTitle) {
       imageWorker.ImageRunner.handleGenerateRequest({
-        prompt: text
+        prompt: text,
+        style: '漫画',
+        dialog: true
       })
         .then((payload) => {
           if (payload && payload.image)
