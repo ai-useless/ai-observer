@@ -8,6 +8,9 @@ export enum SpeakEventType {
   SPEAK_REQUEST = 'SpeakRequest',
   SPEAK_RESPONSE = 'SpeakResponse',
 
+  CONVERT_REQUEST = 'ConvertRequest',
+  CONVERT_RESPONSE = 'ConvertResponse',
+
   ERROR = 'Error'
 }
 
@@ -20,15 +23,27 @@ export interface SpeakResponsePayload {
   audio: string
 }
 
+export interface ConvertRequestPayload {
+  audio_b64: string
+}
+
+export interface ConvertResponsePayload {
+  text: string
+}
+
 export interface SpeakEvent {
   type: SpeakEventType
-  payload: SpeakRequestPayload | SpeakResponsePayload
+  payload:
+    | SpeakRequestPayload
+    | SpeakResponsePayload
+    | ConvertRequestPayload
+    | ConvertResponsePayload
 }
 
 export type ErrorResponsePayload = {
   error: string
   type: SpeakEventType
-  payload: SpeakRequestPayload
+  payload: SpeakRequestPayload | ConvertRequestPayload
 }
 
 export class SpeakRunner {
@@ -89,6 +104,32 @@ export class SpeakRunner {
 
     const response = await SpeakRunner.requestSpeak(simulatorId, text)
     if (!response || !response.audio) return
+
+    return response
+  }
+
+  static requestConvert = async (audio_b64: string) => {
+    try {
+      const convertResp = await axios.post(constants.SPEECH_TO_TEXT_API, {
+        audio_b64
+      })
+      return {
+        text: (convertResp.data as Record<string, string>).text
+      }
+    } catch {
+      return {
+        text: undefined
+      }
+    }
+  }
+
+  static handleConvertRequest = async (
+    payload: ConvertRequestPayload
+  ): Promise<ConvertResponsePayload | undefined> => {
+    const { audio_b64 } = payload
+
+    const response = await SpeakRunner.requestConvert(audio_b64)
+    if (!response || !response.text) return
 
     return response
   }

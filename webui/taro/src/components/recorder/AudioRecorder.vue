@@ -22,6 +22,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { Button, View } from '@tarojs/components'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import Taro from '@tarojs/taro'
+import { entityBridge } from 'src/bridge'
 
 const recording = ref(false)
 const converting = ref(false)
@@ -49,8 +50,29 @@ const onLongPress = () => {
   startRecord()
 }
 
+const convertAudio = (audioB64: string) => {
+  entityBridge.ESpeech.speech2Text(audioB64).then((text) => {
+    console.log(text)
+  }).catch((e) => {
+    console.log(`Failed convert audio: ${e}`)
+  })
+}
+
 const handleRecord = () => {
   converting.value = true
+
+  const fs = Taro.getFileSystemManager()
+  fs.readFile({
+    filePath: audioPath.value,
+    encoding: 'base64',
+    success: (res) => {
+      const audioB64 = res.data as string
+      convertAudio(audioB64)
+    },
+    fail: (e) => {
+      console.log(`Failed read: ${e}`)
+    }
+  })
 }
 
 const onTouchEnd = () => {

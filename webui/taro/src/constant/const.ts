@@ -16,3 +16,5 @@ export const GET_SIMULATORS_API = 'http://106.15.6.50:8091/api/v1/simulators'
 export const GET_USER = 'http://106.15.6.50:8091/api/v1/user'
 export const COOK_USER = 'http://106.15.6.50:8091/api/v1/cook_user'
 export const GET_MODELS_API = 'http://106.15.6.50:8091/api/v1/models'
+export const SPEECH_TO_TEXT_API =
+  'http://106.15.6.50:8091/api/v1/speech_to_text'
