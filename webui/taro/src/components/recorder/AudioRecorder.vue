@@ -93,7 +93,7 @@ onMounted(() => {
     audioPath.value = res.tempFilePath
   })
   recorderManager.onError((e) => {
-    console.log(`Failed record: ${e}`)
+    console.log(`Failed record: ${JSON.stringify(e)}`)
   })
 })
 
