@@ -11,22 +11,26 @@ export default {
     'pages/search/SearchPage',
     'pages/xiangsheng/XiangshengPage',
     'pages/xiangsheng/role/RolesPage',
-    'pages/duanzi/DuanziPage'
+    'pages/duanzi/DuanziPage',
+    'pages/chat/ChatPage',
+    'pages/english/EnglishPage',
+    'pages/meme/MemePage',
+    'pages/post/PostPage'
   ],
   workers: 'worker',
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#fff',
-    navigationBarTitleText: 'AGI观点',
+    navigationBarTitleText: '没谱儿的AGI',
     navigationBarTextStyle: 'black'
   },
   tabBar: {
     custom: false,
     list: [
       { pagePath: 'pages/index/IndexPage', text: '首页' },
-      { pagePath: 'pages/seminar/SeminarPage', text: 'AGI观点' },
-      { pagePath: 'pages/xiangsheng/XiangshengPage', text: 'AGI相声' },
-      { pagePath: 'pages/duanzi/DuanziPage', text: 'AGI段子' },
+      { pagePath: 'pages/seminar/SeminarPage', text: 'AGI看世界' },
+      { pagePath: 'pages/xiangsheng/XiangshengPage', text: 'AGI相声社' },
+      { pagePath: 'pages/duanzi/DuanziPage', text: 'AGI有内涵' },
       { pagePath: 'pages/user/UserPage', text: '我的' }
     ]
   }

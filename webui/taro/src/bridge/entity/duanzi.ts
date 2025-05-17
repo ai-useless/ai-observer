@@ -28,8 +28,9 @@ export class Duanzi {
     if (!isTitle) {
       imageWorker.ImageRunner.handleGenerateRequest({
         prompt: text,
-        style: '漫画',
-        dialog: true
+        style: '内涵无厘头搞笑漫画',
+        dialog: false,
+        extra: '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。'
       })
         .then((payload) => {
           if (payload && payload.image)

@@ -48,14 +48,14 @@
         AGI轻松聊
       </Button>
       <Button
-        @click='onStartChatClick'
+        @click='onStartMemeClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
         AGI超有梗
       </Button>
       <Button
-        @click='onStartChatClick'
+        @click='onStartPostClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
@@ -69,7 +69,7 @@
         AGI妙音坊
       </Button>
       <Button
-        @click='onStartChatClick'
+        @click='onStartEnglishClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
@@ -243,11 +243,35 @@ const onStartDuanziClick = () => {
 }
 
 const startChat = () => {
-
+  Taro.navigateTo({ url: '/pages/chat/ChatPage' })
 }
 
 const onStartChatClick = () => {
   startChat()
+}
+
+const startPost = () => {
+  Taro.navigateTo({ url: '/pages/post/PostPage' })
+}
+
+const onStartPostClick = () => {
+  startPost()
+}
+
+const startMeme = () => {
+  Taro.navigateTo({ url: '/pages/meme/MemePage' })
+}
+
+const onStartMemeClick = () => {
+  startMeme()
+}
+
+const startEnglish = () => {
+  Taro.navigateTo({ url: '/pages/english/EnglishPage' })
+}
+
+const onStartEnglishClick = () => {
+  startEnglish()
 }
 
 const onTopicClick = (_topic: string) => {
