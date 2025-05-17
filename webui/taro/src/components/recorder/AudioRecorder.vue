@@ -112,9 +112,11 @@ onMounted(() => {
   }
 
   recorderManager.onStop((res) => {
+    recording.value = false
     audioPath.value = res.tempFilePath
   })
   recorderManager.onError((e) => {
+    recording.value = false
     console.log(`Failed record: ${JSON.stringify(e)}`)
   })
 })
