@@ -17,7 +17,7 @@ from image import generator as image_generator
 from include import *
 from chat import chat as _chat, ChatMessage
 from config import config
-from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators, get_user as _get_user, cook_user as _cook_user
+from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators, get_user as _get_user, cook_user as _cook_user, audio_2_text
 from db import db
 
 app = FastAPI()
@@ -55,6 +55,10 @@ class QueryImageResponse(BaseModel):
 
 class CookSimulatorResponse(BaseModel):
     audio_url: str | None = None
+    error: str | None = None
+
+class SpeechToTextResponse(BaseModel):
+    text: str | None = None
     error: str | None = None
 
 @app.get('/api/v1/models')
@@ -159,8 +163,10 @@ async def query_audio(audio_uid: str):
 @app.post('/api/v1/generate_image_async', response_model=GenerateImageAsyncResponse)
 async def generate_image_async(
     prompt: str = Body(..., embed=True),
+    high_resolution: bool = Body(...),
+    square: bool = Body(...),
 ):
-    image_uid = await image_generator.generate_image_async(prompt)
+    image_uid = await image_generator.generate_image_async(prompt, high_resolution, square)
 
     return {'image_uid': image_uid}
 
@@ -172,6 +178,11 @@ async def query_image(image_uid: str):
         'settled': image['settled'],
         'error': image['error']
     }
+
+@app.post('/api/v1/speech_to_text', response_model=SpeechToTextResponse)
+async def speech_to_text(audio_b64: str = Body(..., embed=True)):
+    text = await audio_2_text(audio_b64)
+    return { 'text': text }
 
 def get_client_host(request: Request) -> str:
     x_forwarded_for = request.headers.get("x-forwarded-for")
