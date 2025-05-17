@@ -24,6 +24,7 @@
             <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ timestamp.timestamp2HumanReadable(_message.createdAt) }}</Text>
           </View>
         </View>
+        <View v-if='friendThinking' style='text-align: center; font-size: 12px; color: gray; padding: 8px 0;'>对方正在思考...</View>
       </View>
     </scroll-view>
     <View style='display: flex; flex-direction: row; align-items: center; width: 100%; height: 24px;'>
@@ -39,6 +40,7 @@
         @input='onChatInput'
         style='font-size: 14px; height: 20px; border: 1px solid gray; border-radius: 4px; padding: 0 8px; width: 100%; margin-left: 4px;'
         placeholder='输入'
+        :disabled='audioPlayer && audioPlayer.playing'
       />
       <View v-if='!inputAudio' style='height: 24px; background-color: white; margin-left: 4px;' @click='onSendClick'>
         <Image :src='send' mode='widthFix' style='width: 24px; height: 24px;' />
@@ -57,7 +59,7 @@ import { View, Input, Image, Text } from '@tarojs/components'
 import { computed, onMounted, ref, watch } from 'vue'
 import Taro from '@tarojs/taro'
 import { model, simulator, user } from 'src/localstores'
-import { dbBridge } from 'src/bridge'
+import { dbBridge, entityBridge } from 'src/bridge'
 import { timestamp } from 'src/utils'
 
 import AudioRecorder from '../recorder/AudioRecorder.vue'
@@ -71,6 +73,7 @@ interface Message {
   displayName: string
   avatar: string
   hint: boolean
+  audio?: string
 }
 
 const message = ref('')
@@ -88,6 +91,93 @@ const userAvatar = computed(() => user.User.avatar() || user.User.avatarUrl())
 const username = computed(() => user.User.username())
 
 const inputAudio = ref(false)
+const friendThinking = ref(false)
+
+class AudioPlayer {
+  context: Taro.InnerAudioContext
+  playing: boolean
+  duration: number
+  durationTicker: number
+}
+
+const audioPlayer = ref(undefined as unknown as AudioPlayer)
+
+const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
+  const context = Taro.createInnerAudioContext()
+  context.src = audioUrl
+
+  const player = {
+    context: context,
+    playing: true,
+    duration: context.duration
+  } as AudioPlayer
+
+  return new Promise((resolve, reject) => {
+    context.onError((e) => {
+      player.playing = false
+      if (player.durationTicker >= 0) {
+        window.clearInterval(player.durationTicker)
+        player.durationTicker = -1
+      }
+      reject(`Failed play audio: ${JSON.stringify(e)}`)
+    })
+    context.onCanplay(() => {
+      context.play()
+
+      player.durationTicker = window.setInterval(() => {
+        if (context.duration) {
+          window.clearInterval(player.durationTicker)
+          player.durationTicker = -1
+          player.duration = context.duration
+          resolve(player)
+          return
+        }
+      }, 100)
+    })
+    context.onEnded(() => {
+      player.playing = false
+      if (player.durationTicker >= 0) {
+        window.clearInterval(player.durationTicker)
+        player.durationTicker = -1
+      }
+    })
+  })
+}
+
+const sendToFriend = (_message: string) => {
+  friendThinking.value = true
+  entityBridge.EChat.chat(friend.value.id, friend.value.simulator, friend.value.origin_personality, username.value, [...messages.value.map((el) => `${el.send ? friend.value.simulator : username.value}: ${el.message}`), _message], _model.value.id, (_message?: string, audio?: string, error?: string) => {
+    friendThinking.value = false
+    if (error && error.length) {
+      messages.value.push({
+        message: error,
+        send: false,
+        createdAt: Date.now(),
+        displayName: friend.value.simulator,
+        hint: true,
+        avatar: friend.value.simulator_avatar_url
+      })
+      return
+    }
+    messages.value.push({
+      message: _message as string,
+      send: false,
+      createdAt: Date.now(),
+      displayName: friend.value.simulator,
+      hint: false,
+      avatar: friend.value.simulator_avatar_url,
+      audio
+    })
+    if (audio) {
+       playAudio(audio).then((player) => {
+        if (!player) return
+        audioPlayer.value = player
+      }).catch((e) => {
+        console.log(`Failed play audio: ${e}`)
+      })
+    }
+  })
+}
 
 watch(message, () => {
   if (!inputAudio.value || !message.value || !message.value.length) return
@@ -101,6 +191,7 @@ watch(message, () => {
     avatar: userAvatar.value
   })
 
+  sendToFriend(message.value)
   message.value = ''
 })
 
@@ -124,6 +215,8 @@ const onSelectSimulatorClick = () => {
 }
 
 const onRecordClick = () => {
+  if (audioPlayer.value && audioPlayer.value.playing) return
+
   inputAudio.value = !inputAudio.value
 }
 
@@ -140,6 +233,8 @@ const onSendClick = () => {
     hint: false,
     avatar: userAvatar.value
   })
+
+  sendToFriend(message.value)
   message.value = ''
 }
 
