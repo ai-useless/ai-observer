@@ -7,7 +7,7 @@
   <AtModal :is-opened='recording || converting'>
     <AtModalHeader>正在说话...</AtModalHeader>
     <AtModalContent>
-      <View v-if='recording' style='display: flex;  height: 80px; justify-content: center; align-items: center;'>
+      <View style='display: flex;  height: 80px; justify-content: center; align-items: center;'>
         <View v-for='(wave, index) in waves' :key='index' :style='{borderRight: "2px solid lightgray", height: wave.toString() + "px", width: "1px", marginRight: "1px"}' />
       </View>
     </AtModalContent>
