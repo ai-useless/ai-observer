@@ -56,8 +56,8 @@ const onLongPress = () => {
 const convertAudio = (audioB64: string) => {
   entityBridge.ESpeech.speech2Text(audioB64).then((text) => {
     converting.value = false
-    if (!text || !text.length) message.value = '您似乎遇到了一个网络错误，或者您的音频不包含有效文字，请重新录制试试！'
-    else message.value = text
+    if (!text || !text.text || !text.text.length) error.value = '您似乎遇到了一个网络错误，或者您的音频不包含有效文字，请重新录制试试！'
+    else message.value = text.text
   }).catch((e) => {
     converting.value = false
     error.value = '您似乎遇到了一个网络错误，或者您的音频不包含有效文字，请重新录制试试！'
