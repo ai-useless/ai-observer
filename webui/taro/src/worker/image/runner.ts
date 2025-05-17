@@ -10,7 +10,9 @@ export enum ImageEventType {
 }
 
 export interface GenerateRequestPayload {
+  style: string
   prompt: string
+  dialog: boolean
 }
 
 export interface GenerateResponsePayload {
@@ -29,7 +31,13 @@ export type ErrorResponsePayload = {
 }
 
 export class ImageRunner {
-  static requestGenerate = async (prompt: string) => {
+  static requestGenerate = async (
+    prompt: string,
+    style: string,
+    dialog: boolean
+  ) => {
+    prompt += `为文字 ${prompt} 生成${style}风格的配图。`
+    if (dialog) prompt += '如果文字中有对话，在图片中添加气泡对话框。'
     try {
       const imageResp = await axios.post(constants.GENERATE_IMAGE_ASYNC_API, {
         prompt
@@ -63,9 +71,9 @@ export class ImageRunner {
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const { prompt } = payload
+    const { prompt, style, dialog } = payload
 
-    const response = await ImageRunner.requestGenerate(prompt)
+    const response = await ImageRunner.requestGenerate(prompt, style, dialog)
     if (!response || !response.image) return
 
     return response

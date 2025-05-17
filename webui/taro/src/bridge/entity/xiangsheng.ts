@@ -111,11 +111,10 @@ export class EXiangsheng {
   ) => {
     const { texts } = message
     const steps = 5
-    const topic = texts
-      .find((el) =>
-        el.replace(' ', '').replace('#', '').replace('*', '').startsWith('标题')
-      )
-    const subTopic = topic ? topic.replace(/标题[:：]*\s*/, '') as string : ''
+    const topic = texts.find((el) =>
+      el.replace(' ', '').replace('#', '').replace('*', '').startsWith('标题')
+    )
+    const subTopic = topic ? (topic.replace(/标题[:：]*\s*/, '') as string) : ''
 
     this.subTopics.push(subTopic)
     this.subTopicIndex += 1
