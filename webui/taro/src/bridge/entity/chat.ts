@@ -1,4 +1,4 @@
-import { chatWorker, speakWorker } from 'src/worker'
+import { chatWorker, refineWorker, speakWorker } from 'src/worker'
 
 export class EChat {
   static chat = (
@@ -43,5 +43,14 @@ export class EChat {
         console.log(`Failed generate: ${e}`)
         onMessage(undefined, undefined, '出错啦！再试试吧！')
       })
+  }
+
+  static refine = async (prompt: string, modelId: number) => {
+    const payload = await refineWorker.RefineRunner.handleGenerateRequest({
+      prompt,
+      modelId
+    })
+    if (!payload || !payload.text || !payload.text.length) return undefined
+    return payload.text
   }
 }

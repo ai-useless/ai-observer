@@ -1,13 +1,13 @@
 <template>
   <View style='padding: 0 16px;'>
-    <Meme />
+    <Post />
   </View>
 </template>
 
 <script setup lang='ts'>
 import { View } from '@tarojs/components'
 
-import Meme from 'src/components/meme/Meme.vue'
+import Post from 'src/components/post/Post.vue'
 
 </script>
 

@@ -55,7 +55,7 @@
         AGI超有梗
       </Button>
       <Button
-        @click='onStartChatClick'
+        @click='onStartPostClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
@@ -248,6 +248,14 @@ const startChat = () => {
 
 const onStartChatClick = () => {
   startChat()
+}
+
+const startPost = () => {
+  Taro.navigateTo({ url: '/pages/post/PostPage' })
+}
+
+const onStartPostClick = () => {
+  startPost()
 }
 
 const startMeme = () => {

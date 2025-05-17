@@ -14,7 +14,8 @@ export default {
     'pages/duanzi/DuanziPage',
     'pages/chat/ChatPage',
     'pages/english/EnglishPage',
-    'pages/meme/MemePage'
+    'pages/meme/MemePage',
+    'pages/post/PostPage'
   ],
   workers: 'worker',
   window: {
