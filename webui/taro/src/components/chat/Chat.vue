@@ -100,6 +100,8 @@ watch(message, () => {
     hint: false,
     avatar: userAvatar.value
   })
+
+  message.value = ''
 })
 
 watch(audioError, () => {
@@ -138,6 +140,7 @@ const onSendClick = () => {
     hint: false,
     avatar: userAvatar.value
   })
+  message.value = ''
 }
 
 watch(friend, () => {
