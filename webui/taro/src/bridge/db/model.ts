@@ -25,4 +25,8 @@ export class _Model {
     )
     return topicModel ? topicModel.id : 0
   }
+
+  static chatModelId = () => {
+    return _Model.topicModelId()
+  }
 }
