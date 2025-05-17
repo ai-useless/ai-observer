@@ -128,7 +128,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       const topic3 = topics[Math.floor(Math.random() * topics.length)]
       const topic4 = topics[Math.floor(Math.random() * topics.length)]
       const topic5 = topics[Math.floor(Math.random() * topics.length)]
-      return `你是一个比李诞还棒的搞笑段子创作者，请生成5个关于${topic1}，${topic2}，${topic3}，${topic4}或${topic5}的“内涵段子”风格的幽默搞笑段子或冷笑话，要求：
+      return `你是一个比李诞还棒的搞笑段子创作者，请生成5个关于${topic1}，${topic2}，${topic3}，${topic4}或${topic5}的“内涵段子”风格的幽默搞笑段子或冷笑话。
+          生成的段子应该符合汉语语法逻辑，并合理使用汉语知识和素材。要求：
           - 包含谐音梗或双关语义等搞笑元素
           - 有生活中的反转和吐槽
           - 结合当前社会热点或网络流行语

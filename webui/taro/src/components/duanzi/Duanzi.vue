@@ -226,7 +226,7 @@ const typing = () => {
 
   lastModelId.value = typingMessage.value.modelId
 
-  if (waitMessages.value.length <= 3) void generate()
+  if (waitMessages.value.length <= 3 && displayMessages.value.length > 3) void generate()
 
   if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)
