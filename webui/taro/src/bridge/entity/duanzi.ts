@@ -30,7 +30,7 @@ export class Duanzi {
         prompt: text,
         style: '内涵无厘头搞笑漫画',
         dialog: false,
-        extra: '图片中的搞笑人物头像可以使用像沙雕熊猫头等表情包头像。'
+        extra: '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。'
       })
         .then((payload) => {
           if (payload && payload.image)
