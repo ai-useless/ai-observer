@@ -7,7 +7,8 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     username: undefined as unknown as string,
     avatar: undefined as unknown as string,
-    avatarUrl: undefined as unknown as string
+    avatarUrl: undefined as unknown as string,
+    displayAvatar: undefined as unknown as string
   }),
   actions: {
     getUser(code: string, done?: (error: boolean) => void) {
@@ -68,8 +69,12 @@ export class User {
   static username = () => user.username
   static setUsername = (v: string) => (user.username = v)
   static avatar = () => user.avatar
+  static displayAvatar = () => user.displayAvatar
   static avatarUrl = () => user.avatarUrl
-  static setAvatar = (v: string) => (user.avatar = v)
+  static setAvatar = (v: string, display?: string) => {
+    user.avatar = v
+    user.displayAvatar = display as unknown as string
+  }
 
   static getUser = (code: string) => user.getUser(code)
   static logined = () => user.username && (user.avatar || user.avatarUrl)

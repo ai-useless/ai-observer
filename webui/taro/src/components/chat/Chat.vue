@@ -42,9 +42,21 @@
       </ComplexInput>
     </View>
   </View>
+  <AtModal :is-opened='logining' @close='onLoginClose'>
+    <AtModalHeader>登录</AtModalHeader>
+    <AtModalContent>
+      <View>
+        <Login :modal='true' />
+      </View>
+    </AtModalContent>
+    <AtModalAction>
+      <Button @click='onCancelLoginClick'>取消</Button>
+    </AtModalAction>
+  </AtModal>
 </template>
 
 <script setup lang='ts'>
+import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { View, Image, Text, Button } from '@tarojs/components'
 import { computed, nextTick, onMounted, ref, toRef, watch } from 'vue'
 import Taro from '@tarojs/taro'
@@ -53,6 +65,7 @@ import { dbBridge, entityBridge } from 'src/bridge'
 import { timestamp } from 'src/utils'
 
 import ComplexInput from '../input/ComplexInput.vue'
+import Login from '../user/Login.vue'
 
 import { personAvatar, send } from 'src/assets'
 
@@ -87,11 +100,12 @@ const scrollTop = ref(999999)
 const friend = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
 
-const userAvatar = computed(() => user.User.avatar() || user.User.avatarUrl())
+const userAvatar = computed(() => user.User.displayAvatar() || user.User.avatarUrl())
 const username = computed(() => user.User.username())
 
 const audioInput = ref(false)
 const friendThinking = ref(false)
+const logining = ref(false)
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
@@ -242,12 +256,42 @@ watch(inputHeight, () => {
   }
 })
 
+const onLoginClose = () => {
+  logining.value = false
+  Taro.navigateBack()
+}
+
+const onCancelLoginClick = () => {
+  logining.value = false
+  Taro.navigateBack()
+}
+
+watch(userAvatar, () => {
+  if (userAvatar.value && userAvatar.value.length && username.value && username.value.length) {
+    logining.value = false
+  }
+})
+
+watch(username, () => {
+  if (userAvatar.value && userAvatar.value.length && username.value && username.value.length) {
+    logining.value = false
+  }
+})
+
 watch(messageCount, () => {
   nextTick().then(() => scrollTop.value += 1)
   messages.value.forEach((el) => el.displayTime = timestamp.timestamp2HumanReadable(el.createdAt))
 })
 
 onMounted(async () => {
+  if (!userAvatar.value || !userAvatar.value.length || !username.value || !username.value.length) {
+    Taro.login().then((code) => {
+      user.User.getUser(code.code)
+    }).catch(() => {
+      logining.value = true
+    })
+  }
+
   if (Taro.getWindowInfo()) {
     chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 32
   }

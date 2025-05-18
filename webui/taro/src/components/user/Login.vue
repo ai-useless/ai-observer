@@ -1,14 +1,14 @@
 <template>
-  <View style='width: 100%; border-radius: 8px; border: 1px solid lightblue; display: flex; justify-content: space-between;'>
+  <View :style='{width: "100%", borderRadius: "8px", border: modal ? "" : "1px solid lightblue", display: "flex", justifyContent: "space-between"}'>
     <View style='display: flex;'>
-      <Image :src='_avatar || personCircle' style='width: 56px; height: 56px; margin: 16px; border-radius: 50%;' />
+      <Image :src='_avatar || personCircle' style='width: 56px; height: 56px; margin: 16px 8px 16px 16px; border-radius: 50%;' />
       <View style='margin-top: 16px;'>
         <View style='display: flex; align-items: center;'>
           <View v-if='username' style='font-weight: 600; color: gray;'>{{ username }}</View>
-          <Input v-else type='nickname' placeholder='点击获取微信昵称' :value='wechatName' @input='onNicknameInput' style='height: 26px;' />
-          <Button v-if='!_avatar' open-type='chooseAvatar' @chooseAvatar='onChooseAvatar' size='mini' plain style='font-size: 12px; color: gray; margin-left: 8px;' class='plain-btn'>获取头像</Button>
+          <Input v-else type='nickname' placeholder='获取微信昵称' :value='wechatName' @input='onNicknameInput' style='height: 26px; width: 90px;' />
+          <Button v-if='!_avatar' open-type='chooseAvatar' @chooseAvatar='onChooseAvatar' size='mini' plain style='font-size: 12px; color: gray; margin-left: 8px; width: 48px;' class='plain-btn'>获取头像</Button>
         </View>
-        <View v-if='!username || !_avatar' style='font-size: 12px; color: blue;'>获取到头像和昵称后将自动登录</View>
+        <View v-if='!username || !_avatar' style='font-size: 12px; color: blue;'>获取头像和昵称后自动登录</View>
         <View v-else style='font-size: 12px; color: blue; margin-top: 4px;' @click='onLoginClick'>{{ username ? '立即定制自己的AGI' : '登陆后可以定制AGI' }}</View>
       </View>
     </View>
@@ -22,10 +22,16 @@
 <script setup lang='ts'>
 import { View, Image, Button, Input } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, toRef, watch } from 'vue'
 import { simulator, user } from 'src/localstores'
 
 import { personCircle } from 'src/assets'
+
+interface Props {
+  modal?: boolean
+}
+const props = defineProps<Props>()
+const modal = toRef(props, 'modal')
 
 const username = computed(() => user.User.username())
 const avatarUrl = computed(() => user.User.avatarUrl())
