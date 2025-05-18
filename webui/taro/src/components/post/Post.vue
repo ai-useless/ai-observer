@@ -30,48 +30,35 @@
         <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _prompt }}</Text>
       </View>
     </scroll-view>
-    <View style='display: flex; flex-direction: row; align-items: center; width: 100%; height: 24px;'>
-      <View style='height: 24px; background-color: white;' @click='onRecordClick'>
-        <Image :src='inputAudio ? keyboardAlt : volumeUp' mode='widthFix' style='width: 24px; height: 24px;' />
-      </View>
-      <View v-if='inputAudio' style='margin-left: 4px; width: 100%; height: 24px;'>
-        <AudioRecorder v-model:message='prompt' v-model:error='audioError' />
-      </View>
-      <Input
-        v-else
-        :value='prompt'
-        @input='onPromptInput'
-        style='font-size: 14px; height: 20px; border: 1px solid gray; border-radius: 4px; padding: 0 8px; width: 100%; margin-left: 4px;'
-        placeholder='写下你现在的心情，例如：忐忑又充满希望'
-      />
-      <View v-if='!inputAudio' style='height: 24px; background-color: white; margin-left: 4px;' @click='onGenerateClick'>
-        <Image :src='send' mode='widthFix' style='width: 24px; height: 24px;' />
-      </View>
-      <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5); margin-left: 4px;'>
-        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onSelectSimulatorClick'>
-          <Image :src='personAvatar' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-      </View>
+    <View style='display: flex;'>
+      <ComplexInput v-model:prompt='prompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='随便问点儿啥'>
+        <template #actions>
+          <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onGenerateClick'>
+            <Image :src='send' style='width: 18px; height: 18px;' />
+          </View>
+        </template>
+      </ComplexInput>
     </View>
   </View>
 </template>
 
 <script setup lang='ts'>
-import { View, Input, Image, Text } from '@tarojs/components'
+import { View, Image, Text } from '@tarojs/components'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
-
-import AudioRecorder from '../recorder/AudioRecorder.vue'
-
-import { personAvatar, volumeUp, send, keyboardAlt } from 'src/assets'
 import Taro from '@tarojs/taro'
 import { model } from 'src/localstores'
 
+import ComplexInput from '../input/ComplexInput.vue'
+
+import { send } from 'src/assets'
+
 const prompt = ref('忐忑又充满希望')
 
-const inputAudio = ref(false)
+const audioInput = ref(false)
 const audioError = ref('')
 
+const inputHeight = ref(0)
 const memeHeight = ref(0)
 const scrollTop = ref(999999)
 
@@ -115,28 +102,22 @@ const refine = (_prompt: string) => {
 }
 
 watch(prompt, () => {
-  if (!inputAudio.value || !prompt.value || !prompt.value.length) return
+  if (!audioInput.value || !prompt.value || !prompt.value.length) return
 
   refine(prompt.value)
 })
 
 watch(audioError, () => {
-  if (!inputAudio.value || !audioError.value || !audioError.value.length) return
+  if (!audioInput.value || !audioError.value || !audioError.value.length) return
 
   audioError.value = ''
 })
 
-const onSelectSimulatorClick = () => {
-
-}
-
-const onRecordClick = () => {
-  inputAudio.value = !inputAudio.value
-}
-
-const onPromptInput = (e: { detail: { value: string } }) => {
-  prompt.value = e.detail.value
-}
+watch(inputHeight, () => {
+  if (Taro.getWindowInfo()) {
+    memeHeight.value = Taro.getWindowInfo().windowHeight - 32 - inputHeight.value
+  }
+})
 
 const onGenerateClick = () => {
   refine(prompt.value)

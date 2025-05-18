@@ -24,47 +24,37 @@
             <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ timestamp.timestamp2HumanReadable(_message.createdAt) }}</Text>
           </View>
         </View>
-        <View v-if='friendThinking' style='text-align: center; font-size: 12px; color: gray; padding: 8px 0;'>对方正在思考...</View>
+        <Button class='plain-btn' plain v-if='friendThinking' style='text-align: center; font-size: 12px; color: gray; padding: 8px 0; background-color: white;' :loading='true'>对方正在思考...</Button>
       </View>
     </scroll-view>
-    <View style='display: flex; flex-direction: row; align-items: center; width: 100%; height: 24px;'>
-      <View style='height: 24px; background-color: white;' @click='onRecordClick'>
-        <Image :src='inputAudio ? keyboardAlt : volumeUp' mode='widthFix' style='width: 24px; height: 24px;' />
-      </View>
-      <View v-if='inputAudio' style='margin-left: 4px; width: 100%; height: 24px;'>
-        <AudioRecorder v-model:message='message' v-model:error='audioError' />
-      </View>
-      <Input
-        v-else
-        :value='message'
-        @input='onChatInput'
-        style='font-size: 14px; height: 20px; border: 1px solid gray; border-radius: 4px; padding: 0 8px; width: 100%; margin-left: 4px;'
-        placeholder='输入'
-        :disabled='audioPlayer && audioPlayer.playing'
-      />
-      <View v-if='!inputAudio' style='height: 24px; background-color: white; margin-left: 4px;' @click='onSendClick'>
-        <Image :src='send' mode='widthFix' style='width: 24px; height: 24px;' />
-      </View>
-      <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5); margin-left: 4px;'>
-        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onSelectSimulatorClick'>
-          <Image :src='personAvatar' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-      </View>
+    <View style='display: flex;'>
+      <ComplexInput v-model:prompt='message' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='随便问点儿啥'>
+        <template #actions>
+          <View style='display: flex;'>
+            <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onSendClick'>
+              <Image :src='send' style='width: 18px; height: 18px;' />
+            </View>
+            <View style='height: 24px; background-color: white;' @click='onSelectSimulatorClick'>
+              <Image :src='personAvatar' mode='widthFix' style='width: 24px; height: 24px;' />
+            </View>
+          </View>
+        </template>
+      </ComplexInput>
     </View>
   </View>
 </template>
 
 <script setup lang='ts'>
-import { View, Input, Image, Text } from '@tarojs/components'
+import { View, Image, Text, Button } from '@tarojs/components'
 import { computed, nextTick, onMounted, ref, toRef, watch } from 'vue'
 import Taro from '@tarojs/taro'
 import { model, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { timestamp } from 'src/utils'
 
-import AudioRecorder from '../recorder/AudioRecorder.vue'
+import ComplexInput from '../input/ComplexInput.vue'
 
-import { personAvatar, volumeUp, send, keyboardAlt } from 'src/assets'
+import { personAvatar, send } from 'src/assets'
 
 interface Props {
   language: string
@@ -89,6 +79,7 @@ const audioError = ref('')
 const messages = ref([] as Message[])
 const messageCount = computed(() => messages.value.length)
 
+const inputHeight = ref(0)
 const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
 
@@ -98,7 +89,7 @@ const _model = ref(undefined as unknown as model._Model)
 const userAvatar = computed(() => user.User.avatar() || user.User.avatarUrl())
 const username = computed(() => user.User.username())
 
-const inputAudio = ref(false)
+const audioInput = ref(false)
 const friendThinking = ref(false)
 
 class AudioPlayer {
@@ -188,7 +179,7 @@ const sendToFriend = (_message: string) => {
 }
 
 watch(message, () => {
-  if (!inputAudio.value || !message.value || !message.value.length) return
+  if (!audioInput.value || !message.value || !message.value.length) return
 
   messages.value.push({
     message: message.value,
@@ -204,7 +195,7 @@ watch(message, () => {
 })
 
 watch(audioError, () => {
-  if (!inputAudio.value || !audioError.value || !audioError.value.length) return
+  if (!audioInput.value || !audioError.value || !audioError.value.length) return
 
   messages.value.push({
     message: audioError.value,
@@ -220,16 +211,6 @@ watch(audioError, () => {
 
 const onSelectSimulatorClick = () => {
 
-}
-
-const onRecordClick = () => {
-  if (audioPlayer.value && audioPlayer.value.playing) return
-
-  inputAudio.value = !inputAudio.value
-}
-
-const onChatInput = (e: { detail: { value: string } }) => {
-  message.value = e.detail.value
 }
 
 const onSendClick = () => {
@@ -252,6 +233,12 @@ watch(friend, () => {
   Taro.setNavigationBarTitle({
     title: friend.value.simulator
   })
+})
+
+watch(inputHeight, () => {
+  if (Taro.getWindowInfo()) {
+    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 32 - inputHeight.value
+  }
 })
 
 watch(messageCount, () => {
@@ -282,3 +269,15 @@ onMounted(async () => {
 })
 
 </script>
+
+<style lang='sass'>
+.plain-btn
+  border: none !important
+  background-color: transparent
+  box-shadow: none !important
+  padding: 0 !important
+
+.plain-btn::after
+  border: none !important
+  content: none !important
+</style>
