@@ -1,5 +1,6 @@
 <template>
-  <View>
+  <View style='text-align: center;'>
+    <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; padding: 8px;'>{{ prompt }}</View>
     <scroll-view
       scrollY={true}
       :scroll-with-animation='true'
@@ -9,8 +10,11 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View v-for='(message, index) in messages' :key='index' :style='{borderBottom: index < messages.length - 1 ? "1px solid lightgray" : "", padding: "8px 0"}'>
+      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom: index < displayMessages.length - 1 ? "1px solid lightgray" : "", padding: "8px 0"}'>
         <View style='font-size: 14px;'>{{ message.message }}</View>
+      </View>
+      <View v-if='lastDisplayMessage' style='padding: 8px 0;'>
+        <View style='font-size: 14px;'>{{ lastDisplayMessage.message }}</View>
       </View>
     </scroll-view>
     <View style='display: flex;'>
@@ -57,8 +61,15 @@ interface Message {
   index: number
 }
 
-const messages = ref([] as Message[])
-const messageCount = computed(() => messages.value.length)
+const displayMessages = ref([] as Message[])
+const waitMessages = ref([] as Message[])
+const lastDisplayMessage = ref(undefined as unknown as Message)
+const typingMessage = ref(undefined as unknown as Message)
+const typingMessageIndex = ref(0)
+const typingTicker = ref(-1)
+const typingInterval = ref(40)
+
+const messageCount = computed(() => waitMessages.value.length)
 
 const generating = ref(false)
 
@@ -85,7 +96,7 @@ const generate = () => {
 
   entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (message: string, index: number, audio?: string) => {
     generating.value = false
-    messages.value.push({
+    waitMessages.value.push({
       message,
       audio,
       index
@@ -126,14 +137,6 @@ const calculateTypingInterval = (duration: number) => {
     typingInterval.value = interval
   }
 }
-
-const displayMessages = ref([] as Message[])
-const waitMessages = ref([] as Message[])
-const lastDisplayMessage = ref(undefined as unknown as Message)
-const typingMessage = ref(undefined as unknown as Message)
-const typingMessageIndex = ref(0)
-const typingTicker = ref(-1)
-const typingInterval = ref(40)
 
 onMounted(async () => {
   Taro.setNavigationBarTitle({
