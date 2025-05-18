@@ -42,11 +42,12 @@
         </template>
       </ComplexInput>
     </View>
+    <Canvas canvasId='canvas' style='width: 900px; height: 900px;' />
   </View>
 </template>
 
 <script setup lang='ts'>
-import { View, Image, Button } from '@tarojs/components'
+import { View, Image, Button, Canvas } from '@tarojs/components'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import Taro, { ShareAppMessageObject, ShareAppMessageReturn, ShareTimelineReturnObject, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
