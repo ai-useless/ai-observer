@@ -20,10 +20,10 @@
         enhanced={true}
         showsVerticalScrollIndicator={false}
       >
-        <View v-for='(message, index) in displayMessages' :key='index' :style='{borderTop: index > 0 ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center"}'>
+        <View v-for='(message, index) in displayMessages' :key='index' :style='{borderTop: index > 0 ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center", marginBottom: "4px"}'>
           <View style='font-size: 14px; color: gray'>{{ message.message }}</View>
         </View>
-        <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center; border-top: 1px solid lightgray;'>
+        <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center; border-top: 1px solid lightgray; margin-bottom: 4px;'>
           <View style='font-size: 14px; color: gray;'>{{ lastDisplayMessage.message }}</View>
         </View>
       </scroll-view>
@@ -320,6 +320,7 @@ const playAudio = (audioUrl: string, loop?: boolean): Promise<AudioPlayer | unde
       }
       if (loop) {
         context.seek(0)
+        context.stop()
         context.play()
       }
     })
