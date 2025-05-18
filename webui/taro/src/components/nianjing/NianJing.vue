@@ -92,7 +92,7 @@ watch(generating, () => {
 })
 
 const generate = () => {
-  generating.value = true
+  if (!displayMessages.value.length) generating.value = true
 
   entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (message: string, index: number, audio?: string) => {
     generating.value = false
