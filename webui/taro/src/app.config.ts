@@ -1,4 +1,6 @@
 export default {
+  enableShareAppMessage: true,
+  enableShareTimeline: true,
   pages: [
     'pages/index/IndexPage',
     'pages/seminar/SeminarPage',
