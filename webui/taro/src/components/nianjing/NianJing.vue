@@ -1,6 +1,6 @@
 <template>
   <View style='text-align: center;'>
-    <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; padding: 8px;'>{{ prompt }}</View>
+    <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; padding: 8px; color: gray;'>{{ prompt }}</View>
     <scroll-view
       scrollY={true}
       :scroll-with-animation='true'
@@ -92,7 +92,14 @@ watch(generating, () => {
 })
 
 const generate = () => {
-  if (!displayMessages.value.length) generating.value = true
+  generating.value = true
+
+  displayMessages.value = []
+  waitMessages.value = []
+  lastDisplayMessage.value = undefined as unknown as Message
+  typingMessage.value = undefined as unknown as Message
+  audioPlayer.value.context.stop()
+  audioPlayer.value = undefined as unknown as AudioPlayer
 
   entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (message: string, index: number, audio?: string) => {
     generating.value = false
@@ -200,8 +207,6 @@ const typing = () => {
   typingMessage.value = waitMessages.value[index]
   waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1)]
   typingMessageIndex.value += 1
-
-  if (waitMessages.value.length <= 3 && displayMessages.value.length > 3) void generate()
 
   if (typingMessage.value.audio && typingMessage.value.audio.length) {
     window.clearInterval(typingTicker.value)
