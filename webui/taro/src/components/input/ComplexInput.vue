@@ -64,15 +64,17 @@ const handleLineChange = (e: { detail: { lineCount: any } }) => {
 }
 
 const onRecordClick = () => {
-  audioInput.value = !audioInput.value
-  if (audioInput.value) inputHeight.value = 18
-  else {
+  if (!audioInput.value) { // Will switch to audio input
+    _prompt.value = ''
+    inputHeight.value = 18
+  } else {
     const __prompt = _prompt.value
     _prompt.value = ''
     setTimeout(() => {
       _prompt.value = __prompt
     }, 100)
   }
+  audioInput.value = !audioInput.value
 }
 
 onMounted(() => {

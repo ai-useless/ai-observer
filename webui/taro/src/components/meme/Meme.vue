@@ -15,7 +15,7 @@
       </View>
     </scroll-view>
     <View style='display: flex;'>
-      <ComplexInput v-model:prompt='prompt' v-model:height='inputHeight' placeholder='随便问点儿啥'>
+      <ComplexInput v-model:prompt='prompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='随便问点儿啥'>
         <template #actions>
           <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onGenerateClick'>
             <Image :src='send' style='width: 18px; height: 18px;' />
@@ -38,7 +38,7 @@ import Taro from '@tarojs/taro'
 
 const prompt = ref('尴尬的天鹅走在乡间小路上，一边是友情，一边是爱情')
 
-const inputAudio = ref(false)
+const audioInput = ref(false)
 const audioError = ref('')
 
 const inputHeight = ref(0)
@@ -71,13 +71,14 @@ const generate = (_prompt: string) => {
 }
 
 watch(prompt, () => {
-  if (!inputAudio.value || !prompt.value || !prompt.value.length) return
+  if (!audioInput.value || !prompt.value || !prompt.value.length) return
 
   generate(prompt.value)
+  prompt.value = ''
 })
 
 watch(audioError, () => {
-  if (!inputAudio.value || !audioError.value || !audioError.value.length) return
+  if (!audioInput.value || !audioError.value || !audioError.value.length) return
 
   audioError.value = ''
 })
