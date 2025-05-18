@@ -42,7 +42,7 @@
         </template>
       </ComplexInput>
     </View>
-    <Canvas canvasId='canvas' style='width: 900px; height: 900px;' />
+    <Canvas canvasId='canvas' style='width: 900px; height: 900px; display: none;' />
   </View>
 </template>
 
