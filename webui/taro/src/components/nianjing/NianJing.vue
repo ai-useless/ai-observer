@@ -36,7 +36,7 @@
 
 <script setup lang='ts'>
 import { View, Image } from '@tarojs/components'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import Taro from '@tarojs/taro'
 import { model, simulator } from 'src/localstores'
@@ -151,6 +151,14 @@ onMounted(async () => {
       speaker.value = dbBridge._Simulator.randomPeek()
     })
   })
+
+  typingTicker.value = window.setInterval(typing, typingInterval.value)
+})
+
+onBeforeUnmount(() => {
+  if (typingTicker.value >= 0) {
+    window.clearInterval(typingTicker.value)
+  }
 })
 
 class AudioPlayer {
