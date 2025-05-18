@@ -16,11 +16,11 @@
         enhanced={true}
         showsVerticalScrollIndicator={false}
       >
-        <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom: index < displayMessages.length - 1 || lastDisplayMessage ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center"}'>
-          <View style='font-size: 14px; writing-mode: vertical-rl;'>{{ message.message }}</View>
+        <View v-for='(message, index) in displayMessages' :key='index' :style='{borderTop: index > 0 ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center"}'>
+          <View style='font-size: 14px'>{{ message.message }}</View>
         </View>
-        <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center;'>
-          <View style='font-size: 14px; writing-mode: vertical-rl;'>{{ lastDisplayMessage.message }}</View>
+        <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center; border-top: 1px solid lightgray;'>
+          <View style='font-size: 14px;'>{{ lastDisplayMessage.message }}</View>
         </View>
       </scroll-view>
     </View>
@@ -105,7 +105,7 @@ const simulators = computed(() => simulator.Simulator.allSimulators())
 const selectingSimulator = ref(false)
 
 watch(scriptHeight, () => {
-  scrollHeight.value = scriptHeight.value - 400
+  scrollHeight.value = scriptHeight.value - 400 - 32
 })
 
 watch(messageCount, async () => {
@@ -207,11 +207,16 @@ onMounted(async () => {
   })
 
   typingTicker.value = window.setInterval(typing, typingInterval.value)
+
+  bgPlayer.value = await playAudio('http://106.15.6.50:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
 })
 
 onBeforeUnmount(() => {
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
+  }
+  if (bgPlayer.value && bgPlayer.value.context) {
+    bgPlayer.value.context.stop()
   }
 })
 
@@ -223,6 +228,7 @@ class AudioPlayer {
 }
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
+const bgPlayer = ref(undefined as unknown as AudioPlayer)
 
 const typing = () => {
   if (!typingMessage.value && !waitMessages.value.length) return
@@ -280,7 +286,7 @@ const typing = () => {
   }
 }
 
-const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
+const playAudio = (audioUrl: string, loop?: boolean): Promise<AudioPlayer | undefined> => {
   const context = Taro.createInnerAudioContext()
   context.src = audioUrl
 
@@ -317,6 +323,10 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
       if (player.durationTicker >= 0) {
         window.clearInterval(player.durationTicker)
         player.durationTicker = -1
+      }
+      if (loop) {
+        context.seek(0)
+        context.play()
       }
     })
   })
