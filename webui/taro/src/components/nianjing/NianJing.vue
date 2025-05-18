@@ -7,10 +7,14 @@
         mode='widthFix'
         style='width: 100vw; height: 400px;'
       />
+      <View v-if='generating' :style='{ height: scrollHeight + "px", padding: "0 16px", display: "flex", justifyContent: "center", alignItems: "center" }'>
+        <Button class='plain-btn' style='font-size: 14px; color: gray;' plain :loading='true'>师傅正在准备，请稍后...</Button>
+      </View>
       <scroll-view
+        v-else
         scrollX={true}
         :scroll-with-animation='true'
-        :style='{ height: scrollHeight + "px", padding: "0 16px" }'
+        :style='{ height: scrollHeight + "px", padding: "0 16px 8px 16px" }'
         :scroll-top='scrollTop'
         showScrollbar={false}
         enhanced={true}
@@ -24,7 +28,7 @@
         </View>
       </scroll-view>
     </View>
-    <View style='display: flex; padding: 0 16px'>
+    <View style='display: flex; padding: 0 16px;'>
       <ComplexInput v-model:prompt='prompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='听一段经文，让心静下来~'>
         <template #actions>
           <View style='display: flex;'>
@@ -111,16 +115,6 @@ watch(scriptHeight, () => {
 watch(messageCount, async () => {
   await nextTick()
   scrollTop.value += 1
-})
-
-watch(generating, () => {
-  if (generating.value) {
-    Taro.showLoading({
-      title: '正在准备...'
-    })
-  } else {
-    Taro.hideLoading()
-  }
 })
 
 const generate = () => {
@@ -333,3 +327,15 @@ const playAudio = (audioUrl: string, loop?: boolean): Promise<AudioPlayer | unde
 }
 
 </script>
+
+<style lang='sass'>
+.plain-btn
+  border: none !important
+  background-color: transparent
+  box-shadow: none !important
+  padding: 0 !important
+
+.plain-btn::after
+  border: none !important
+  content: none !important
+</style>
