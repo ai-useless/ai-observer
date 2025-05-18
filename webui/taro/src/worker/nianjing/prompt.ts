@@ -68,7 +68,7 @@ const intentRequirements = (
 export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.GENERATE,
-    ((name: string) => `你是儒释道三教古今文献经典大师, 请帮助用户查找文献${name}的原文。返回全文，不要省略或添加任何内容。除非必要，否则在30到60个字内的第一个句号换行以利于语音朗读。
+    ((name: string) => `你是儒释道三教古今文献经典大师, 请帮助用户查找文献${name}的原文。返回全文，不要省略或添加任何内容。20字一行。
           要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
   ]
 ])
