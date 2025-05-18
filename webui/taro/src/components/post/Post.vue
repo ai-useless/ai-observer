@@ -70,6 +70,9 @@ const memeHeight = ref(0)
 const scrollTop = ref(999999)
 const generating = ref(false)
 
+const canvasImagePaths = ref([] as string[])
+const canvasImagePathMap = ref(new Map<string, string>())
+
 interface Image {
   prompt: string
   images: string[]
@@ -100,14 +103,26 @@ const generate = (_prompt: string) => {
     generating.value = false
 
     if (_images.length >= 9) {
-      if (timelinePosterPath.value) {
+      if (canvasImagePaths.value.length >= 20) {
         const fs = Taro.getFileSystemManager()
         fs.removeSavedFile({
-          filePath: timelinePosterPath.value,
+          filePath: canvasImagePaths.value[0],
           success: () => {
             sharePoster(_prompt).then((posterPath) => {
+              let firstPrompt = ''
+              for (let i = 0; i < canvasImagePathMap.value.size; i++) {
+                const [k, v] = canvasImagePathMap.value[i]
+                if (v === canvasImagePathMap.value[0]) {
+                  firstPrompt = k
+                  break
+                }
+              }
+              canvasImagePathMap.value.delete(firstPrompt)
+              canvasImagePaths.value = canvasImagePaths.value.slice(1)
               timelinePrompt.value = _prompt
               timelinePosterPath.value = posterPath as string
+              canvasImagePaths.value.push(posterPath as string)
+              canvasImagePathMap.value[_prompt] = posterPath
             }).catch((e) => {
               console.log(`Failed generate poster: ${e}`)
             })
@@ -119,8 +134,20 @@ const generate = (_prompt: string) => {
         return
       }
       sharePoster(_prompt).then((posterPath) => {
+        let firstPrompt = ''
+        for (let i = 0; i < canvasImagePathMap.value.size; i++) {
+          const [k, v] = canvasImagePathMap.value[i]
+          if (v === canvasImagePathMap.value[0]) {
+            firstPrompt = k
+            break
+          }
+        }
+        canvasImagePathMap.value.delete(firstPrompt)
+        canvasImagePaths.value = canvasImagePaths.value.slice(1)
         timelinePrompt.value = _prompt
         timelinePosterPath.value = posterPath as string
+        canvasImagePaths.value.push(posterPath as string)
+        canvasImagePathMap.value[_prompt] = posterPath
       }).catch((e) => {
         console.log(`Failed generate poster: ${e}`)
       })
@@ -199,14 +226,14 @@ const sharePoster = async (title: string) => {
   })
 }
 
-useShareAppMessage(async (res: ShareAppMessageObject) => {
+useShareAppMessage((res: ShareAppMessageObject) => {
   let posterPath = timelinePosterPath.value
   let dataTitle = timelinePrompt.value
 
   if (res.from === 'button') {
     const dataset = res.target ? (res.target as Record<string, Record<string, string>>).dataset || {} : {}
     dataTitle = dataset.title
-    posterPath = await sharePoster(dataTitle) as string
+    posterPath = canvasImagePathMap.value[dataTitle] || timelinePosterPath.value
   }
   return {
     title: dataTitle,
