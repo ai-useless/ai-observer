@@ -200,10 +200,14 @@ const sharePoster = async (title: string) => {
 }
 
 useShareAppMessage(async (res: ShareAppMessageObject) => {
-  const dataset = res.target ? (res.target as Record<string, Record<string, string>>).dataset || {} : {}
-  const dataTitle = dataset.title
+  let posterPath = timelinePosterPath.value
+  let dataTitle = timelinePrompt.value
 
-  const posterPath = await sharePoster(dataTitle)
+  if (res.from === 'button') {
+    const dataset = res.target ? (res.target as Record<string, Record<string, string>>).dataset || {} : {}
+    dataTitle = dataset.title
+    posterPath = await sharePoster(dataTitle) as string
+  }
   return {
     title: dataTitle,
     path: '/pages/post/PostPage',
@@ -214,7 +218,6 @@ useShareAppMessage(async (res: ShareAppMessageObject) => {
 useShareTimeline(() => {
   return {
     title: timelinePrompt.value,
-    path: '/pages/post/PostPage',
     imageUrl: timelinePosterPath.value
   } as ShareTimelineReturnObject
 })
