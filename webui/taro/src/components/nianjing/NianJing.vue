@@ -1,7 +1,7 @@
 <template>
-  <View style='padding: 0 16px;'>
+  <View>
     <View :style='{ height: scriptHeight + "px", width: "100vw" }'>
-      <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; padding: 8px; color: gray; text-align: center; height: 32px;'>{{ prompt }}</View>
+      <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; margin: 8px 16px; color: gray; text-align: center; height: 32px;'>{{ prompt }}</View>
       <Image
         src='http://106.15.6.50:81/download/images/qiaomuyu.gif'
         mode='widthFix'
@@ -10,21 +10,21 @@
       <scroll-view
         scrollX={true}
         :scroll-with-animation='true'
-        :style='{ height: scrollHeight + "px" }'
+        :style='{ height: scrollHeight + "px", padding: "0 16px" }'
         :scroll-top='scrollTop'
         showScrollbar={false}
         enhanced={true}
         showsVerticalScrollIndicator={false}
       >
         <View v-for='(message, index) in displayMessages' :key='index' :style='{borderTop: index > 0 ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center"}'>
-          <View style='font-size: 14px'>{{ message.message }}</View>
+          <View style='font-size: 14px; color: gray'>{{ message.message }}</View>
         </View>
         <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center; border-top: 1px solid lightgray;'>
-          <View style='font-size: 14px;'>{{ lastDisplayMessage.message }}</View>
+          <View style='font-size: 14px; color: gray;'>{{ lastDisplayMessage.message }}</View>
         </View>
       </scroll-view>
     </View>
-    <View style='display: flex;'>
+    <View style='display: flex; padding: 0 16px'>
       <ComplexInput v-model:prompt='prompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='听一段经文，让心静下来~'>
         <template #actions>
           <View style='display: flex;'>
