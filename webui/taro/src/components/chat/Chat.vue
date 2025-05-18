@@ -21,14 +21,14 @@
             <View :style='{backgroundColor: _message.hint ? "rgba(160, 160, 160, 0.2)" : _message.send ? "#07c160" : "white", color: _message.hint ? "black" : _message.send ? "white" : "black", borderRadius: _message.send ? "16px 16px 0 16px" : "16px 16px 16px 0", padding: "8px", border: "1px solid rgba(200, 200, 200, 0.3)"}'>
               <rich-text :nodes='_message.message' />
             </View>
-            <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ timestamp.timestamp2HumanReadable(_message.createdAt) }}</Text>
+            <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _message.displayTime }}</Text>
           </View>
         </View>
         <Button class='plain-btn' plain v-if='friendThinking' style='text-align: center; font-size: 12px; color: gray; padding: 8px 0; background-color: white;' :loading='true'>对方正在思考...</Button>
       </View>
     </scroll-view>
     <View style='display: flex;'>
-      <ComplexInput v-model:prompt='message' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='随便问点儿啥'>
+      <ComplexInput v-model:prompt='message' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='随便聊点儿啥'>
         <template #actions>
           <View style='display: flex;'>
             <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onSendClick'>
@@ -67,6 +67,7 @@ interface Message {
   message: string
   send: boolean
   createdAt: number
+  displayTime?: string
   displayName: string
   avatar: string
   hint: boolean
@@ -243,6 +244,7 @@ watch(inputHeight, () => {
 
 watch(messageCount, () => {
   nextTick().then(() => scrollTop.value += 1)
+  messages.value.forEach((el) => el.displayTime = timestamp.timestamp2HumanReadable(el.createdAt))
 })
 
 onMounted(async () => {
