@@ -10,7 +10,7 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom: index < displayMessages.length - 1 ? "1px solid lightgray" : "", padding: "8px 0"}'>
+      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom: index < displayMessages.length - 1 || lastDisplayMessage ? "1px solid lightgray" : "", padding: "8px 0"}'>
         <View style='font-size: 14px;'>{{ message.message }}</View>
       </View>
       <View v-if='lastDisplayMessage' style='padding: 8px 0;'>
