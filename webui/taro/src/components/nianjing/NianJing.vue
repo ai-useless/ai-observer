@@ -12,7 +12,7 @@
       </View>
       <scroll-view
         v-else
-        scrollX={true}
+        scrollY={true}
         :scroll-with-animation='true'
         :style='{ height: scrollHeight + "px", padding: "0 16px 8px 16px", width: "calc(100% - 32px)" }'
         :scroll-top='scrollTop'
@@ -36,7 +36,7 @@
               <Image :src='send' style='width: 18px; height: 18px;' />
             </View>
             <View style='height: 24px; background-color: white;' @click='onOpenSelectSimulatorClick'>
-                <Image :src='personAvatar' mode='widthFix' style='width: 24px; height: 24px;' />
+              <Image :src='personAvatar' mode='widthFix' style='width: 24px; height: 24px;' />
             </View>
           </View>
         </template>
