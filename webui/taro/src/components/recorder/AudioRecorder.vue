@@ -1,18 +1,18 @@
 <template>
   <View style='width: 100%;'>
-    <Button size='mini' style='width: 100%; height: 24px; font-size: 14px; line-height: 24px;' @longpress='onLongPress' @touchend='onTouchEnd' @touchstart='onTouchStart' @touchmove='onTouchMove'>
+    <Button style='width: 100%; height: 36px; font-size: 14px; line-height: 36px;' @longpress='onLongPress' @touchend='onTouchEnd' @touchstart='onTouchStart' @touchmove='onTouchMove'>
       {{ recording ? '松开取消' : '长按说话' }}
     </Button>
   </View>
   <AtModal :is-opened='recording || converting'>
-    <AtModalHeader>正在说话...</AtModalHeader>
+    <AtModalHeader>正在{{ recording ? '说话' : '提取文字' }}...</AtModalHeader>
     <AtModalContent>
       <View style='display: flex;  height: 80px; justify-content: center; align-items: center;'>
         <View v-for='(wave, index) in waves' :key='index' :style='{borderRight: "2px solid lightgray", height: wave.toString() + "px", width: "1px", marginRight: "1px"}' />
       </View>
     </AtModalContent>
     <AtModalAction>
-      <View style='font-size: 12px; padding: 4px 0; text-align: center;  width: 100%;'>上滑发送，松开取消</View>
+      <View style='font-size: 12px; padding: 4px 0; text-align: center;  width: 100%;'>上滑确定，松开取消</View>
     </AtModalAction>
   </AtModal>
 </template>
