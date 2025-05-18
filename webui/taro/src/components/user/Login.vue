@@ -133,7 +133,7 @@ const cookUser = () => {
 const onChooseAvatar = async (e: { detail: { avatarUrl: any } }) => {
   wechatAvatar.value = await readAsBase64(e.detail.avatarUrl) as string
   wechatAvatarType.value = await imageExtension(e.detail.avatarUrl) as string
-  user.User.setAvatar(wechatAvatar.value)
+  user.User.setAvatar(wechatAvatar.value, wechatDisplayAvatar.value)
   cookUser()
 }
 

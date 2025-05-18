@@ -15,7 +15,8 @@ export default {
     'pages/chat/ChatPage',
     'pages/english/EnglishPage',
     'pages/meme/MemePage',
-    'pages/post/PostPage'
+    'pages/post/PostPage',
+    'pages/nianjing/NianJingPage'
   ],
   workers: 'worker',
   window: {

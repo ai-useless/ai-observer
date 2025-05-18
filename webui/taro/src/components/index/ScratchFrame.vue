@@ -62,7 +62,7 @@
         AGI超有才
       </Button>
       <Button
-        @click='onStartChatClick'
+        @click='onStartNianJingClick'
         size='mini'
         style='border-radius: 8px; color: blue; width: 33.3%;'
       >
@@ -272,6 +272,14 @@ const startEnglish = () => {
 
 const onStartEnglishClick = () => {
   startEnglish()
+}
+
+const startNianJing = () => {
+  Taro.navigateTo({ url: '/pages/nianjing/NianJingPage' })
+}
+
+const onStartNianJingClick = () => {
+  startNianJing()
 }
 
 const onTopicClick = (_topic: string) => {

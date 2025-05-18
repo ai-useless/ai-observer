@@ -373,6 +373,10 @@ watch(_uid, () => {
 })
 
 onMounted(async () => {
+  Taro.setNavigationBarTitle({
+    title: 'AGI相声社'
+  })
+
   if (Taro.getWindowInfo()) {
     chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 32
   }

@@ -129,7 +129,7 @@ const onMoreClick = async () => {
 
 onMounted(async () => {
   Taro.setNavigationBarTitle({
-    title: 'AGI段子'
+    title: 'AGI有内涵'
   })
 
   model.Model.getModels(() => {

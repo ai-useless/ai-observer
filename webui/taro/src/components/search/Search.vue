@@ -119,6 +119,10 @@ watch(prompt, () => {
 })
 
 onMounted(() => {
+  Taro.setNavigationBarTitle({
+    title: 'AGI问一问'
+  })
+
   model.Model.getModels(() => {
     simulator.Simulator.getSimulators(undefined, () => {
       searchDo()

@@ -124,6 +124,10 @@ const onGenerateClick = () => {
 }
 
 onMounted(async () => {
+  Taro.setNavigationBarTitle({
+    title: 'AGI超有才'
+  })
+
   if (Taro.getWindowInfo()) {
     memeHeight.value = Taro.getWindowInfo().windowHeight - 32
   }
