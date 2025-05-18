@@ -24,7 +24,7 @@
             <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onGenerateClick'>
               <Image :src='send' style='width: 18px; height: 18px;' />
             </View>
-            <View style='height: 24px; background-color: white;' @click='onSelectSimulatorClick'>
+            <View style='height: 24px; background-color: white;' @click='onOpenSelectSimulatorClick'>
                 <Image :src='personAvatar' mode='widthFix' style='width: 24px; height: 24px;' />
             </View>
           </View>
@@ -32,17 +32,32 @@
       </ComplexInput>
     </View>
   </View>
+  <AtModal :is-opened='selectingSimulator' @close='onSimulatorSelectorClose'>
+    <AtModalHeader>选择模拟器</AtModalHeader>
+    <AtModalContent>
+      <View>
+        <View v-for='(_simulator, index) in simulators' :key='index' style='border-bottom: 1px solid gray;' @click='onSelectSimulatorClick(_simulator)'>
+          <SimulatorCard :simulator='_simulator' />
+        </View>
+      </View>
+    </AtModalContent>
+    <AtModalAction>
+      <Button @click='onCancelSelectSimulatorClick'>取消</Button>
+    </AtModalAction>
+  </AtModal>
 </template>
 
 <script setup lang='ts'>
-import { View, Image } from '@tarojs/components'
+import { View, Image, Button } from '@tarojs/components'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { dbBridge, entityBridge } from 'src/bridge'
 import Taro from '@tarojs/taro'
 import { model, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
 
 import ComplexInput from '../input/ComplexInput.vue'
+import SimulatorCard from '../simulator/SimulatorCard.vue'
 
 import { send, personAvatar } from 'src/assets'
 
@@ -76,6 +91,9 @@ const generating = ref(false)
 const speaker = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
 
+const simulators = computed(() => simulator.Simulator.allSimulators())
+const selectingSimulator = ref(false)
+
 watch(messageCount, async () => {
   await nextTick()
   scrollTop.value += 1
@@ -98,7 +116,7 @@ const generate = () => {
   waitMessages.value = []
   lastDisplayMessage.value = undefined as unknown as Message
   typingMessage.value = undefined as unknown as Message
-  audioPlayer.value.context.stop()
+  if (audioPlayer.value && audioPlayer.value.context) audioPlayer.value.context.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
 
   entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (message: string, index: number, audio?: string) => {
@@ -134,8 +152,21 @@ watch(inputHeight, () => {
   }
 })
 
-const onSelectSimulatorClick = () => {
+const onOpenSelectSimulatorClick = () => {
+  selectingSimulator.value = true
+}
 
+const onSelectSimulatorClick = (_simulator: simulator._Simulator) => {
+  speaker.value = _simulator
+  selectingSimulator.value = false
+}
+
+const onSimulatorSelectorClose = () => {
+  selectingSimulator.value = false
+}
+
+const onCancelSelectSimulatorClick = () => {
+  selectingSimulator.value = false
 }
 
 const calculateTypingInterval = (duration: number) => {
