@@ -74,6 +74,8 @@ interface Message {
   message: string
   audio?: string
   index: number
+  first: boolean
+  last: boolean
 }
 
 const displayMessages = ref([] as Message[])
@@ -119,12 +121,14 @@ const generate = () => {
   if (audioPlayer.value && audioPlayer.value.context) audioPlayer.value.context.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
 
-  entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (message: string, index: number, audio?: string) => {
+  entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
     generating.value = false
     waitMessages.value.push({
       message,
       audio,
-      index
+      index,
+      first,
+      last
     })
   })
 }
@@ -238,6 +242,11 @@ const typing = () => {
   typingMessage.value = waitMessages.value[index]
   waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1)]
   typingMessageIndex.value += 1
+
+  if (typingMessage.value.last) {
+    waitMessages.value = [...displayMessages.value, typingMessage.value]
+    typingMessageIndex.value = 0
+  }
 
   if (typingMessage.value.audio && typingMessage.value.audio.length) {
     window.clearInterval(typingTicker.value)
