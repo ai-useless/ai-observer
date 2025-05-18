@@ -16,7 +16,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格；') as RequirementFunc],
   [
     PromptType.NO_EMOJI,
-    (() => ') 不包含表情、标签、换行符或额外提示；') as RequirementFunc
+    (() => ') 不包含表情、标签或额外提示；') as RequirementFunc
   ],
   [
     PromptType.MERGE_SPACES,
@@ -68,7 +68,7 @@ const intentRequirements = (
 export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.GENERATE,
-    ((name: string) => `你是儒释道三教古今文献经典大师, 请帮助用户查找文献${name}的原文。返回全文，不要省略或添加任何内容。20字一行。
+    ((name: string) => `你是儒释道三教古今文献经典大师, 请帮助用户查找文献${name}的原文。返回全文，不要省略或添加任何内容。60字一行。
           要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
   ]
 ])
