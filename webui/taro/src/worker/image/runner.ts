@@ -42,7 +42,7 @@ export class ImageRunner {
     highResolution: boolean,
     square: boolean
   ) => {
-    prompt = `为文字 ${prompt} 生成${style}风格的配图。图不要有黑边或白边。`
+    prompt = `为文字 ${prompt} 生成${style}风格的配图。图不要有黑边或白边。生成的图应该现实，自然，没有AI味道。`
     if (dialog)
       prompt +=
         '如果文字中有对话，在图片中添加气泡对话框，对话框的文字用黑体、仿宋、幼圆、楷体或卡通字体中的一种，对话框中的包含清晰的中文对话文本。'
