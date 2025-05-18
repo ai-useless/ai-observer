@@ -28,6 +28,9 @@
           </View>
         </View>
         <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _prompt }}</Text>
+        <Button class='plain-btn' size='mini' plain>
+          <Image :src='share' style='width: 16px; height: 16px;' />
+        </Button>
       </View>
     </scroll-view>
     <View style='display: flex;'>
@@ -43,7 +46,7 @@
 </template>
 
 <script setup lang='ts'>
-import { View, Image, Text } from '@tarojs/components'
+import { View, Image, Text, Button } from '@tarojs/components'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import Taro from '@tarojs/taro'
@@ -51,7 +54,7 @@ import { model } from 'src/localstores'
 
 import ComplexInput from '../input/ComplexInput.vue'
 
-import { send } from 'src/assets'
+import { send, share } from 'src/assets'
 
 const prompt = ref('忐忑又充满希望')
 
@@ -135,3 +138,15 @@ onMounted(async () => {
 })
 
 </script>
+
+<style lang='sass'>
+.plain-btn
+  border: none !important
+  background-color: transparent
+  box-shadow: none !important
+  padding: 0 !important
+
+.plain-btn::after
+  border: none !important
+  content: none !important
+</style>

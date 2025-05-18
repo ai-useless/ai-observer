@@ -21,6 +21,7 @@ import dominoMask from './DominoMask.svg'
 import personAvatar from './PersonAvatar.svg'
 import send from './Send.svg'
 import keyboardAlt from './KeyboardAlt.svg'
+import share from './Share.svg'
 
 export {
   chevronRight,
@@ -45,5 +46,6 @@ export {
   dominoMask,
   personAvatar,
   send,
-  keyboardAlt
+  keyboardAlt,
+  share
 }
