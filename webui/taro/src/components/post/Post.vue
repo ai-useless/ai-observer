@@ -27,8 +27,8 @@
             </View>
           </View>
         </View>
-        <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _prompt }}</Text>
-        <Button class='plain-btn' size='mini' plain>
+        <View style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
+        <Button class='plain-btn' size='mini' plain style='margin-top: 4px;' open-type='share'>
           <Image :src='share' style='width: 16px; height: 16px;' />
         </Button>
       </View>
