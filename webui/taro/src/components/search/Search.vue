@@ -21,32 +21,26 @@
       </View>
     </scroll-view>
     <View style='display: flex;'>
-      <Textarea
-        type='textarea'
-        :value='prompt'
-        placeholder='继续搜索'
-        :style='{width: "calc(100% - 16px)", fontSize: "14px", height: searchInputHeight + "px", border: "1px solid gray", borderRadius: "8px", padding: "8px"}'
-        class='section-margin'
-        @input='handleInput'
-        autoHeight={false}
-        @linechange='handleLineChange'
-        :show-confirm-bar='false'
-        :cursor-spacing='16'
-      />
-      <View style='height: 32px; width: 32px; padding: 7px 0 7px 4px;' @click='onSearchClick'>
-        <Image :src='searchIcon' style='width: 18px; height: 18px;' />
-      </View>
+      <ComplexInput v-model:prompt='prompt' v-model:height='searchInputHeight' placeholder='随便问点儿啥'>
+        <template #actions>
+          <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onSearchClick'>
+            <Image :src='searchIcon' style='width: 18px; height: 18px;' />
+          </View>
+        </template>
+      </ComplexInput>
     </View>
   </View>
 </template>
 
 <script setup lang='ts'>
-import { View, Image, Textarea, ScrollView } from '@tarojs/components'
+import { View, Image, ScrollView } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { model, search, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
 import { computed, onMounted, ref, watch, nextTick } from 'vue'
+
+import ComplexInput from '../input/ComplexInput.vue'
 
 import { search as searchIcon } from 'src/assets'
 
@@ -75,21 +69,6 @@ const modelLogo = (modelId: number) => {
 const modelName = (modelId: number) => {
   const model = models.value.find((el) => el.id === modelId)
   return model ? model.name : ''
-}
-
-const handleInput = (e: { detail: { value: string } }) => {
-  prompt.value = e.detail.value
-}
-
-const handleLineChange = (e: { detail: { lineCount: any } }) => {
-  let lineCount = e.detail.lineCount
-  if (prompt.value === topic.value) lineCount = 1
-  const lineHeight = 18
-  const maxLines = 4
-  searchInputHeight.value = Math.min(maxLines, lineCount) * lineHeight
-  if (Taro.getWindowInfo()) {
-    searchContentHeight.value = Taro.getWindowInfo().windowHeight - 32 - searchInputHeight.value
-  }
 }
 
 watch(searchInputHeight, () => {

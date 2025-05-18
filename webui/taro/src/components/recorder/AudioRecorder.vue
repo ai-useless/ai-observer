@@ -1,6 +1,6 @@
 <template>
   <View style='width: 100%;'>
-    <Button size='mini' style='width: 100%; height: 24px; font-size: 14px; line-height: 24px;' @longpress='onLongPress' @touchend='onTouchEnd' @touchstart='onTouchStart' @touchmove='onTouchMove'>
+    <Button style='width: 100%; height: 36px; font-size: 14px; line-height: 36px;' @longpress='onLongPress' @touchend='onTouchEnd' @touchstart='onTouchStart' @touchmove='onTouchMove'>
       {{ recording ? '松开取消' : '长按说话' }}
     </Button>
   </View>
@@ -12,7 +12,7 @@
       </View>
     </AtModalContent>
     <AtModalAction>
-      <View style='font-size: 12px; padding: 4px 0; text-align: center;  width: 100%;'>上滑发送，松开取消</View>
+      <View style='font-size: 12px; padding: 4px 0; text-align: center;  width: 100%;'>上滑确定，松开取消</View>
     </AtModalAction>
   </AtModal>
 </template>

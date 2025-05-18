@@ -9,3 +9,9 @@ import { View } from '@tarojs/components'
 
 import Search from 'src/components/search/Search.vue'
 </script>
+
+<style lang='scss'>
+
+@import 'taro-ui-vue3/dist/style/components/modal.scss';
+
+</style>
