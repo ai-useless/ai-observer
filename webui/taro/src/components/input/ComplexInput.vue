@@ -49,6 +49,10 @@ watch(_prompt, () => {
   prompt.value = _prompt.value
 })
 
+watch(prompt, () => {
+  _prompt.value = prompt.value || ''
+})
+
 const inputHeight = defineModel<number>('height')
 
 const handleInput = (e: { detail: { value: string } }) => {
@@ -79,7 +83,7 @@ const onRecordClick = () => {
 
 onMounted(() => {
   setTimeout(() => {
-    if (!_prompt.value.length) _prompt.value = prompt.value || ''
+    _prompt.value = prompt.value || ''
   }, 100)
 })
 
