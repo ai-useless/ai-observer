@@ -1,5 +1,5 @@
 <template>
-  <View style='padding: 0 16px;'>
+  <View>
     <NianJing />
   </View>
 </template>

@@ -1,22 +1,29 @@
 <template>
-  <View>
-    <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; padding: 8px; color: gray; text-align: center; height: 32px;'>{{ prompt }}</View>
-    <scroll-view
-      scrollY={true}
-      :scroll-with-animation='true'
-      :style='{ height: scriptHeight + "px" }'
-      :scroll-top='scrollTop'
-      showScrollbar={false}
-      enhanced={true}
-      showsVerticalScrollIndicator={false}
-    >
-      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom: index < displayMessages.length - 1 || lastDisplayMessage ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center"}'>
-        <View style='font-size: 14px;'>{{ message.message }}</View>
-      </View>
-      <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center;'>
-        <View style='font-size: 14px;'>{{ lastDisplayMessage.message }}</View>
-      </View>
-    </scroll-view>
+  <View style='padding: 0 16px;'>
+    <View :style='{ height: scriptHeight + "px", width: "100vw" }'>
+      <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; padding: 8px; color: gray; text-align: center; height: 32px;'>{{ prompt }}</View>
+      <Image
+        src='http://106.15.6.50:81/download/images/qiaomuyu.gif'
+        mode='widthFix'
+        style='width: 100vw; height: 400px;'
+      />
+      <scroll-view
+        scrollX={true}
+        :scroll-with-animation='true'
+        :style='{ height: scrollHeight + "px" }'
+        :scroll-top='scrollTop'
+        showScrollbar={false}
+        enhanced={true}
+        showsVerticalScrollIndicator={false}
+      >
+        <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom: index < displayMessages.length - 1 || lastDisplayMessage ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center"}'>
+          <View style='font-size: 14px; writing-mode: vertical-rl;'>{{ message.message }}</View>
+        </View>
+        <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center;'>
+          <View style='font-size: 14px; writing-mode: vertical-rl;'>{{ lastDisplayMessage.message }}</View>
+        </View>
+      </scroll-view>
+    </View>
     <View style='display: flex;'>
       <ComplexInput v-model:prompt='prompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='听一段经文，让心静下来~'>
         <template #actions>
@@ -68,6 +75,7 @@ const audioError = ref('')
 
 const inputHeight = ref(0)
 const scriptHeight = ref(0)
+const scrollHeight = ref(0)
 const scrollTop = ref(999999)
 
 interface Message {
@@ -95,6 +103,10 @@ const _model = ref(undefined as unknown as model._Model)
 
 const simulators = computed(() => simulator.Simulator.allSimulators())
 const selectingSimulator = ref(false)
+
+watch(scriptHeight, () => {
+  scrollHeight.value = scriptHeight.value - 400
+})
 
 watch(messageCount, async () => {
   await nextTick()
