@@ -119,6 +119,7 @@ const generate = (_prompt: string) => {
         return
       }
       sharePoster(_prompt).then((posterPath) => {
+        timelinePrompt.value = _prompt
         timelinePosterPath.value = posterPath as string
       }).catch((e) => {
         console.log(`Failed generate poster: ${e}`)
