@@ -1,15 +1,15 @@
 <template>
-  <View style='display: flex; width: 100%;'>
+  <View style='display: flex; width: 100%; margin: 4px 0;'>
     <View style='height: 36px; width: 32px; background-color: white; padding: 6px 0;' @click='onRecordClick'>
-      <Image :src='inputAudio ? keyboardAlt : volumeUp' mode='widthFix' style='width: 24px; height: 24px;' />
+      <Image :src='audioInput ? keyboardAlt : volumeUp' mode='widthFix' style='width: 24px; height: 24px;' />
     </View>
-    <View v-if='inputAudio' style='width: 100%; height: 36px;'>
-      <AudioRecorder v-model:message='prompt' v-model:error='error' />
+    <View v-if='audioInput' style='width: 100%; height: 36px;'>
+      <AudioRecorder v-model:message='_prompt' v-model:error='error' />
     </View>
     <Textarea
       v-else
       type='textarea'
-      :value='prompt'
+      :value='_prompt'
       :placeholder='placeholder'
       :style='{width: "calc(100% - 16px)", fontSize: "14px", height: inputHeight + "px", border: "1px solid gray", borderRadius: "8px", padding: "8px"}'
       class='section-margin'
@@ -27,7 +27,7 @@
 
 <script setup lang='ts'>
 import { View, Image, Textarea } from '@tarojs/components'
-import { ref, toRef } from 'vue'
+import { onMounted, ref, toRef, watch } from 'vue'
 
 import AudioRecorder from '../recorder/AudioRecorder.vue'
 
@@ -41,25 +41,44 @@ const placeholder = toRef(props, 'placeholder')
 
 const prompt = defineModel<string>('prompt')
 const error = defineModel<string>('error')
+const audioInput = defineModel<boolean>('audioInput')
+
+const _prompt = ref('')
+
+watch(_prompt, () => {
+  prompt.value = _prompt.value
+})
 
 const inputHeight = defineModel<number>('height')
 
-const inputAudio = ref(false)
-
 const handleInput = (e: { detail: { value: string } }) => {
-  prompt.value = e.detail.value
+  _prompt.value = e.detail.value
 }
 
 const handleLineChange = (e: { detail: { lineCount: any } }) => {
   let lineCount = e.detail.lineCount
-  if (!prompt.value || prompt.value.length <= 10) lineCount = 1
+  if (!_prompt.value || _prompt.value.length <= 10) lineCount = 1
   const lineHeight = 18
   const maxLines = 4
   inputHeight.value = Math.min(maxLines, lineCount) * lineHeight
 }
 
 const onRecordClick = () => {
-  inputAudio.value = !inputAudio.value
+  audioInput.value = !audioInput.value
+  if (audioInput.value) inputHeight.value = 18
+  else {
+    const __prompt = _prompt.value
+    _prompt.value = ''
+    setTimeout(() => {
+      _prompt.value = __prompt
+    }, 100)
+  }
 }
+
+onMounted(() => {
+  setTimeout(() => {
+    if (!_prompt.value.length) _prompt.value = prompt.value || ''
+  }, 100)
+})
 
 </script>

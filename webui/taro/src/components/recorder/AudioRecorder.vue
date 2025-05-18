@@ -5,7 +5,7 @@
     </Button>
   </View>
   <AtModal :is-opened='recording || converting'>
-    <AtModalHeader>正在说话...</AtModalHeader>
+    <AtModalHeader>正在{{ recording ? '说话' : '转文字' }}...</AtModalHeader>
     <AtModalContent>
       <View style='display: flex;  height: 80px; justify-content: center; align-items: center;'>
         <View v-for='(wave, index) in waves' :key='index' :style='{borderRight: "2px solid lightgray", height: wave.toString() + "px", width: "1px", marginRight: "1px"}' />

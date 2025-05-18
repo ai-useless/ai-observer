@@ -28,9 +28,9 @@ export default {
     custom: false,
     list: [
       { pagePath: 'pages/index/IndexPage', text: '首页' },
-      { pagePath: 'pages/seminar/SeminarPage', text: 'AGI看世界' },
-      { pagePath: 'pages/xiangsheng/XiangshengPage', text: 'AGI相声社' },
-      { pagePath: 'pages/duanzi/DuanziPage', text: 'AGI有内涵' },
+      { pagePath: 'pages/seminar/SeminarPage', text: '看世界' },
+      { pagePath: 'pages/xiangsheng/XiangshengPage', text: '相声社' },
+      { pagePath: 'pages/duanzi/DuanziPage', text: '有内涵' },
       { pagePath: 'pages/user/UserPage', text: '我的' }
     ]
   }

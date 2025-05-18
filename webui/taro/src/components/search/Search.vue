@@ -16,12 +16,9 @@
         </View>
         <rich-text user-select :nodes='result.message' style='margin-left: 8px; font-size: 12px;' />
       </View>
-      <View v-if='!searchResults.length || searching' style='text-align: center; font-size: 12px; padding: 0 0 16px 0;'>
-        {{ models.length }}个AGI正在搜索 ...
-      </View>
     </scroll-view>
     <View style='display: flex;'>
-      <ComplexInput v-model:prompt='prompt' v-model:height='searchInputHeight' placeholder='随便问点儿啥'>
+      <ComplexInput v-model:prompt='prompt' v-model:height='searchInputHeight' v-model:audio-input='audioInput' placeholder='随便问点儿啥'>
         <template #actions>
           <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onSearchClick'>
             <Image :src='searchIcon' style='width: 18px; height: 18px;' />
@@ -52,9 +49,11 @@ const topic = computed(() => search.Search.topic())
 const prompt = ref(topic.value)
 
 const searchContentHeight = ref(0)
-const searchInputHeight = ref(18)
+const searchInputHeight = ref(0)
 const scrollTop = ref(999999)
-const searching = ref(true)
+const searching = ref(false)
+
+const audioInput = ref(false)
 
 watch(searchResultCount, async () => {
   await nextTick()
@@ -77,14 +76,24 @@ watch(searchInputHeight, () => {
   }
 })
 
-const searchDo = (initial: boolean) => {
+watch(searching, () => {
+  if (searching.value) {
+    Taro.showLoading({
+      title: `${models.value.length}个AGI正在搜索...`
+    })
+  } else {
+    Taro.hideLoading()
+  }
+})
+
+const searchDo = () => {
   searching.value = true
 
   nextTick().then(() => scrollTop.value += 1)
 
   models.value.forEach((model) => {
     const simulator = dbBridge._Simulator.randomPeek()
-    entityBridge.Search.search(topic.value, initial ? [] : searchResults.value.map((el) => el.message), model.id, simulator.id, prompt.value, false).then((payload) => {
+    entityBridge.Search.search(prompt.value, searchResults.value.map((el) => el.message), model.id, simulator.id, prompt.value, false).then((payload) => {
       searchResults.value.push({
         topic: payload.topic,
         prompt: payload.prompt,
@@ -100,18 +109,24 @@ const searchDo = (initial: boolean) => {
 }
 
 const onSearchClick = () => {
-  searchDo(prompt.value === topic.value)
+  searchDo()
 }
+
+watch(prompt, () => {
+  if (!audioInput.value || !prompt.value || !prompt.value.length) return
+
+  searchDo()
+})
 
 onMounted(() => {
   model.Model.getModels(() => {
     simulator.Simulator.getSimulators(undefined, () => {
-      searchDo(true)
+      searchDo()
     })
   })
 
   if (Taro.getWindowInfo()) {
-    searchContentHeight.value = Taro.getWindowInfo().windowHeight - 32 - 32
+    searchContentHeight.value = Taro.getWindowInfo().windowHeight - 32
   }
 })
 </script>
