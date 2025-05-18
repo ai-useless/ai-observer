@@ -1,6 +1,6 @@
 <template>
-  <View style='text-align: center;'>
-    <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; padding: 8px; color: gray;'>{{ prompt }}</View>
+  <View>
+    <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; padding: 8px; color: gray; text-align: center; height: 32px;'>{{ prompt }}</View>
     <scroll-view
       scrollY={true}
       :scroll-with-animation='true'
@@ -10,10 +10,10 @@
       enhanced={true}
       showsVerticalScrollIndicator={false}
     >
-      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom: index < displayMessages.length - 1 || lastDisplayMessage ? "1px solid lightgray" : "", padding: "8px 0"}'>
+      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom: index < displayMessages.length - 1 || lastDisplayMessage ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center"}'>
         <View style='font-size: 14px;'>{{ message.message }}</View>
       </View>
-      <View v-if='lastDisplayMessage' style='padding: 8px 0;'>
+      <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center;'>
         <View style='font-size: 14px;'>{{ lastDisplayMessage.message }}</View>
       </View>
     </scroll-view>
