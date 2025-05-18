@@ -34,8 +34,8 @@ async def get_openid(code: str):
             response.raise_for_status()
 
             try:
-                response = json.loads(await response.text())
-                return response['openid']
+                _response = json.loads(await response.text())
+                return _response['openid']
             except Exception as e:
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
                 raise Exception(repr(e))

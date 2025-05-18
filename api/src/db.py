@@ -346,7 +346,7 @@ class Db:
                 WHERE wechat_openid="{wechat_openid}"
             '''
         )
-        retults = cursor_dict.fetchone()
+        results = cursor_dict.fetchone()
         cursor_dict.close()
 
         return results
