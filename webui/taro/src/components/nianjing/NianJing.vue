@@ -14,7 +14,7 @@
         v-else
         scrollX={true}
         :scroll-with-animation='true'
-        :style='{ height: scrollHeight + "px", padding: "0 16px 8px 16px" }'
+        :style='{ height: scrollHeight + "px", padding: "0 16px 8px 16px", width: "calc(100% - 32px)" }'
         :scroll-top='scrollTop'
         showScrollbar={false}
         enhanced={true}
