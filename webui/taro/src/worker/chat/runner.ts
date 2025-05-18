@@ -37,13 +37,6 @@ export type ErrorResponsePayload = {
 }
 
 export class ChatRunner {
-  static speakerVoice = async (simulatorId: number) => {
-    const simulator = dbBridge._Simulator.simulator(simulatorId)
-    if (!simulator) return
-
-    return simulator.audio_id
-  }
-
   static prompt = (
     simulator: string,
     personality: string,

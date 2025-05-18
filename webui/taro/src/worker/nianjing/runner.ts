@@ -4,7 +4,7 @@ import { dbBridge } from '../../bridge'
 import { Intent, Prompt } from './prompt'
 import { purify } from 'src/utils'
 
-export enum RefineEventType {
+export enum NianJingEventType {
   GENERATE_REQUEST = 'GenerateRequest',
   GENERATE_RESPONSE = 'GenerateResponse',
 
@@ -12,45 +12,45 @@ export enum RefineEventType {
 }
 
 export interface GenerateRequestPayload {
-  prompt: string
+  name: string
   modelId: number
 }
 
 export interface GenerateResponsePayload {
   modelId: number
-  text: string
+  texts: string[]
 }
 
-export interface RefineEvent {
-  type: RefineEventType
+export interface NianJingEvent {
+  type: NianJingEventType
   payload: GenerateRequestPayload | GenerateResponsePayload
 }
 
 export type ErrorResponsePayload = {
   error: string
-  type: RefineEventType
+  type: NianJingEventType
   payload: GenerateRequestPayload
 }
 
-export class RefineRunner {
+export class NianJingRunner {
   static prompt = (
-    prompt: string
+    name: string
   ) => {
     return Prompt.prompt(
       Intent.GENERATE,
-      prompt
+      name
     )
   }
 
   static requestGenerate = async (
-    prompt: string,
+    name: string,
     modelId?: number
   ) => {
     const model = dbBridge._Model.model(modelId as number)
     if (!model) return
 
-    const _prompt = RefineRunner.prompt(
-      prompt
+    const _prompt = NianJingRunner.prompt(
+      name
     )
 
     const textResp = await axios.post(constants.FALLBACK_API, {
@@ -60,12 +60,13 @@ export class RefineRunner {
     })
     if (!(textResp.data as Record<string, string>).content) {
       return {
-        text: undefined
+        texts: []
       }
     }
 
+    const texts = Prompt.postProcess((textResp.data as Record<string, string>).content)
     return {
-      text: (textResp.data as Record<string, string>).content
+      texts: texts
     }
   }
 
@@ -73,15 +74,15 @@ export class RefineRunner {
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
     const {
-      prompt,
+      name,
       modelId
     } = payload
 
-    const response = await RefineRunner.requestGenerate(
-      prompt,
+    const response = await NianJingRunner.requestGenerate(
+      name,
       modelId
     )
-    if (!response || !response.text || !response.text.length) return
+    if (!response || !response.texts || !response.texts.length) return
 
     return {
       modelId,
