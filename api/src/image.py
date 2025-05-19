@@ -89,7 +89,7 @@ class ImageGenerator:
             'guidance_scale': 5,
             'num_inference_steps': 16
         }
-        url = 'https://chutes-hidream.chutes.ai/generate'
+        url = 'https://kikakkz-hidream-i1-full.chutes.ai/generate'
 
         headers = {
             'Authorization': f'Bearer {config.api_token}',
