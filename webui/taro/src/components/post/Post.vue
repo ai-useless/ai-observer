@@ -11,26 +11,41 @@
     >
       <View v-for='([_prompt, _images], index) in images' :key='index' :style='{borderBottom: "1px solid lightgray", padding: "8px 0", width: "100%"}'>
         <View style='width: 100%;'>
-          <View style='width: 100%; display: flex;'>
-            <View v-if='_images.length' v-for='(image, index) in _images.slice(0, 3)' :key='index' style='width: 33.3%;'>
-              <Image :src='image' mode='widthFix' style='width: 100%;' />
+          <View v-if='_images.images.length' style='width: 100%; display: flex;'>
+            <Image v-for='(image, index) in _images.images.slice(0, 3)' :key='index' :src='image.imageUrl' mode='widthFix' style='width: 33.3%;' />
+          </View>
+          <View v-if='_images.images.length > 3' style='width: 100%; display: flex;'>
+            <View v-for='(image, index) in _images.images.slice(3, 6)' :key='index' style='width: 33.3%;'>
+              <Image :src='image.imageUrl' mode='widthFix' style='width: 100%;' />
             </View>
           </View>
-          <View style='width: 100%; display: flex;'>
-            <View v-if='_images.length > 3' v-for='(image, index) in _images.slice(3, 6)' :key='index' style='width: 33.3%;'>
-              <Image :src='image' mode='widthFix' style='width: 100%;' />
-            </View>
-          </View>
-          <View style='width: 100%; display: flex;'>
-            <View v-if='_images.length > 6' v-for='(image, index) in _images.slice(6)' :key='index' style='width: 33.3%;'>
-              <Image :src='image' mode='widthFix' style='width: 100%;' />
+          <View v-if='_images.images.length > 6' style='width: 100%; display: flex;'>
+            <View v-for='(image, index) in _images.images.slice(6)' :key='index' style='width: 33.3%;'>
+              <Image :src='image.imageUrl' mode='widthFix' style='width: 100%;' />
             </View>
           </View>
         </View>
         <View style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
-        <Button class='plain-btn' size='mini' plain style='margin-top: 4px;' open-type='share' :data-id='index' :data-title='_prompt'>
-          <Image :src='share' style='width: 16px; height: 16px;' />
-        </Button>
+        <View style='display: flex; margin-top: 4px; flex-direction: row-reverse;'>
+          <View>
+            <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt'>
+              <Image :src='share' style='width: 16px; height: 16px;' />
+            </Button>
+          </View>
+          <View>
+            <Button v-if='_images.responds < 9' class='plain-btn' size='mini' plain style='margin-left: 4px; font-size: 12px; color: gray; height: 24px; margin-right: 4px;' :loading='true'>
+              {{ 9 - _images.responds }}张美图生成中...
+            </Button>
+          </View>
+          <View style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
+            <Image :src='fail' style='width: 16px; height: 16px;' />
+            <Text style='font-size: 12px; color: gray; margin-left: 4px;'>{{ _images.errors }}失败</Text>
+          </View>
+          <View style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
+            <Image :src='check' style='width: 16px; height: 16px;' />
+            <Text style='font-size: 12px; color: gray; margin-left: 4px;'>{{ _images.successes }}成功</Text>
+          </View>
+        </View>
       </View>
     </scroll-view>
     <View style='display: flex;'>
@@ -42,12 +57,12 @@
         </template>
       </ComplexInput>
     </View>
-    <Canvas canvasId='canvas' style='width: 900px; height: 900px; display: none;' />
+    <Canvas canvasId='canvas' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
   </View>
 </template>
 
 <script setup lang='ts'>
-import { View, Image, Button, Canvas } from '@tarojs/components'
+import { View, Image, Button, Canvas, Text } from '@tarojs/components'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import Taro, { ShareAppMessageObject, ShareAppMessageReturn, ShareTimelineReturnObject, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
@@ -55,7 +70,7 @@ import { model } from 'src/localstores'
 
 import ComplexInput from '../input/ComplexInput.vue'
 
-import { send, share } from 'src/assets'
+import { send, share, check, fail } from 'src/assets'
 
 const prompt = ref('忐忑又充满希望')
 
@@ -70,20 +85,114 @@ const memeHeight = ref(0)
 const scrollTop = ref(999999)
 const generating = ref(false)
 
-const canvasImagePaths = ref([] as string[])
-const canvasImagePathMap = ref(new Map<string, string>())
+const cachePrompts = ref([] as string[])
 
-interface Image {
-  prompt: string
-  images: string[]
+interface ImageData {
+  imageUrl: string
+  imagePath: string
 }
-const images = ref(new Map<string, string[]>())
+interface PromptImage {
+  responds: number
+  successes: number
+  errors: number
+  posterPath?: string
+  images: ImageData[]
+}
+const images = ref(new Map<string, PromptImage>())
 const imageCount = computed(() => images.value.size)
 
 watch(imageCount, async () => {
   await nextTick()
   scrollTop.value += 1
 })
+
+const prepareShareData = (_prompt: string) => {
+  const _images = images.value.get(_prompt) as PromptImage
+
+  sharePoster(_prompt).then((posterPath) => {
+    _images.posterPath = posterPath as string
+    timelinePrompt.value = _prompt
+    timelinePosterPath.value = posterPath as string
+  }).catch((e) => {
+    console.log(`Failed generate poster: ${e}`)
+  })
+}
+
+const lruPromptCache = (_prompt: string) => {
+  if (cachePrompts.value.length < 20) {
+    prepareShareData(_prompt)
+    return
+  }
+
+  const _images = images.value.get(_prompt) as PromptImage
+  _images.images.forEach((el) => {
+    const fs = Taro.getFileSystemManager()
+    fs.removeSavedFile({
+      filePath: el.imagePath
+    })
+  })
+
+  cachePrompts.value = cachePrompts.value.slice(1)
+  prepareShareData(_prompt)
+}
+
+const cacheImageUrl = (_prompt: string, _image: string) => {
+  const _images = images.value.get(_prompt) as PromptImage
+  Taro.getImageInfo({
+    src: _image,
+    success: (res) => {
+      _images.images.push({
+        imageUrl: _image,
+        imagePath: res.path
+      })
+      images.value.set(_prompt, _images)
+      if (_images.images.length >= 9) {
+        lruPromptCache(_prompt)
+      }
+    },
+    fail: () => {
+      images.value.set(_prompt, _images)
+    }
+  })
+}
+
+const generate = (_prompt: string) => {
+  const _images = images.value.get(_prompt) as PromptImage
+
+  entityBridge.EImage.generate(_prompt, '唯美而意境悠远', false, '', true, true, (_image: string) => {
+    _images.responds += 1
+    _images.successes += 1
+    cacheImageUrl(_prompt, _image)
+  }, () => {
+    _images.responds += 1
+    _images.errors += 1
+    images.value.set(_prompt, _images)
+  })
+}
+
+const refine = (_prompt: string) => {
+  generating.value = true
+
+  entityBridge.EChat.refine(_prompt, dbBridge._Model.topicModelId()).then((__prompt) => {
+    generating.value = false
+    if (!__prompt) {
+      return
+    }
+    const _images = images.value.get(__prompt) || {
+      successes: 0,
+      errors: 0,
+      responds: 0,
+      images: []
+    } as PromptImage
+    images.value.set(__prompt, _images)
+    for (let i = 0; i < 9; i++) {
+      generate(__prompt)
+    }
+  }).catch((e) => {
+    generating.value = false
+    console.log(`Failed refine: ${e}`)
+  })
+}
 
 watch(generating, () => {
   if (generating.value) {
@@ -94,82 +203,6 @@ watch(generating, () => {
     Taro.hideLoading()
   }
 })
-
-const generate = (_prompt: string) => {
-  entityBridge.EImage.generate(_prompt, '唯美而意境悠远', false, '', true, true, (_image: string) => {
-    const _images = images.value.get(_prompt) || []
-    _images.push(_image)
-    images.value.set(_prompt, _images)
-    generating.value = false
-
-    if (_images.length >= 9) {
-      if (canvasImagePaths.value.length >= 20) {
-        const fs = Taro.getFileSystemManager()
-        fs.removeSavedFile({
-          filePath: canvasImagePaths.value[0],
-          success: () => {
-            sharePoster(_prompt).then((posterPath) => {
-              let firstPrompt = ''
-              for (let i = 0; i < canvasImagePathMap.value.size; i++) {
-                const [k, v] = canvasImagePathMap.value[i]
-                if (v === canvasImagePathMap.value[0]) {
-                  firstPrompt = k
-                  break
-                }
-              }
-              canvasImagePathMap.value.delete(firstPrompt)
-              canvasImagePaths.value = canvasImagePaths.value.slice(1)
-              timelinePrompt.value = _prompt
-              timelinePosterPath.value = posterPath as string
-              canvasImagePaths.value.push(posterPath as string)
-              canvasImagePathMap.value[_prompt] = posterPath
-            }).catch((e) => {
-              console.log(`Failed generate poster: ${e}`)
-            })
-          },
-          fail: (e) => {
-            console.log(`Failed remove: ${e}`)
-          }
-        })
-        return
-      }
-      sharePoster(_prompt).then((posterPath) => {
-        let firstPrompt = ''
-        for (let i = 0; i < canvasImagePathMap.value.size; i++) {
-          const [k, v] = canvasImagePathMap.value[i]
-          if (v === canvasImagePathMap.value[0]) {
-            firstPrompt = k
-            break
-          }
-        }
-        canvasImagePathMap.value.delete(firstPrompt)
-        canvasImagePaths.value = canvasImagePaths.value.slice(1)
-        timelinePrompt.value = _prompt
-        timelinePosterPath.value = posterPath as string
-        canvasImagePaths.value.push(posterPath as string)
-        canvasImagePathMap.value[_prompt] = posterPath
-      }).catch((e) => {
-        console.log(`Failed generate poster: ${e}`)
-      })
-    }
-  })
-}
-
-const refine = (_prompt: string) => {
-  generating.value = true
-
-  entityBridge.EChat.refine(_prompt, dbBridge._Model.topicModelId()).then((__prompt) => {
-    if (!__prompt) {
-      return
-    }
-    for (let i = 0; i < 9; i++) {
-      generate(__prompt)
-    }
-  }).catch((e) => {
-    generating.value = false
-    console.log(`Failed refine: ${e}`)
-  })
-}
 
 watch(prompt, () => {
   if (!audioInput.value || !prompt.value || !prompt.value.length) return
@@ -190,6 +223,7 @@ watch(inputHeight, () => {
 })
 
 const onGenerateClick = () => {
+  if (generating.value) return
   refine(prompt.value)
 }
 
@@ -208,11 +242,11 @@ const sharePoster = async (title: string) => {
   const canvasId = 'canvas'
   const canvasCtx = Taro.createCanvasContext(canvasId)
 
-  const _images = images.value.get(title)
-  if (!_images || !_images.length) return undefined
+  const _images = images.value.get(title) || {} as PromptImage
+  if (!_images || !_images.images || !_images.images.length) return undefined
 
-  for (let i = 0; i < _images.length; i++) {
-    canvasCtx.drawImage(_images[i], i / 3, 300 * (i % 3), 300, 300)
+  for (let i = 0; i < _images.images.length; i++) {
+    canvasCtx.drawImage(_images.images[i].imagePath, i / 3, 300 * (i % 3), 300, 300)
   }
 
   return new Promise((resolve, reject) => {
@@ -233,7 +267,7 @@ useShareAppMessage((res: ShareAppMessageObject) => {
   if (res.from === 'button') {
     const dataset = res.target ? (res.target as Record<string, Record<string, string>>).dataset || {} : {}
     dataTitle = dataset.title
-    posterPath = canvasImagePathMap.value[dataTitle] || timelinePosterPath.value
+    posterPath = images.value[dataTitle].posterPath || timelinePosterPath.value
   }
   return {
     title: dataTitle,

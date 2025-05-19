@@ -22,6 +22,8 @@ import personAvatar from './PersonAvatar.svg'
 import send from './Send.svg'
 import keyboardAlt from './KeyboardAlt.svg'
 import share from './Share.svg'
+import check from './Check.svg'
+import fail from './Fail.svg'
 
 export {
   chevronRight,
@@ -47,5 +49,7 @@ export {
   personAvatar,
   send,
   keyboardAlt,
-  share
+  share,
+  check,
+  fail
 }
