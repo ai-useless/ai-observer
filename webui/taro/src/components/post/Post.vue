@@ -280,7 +280,7 @@ const sharePoster = async (title: string) => {
   if (!_images || !_images.images || !_images.images.length) return undefined
 
   for (let i = 0; i < _images.images.length; i++) {
-    canvasCtx.drawImage(_images.images[i].imagePath, 300 * (i % 3), 300 * (i / 3), 300, 300)
+    canvasCtx.drawImage(_images.images[i].imagePath, 300 * (i % 3), 300 * Math.floor(i / 3), 300, 300)
   }
 
   return new Promise((resolve, reject) => {
