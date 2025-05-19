@@ -222,7 +222,7 @@ watch(imageCount, async () => {
 
 const imageWidth = (count: number) => {
   if (count === 1) return '100%'
-  else if (count === 2) return '50%'
+  else if (count === 2 || count == 4) return '50%'
   else return '33.3%'
 }
 
