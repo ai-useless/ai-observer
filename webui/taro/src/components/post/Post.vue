@@ -57,13 +57,13 @@
         <View style='margin-top: 8px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
         <View style='display: flex; margin-top: 4px; flex-direction: row-reverse;'>
           <View>
-            <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt' :disabled='_images.successes < 9'>
+            <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt' :disabled='_images.successes < imageNumber'>
               <Image :src='share' style='width: 16px; height: 16px;' />
             </Button>
           </View>
           <View>
-            <Button v-if='_images.responds < 9' class='plain-btn' size='mini' plain style='margin-left: 4px; font-size: 12px; color: gray; height: 24px; margin-right: 4px;' :loading='true'>
-              {{ 9 - _images.responds }}张美图生成中...
+            <Button v-if='_images.responds < imageNumber' class='plain-btn' size='mini' plain style='margin-left: 4px; font-size: 12px; color: gray; height: 24px; margin-right: 4px;' :loading='true'>
+              {{ imageNumber - _images.responds }}张美图生成中...
             </Button>
           </View>
           <View v-if='_images.errors > 0' style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
@@ -260,7 +260,7 @@ const cacheImageUrl = (_prompt: string, _image: string) => {
         imagePath: res.path
       })
       images.value.set(_prompt, _images)
-      if (_images.images.length >= 9) {
+      if (_images.images.length >= imageNumber.value) {
         lruPromptCache(_prompt)
       }
     },
@@ -301,7 +301,7 @@ const refine = (_prompt: string) => {
       images: []
     } as PromptImage
     images.value.set(__prompt, _images)
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < imageNumber.value; i++) {
       generate(__prompt, imageStyles.value[i % imageStyles.value.length])
     }
   }).catch((e) => {
@@ -358,7 +358,7 @@ const onConfigureClose = () => {
 
 const onStyleClick = (style: string) => {
   if (imageStyles.value.includes(style)) return
-  if (imageStyles.value.length >= 9) return
+  if (imageStyles.value.length >= imageNumber.value) return
   imageStyles.value.push(style)
 }
 
