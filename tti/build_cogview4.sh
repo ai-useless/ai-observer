@@ -13,3 +13,9 @@
 
 # chutes build cogview4:chute --public --wait --debug
 # chutes deploy cogview4:chute --public
+
+# chutes build hidream_i1_fast:chute --local
+# docker run --gpus all --rm -it -e CHUTES_EXECUTION_CONTEXT=REMOTE -p 8900:8000 hidream-i1-fast:0.0.1 chutes run hidream_i1_fast:chute --port 8000 --dev
+
+# chutes build hidream_i1_fast:chute --public --wait --debug
+# chutes deploy hidream_i1_fast:chute --public
