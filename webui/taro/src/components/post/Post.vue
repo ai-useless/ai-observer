@@ -21,7 +21,7 @@
               <Image
                 :src='image.imageUrl'
                 mode='widthFix'
-                style='width: 100%;'
+                :style='{width: "100%", height: imageHeight + "px"}'
               />
             </View>
           </View>
@@ -35,7 +35,7 @@
               <Image
                 :src='image.imageUrl'
                 mode='widthFix'
-                style='width: 100%;'
+                :style='{width: "100%", height: imageHeight + "px"}'
               />
             </View>
           </View>
@@ -49,7 +49,7 @@
               <Image
                 :src='image.imageUrl'
                 mode='widthFix'
-                style='width: 100%;'
+                :style='{width: "100%", height: imageHeight + "px"}'
               />
             </View>
           </View>
@@ -280,7 +280,7 @@ const sharePoster = async (title: string) => {
   if (!_images || !_images.images || !_images.images.length) return undefined
 
   for (let i = 0; i < _images.images.length; i++) {
-    canvasCtx.drawImage(_images.images[i].imagePath, i / 3, 300 * (i % 3), 300, 300)
+    canvasCtx.drawImage(_images.images[i].imagePath, 300 * (i % 3), 300 * (i / 3), 300, 300)
   }
 
   return new Promise((resolve, reject) => {
@@ -323,7 +323,10 @@ useShareTimeline(() => {
 const onPreviewImageClick = (image: string, _images: string[]) => {
   Taro.previewImage({
     current: image,
-    urls: _images
+    urls: _images,
+    enablesavephoto: true,
+    enableShowPhotoDownload: true,
+    showmenu: true
   })
 }
 
