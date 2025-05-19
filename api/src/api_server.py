@@ -164,9 +164,9 @@ async def query_audio(audio_uid: str):
 async def generate_image_async(
     prompt: str = Body(..., embed=True),
     high_resolution: bool = Body(...),
-    square: bool = Body(...),
+    ratio: str = Body(...),
 ):
-    image_uid = await image_generator.generate_image_async(prompt, high_resolution, square)
+    image_uid = await image_generator.generate_image_async(prompt, high_resolution, ratio)
 
     return {'image_uid': image_uid}
 
