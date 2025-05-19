@@ -16,7 +16,7 @@
               v-for='(image, index) in _images.images.slice(0, 3)'
               :key='index'
               @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
-              :style='{width: "33.3%", height: imageHeight + "px"}'
+              :style='{width: imageWidth(_images.total), height: imageHeight + "px"}'
             >
               <Image
                 :src='image.imageUrl'
@@ -30,7 +30,7 @@
               v-for='(image, index) in _images.images.slice(3, 6)'
               :key='index'
               @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
-              :style='{width: "33.3%", height: imageHeight + "px"}'
+              :style='{width: imageWidth(_images.total), height: imageHeight + "px"}'
             >
               <Image
                 :src='image.imageUrl'
@@ -44,7 +44,7 @@
               v-for='(image, index) in _images.images.slice(6)'
               :key='index'
               @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
-              :style='{width: "33.3%", height: imageHeight + "px"}'
+              :style='{width: imageWidth(_images.total), height: imageHeight + "px"}'
             >
               <Image
                 :src='image.imageUrl'
@@ -57,13 +57,13 @@
         <View style='margin-top: 8px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
         <View style='display: flex; margin-top: 4px; flex-direction: row-reverse;'>
           <View>
-            <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt' :disabled='_images.successes < imageNumber'>
+            <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt' :disabled='_images.successes < _images.total'>
               <Image :src='share' style='width: 16px; height: 16px;' />
             </Button>
           </View>
           <View>
-            <Button v-if='_images.responds < imageNumber' class='plain-btn' size='mini' plain style='margin-left: 4px; font-size: 12px; color: gray; height: 24px; margin-right: 4px;' :loading='true'>
-              {{ imageNumber - _images.responds }}张美图生成中...
+            <Button v-if='_images.responds < _images.total' class='plain-btn' size='mini' plain style='margin-left: 4px; font-size: 12px; color: gray; height: 24px; margin-right: 4px;' :loading='true'>
+              {{ _images.total - _images.responds }}张美图生成中...
             </Button>
           </View>
           <View v-if='_images.errors > 0' style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
@@ -206,6 +206,7 @@ interface ImageData {
   imagePath: string
 }
 interface PromptImage {
+  total: number
   responds: number
   successes: number
   errors: number
@@ -219,6 +220,12 @@ watch(imageCount, async () => {
   await nextTick()
   scrollTop.value += 1
 })
+
+const imageWidth = (count: number) => {
+  if (count === 1) return '100%'
+  else if (count === 2) return '50'
+  else return '33.3%'
+}
 
 const prepareShareData = (_prompt: string) => {
   const _images = images.value.get(_prompt) as PromptImage
@@ -295,6 +302,7 @@ const refine = (_prompt: string) => {
       return
     }
     const _images = images.value.get(__prompt) || {
+      total: imageNumber.value,
       successes: 0,
       errors: 0,
       responds: 0,
