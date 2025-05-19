@@ -196,8 +196,8 @@ const styles = [
   '重金属',
   '摇滚'
 ]
-const imageStyles = ref([] as string[])
-const imageStyle = ref('')
+const imageStyles = ref([styles[0]] as string[])
+const imageStyle = ref(styles[0])
 
 interface ImageData {
   imageUrl: string
@@ -231,7 +231,9 @@ const imageHeight = (count: number, ratio: string) => {
   if (Taro.getWindowInfo()) {
     baseHeight = Taro.getWindowInfo().windowWidth - 32
   }
-  if (count === 2 || count === 4) baseHeight = Math.floor(baseHeight / 2)
+
+  if (count === 1) baseHeight = baseHeight
+  else if (count === 2 || count === 4) baseHeight = Math.floor(baseHeight / 2)
   else baseHeight = Math.floor(baseHeight / 3)
 
   if (ratio === '1:1') return `${baseHeight}px`
@@ -300,7 +302,7 @@ const cacheImageUrl = (_prompt: string, _image: string) => {
 const generate = (_prompt: string, style: string) => {
   const _images = images.value.get(_prompt) as PromptImage
 
-  entityBridge.EImage.generate(_prompt, style, false, '', imageResolution.value === '高清', imageRatio.value === '1:1', (_image: string) => {
+  entityBridge.EImage.generate(_prompt, style, false, '', imageResolution.value === '高清', imageRatio.value, (_image: string) => {
     _images.responds += 1
     _images.successes += 1
     cacheImageUrl(_prompt, _image)
@@ -427,6 +429,11 @@ const posterImageHeight = (count: number, ratio: string) => {
 }
 
 onMounted(async () => {
+  Taro.showShareMenu({
+    withShareTicket: true,
+    showShareItems: ['shareAppMessage', 'shareTimeline']
+  })
+
   Taro.setNavigationBarTitle({
     title: 'AGI超有才'
   })
@@ -444,8 +451,12 @@ const sharePoster = async (title: string) => {
   const _images = images.value.get(title) || {} as PromptImage
   if (!_images || !_images.images || !_images.images.length) return undefined
 
+  if (_images.total === 1) return Promise.resolve(_images.images[0].imagePath)
+
+  const _imagesPerRow = imagesPerRow(_images.total)
+
   for (let i = 0; i < _images.images.length; i++) {
-    canvasCtx.drawImage(_images.images[i].imagePath, posterImageWidth(_images.total) * (i % 3), posterImageHeight(_images.total, _images.ratio) * Math.floor(i / 3), 300, 300)
+    canvasCtx.drawImage(_images.images[i].imagePath, posterImageWidth(_images.total) * (i % _imagesPerRow), posterImageHeight(_images.total, _images.ratio) * Math.floor(i / _imagesPerRow), 300, 300)
   }
 
   return new Promise((resolve, reject) => {
@@ -466,10 +477,9 @@ useShareAppMessage((res: ShareAppMessageObject) => {
   if (res.from === 'button') {
     const dataset = res.target ? (res.target as Record<string, Record<string, string>>).dataset || {} : {}
     dataTitle = dataset.title
-    posterPath = images.value[dataTitle].posterPath || timelinePosterPath.value
+    const image = images.value.get(dataTitle) as PromptImage
+    posterPath = image.posterPath || timelinePosterPath.value
   }
-
-  console.log(dataTitle, posterPath, 111)
 
   return {
     title: dataTitle,

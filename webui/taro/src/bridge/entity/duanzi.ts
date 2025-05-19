@@ -32,7 +32,7 @@ export class Duanzi {
         dialog: false,
         extra: '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。',
         highResolution: false,
-        square: false
+        ratio: '16:9'
       })
         .then((payload) => {
           if (payload && payload.image)
