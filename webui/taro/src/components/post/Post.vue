@@ -10,46 +10,46 @@
       showsVerticalScrollIndicator={false}
     >
       <View v-for='([_prompt, _images], index) in images' :key='index' :style='{borderBottom: "1px solid lightgray", padding: "8px 0", width: "100%"}'>
-        <View style='width: 100%;'>
+        <View :style='{width: "100%", height: imageHeight(_images.total, _images.ratio)}'>
           <View v-if='_images.images.length' style='width: 100%; display: flex;'>
             <View
-              v-for='(image, index) in _images.images.slice(0, 3)'
+              v-for='(image, index) in _images.images.slice(0, imagesPerRow(_images.total))'
               :key='index'
               @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
-              :style='{width: imageWidth(_images.total), height: imageHeight + "px"}'
+              :style='{width: imageWidth(_images.total), height: imageHeight(_images.total, _images.ratio)}'
             >
               <Image
                 :src='image.imageUrl'
                 mode='widthFix'
-                :style='{width: "100%", height: imageHeight + "px"}'
+                :style='{width: "100%", height: imageHeight(_images.total, _images.ratio)}'
               />
             </View>
           </View>
-          <View v-if='_images.images.length > 3' style='width: 100%; display: flex;'>
+          <View v-if='_images.images.length > imagesPerRow(_images.total)' style='width: 100%; display: flex;'>
             <View
-              v-for='(image, index) in _images.images.slice(3, 6)'
+              v-for='(image, index) in _images.images.slice(imagesPerRow(_images.total), imagesPerRow(_images.total) * 2)'
               :key='index'
               @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
-              :style='{width: imageWidth(_images.total), height: imageHeight + "px"}'
+              :style='{width: imageWidth(_images.total), height: imageHeight(_images.total, _images.ratio)}'
             >
               <Image
                 :src='image.imageUrl'
                 mode='widthFix'
-                :style='{width: "100%", height: imageHeight + "px"}'
+                :style='{width: "100%", height: imageHeight(_images.total, _images.ratio)}'
               />
             </View>
           </View>
-          <View v-if='_images.images.length > 6' style='width: 100%; display: flex;'>
+          <View v-if='_images.images.length > imagesPerRow(_images.total) * 2' style='width: 100%; display: flex;'>
             <View
-              v-for='(image, index) in _images.images.slice(6)'
+              v-for='(image, index) in _images.images.slice(imagesPerRow(_images.total) * 2)'
               :key='index'
               @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
-              :style='{width: imageWidth(_images.total), height: imageHeight + "px"}'
+              :style='{width: imageWidth(_images.total), height: imageHeight(_images.total, _images.ratio)}'
             >
               <Image
                 :src='image.imageUrl'
                 mode='widthFix'
-                :style='{width: "100%", height: imageHeight + "px"}'
+                :style='{width: "100%", height: imageHeight(_images.total, _images.ratio)}'
               />
             </View>
           </View>
@@ -182,8 +182,6 @@ const imageNumber = ref(1)
 const imageRatio = ref('1:1')
 const imageResolution = ref('标清')
 
-const imageHeight = ref(0)
-
 const cachePrompts = ref([] as string[])
 
 const styles = [
@@ -207,6 +205,7 @@ interface ImageData {
 }
 interface PromptImage {
   total: number
+  ratio: string
   responds: number
   successes: number
   errors: number
@@ -223,8 +222,27 @@ watch(imageCount, async () => {
 
 const imageWidth = (count: number) => {
   if (count === 1) return '100%'
-  else if (count === 2) return '50'
+  else if (count === 2) return '50%'
   else return '33.3%'
+}
+
+const imageHeight = (count: number, ratio: string) => {
+  let baseHeight = 0
+  if (Taro.getWindowInfo()) {
+    baseHeight = Taro.getWindowInfo().windowWidth - 32
+  }
+  if (count === 2 || count === 4) baseHeight = Math.floor(baseHeight / 2)
+  else baseHeight = Math.floor(baseHeight / 3)
+
+  if (ratio === '1:1') return `${baseHeight}px`
+  else if (ratio === '4:3') return `${Math.floor(baseHeight * 0.75)}px`
+  else return `${Math.floor(baseHeight * 9 / 16)}px`
+}
+
+const imagesPerRow = (count: number) => {
+  if (count <= 3) return count
+  else if (count === 4) return 2
+  else return 3
 }
 
 const prepareShareData = (_prompt: string) => {
@@ -303,6 +321,7 @@ const refine = (_prompt: string) => {
     }
     const _images = images.value.get(__prompt) || {
       total: imageNumber.value,
+      ratio: imageRatio.value,
       successes: 0,
       errors: 0,
       responds: 0,
@@ -368,6 +387,7 @@ const onStyleClick = (style: string) => {
   if (imageStyles.value.includes(style)) return
   if (imageStyles.value.length >= imageNumber.value) return
   imageStyles.value.push(style)
+  imageStyle.value = ''
 }
 
 const onSelectedStyleClick = (style: string) => {
@@ -391,6 +411,21 @@ const onImageNumberInput = (e: { detail: { value: any } }) => {
   imageNumber.value = Number(e.detail.value)
 }
 
+const posterImageWidth = (count: number) => {
+  let baseWidth = 900
+  if (count === 1) return baseWidth
+  else if (count === 2 || count === 4) return Math.floor(baseWidth / 2)
+  else return Math.floor(baseWidth / 3)
+}
+
+const posterImageHeight = (count: number, ratio: string) => {
+  const width = posterImageWidth(count)
+
+  if (ratio === '1:1') return width
+  else if (ratio === '4:3') return Math.floor(width * 0.75)
+  else return Math.floor(width * 9 / 16)
+}
+
 onMounted(async () => {
   Taro.setNavigationBarTitle({
     title: 'AGI超有才'
@@ -398,7 +433,6 @@ onMounted(async () => {
 
   if (Taro.getWindowInfo()) {
     postHeight.value = Taro.getWindowInfo().windowHeight - 32
-    imageHeight.value = Math.floor((Taro.getWindowInfo().windowWidth - 32) / 3)
   }
   model.Model.getModels()
 })
@@ -411,7 +445,7 @@ const sharePoster = async (title: string) => {
   if (!_images || !_images.images || !_images.images.length) return undefined
 
   for (let i = 0; i < _images.images.length; i++) {
-    canvasCtx.drawImage(_images.images[i].imagePath, 300 * (i % 3), 300 * Math.floor(i / 3), 300, 300)
+    canvasCtx.drawImage(_images.images[i].imagePath, posterImageWidth(_images.total) * (i % 3), posterImageHeight(_images.total, _images.ratio) * Math.floor(i / 3), 300, 300)
   }
 
   return new Promise((resolve, reject) => {
