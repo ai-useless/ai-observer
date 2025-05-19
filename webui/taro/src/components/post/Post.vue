@@ -231,7 +231,9 @@ const imageHeight = (count: number, ratio: string) => {
   if (Taro.getWindowInfo()) {
     baseHeight = Taro.getWindowInfo().windowWidth - 32
   }
-  if (count === 2 || count === 4) baseHeight = Math.floor(baseHeight / 2)
+
+  if (count === 1) baseHeight = baseHeight
+  else if (count === 2 || count === 4) baseHeight = Math.floor(baseHeight / 2)
   else baseHeight = Math.floor(baseHeight / 3)
 
   if (ratio === '1:1') return `${baseHeight}px`
