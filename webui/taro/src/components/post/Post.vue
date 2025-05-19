@@ -451,7 +451,7 @@ const sharePoster = async (title: string) => {
   const _images = images.value.get(title) || {} as PromptImage
   if (!_images || !_images.images || !_images.images.length) return undefined
 
-  if (_images.total === 1) return _images.images[0].imagePath
+  if (_images.total === 1) return Promise.resolve(_images.images[0].imagePath)
 
   const _imagesPerRow = imagesPerRow(_images.total)
 
@@ -477,10 +477,9 @@ useShareAppMessage((res: ShareAppMessageObject) => {
   if (res.from === 'button') {
     const dataset = res.target ? (res.target as Record<string, Record<string, string>>).dataset || {} : {}
     dataTitle = dataset.title
-    posterPath = images.value[dataTitle].posterPath || timelinePosterPath.value
+    const image = images.value.get(dataTitle) as PromptImage
+    posterPath = image.posterPath || timelinePosterPath.value
   }
-
-  console.log(dataTitle, posterPath, 111)
 
   return {
     title: dataTitle,
