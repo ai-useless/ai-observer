@@ -12,6 +12,7 @@ export enum RefineEventType {
 }
 
 export interface GenerateRequestPayload {
+  intent: Intent
   prompt: string
   modelId: number
 }
@@ -34,15 +35,17 @@ export type ErrorResponsePayload = {
 
 export class RefineRunner {
   static prompt = (
+    intent: Intent,
     prompt: string
   ) => {
     return Prompt.prompt(
-      Intent.GENERATE,
+      intent,
       prompt
     )
   }
 
   static requestGenerate = async (
+    intent: Intent,
     prompt: string,
     modelId?: number
   ) => {
@@ -50,6 +53,7 @@ export class RefineRunner {
     if (!model) return
 
     const _prompt = RefineRunner.prompt(
+      intent,
       prompt
     )
 
@@ -73,11 +77,13 @@ export class RefineRunner {
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
     const {
+      intent,
       prompt,
       modelId
     } = payload
 
     const response = await RefineRunner.requestGenerate(
+      intent,
       prompt,
       modelId
     )
