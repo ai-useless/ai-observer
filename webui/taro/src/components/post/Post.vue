@@ -88,13 +88,76 @@
     </View>
     <Canvas canvasId='canvas' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
   </View>
+  <AtModal :is-opened='configuring' @close='onConfigureClose'>
+    <AtModalHeader>创作设置</AtModalHeader>
+    <AtModalContent>
+      <View>
+        <View style='display: flex; line-height: 18px;'>
+          <View style='width: 60%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>图片数</View>
+            <View style='font-size: 12px; color: gray;'>(最多9张)</View>
+          </View>
+          <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
+            <Input :value='imageNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onImageNumberInput' />
+          </View>
+        </View>
+        <View style='display: flex; line-height: 18px; margin-top: 4px;'>
+          <View style='width: 60%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>宽高比</View>
+          </View>
+          <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
+            <View :style='{fontSize: "12px", backgroundColor: imageRatio === "1:1" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("1:1")'>1:1</View>
+            <View :style='{fontSize: "12px", backgroundColor: imageRatio === "4:3" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("4:3")'>4:3</View>
+            <View :style='{fontSize: "12px", backgroundColor: imageRatio === "16:9" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("16:9")'>16:9</View>
+          </View>
+        </View>
+        <View style='display: flex; line-height: 18px; margin-top: 4px;'>
+          <View style='width: 60%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>清晰度</View>
+          </View>
+          <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
+            <View :style='{fontSize: "12px", backgroundColor: imageResolution === "标清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("标清")'>标清</View>
+            <View :style='{fontSize: "12px", backgroundColor: imageResolution === "高清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("高清")'>高清</View>
+          </View>
+        </View>
+        <View style='display: flex; line-height: 18px; margin-top: 4px;'>
+          <View style='width: 20%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>风格</View>
+          </View>
+          <View style='width: 80%;'>
+            <View style='display: flex; flex-wrap: wrap;'>
+              <View v-for='(style, index) in styles' :key='index' @click='onStyleClick(style)'>
+                <Text style='font-size: 12px; color: blue; margin-left: 4px;'>{{ style }}</Text>
+              </View>
+            </View>
+            <View style='margin-top: 4px; display: flex; flex-direction: row;'>
+              <Input :value='imageStyle' placeholder='任何你喜欢的风格' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onImageStyleInput' />
+              <View style='font-size: 12px; color: blue; margin-left: 4px;' @click='onStyleClick(imageStyle)'>确定</View>
+            </View>
+            <View style='margin-top: 4px;' />
+            <View style='display: flex; flex-wrap: wrap;'>
+              <View v-for='(style, index) in imageStyles' :key='index' style='margin-left: 4px; border-radius: 4px; border: 1px solid lightblue; margin-top: 4px;' @click='onSelectedStyleClick(style)'>
+                <Text style='font-size: 12px; color: gray; padding: 0 4px;'>{{ style }}</Text>
+                <Text style='font-size: 10px; color: gray; margin-right: 4px;'>| 删除</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </AtModalContent>
+    <AtModalAction>
+      <Button @click='onConfirmConfigureClick'>确定</Button>
+      <Button @click='onCancelConfigureClick'>取消</Button>
+    </AtModalAction>
+  </AtModal>
 </template>
 
 <script setup lang='ts'>
-import { View, Image, Button, Canvas, Text } from '@tarojs/components'
+import { View, Image, Button, Canvas, Text, Input } from '@tarojs/components'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import Taro, { ShareAppMessageObject, ShareAppMessageReturn, ShareTimelineReturnObject, useShareAppMessage, useShareTimeline } from '@tarojs/taro'
+import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { model } from 'src/localstores'
 
 import ComplexInput from '../input/ComplexInput.vue'
@@ -114,9 +177,29 @@ const postHeight = ref(0)
 const scrollTop = ref(999999)
 const generating = ref(false)
 
+const configuring = ref(false)
+const imageNumber = ref(1)
+const imageRatio = ref('1:1')
+const imageResolution = ref('标清')
+
 const imageHeight = ref(0)
 
 const cachePrompts = ref([] as string[])
+
+const styles = [
+  '漫画',
+  '搞笑',
+  '清新唯美',
+  '二次元',
+  '中二',
+  '黑暗',
+  '忧伤',
+  '科技',
+  '重金属',
+  '摇滚'
+]
+const imageStyles = ref([] as string[])
+const imageStyle = ref('')
 
 interface ImageData {
   imageUrl: string
@@ -189,10 +272,10 @@ const cacheImageUrl = (_prompt: string, _image: string) => {
   })
 }
 
-const generate = (_prompt: string) => {
+const generate = (_prompt: string, style: string) => {
   const _images = images.value.get(_prompt) as PromptImage
 
-  entityBridge.EImage.generate(_prompt, '唯美而意境悠远', false, '', true, true, (_image: string) => {
+  entityBridge.EImage.generate(_prompt, style, false, '', imageResolution.value === '高清', imageRatio.value === '1:1', (_image: string) => {
     _images.responds += 1
     _images.successes += 1
     cacheImageUrl(_prompt, _image)
@@ -219,7 +302,7 @@ const refine = (_prompt: string) => {
     } as PromptImage
     images.value.set(__prompt, _images)
     for (let i = 0; i < 9; i++) {
-      generate(__prompt)
+      generate(__prompt, imageStyles.value[i % imageStyles.value.length])
     }
   }).catch((e) => {
     generating.value = false
@@ -257,7 +340,47 @@ watch(inputHeight, () => {
 
 const onGenerateClick = () => {
   if (generating.value) return
+  configuring.value = true
+}
+
+const onConfirmConfigureClick = () => {
+  configuring.value = false
   refine(prompt.value)
+}
+
+const onCancelConfigureClick = () => {
+  configuring.value = false
+}
+
+const onConfigureClose = () => {
+  configuring.value = false
+}
+
+const onStyleClick = (style: string) => {
+  if (imageStyles.value.includes(style)) return
+  if (imageStyles.value.length >= 9) return
+  imageStyles.value.push(style)
+}
+
+const onSelectedStyleClick = (style: string) => {
+  const index = imageStyles.value.findIndex((el) => el === style)
+  imageStyles.value = [...imageStyles.value.slice(0, index), ...imageStyles.value.slice(index + 1)]
+}
+
+const onImageRatioChange = (value: string) => {
+  imageRatio.value = value
+}
+
+const onImageResolutionChange = (value: string) => {
+  imageResolution.value = value
+}
+
+const onImageStyleInput = (e: { detail: { value: string } }) => {
+  imageStyle.value = e.detail.value
+}
+
+const onImageNumberInput = (e: { detail: { value: any } }) => {
+  imageNumber.value = Number(e.detail.value)
 }
 
 onMounted(async () => {
