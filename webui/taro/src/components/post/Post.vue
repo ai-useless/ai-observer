@@ -10,7 +10,7 @@
       showsVerticalScrollIndicator={false}
     >
       <View v-for='([_prompt, _images], index) in images' :key='index' :style='{borderBottom: "1px solid lightgray", padding: "8px 0", width: "100%"}'>
-        <View :style='{width: "100%", height: imageHeight(_images.total, _images.ratio)}'>
+        <View :style='{width: "100%", height: containerHeight(_images.total, _images.ratio)}'>
           <View v-if='_images.images.length' style='width: 100%; display: flex;'>
             <View
               v-for='(image, index) in _images.images.slice(0, imagesPerRow(_images.total))'
@@ -226,15 +226,27 @@ const imageWidth = (count: number) => {
   else return '33.3%'
 }
 
-const imageHeight = (count: number, ratio: string) => {
+const imageHeightNumber = (count: number) => {
   let baseHeight = 0
   if (Taro.getWindowInfo()) {
     baseHeight = Taro.getWindowInfo().windowWidth - 32
   }
 
-  if (count === 1) baseHeight = baseHeight
-  else if (count === 2 || count === 4) baseHeight = Math.floor(baseHeight / 2)
-  else baseHeight = Math.floor(baseHeight / 3)
+  if (count === 1) return baseHeight
+  else if (count === 2 || count === 4) return Math.floor(baseHeight / 2)
+  else return Math.floor(baseHeight / 3)
+}
+
+const imageHeight = (count: number, ratio: string) => {
+  const baseHeight = imageHeightNumber(count)
+
+  if (ratio === '1:1') return `${baseHeight}px`
+  else if (ratio === '4:3') return `${Math.floor(baseHeight * 0.75)}px`
+  else return `${Math.floor(baseHeight * 9 / 16)}px`
+}
+
+const containerHeight = (count: number, ratio: string) => {
+  const baseHeight = imageHeightNumber(count) * imageRows(count)
 
   if (ratio === '1:1') return `${baseHeight}px`
   else if (ratio === '4:3') return `${Math.floor(baseHeight * 0.75)}px`
@@ -245,6 +257,12 @@ const imagesPerRow = (count: number) => {
   if (count <= 3) return count
   else if (count === 4) return 2
   else return 3
+}
+
+const imageRows = (count: number) => {
+  if (count <= 3) return 1
+  else if (count === 4) return 2
+  else return Math.ceil(count / 3)
 }
 
 const prepareShareData = (_prompt: string) => {

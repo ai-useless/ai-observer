@@ -1,14 +1,45 @@
-import { duanziWorker, imageWorker, speakWorker } from 'src/worker'
+import { duanziWorker, imageWorker, refineWorker, speakWorker } from 'src/worker'
 
 export class Duanzi {
   private static baseTextIndex = 0
 
-  static generateAudio = (
+  static refineImagePrompt = async (text: string, baseIndex: number, index: number, modelId: number, onImage: (index: number, image: string) => void) => {
+    refineWorker.RefineRunner.handleGenerateRequest({
+      intent: refineWorker.Intent.REFINE_PROMPT,
+      prompt: text,
+      modelId
+    }).then((payload) => {
+      if (!payload || !payload.text || !payload.text.length) return
+
+      imageWorker.ImageRunner.handleGenerateRequest({
+        prompt: payload.text,
+        style: '内涵无厘头搞笑漫画',
+        dialog: false,
+        extra: '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。',
+        highResolution: false,
+        ratio: '16:9'
+      })
+        .then((_payload) => {
+          if (_payload && _payload.image)
+            onImage(baseIndex + index, _payload.image)
+        })
+        .catch((e) => {
+          console.log(`Failed generate image: ${e}`)
+        })
+    }).catch((e) => {
+      console.log(`Failed refine: ${e}`)
+    })
+  }
+
+  static generateMedia = (
     texts: string[],
     simulatorId: number,
+    modelId: number,
     baseIndex: number,
     index: number,
     steps: number,
+    generateAudio: boolean,
+    generateImage: boolean,
     onMessage: (
       text: string,
       isTitle: boolean,
@@ -25,22 +56,8 @@ export class Duanzi {
 
     text = text.replace('标题：', '').replace('内容：', '')
 
-    if (!isTitle) {
-      imageWorker.ImageRunner.handleGenerateRequest({
-        prompt: text,
-        style: '内涵无厘头搞笑漫画',
-        dialog: false,
-        extra: '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。',
-        highResolution: false,
-        ratio: '16:9'
-      })
-        .then((payload) => {
-          if (payload && payload.image)
-            onImage(baseIndex + index, payload.image)
-        })
-        .catch((e) => {
-          console.log(`Failed generate image: ${e}`)
-        })
+    if (!isTitle && generateImage) {
+      Duanzi.refineImagePrompt(text, baseIndex, index, modelId, onImage)
     }
 
     speakWorker.SpeakRunner.handleSpeakRequest({
@@ -50,24 +67,30 @@ export class Duanzi {
       .then((payload) => {
         if (!payload) {
           onMessage(text, isTitle, baseIndex + index, undefined)
-          Duanzi.generateAudio(
+          Duanzi.generateMedia(
             texts,
             simulatorId,
+            modelId,
             baseIndex,
             index + steps,
             steps,
+            generateAudio,
+            false,
             onMessage,
             onImage
           )
           return
         }
         onMessage(text, isTitle, baseIndex + index, payload.audio)
-        Duanzi.generateAudio(
+        Duanzi.generateMedia(
           texts,
           simulatorId,
+          modelId,
           baseIndex,
           index + steps,
           steps,
+          generateAudio,
+          false,
           onMessage,
           onImage
         )
@@ -75,12 +98,15 @@ export class Duanzi {
       .catch((e) => {
         console.log(`Failed generate audio: ${e}`)
         onMessage(text, isTitle, baseIndex + index, undefined)
-        Duanzi.generateAudio(
+        Duanzi.generateMedia(
           texts,
           simulatorId,
+          modelId,
           baseIndex,
           index + steps,
           steps,
+          generateAudio,
+          false,
           onMessage,
           onImage
         )
@@ -107,31 +133,17 @@ export class Duanzi {
       })
       if (!payload) return
 
-      if (generateAudio === false) {
-        for (let i = 0; i < payload.texts.length; i++) {
-          const text = payload.texts[i]
-            .replace('*', '')
-            .replace('#', '')
-            .replace(' ', '')
-          onMessage(
-            text,
-            text.startsWith('标题'),
-            Duanzi.baseTextIndex + i,
-            undefined
-          )
-          Duanzi.baseTextIndex += payload.texts.length
-        }
-        return
-      }
-
       const steps = 5
       for (let i = 0; i < 5; i++) {
-        Duanzi.generateAudio(
+        Duanzi.generateMedia(
           payload.texts,
           simulatorId,
+          modelId,
           Duanzi.baseTextIndex,
           i,
           steps,
+          generateAudio === undefined ? true : generateAudio,
+          true,
           onMessage,
           onImage
         )

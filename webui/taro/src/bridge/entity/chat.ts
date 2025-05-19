@@ -47,6 +47,7 @@ export class EChat {
 
   static refine = async (prompt: string, modelId: number) => {
     const payload = await refineWorker.RefineRunner.handleGenerateRequest({
+      intent: refineWorker.Intent.GENERATE,
       prompt,
       modelId
     })
