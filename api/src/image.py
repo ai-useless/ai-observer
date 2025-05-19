@@ -84,12 +84,14 @@ class ImageGenerator:
         payload = {
             'prompt': prompt,
             'seed': random.randint(0, 100),
-            'shift': 3,
+            # 'width': width,
+            # 'height': height,
             'resolution': f'{height}x{width}',
             'guidance_scale': 5,
             'num_inference_steps': 16
         }
-        url = 'https://kikakkz-hidream-i1-full.chutes.ai/generate'
+        # url = 'https://kikakkz-hidream-i1-full.chutes.ai/generate'
+        url = 'https://chutes-hidream.chutes.ai/generate'
 
         headers = {
             'Authorization': f'Bearer {config.api_token}',
