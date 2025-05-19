@@ -20,8 +20,9 @@ image = (
     .run_command("git clone https://github.com/HiDream-ai/HiDream-I1.git")
     .run_command("cd HiDream-I1; git checkout 072d35b1d3809ba8d0ad5a558092e58daa7627db")
     .run_command("pip install --upgrade pip")
-    .run_command("cd HiDream-I1; pip install -r inference/requirements.txt")
+    .run_command("cd HiDream-I1; pip install -r requirements.txt")
     .run_command("mv -f HiDream-I1/* /app/")
+    .run_command("pip install fastapi uvicorn[standard] python-multipart")
 )
 
 chute = Chute(
