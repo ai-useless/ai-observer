@@ -74,7 +74,7 @@ export class Duanzi {
             index + steps,
             steps,
             generateAudio,
-            false,
+            true,
             onMessage,
             onImage
           )
@@ -88,7 +88,7 @@ export class Duanzi {
           index + steps,
           steps,
           generateAudio,
-          false,
+          true,
           onMessage,
           onImage
         )
@@ -103,7 +103,7 @@ export class Duanzi {
           index + steps,
           steps,
           generateAudio,
-          false,
+          true,
           onMessage,
           onImage
         )
