@@ -10,7 +10,6 @@ export class Duanzi {
       prompt: text,
       modelId: _Model.topicModelId()
     }).then((payload) => {
-      console.log('Refine', index, payload)
       if (!payload || !payload.text || !payload.text.length) return
 
       imageWorker.ImageRunner.handleGenerateRequest({
@@ -22,7 +21,6 @@ export class Duanzi {
         ratio: '16:9'
       })
         .then((_payload) => {
-          console.log('Image', index, _payload?.image)
           if (_payload && _payload.image)
             onImage(baseIndex + index, _payload.image)
         })
