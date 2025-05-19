@@ -1,25 +1,28 @@
 import { duanziWorker, imageWorker, refineWorker, speakWorker } from 'src/worker'
+import { _Model } from '../db'
 
 export class Duanzi {
   private static baseTextIndex = 0
 
-  static refineImagePrompt = async (text: string, baseIndex: number, index: number, modelId: number, onImage: (index: number, image: string) => void) => {
+  static refineImagePrompt = async (text: string, baseIndex: number, index: number, onImage: (index: number, image: string) => void) => {
     refineWorker.RefineRunner.handleGenerateRequest({
       intent: refineWorker.Intent.REFINE_PROMPT,
       prompt: text,
-      modelId
+      modelId: _Model.topicModelId()
     }).then((payload) => {
+      console.log('Refine', index, payload)
       if (!payload || !payload.text || !payload.text.length) return
 
       imageWorker.ImageRunner.handleGenerateRequest({
         prompt: payload.text,
         style: '内涵无厘头搞笑漫画',
         dialog: false,
-        extra: '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。',
+        extra: '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。不允许出现真人头像。',
         highResolution: false,
         ratio: '16:9'
       })
         .then((_payload) => {
+          console.log('Image', index, _payload?.image)
           if (_payload && _payload.image)
             onImage(baseIndex + index, _payload.image)
         })
@@ -34,7 +37,6 @@ export class Duanzi {
   static generateMedia = (
     texts: string[],
     simulatorId: number,
-    modelId: number,
     baseIndex: number,
     index: number,
     steps: number,
@@ -57,7 +59,7 @@ export class Duanzi {
     text = text.replace('标题：', '').replace('内容：', '')
 
     if (!isTitle && generateImage) {
-      Duanzi.refineImagePrompt(text, baseIndex, index, modelId, onImage)
+      Duanzi.refineImagePrompt(text, baseIndex, index, onImage)
     }
 
     speakWorker.SpeakRunner.handleSpeakRequest({
@@ -70,7 +72,6 @@ export class Duanzi {
           Duanzi.generateMedia(
             texts,
             simulatorId,
-            modelId,
             baseIndex,
             index + steps,
             steps,
@@ -85,7 +86,6 @@ export class Duanzi {
         Duanzi.generateMedia(
           texts,
           simulatorId,
-          modelId,
           baseIndex,
           index + steps,
           steps,
@@ -101,7 +101,6 @@ export class Duanzi {
         Duanzi.generateMedia(
           texts,
           simulatorId,
-          modelId,
           baseIndex,
           index + steps,
           steps,
@@ -138,7 +137,6 @@ export class Duanzi {
         Duanzi.generateMedia(
           payload.texts,
           simulatorId,
-          modelId,
           Duanzi.baseTextIndex,
           i,
           steps,
