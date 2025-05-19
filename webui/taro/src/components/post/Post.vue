@@ -472,9 +472,11 @@ const sharePoster = async (title: string) => {
   if (_images.total === 1) return Promise.resolve(_images.images[0].imagePath)
 
   const _imagesPerRow = imagesPerRow(_images.total)
+  const _imageWidth = posterImageWidth(_images.total)
+  const _imageHeight =  posterImageHeight(_images.total, _images.ratio)
 
   for (let i = 0; i < _images.images.length; i++) {
-    canvasCtx.drawImage(_images.images[i].imagePath, posterImageWidth(_images.total) * (i % _imagesPerRow), posterImageHeight(_images.total, _images.ratio) * Math.floor(i / _imagesPerRow), 300, 300)
+    canvasCtx.drawImage(_images.images[i].imagePath, _imageWidth * (i % _imagesPerRow), _imageHeight * Math.floor(i / _imagesPerRow), _imageWidth, _imageHeight)
   }
 
   return new Promise((resolve, reject) => {
