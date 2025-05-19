@@ -5,6 +5,7 @@ import hashlib
 import uuid
 import time
 import os
+import random
 
 from include import *
 from config import config
@@ -49,27 +50,47 @@ class ImageGenerator:
             logger.error(f'{BOLD}{image_uid}{RESET} {RED}Generate image FAIL {e}{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
 
     async def generate_image(self, prompt: str, high_resolution: bool, ratio: str):
-        width = 1024
+        # width = 1024
+        # if ratio == '1:1':
+        #     height = 1024
+        # elif ratio == '4:3':
+        #     height = 768
+        # else:
+        #     height = 576
+
+        # if high_resolution is False:
+        #     width = width / 2
+        #     height = height / 2
+
+        # payload = {
+        #     'prompt': prompt,
+        #     'scales': 3.5,
+        #     'steps': 20,
+        #     'width': width,
+        #     'height': height,
+        # }
+        # url = 'https://kikakkz-cogview4.chutes.ai/v1/generate'
+
         if ratio == '1:1':
+            width = 1024
             height = 1024
         elif ratio == '4:3':
-            height = 768
+            width = 1168
+            height = 880
         else:
-            height = 576
-
-        if high_resolution is False:
-            width = width / 2
-            height = height / 2
+            width = 1360
+            height = 768
 
         payload = {
             'prompt': prompt,
-            'scales': 3.5,
-            'steps': 20,
-            'width': width,
-            'height': height,
+            'seed': random.randint(0, 100),
+            'shift': 3,
+            'resolution': f'{height}x{width}',
+            'guidance_scale': 5,
+            'num_inference_steps': 16
         }
+        url = 'https://chutes-hidream.chutes.ai/generate'
 
-        url = 'https://kikakkz-cogview4.chutes.ai/v1/generate'
         headers = {
             'Authorization': f'Bearer {config.api_token}',
             'Content-Type': 'application/json'
