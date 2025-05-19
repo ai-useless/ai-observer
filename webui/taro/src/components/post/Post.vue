@@ -196,8 +196,8 @@ const styles = [
   '重金属',
   '摇滚'
 ]
-const imageStyles = ref([] as string[])
-const imageStyle = ref('')
+const imageStyles = ref([styles[0]] as string[])
+const imageStyle = ref(styles[0])
 
 interface ImageData {
   imageUrl: string
@@ -429,6 +429,11 @@ const posterImageHeight = (count: number, ratio: string) => {
 }
 
 onMounted(async () => {
+  Taro.showShareMenu({
+    withShareTicket: true,
+    showShareItems: ['shareAppMessage', 'shareTimeline']
+  })
+
   Taro.setNavigationBarTitle({
     title: 'AGI超有才'
   })
