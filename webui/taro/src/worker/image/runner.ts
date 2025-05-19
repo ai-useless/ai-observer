@@ -15,7 +15,7 @@ export interface GenerateRequestPayload {
   dialog: boolean
   extra: string
   highResolution: boolean
-  square: boolean
+  ratio: string
 }
 
 export interface GenerateResponsePayload {
@@ -40,7 +40,7 @@ export class ImageRunner {
     dialog: boolean,
     extra: string,
     highResolution: boolean,
-    square: boolean
+    ratio: string
   ) => {
     prompt = `为文字 ${prompt} 生成${style}风格的配图。图不要有黑边或白边。生成的图应该现实，自然，没有AI味道。`
     if (dialog)
@@ -51,7 +51,7 @@ export class ImageRunner {
       const imageResp = await axios.post(constants.GENERATE_IMAGE_ASYNC_API, {
         prompt,
         high_resolution: highResolution,
-        square
+        ratio
       })
 
       let imageUrl = undefined as unknown as string
@@ -82,7 +82,7 @@ export class ImageRunner {
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const { prompt, style, dialog, extra, highResolution, square } = payload
+    const { prompt, style, dialog, extra, highResolution, ratio } = payload
 
     const response = await ImageRunner.requestGenerate(
       prompt,
@@ -90,7 +90,7 @@ export class ImageRunner {
       dialog,
       extra,
       highResolution,
-      square
+      ratio
     )
     if (!response || !response.image) return
 

@@ -300,7 +300,7 @@ const cacheImageUrl = (_prompt: string, _image: string) => {
 const generate = (_prompt: string, style: string) => {
   const _images = images.value.get(_prompt) as PromptImage
 
-  entityBridge.EImage.generate(_prompt, style, false, '', imageResolution.value === '高清', imageRatio.value === '1:1', (_image: string) => {
+  entityBridge.EImage.generate(_prompt, style, false, '', imageResolution.value === '高清', imageRatio.value, (_image: string) => {
     _images.responds += 1
     _images.successes += 1
     cacheImageUrl(_prompt, _image)
@@ -444,8 +444,12 @@ const sharePoster = async (title: string) => {
   const _images = images.value.get(title) || {} as PromptImage
   if (!_images || !_images.images || !_images.images.length) return undefined
 
+  if (_images.total === 1) return _images.images[0].imagePath
+
+  const _imagesPerRow = imagesPerRow(_images.total)
+
   for (let i = 0; i < _images.images.length; i++) {
-    canvasCtx.drawImage(_images.images[i].imagePath, posterImageWidth(_images.total) * (i % 3), posterImageHeight(_images.total, _images.ratio) * Math.floor(i / 3), 300, 300)
+    canvasCtx.drawImage(_images.images[i].imagePath, posterImageWidth(_images.total) * (i % _imagesPerRow), posterImageHeight(_images.total, _images.ratio) * Math.floor(i / _imagesPerRow), 300, 300)
   }
 
   return new Promise((resolve, reject) => {
