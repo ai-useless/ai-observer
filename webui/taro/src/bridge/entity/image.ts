@@ -16,7 +16,7 @@ export class EImage {
       })
       .catch((e) => {
         console.log(`Failed generate image: ${e}`)
-        onError?.()
+        if (onError) onError()
       })
   }
 }

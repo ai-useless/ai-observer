@@ -3,7 +3,7 @@
     <scroll-view
       scrollY={true}
       :scroll-with-animation='true'
-      :style='{ height: memeHeight + "px" }'
+      :style='{ height: postHeight + "px" }'
       :scroll-top='scrollTop'
       showScrollbar={false}
       enhanced={true}
@@ -12,23 +12,52 @@
       <View v-for='([_prompt, _images], index) in images' :key='index' :style='{borderBottom: "1px solid lightgray", padding: "8px 0", width: "100%"}'>
         <View style='width: 100%;'>
           <View v-if='_images.images.length' style='width: 100%; display: flex;'>
-            <Image v-for='(image, index) in _images.images.slice(0, 3)' :key='index' :src='image.imageUrl' mode='widthFix' style='width: 33.3%;' />
+            <View
+              v-for='(image, index) in _images.images.slice(0, 3)'
+              :key='index'
+              @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
+              :style='{width: "33.3%", height: imageHeight + "px"}'
+            >
+              <Image
+                :src='image.imageUrl'
+                mode='widthFix'
+                style='width: 100%;'
+              />
+            </View>
           </View>
           <View v-if='_images.images.length > 3' style='width: 100%; display: flex;'>
-            <View v-for='(image, index) in _images.images.slice(3, 6)' :key='index' style='width: 33.3%;'>
-              <Image :src='image.imageUrl' mode='widthFix' style='width: 100%;' />
+            <View
+              v-for='(image, index) in _images.images.slice(3, 6)'
+              :key='index'
+              @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
+              :style='{width: "33.3%", height: imageHeight + "px"}'
+            >
+              <Image
+                :src='image.imageUrl'
+                mode='widthFix'
+                style='width: 100%;'
+              />
             </View>
           </View>
           <View v-if='_images.images.length > 6' style='width: 100%; display: flex;'>
-            <View v-for='(image, index) in _images.images.slice(6)' :key='index' style='width: 33.3%;'>
-              <Image :src='image.imageUrl' mode='widthFix' style='width: 100%;' />
+            <View
+              v-for='(image, index) in _images.images.slice(6)'
+              :key='index'
+              @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
+              :style='{width: "33.3%", height: imageHeight + "px"}'
+            >
+              <Image
+                :src='image.imageUrl'
+                mode='widthFix'
+                style='width: 100%;'
+              />
             </View>
           </View>
         </View>
-        <View style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
+        <View style='margin-top: 8px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
         <View style='display: flex; margin-top: 4px; flex-direction: row-reverse;'>
           <View>
-            <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt'>
+            <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt' :disabled='_images.successes < 9'>
               <Image :src='share' style='width: 16px; height: 16px;' />
             </Button>
           </View>
@@ -37,11 +66,11 @@
               {{ 9 - _images.responds }}张美图生成中...
             </Button>
           </View>
-          <View style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
+          <View v-if='_images.errors > 0' style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
             <Image :src='fail' style='width: 16px; height: 16px;' />
             <Text style='font-size: 12px; color: gray; margin-left: 4px;'>{{ _images.errors }}失败</Text>
           </View>
-          <View style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
+          <View v-if='_images.successes > 0' style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
             <Image :src='check' style='width: 16px; height: 16px;' />
             <Text style='font-size: 12px; color: gray; margin-left: 4px;'>{{ _images.successes }}成功</Text>
           </View>
@@ -81,9 +110,11 @@ const audioInput = ref(false)
 const audioError = ref('')
 
 const inputHeight = ref(0)
-const memeHeight = ref(0)
+const postHeight = ref(0)
 const scrollTop = ref(999999)
 const generating = ref(false)
+
+const imageHeight = ref(0)
 
 const cachePrompts = ref([] as string[])
 
@@ -151,7 +182,9 @@ const cacheImageUrl = (_prompt: string, _image: string) => {
       }
     },
     fail: () => {
-      images.value.set(_prompt, _images)
+      setTimeout(() => {
+        cacheImageUrl(_prompt, _image)
+      }, 1000)
     }
   })
 }
@@ -218,7 +251,7 @@ watch(audioError, () => {
 
 watch(inputHeight, () => {
   if (Taro.getWindowInfo()) {
-    memeHeight.value = Taro.getWindowInfo().windowHeight - 32 - inputHeight.value
+    postHeight.value = Taro.getWindowInfo().windowHeight - 32 - inputHeight.value
   }
 })
 
@@ -233,7 +266,8 @@ onMounted(async () => {
   })
 
   if (Taro.getWindowInfo()) {
-    memeHeight.value = Taro.getWindowInfo().windowHeight - 32
+    postHeight.value = Taro.getWindowInfo().windowHeight - 32
+    imageHeight.value = Math.floor((Taro.getWindowInfo().windowWidth - 32) / 3)
   }
   model.Model.getModels()
 })
@@ -269,6 +303,9 @@ useShareAppMessage((res: ShareAppMessageObject) => {
     dataTitle = dataset.title
     posterPath = images.value[dataTitle].posterPath || timelinePosterPath.value
   }
+
+  console.log(dataTitle, posterPath, 111)
+
   return {
     title: dataTitle,
     path: '/pages/post/PostPage',
@@ -282,6 +319,13 @@ useShareTimeline(() => {
     imageUrl: timelinePosterPath.value
   } as ShareTimelineReturnObject
 })
+
+const onPreviewImageClick = (image: string, _images: string[]) => {
+  Taro.previewImage({
+    current: image,
+    urls: _images
+  })
+}
 
 </script>
 
