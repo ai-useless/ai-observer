@@ -130,9 +130,9 @@
                 <Text style='font-size: 12px; color: blue; margin-left: 4px;'>{{ style }}</Text>
               </View>
             </View>
-            <View style='margin-top: 4px; display: flex; flex-direction: row;'>
+            <View style='margin-top: 8px; display: flex; flex-direction: row;'>
               <Input :value='imageStyle' placeholder='任何你喜欢的风格' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onImageStyleInput' />
-              <View style='font-size: 12px; color: blue; margin-left: 4px;' @click='onStyleClick(imageStyle)'>确定</View>
+              <View style='font-size: 12px; color: blue; margin-left: 4px; width: 36px;' @click='onStyleClick(imageStyle)'>确定</View>
             </View>
             <View style='margin-top: 4px;' />
             <View style='display: flex; flex-wrap: wrap;'>
