@@ -91,7 +91,7 @@ export class EXiangsheng {
 
   onGenerateResponse = (message: xiangshengWorker.GenerateResponsePayload) => {
     const { texts, subTopicIndex, topic, subTopic } = message
-    const steps = 5
+    const steps = 10
     for (let i = 0; i < steps; i++) {
       this.speak(topic, subTopic, subTopicIndex, texts, i, steps)
     }
@@ -110,7 +110,7 @@ export class EXiangsheng {
     message: xiangshengWorker.ClassicScriptsResponsePayload
   ) => {
     const { texts } = message
-    const steps = 5
+    const steps = 10
     const topic = texts.find((el) =>
       el.replace(' ', '').replace('#', '').replace('*', '').startsWith('标题')
     )
