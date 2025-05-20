@@ -29,7 +29,7 @@
             <Image :src='personCircle' style='width: 48px; height: 48px;' />
             <View v-if='index === 0' style='font-size: 12px; color: gray;'>逗哏</View>
           </View>
-          <View style='font-size: 12px; color: blue; margin-left: 16px;' @click='onSelectGuestClick(index)'>{{ index === 0 ? '点击选择逗哏' : '点击选择捧哏' }}</View>
+          <View style='font-size: 12px; color: blue; margin-left: 8px;' @click='onSelectGuestClick(index)'>{{ index === 0 ? '点击选择逗哏' : '点击选择捧哏' }}</View>
         </View>
         <View v-else @click='onSelectGuestClick(index)'>
           <RoleCard :simulator='guest' :role='index === 0 ? "逗哏" : ""' />
