@@ -521,7 +521,8 @@ const onDownloadClick = (_images: PromptImage) => {
   let count = 0
 
   _images.images.forEach((image) => {
-    Taro.saveFile({
+    const fs = Taro.getFileSystemManager()
+    fs.saveFile({
       tempFilePath: image.imagePath,
       success: () => {
         count += 1
@@ -530,7 +531,7 @@ const onDownloadClick = (_images: PromptImage) => {
       fail: (e) => {
         count += 1
         if (count === _images.total) downloading.value = false
-        console.log(`Failed save file: ${e}`)
+        console.log(`Failed save file: ${JSON.stringify(e)}`)
       }
     })
   })
