@@ -158,6 +158,15 @@
             </View>
           </View>
         </View>
+        <View style='display: flex; line-height: 18px; margin-top: 8px;'>
+          <View style='width: 60%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>文案字数</View>
+            <View style='font-size: 12px; color: gray;'>(20~200字)</View>
+          </View>
+          <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
+            <Input :value='letterNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onLetterNumberInput' />
+          </View>
+        </View>
       </View>
     </AtModalContent>
     <AtModalAction>
@@ -189,6 +198,7 @@ const generating = ref(false)
 
 const configuring = ref(false)
 const imageNumber = ref(1)
+const letterNumber = ref(20)
 const imageRatio = ref('1:1')
 const imageResolution = ref('标清')
 
@@ -244,6 +254,10 @@ watch(imageCount, async () => {
 
 watch(imageNumber, () => {
   imageNumber.value = imageNumber.value > 0 || imageNumber.value <= 0 ? 9 : imageNumber.value
+})
+
+watch(imageNumber, () => {
+  letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value <= 20 ? 20 : letterNumber.value
 })
 
 const imageWidth = (count: number) => {
@@ -360,7 +374,7 @@ const generate = (_prompt: string, style: string) => {
 const refine = (_prompt: string) => {
   generating.value = true
 
-  entityBridge.EChat.refine(_prompt, promptStyle.value, dbBridge._Model.topicModelId()).then((__prompt) => {
+  entityBridge.EChat.refine(_prompt, promptStyle.value, letterNumber.value, dbBridge._Model.topicModelId()).then((__prompt) => {
     generating.value = false
     if (!__prompt) {
       return
@@ -455,6 +469,10 @@ const onImageStyleInput = (e: { detail: { value: string } }) => {
 
 const onImageNumberInput = (e: { detail: { value: any } }) => {
   imageNumber.value = Number(e.detail.value)
+}
+
+const onLetterNumberInput = (e: { detail: { value: any } }) => {
+  letterNumber.value = Number(e.detail.value)
 }
 
 const onPromptClick = (_prompt: string) => {

@@ -15,6 +15,7 @@ export interface GenerateRequestPayload {
   intent: Intent
   prompt: string
   style: string
+  letters: number
   modelId: number
 }
 
@@ -38,12 +39,14 @@ export class RefineRunner {
   static prompt = (
     intent: Intent,
     prompt: string,
-    style: string
+    style: string,
+    letters: number
   ) => {
     return Prompt.prompt(
       intent,
       prompt,
-      style
+      style,
+      letters
     )
   }
 
@@ -51,6 +54,7 @@ export class RefineRunner {
     intent: Intent,
     prompt: string,
     style: string,
+    letters: number,
     modelId?: number
   ) => {
     const model = dbBridge._Model.model(modelId as number)
@@ -59,7 +63,8 @@ export class RefineRunner {
     const _prompt = RefineRunner.prompt(
       intent,
       prompt,
-      style
+      style,
+      letters
     )
 
     const textResp = await axios.post(constants.FALLBACK_API, {
@@ -85,6 +90,7 @@ export class RefineRunner {
       intent,
       prompt,
       style,
+      letters,
       modelId
     } = payload
 
@@ -92,6 +98,7 @@ export class RefineRunner {
       intent,
       prompt,
       style,
+      letters,
       modelId
     )
     if (!response || !response.text || !response.text.length) return
