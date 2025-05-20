@@ -1,5 +1,5 @@
 import { dbModel } from '../../model'
-import { xiangshengWorker } from '../../worker'
+import { imageWorker, xiangshengWorker } from '../../worker'
 import { dbBridge } from '..'
 import { EParticipator } from './participator'
 
@@ -253,5 +253,19 @@ export class EXiangsheng {
       }),
       modelId: dbBridge._Model.topicModelId()
     })
+  }
+
+  generateStageBackground = async () => {
+    const prompt = `相声舞台背景，暗红色调，背景墙有明显的 AGI相声社 标志，两个穿长衫大褂相声演员正在表演${this.xiangsheng.topic}，舞台上有桌子、道具、鲜花和话筒。相声演员使用卡通头像。捧哏演员看着逗哏演员，逗哏演员看着观众。`
+    const payload = await imageWorker.ImageRunner.handleGenerateRequest({
+      style: '漫画',
+      prompt,
+      dialog: false,
+      extra: '',
+      highResolution: true,
+      ratio: '1:1'
+    })
+    if (!payload || !payload.image || !payload.image.length) return
+    return payload.image
   }
 }

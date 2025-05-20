@@ -37,6 +37,7 @@ import ComplexInput from '../input/ComplexInput.vue'
 
 import { send } from 'src/assets'
 import Taro from '@tarojs/taro'
+import { model } from 'src/localstores'
 
 const prompt = ref('一只极度震惊的猫咪，漫画风格，表情夸张，带有“当你发现代码全错了”的文字，上下标题格式')
 
@@ -103,6 +104,10 @@ onMounted(async () => {
   if (Taro.getWindowInfo()) {
     memeHeight.value = Taro.getWindowInfo().windowHeight - 32
   }
+
+  model.Model.getModels(() => {
+    generate(prompt.value)
+  })
 })
 
 const onPreviewImageClick = (image: string, _images: string[]) => {

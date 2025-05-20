@@ -121,17 +121,17 @@
           </View>
         </View>
         <View style='display: flex; line-height: 18px; margin-top: 4px;'>
-          <View style='width: 20%; display: flex;'>
-            <View style='font-size: 14px; color: gray;'>风格</View>
+          <View style='width: 30%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>图片风格</View>
           </View>
-          <View style='width: 80%;'>
+          <View style='width: 70%;'>
             <View style='display: flex; flex-wrap: wrap;'>
               <View v-for='(style, index) in styles' :key='index' @click='onStyleClick(style)'>
                 <Text style='font-size: 12px; color: blue; margin-left: 4px;'>{{ style }}</Text>
               </View>
             </View>
             <View style='margin-top: 8px; display: flex; flex-direction: row;'>
-              <Input :value='imageStyle' placeholder='任何你喜欢的风格' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onImageStyleInput' />
+              <Input :value='imageStyle' placeholder='你喜欢的图片风格' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onImageStyleInput' />
               <View style='font-size: 12px; color: blue; margin-left: 4px; width: 36px;' @click='onStyleClick(imageStyle)'>确定</View>
             </View>
             <View style='margin-top: 4px;' />
@@ -141,6 +141,30 @@
                 <Text style='font-size: 10px; color: gray; margin-right: 4px;'>| 删除</Text>
               </View>
             </View>
+          </View>
+        </View>
+        <View style='display: flex; line-height: 18px; margin-top: 4px;'>
+          <View style='width: 30%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>文案要求</View>
+          </View>
+          <View style='width: 70%;'>
+            <View>
+              <View v-for='(_prompt, index) in presetStyles' :key='index' @click='onPromptStyleClick(_prompt)'>
+                <Text style='font-size: 12px; color: blue; margin-left: 4px;'>{{ _prompt }}</Text>
+              </View>
+            </View>
+            <View style='margin-top: 8px; display: flex; flex-direction: row;'>
+              <Input :value='promptStyle' placeholder='你喜欢的文案要求' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onPromptStyleInput' />
+            </View>
+          </View>
+        </View>
+        <View style='display: flex; line-height: 18px; margin-top: 8px;'>
+          <View style='width: 60%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>文案字数</View>
+            <View style='font-size: 12px; color: gray;'>(20~200字)</View>
+          </View>
+          <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
+            <Input :value='letterNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onLetterNumberInput' />
           </View>
         </View>
       </View>
@@ -164,23 +188,20 @@ import ComplexInput from '../input/ComplexInput.vue'
 
 import { send, share, check, fail } from 'src/assets'
 
-const prompt = ref('忐忑又充满希望')
-
-const timelinePrompt = ref(prompt.value)
-const timelinePosterPath = ref(undefined as unknown as string)
-
 const audioInput = ref(false)
 const audioError = ref('')
 
 const inputHeight = ref(0)
 const postHeight = ref(0)
 const scrollTop = ref(999999)
+
 const generating = ref(false)
 
 const configuring = ref(false)
 const imageNumber = ref(1)
-const imageRatio = ref('1:1')
-const imageResolution = ref('标清')
+const letterNumber = ref(20)
+const imageRatio = ref('4:3')
+const imageResolution = ref('高清')
 
 const cachePrompts = ref([] as string[])
 
@@ -199,11 +220,26 @@ const styles = [
 const imageStyles = ref([styles[0]] as string[])
 const imageStyle = ref(styles[0])
 
+const presetStyles = [
+  '带典故的心灵鸡汤',
+  '和今天的黄历相符的心情描述',
+  '带典故，充满人生哲理',
+  '小人物的日常感悟',
+  '让人捧腹大笑',
+  '适合给小朋友做科普',
+  '松尾芭蕉的俳句'
+]
+const prompt = ref('最是仓皇辞庙日，教坊犹奏离别歌，垂泪对宫娥！')
+const promptStyle = ref('带典故，充满人生哲理')
+const timelinePrompt = ref(prompt.value)
+const timelinePosterPath = ref(undefined as unknown as string)
+
 interface ImageData {
   imageUrl: string
   imagePath: string
 }
 interface PromptImage {
+  imagePrompt: string
   total: number
   ratio: string
   responds: number
@@ -218,6 +254,14 @@ const imageCount = computed(() => images.value.size)
 watch(imageCount, async () => {
   await nextTick()
   scrollTop.value += 1
+})
+
+watch(imageNumber, () => {
+  imageNumber.value = imageNumber.value > 0 || imageNumber.value <= 0 ? 9 : imageNumber.value
+})
+
+watch(imageNumber, () => {
+  letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value <= 20 ? 20 : letterNumber.value
 })
 
 const imageWidth = (count: number) => {
@@ -278,15 +322,17 @@ const prepareShareData = (_prompt: string) => {
 }
 
 const lruPromptCache = (_prompt: string) => {
+  cachePrompts.value.push(_prompt)
+
   if (cachePrompts.value.length < 20) {
     prepareShareData(_prompt)
     return
   }
 
-  const _images = images.value.get(_prompt) as PromptImage
+  const _images = images.value.get(cachePrompts.value[0]) as PromptImage
   _images.images.forEach((el) => {
     const fs = Taro.getFileSystemManager()
-    fs.removeSavedFile({
+    fs.unlink({
       filePath: el.imagePath
     })
   })
@@ -320,7 +366,7 @@ const cacheImageUrl = (_prompt: string, _image: string) => {
 const generate = (_prompt: string, style: string) => {
   const _images = images.value.get(_prompt) as PromptImage
 
-  entityBridge.EImage.generate(_prompt, style, false, '', imageResolution.value === '高清', imageRatio.value, (_image: string) => {
+  entityBridge.EImage.generate(_images.imagePrompt, style, false, '', imageResolution.value === '高清', imageRatio.value, (_image: string) => {
     _images.responds += 1
     _images.successes += 1
     cacheImageUrl(_prompt, _image)
@@ -331,15 +377,38 @@ const generate = (_prompt: string, style: string) => {
   })
 }
 
-const refine = (_prompt: string) => {
-  generating.value = true
+const refinePrompt = (_prompt: string) => {
+  const _images = images.value.get(_prompt) as PromptImage
 
-  entityBridge.EChat.refine(_prompt, dbBridge._Model.topicModelId()).then((__prompt) => {
+  entityBridge.EChat.refinePrompt(_prompt, dbBridge._Model.topicModelId()).then((__prompt) => {
     generating.value = false
     if (!__prompt) {
       return
     }
+    _images.imagePrompt = __prompt
+    images.value.set(_prompt, _images)
+    for (let i = 0; i < imageNumber.value; i++) {
+      generate(_prompt, imageStyles.value[i % imageStyles.value.length])
+    }
+  }).catch((e) => {
+    generating.value = false
+    console.log(`Failed refine prompt: ${e}`)
+    setTimeout(() => {
+      refinePrompt(_prompt)
+    }, 1000)
+  })
+}
+
+const refineText = (_prompt: string) => {
+  generating.value = true
+
+  entityBridge.EChat.refineText(_prompt, promptStyle.value, letterNumber.value, dbBridge._Model.topicModelId()).then((__prompt) => {
+    if (!__prompt) {
+      return
+    }
+
     const _images = images.value.get(__prompt) || {
+      imagePrompt: __prompt,
       total: imageNumber.value,
       ratio: imageRatio.value,
       successes: 0,
@@ -348,12 +417,14 @@ const refine = (_prompt: string) => {
       images: []
     } as PromptImage
     images.value.set(__prompt, _images)
-    for (let i = 0; i < imageNumber.value; i++) {
-      generate(__prompt, imageStyles.value[i % imageStyles.value.length])
-    }
+
+    refinePrompt(__prompt)
   }).catch((e) => {
     generating.value = false
-    console.log(`Failed refine: ${e}`)
+    console.log(`Failed refine text: ${e}`)
+    setTimeout(() => {
+      refineText(_prompt)
+    }, 1000)
   })
 }
 
@@ -370,7 +441,8 @@ watch(generating, () => {
 watch(prompt, () => {
   if (!audioInput.value || !prompt.value || !prompt.value.length) return
 
-  refine(prompt.value)
+  if (generating.value) return
+  configuring.value = true
 })
 
 watch(audioError, () => {
@@ -392,7 +464,7 @@ const onGenerateClick = () => {
 
 const onConfirmConfigureClick = () => {
   configuring.value = false
-  refine(prompt.value)
+  refineText(prompt.value)
 }
 
 const onCancelConfigureClick = () => {
@@ -405,8 +477,12 @@ const onConfigureClose = () => {
 
 const onStyleClick = (style: string) => {
   if (imageStyles.value.includes(style)) return
-  if (imageStyles.value.length >= imageNumber.value) return
-  imageStyles.value.push(style)
+
+  if (imageStyles.value.length >= imageNumber.value) {
+    imageStyles.value[imageNumber.value - 1] = style
+  } else {
+    imageStyles.value.push(style)
+  }
   imageStyle.value = ''
 }
 
@@ -429,6 +505,18 @@ const onImageStyleInput = (e: { detail: { value: string } }) => {
 
 const onImageNumberInput = (e: { detail: { value: any } }) => {
   imageNumber.value = Number(e.detail.value)
+}
+
+const onLetterNumberInput = (e: { detail: { value: any } }) => {
+  letterNumber.value = Number(e.detail.value)
+}
+
+const onPromptStyleClick = (_prompt: string) => {
+  promptStyle.value = _prompt
+}
+
+const onPromptStyleInput = (e: { detail: { value: string } }) => {
+  promptStyle.value = e.detail.value
 }
 
 const posterImageWidth = (count: number) => {
@@ -459,7 +547,9 @@ onMounted(async () => {
   if (Taro.getWindowInfo()) {
     postHeight.value = Taro.getWindowInfo().windowHeight - 32
   }
-  model.Model.getModels()
+  model.Model.getModels(() => {
+    refineText(prompt.value)
+  })
 })
 
 const sharePoster = async (title: string) => {

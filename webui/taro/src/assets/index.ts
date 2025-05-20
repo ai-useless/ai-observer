@@ -24,6 +24,7 @@ import keyboardAlt from './KeyboardAlt.svg'
 import share from './Share.svg'
 import check from './Check.svg'
 import fail from './Fail.svg'
+import download from './Download.svg'
 
 export {
   chevronRight,
@@ -51,5 +52,6 @@ export {
   keyboardAlt,
   share,
   check,
-  fail
+  fail,
+  download
 }

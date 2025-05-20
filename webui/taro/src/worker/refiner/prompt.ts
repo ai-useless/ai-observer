@@ -83,7 +83,7 @@ const intentRequirements = (
 export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.GENERATE,
-    ((prompt: string) => `你是遣词造句的大师, 现在用户的心情${prompt}，请为此时此刻的心情写一段60字以内的深邃且具有哲思的话。
+    ((prompt: string, style: string, letters: number) => `你是遣词造句的大师, 请用中文以${prompt}为素材写一段${letters}字以内的${style}的话。
           要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
   ],
   [

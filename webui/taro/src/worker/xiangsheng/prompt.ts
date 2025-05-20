@@ -114,16 +114,58 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       topic: string,
       host: string,
       guest: string
-    ) => `你是相声剧本创作者，请创作一段主题为${topic}的相声剧本，字数大于1500中文字，只返回标题和剧本内容。
+    ) => {
+      const skills = [
+        '扑盲子',
+        '三翻四抖',
+        '边使边刨',
+        '现挂',
+        '强词夺理',
+        '自我否定',
+        '谐音',
+        '双关',
+        '误会',
+        '错觉',
+        '颠倒',
+        '夸张',
+        '逻辑混乱',
+        '强词夺理',
+        '磨蔓儿',
+        '扒马褂'
+      ]
+      const skill1 = skills[Math.floor(Math.random() * skills.length)]
+      const skill2 = skills[Math.floor(Math.random() * skills.length)]
+      const skill3 = skills[Math.floor(Math.random() * skills.length)]
+      const skill4 = skills[Math.floor(Math.random() * skills.length)]
+      const skill5 = skills[Math.floor(Math.random() * skills.length)]
+      return `你是相声剧本创作者，请创作一段主题为${topic}的相声剧本，字数大于1500中文字，只返回标题和剧本内容。
           演员的语言轻松诙谐，包含高质量包袱，逗哏和捧哏的句式多变，剧本情节综合运用各种幽默和相声技法，内容有深度。
-          剧本中不要包含具体相声社团名称。剧本开场要自然而引人入胜，可以以和观众聊天的形式，或两个人打趣的形式开始。谢场要有
-          多样性和随机性，不要用过于套路式的谢场。剧本展开过程需要使用诸如磨蔓儿、扒马褂等经典相声技法。
+          剧本中不要包含具体相声社团名称。剧本开场要自然而引人入胜，下面的开场可以做参考。
+          可以以和观众聊天的形式，
+          例如：
+          逗哏：大伙都在呢？都买票了吗？感谢您各位
+          捧哏：是得感谢，衣食父母！
+          逗哏：哎哟，还有送花的，送给我的吧？
+          捧哏：不能吧。
+          或两个人打趣的形式开始，
+          例如：
+          逗哏：孙老师。
+          捧哏：您老师。
+          逗哏：今天我要给大家介绍孙老师。
+          捧哏：您客气。
+          或者传统相声开场，
+          逗哏：相声学徒xxx给您鞠躬。
+          捧哏：相声学徒xxx给您鞠躬。
+          逗哏：我就是一个相声的小学生。
+          捧哏：您客气，您有名着呢。
+          谢场要有多样性和随机性，不要用过于套路式的谢场。剧本展开过程合理使用诸如${skill1}，${skill2}，${skill3}，${skill4}，${skill5}等经典相声技法，层层递进。
           逗哏为相声演员${host}，捧哏为相声演员${guest}。剧本应该包含合理的开场和谢场部分。
           返回纯文本，返回格式如下：
           标题：xxxxxxxxxx
           逗哏：xxxxxxxxxxxxxxx
           捧哏：xxxxxxxxxxxxxxx
-          要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
+          要求: ${intentRequirements(Intent.GENERATE)}`
+    }) as IntentFunc
   ],
   [
     Intent.TOPICS,

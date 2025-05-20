@@ -12,9 +12,9 @@ from fastapi.responses import Response
 image = (
     Image(
         username="kikakkz",
-        name="hidream-i1-fast",
-        tag="0.0.3",
-        readme="## Text-to-image using HiDream-ai/HiDream-I1-Fast",
+        name="hidream-i1-full",
+        tag="0.0.2",
+        readme="## Text-to-image using HiDream-ai/HiDream-I1-Full",
     )
     .from_base("parachutes/base-python:3.12.9")
     .run_command(
@@ -27,8 +27,8 @@ image = (
 
 chute = Chute(
     username="kikakkz",
-    name="hidream-i1-fast",
-    tagline="Text-to-image with HiDream-ai/HiDream-I1-Fast",
+    name="hidream-i1-full",
+    tagline="Text-to-image with HiDream-ai/HiDream-I1-Full",
     readme="HiDream-I1 is a new open-source image generative foundation model with 17B parameters that achieves state-of-the-art image generation quality within seconds.",
     image=image,
     node_selector=NodeSelector(
@@ -45,11 +45,10 @@ MODELS = {
         "revision": "a2856192dd7c25b842431f39c179a6c2c2f627d1",
     },
     "image": {
-        "model": "HiDream-ai/HiDream-I1-Fast",
-        "revision": "6063f5b060e970888d59c556c5fc0f859f3230dd",
+        "model": "HiDream-ai/HiDream-I1-Full",
+        "revision": "61848b939643432548f1a59d4e581af54f04356e",
     },
 }
-
 
 class GenerationInput(BaseModel):
     prompt: str
@@ -64,7 +63,7 @@ class GenerationInput(BaseModel):
 async def initialize_pipeline(self):
     from hi_diffusers import HiDreamImagePipeline
     from hi_diffusers import HiDreamImageTransformer2DModel
-    from hi_diffusers.schedulers.flash_flow_match import FlashFlowMatchEulerDiscreteScheduler
+    from hi_diffusers.schedulers.fm_solvers_unipc import FlowUniPCMultistepScheduler
     from transformers import LlamaForCausalLM, PreTrainedTokenizerFast
     from huggingface_hub import snapshot_download
     import torch
@@ -86,7 +85,7 @@ async def initialize_pipeline(self):
     ).to("cuda")
 
     # Image model.
-    scheduler = FlashFlowMatchEulerDiscreteScheduler(num_train_timesteps=1000, shift=3.0, use_dynamic_shifting=False)
+    scheduler = FlowUniPCMultistepScheduler(num_train_timesteps=1000, shift=3.0, use_dynamic_shifting=False)
     transformer = HiDreamImageTransformer2DModel.from_pretrained(
         MODELS["image"]["model"],
         revision=MODELS["image"]["revision"],
