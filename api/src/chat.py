@@ -107,6 +107,14 @@ async def chat(
                             raw_chunk += chunk
                             continue
 
+                        # We may have error in object here
+                        if 'error' in obj and 'object' in obj['error'] and obj['error']['object'] == 'error':
+                            if 'message' in obj['error']['object']:
+                                logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{obj["error"]["message"]}{RESET}')
+                                raise Exception(f'Response error: {obj["error"]["message"]}')
+                            logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{obj["error"]}{RESET}')
+                            raise Exception(f'Response error: {obj["error"]}')
+
                         chat_response = ModelChatResponse(obj)
 
                         if chat_response.choices is None or len(chat_response.choices) == 0:
