@@ -8,7 +8,7 @@ from chutes.chute import Chute, NodeSelector
 image = (
     Image(
         username="kikakkz",
-        name="cosy-voice-tts",
+        name="cosy-voice-tts-16g",
         tag="0.0.6",
         readme="## Text-to-speech using FunAudioLLM/CosyVoice",
     )
@@ -94,11 +94,11 @@ image = (
 
 chute = Chute(
     username="kikakkz",
-    name="cosy-voice-tts",
+    name="cosy-voice-tts-16g",
     tagline="Text-to-speech with FunAudioLLM/CosyVoice",
     readme="CosyVoice is a frontier TTS model for its size of 82 million parameters (text in/audio out).",
     image=image,
-    node_selector=NodeSelector(gpu_count=1, min_vram_gpu_per_gpu=8),
+    node_selector=NodeSelector(gpu_count=1, min_vram_gpu_per_gpu=16),
 )
 
 import os

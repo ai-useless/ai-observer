@@ -1,66 +1,65 @@
 <template>
   <View>
-    <scroll-view
-      scrollY={true}
-      :scroll-with-animation='true'
-      :style='{ height: chatBoxHeight + "px" }'
-      :scroll-top='scrollTop'
-      showScrollbar={false}
-      enhanced={true}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray; width: calc(100% - 32px); padding-bottom: 4px;'>
-        {{ topic }}
-      </View>
-      <View style='transition: 500ms'>
-        <View v-if='host && host.simulator' style='font-size: 14px;'>
-          <View style='width: 64px'>
-            主持人：
+    <View :style='{height: stageHeight + "px"}'>
+      <Image :src='backgroundImage' style='width: 100%;' mode='widthFix' />
+      <View style='margin-top: -156px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.8; padding: 8px 32px; text-align: center;'>
+        <View style='font-size: 16px; font-weight: 600; color: white; padding: 0 0 4px 0; min-height: 18px; max-height: 54px; overflow: scroll;'>{{ topic }}</View>
+        <View style='display: flex; padding: 8px 0; color: white; justify-content: center; align-items: center;'>
+          <View v-if='host && host.simulator' style='font-size: 14px;'>
+            <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
+            <View style='margin-left: 4px; color: white;'>
+              {{ host.simulator.simulator }}
+            </View>
           </View>
-          <View style='color: blue'>
-            {{ host.simulator.simulator }}
-          </View>
-        </View>
-        <View style='font-size: 14px;'>
-          <View style='width: 64px'>
-            嘉宾：
-          </View>
-          <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: blue'>
-            <Text
-              style='margin-right: 16px;'
-              v-for='(guest, index) in guests'
-              :simulator='guest.simulator'
-              :small='true'
-              :key='index'
-              :is-host='false'
-            >
-              {{ guest.simulator.simulator }}
-            </Text>
+          <View style='font-size: 14px; display: flex; margin-left: 16px;'>
+            <View style='margin-left: 8px;  color: white; display: flex; flex-wrap: wrap;'>
+              <View v-for='(guest, index) in guests' :key='index' style='color: white; margin-left: 8px; margin-bottom: 4px;'>
+                <Image v-if='guests.length' :src='guest.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
+                <View style='margin-left: 4px;'>
+                  {{ guest.simulator.simulator }}
+                </View>
+              </View>
+            </View>
           </View>
         </View>
       </View>
-      <Outline :json='outline' :active-topic='activeTopic || ""' />
-      <View style='margin-top: 16px;'>
-        <View v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
-          <MessageCard :message='message' />
+    </View>
+    <View style='padding: 16px 16px; width: calc(100% - 32px); background: linear-gradient(0deg, #040B12 0%, #0A243B 45%, #144663 80%, #1E5A7E 100%);'>
+      <scroll-view
+        scrollY={true}
+        :scroll-with-animation='true'
+        :style='{ height: chatBoxHeight + "px", width: "100%" }'
+        :scroll-top='scrollTop'
+        showScrollbar={false}
+        enhanced={true}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray; width: 100%; padding-bottom: 4px; color: white;'>
+          {{ topic }}
         </View>
-        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
-      </View>
-      <View id='scrollBottomView'  />
-    </scroll-view>
-    <View style='display: flex; flex-direction: row-reverse; align-items: center; width: calc(100% - 32px); margin-top: -8px; height: 24px;'>
-      <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
-        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
-          <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
+        <Outline :json='outline' :active-topic='activeTopic || ""' />
+        <View style='margin-top: 16px;'>
+          <View v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
+            <MessageCard :message='message' />
+          </View>
+          <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
         </View>
-        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
-          <Image :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
-          <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-        <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
-          <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
+        <View id='scrollBottomView'  />
+      </scroll-view>
+      <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; margin-top: -8px; height: 24px;'>
+        <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
+          <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
+            <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+          <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
+            <Image :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+          <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
+            <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+          <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
+            <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
         </View>
       </View>
     </View>
@@ -89,10 +88,13 @@ const _seminar = ref(undefined as unknown as dbModel.Seminar)
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
+const stageHeight = ref(0)
 const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
+
+const backgroundImage = ref('http://106.15.6.50:81/download/images/yuanzhuotaolun.png')
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))
@@ -395,6 +397,8 @@ const startSeminar = async () => {
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
   loading.value = true
+
+  backgroundImage.value = await eSeminar.value.generateStageBackground() as string
   eSeminar.value.start()
 
   typingTicker.value = window.setInterval(typing, 100)
@@ -410,8 +414,10 @@ onMounted(async () => {
   })
 
   if (Taro.getWindowInfo()) {
-    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 20
+    stageHeight.value = Taro.getWindowInfo().windowWidth
+    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 40
   }
+
   startSeminar()
 })
 

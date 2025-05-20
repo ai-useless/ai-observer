@@ -1,5 +1,5 @@
 import { dbModel } from '../../model'
-import { seminarWorker } from '../../worker'
+import { imageWorker, seminarWorker } from '../../worker'
 import { dbBridge } from '..'
 import { EParticipator, PSimulator } from './participator'
 
@@ -444,5 +444,20 @@ export class ESeminar {
 
   userRequest = () => {
     // TODO
+  }
+
+  generateStageBackground = async () => {
+    const participators = this.participators()
+    const prompt = `现场论坛背景，大屏幕科技风，背景墙有明显的 AGI观点 标志，来自各领域的${participators.length}个专家正在讨论话题${this.seminar.topic}。主持人站在最左边，嘉宾们分别坐在各自的位置。`
+    const payload = await imageWorker.ImageRunner.handleGenerateRequest({
+      style: '科技感',
+      prompt,
+      dialog: false,
+      extra: '',
+      highResolution: true,
+      ratio: '1:1'
+    })
+    if (!payload || !payload.image || !payload.image.length) return
+    return payload.image
   }
 }
