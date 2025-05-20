@@ -25,6 +25,9 @@ class ModelChatResponse:
     choices: list[ModelChatChoice]
 
     def __init__(self, api_response: dict):
+        if 'choices' not in api_response:
+            self.choices = []
+            return
         self.choices = [ModelChatChoice(choice) for choice in api_response['choices']]
 
 async def chat(
@@ -107,7 +110,7 @@ async def chat(
                         chat_response = ModelChatResponse(obj)
 
                         if chat_response.choices is None or len(chat_response.choices) == 0:
-                            # logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{json_str}{RESET} ... Invalid message')
+                            logger.warn(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{json_str}{RESET} ... choices is missing')
                             continue
 
                         choice = chat_response.choices[0]
