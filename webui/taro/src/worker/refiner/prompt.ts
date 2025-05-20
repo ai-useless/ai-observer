@@ -83,7 +83,7 @@ const intentRequirements = (
 export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.GENERATE,
-    ((prompt: string, style: string, letters: number) => `你是遣词造句的大师, 请以${prompt}为素材写一段${letters}字以内的${style}的话。
+    ((prompt: string, style: string, letters: number) => `你是遣词造句的大师, 请用中文以${prompt}为素材写一段${letters}字以内的${style}的话。
           要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
   ],
   [

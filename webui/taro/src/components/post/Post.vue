@@ -226,7 +226,8 @@ const presetStyles = [
   '带典故，充满人生哲理',
   '小人物的日常感悟',
   '让人捧腹大笑',
-  '适合给小朋友做科普'
+  '适合给小朋友做科普',
+  '松尾芭蕉的俳句'
 ]
 const prompt = ref('最是仓皇辞庙日，教坊犹奏离别歌，垂泪对宫娥！')
 const promptStyle = ref('带典故，充满人生哲理')
@@ -391,6 +392,8 @@ const refinePrompt = (_prompt: string) => {
     }
   }).catch((e) => {
     generating.value = false
+    _images.errors = _images.total
+    images.value.set(_prompt, _images)
     console.log(`Failed refine prompt: ${e}`)
   })
 }
