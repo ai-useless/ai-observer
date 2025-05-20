@@ -234,6 +234,7 @@ const typing = () => {
 
   typingMessageIndex.value += 1
   if (typingMessage.value.last) typingMessageIndex.value = 0
+  if (typingMessage.value.first) displayMessages.value = []
 
   if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)
