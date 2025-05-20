@@ -34,7 +34,7 @@
             <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onSendClick'>
               <Image :src='send' style='width: 18px; height: 18px;' />
             </View>
-            <View style='height: 24px; background-color: white;' @click='onSelectSimulatorClick'>
+            <View style='height: 24px; background-color: white;' @click='onOpenSelectSimulatorClick'>
               <Image :src='personAvatar' mode='widthFix' style='width: 24px; height: 24px;' />
             </View>
           </View>
@@ -53,6 +53,19 @@
       <Button @click='onCancelLoginClick'>取消</Button>
     </AtModalAction>
   </AtModal>
+  <AtModal :is-opened='selectingSimulator' @close='onSimulatorSelectorClose'>
+    <AtModalHeader>选择模拟器</AtModalHeader>
+    <AtModalContent>
+      <View>
+        <View v-for='(_simulator, index) in simulators' :key='index' style='border-bottom: 1px solid gray;' @click='onSelectSimulatorClick(_simulator)'>
+          <SimulatorCard :simulator='_simulator' />
+        </View>
+      </View>
+    </AtModalContent>
+    <AtModalAction>
+      <Button @click='onCancelSelectSimulatorClick'>取消</Button>
+    </AtModalAction>
+  </AtModal>
 </template>
 
 <script setup lang='ts'>
@@ -66,6 +79,7 @@ import { timestamp } from 'src/utils'
 
 import ComplexInput from '../input/ComplexInput.vue'
 import Login from '../user/Login.vue'
+import SimulatorCard from '../simulator/SimulatorCard.vue'
 
 import { personAvatar, send } from 'src/assets'
 
@@ -96,6 +110,9 @@ const messageCount = computed(() => messages.value.length)
 const inputHeight = ref(0)
 const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
+
+const simulators = computed(() => simulator.Simulator.allSimulators())
+const selectingSimulator = ref(false)
 
 const friend = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
@@ -224,8 +241,32 @@ watch(audioError, () => {
   audioError.value = ''
 })
 
-const onSelectSimulatorClick = () => {
+const onOpenSelectSimulatorClick = () => {
+  selectingSimulator.value = true
+}
 
+const onSelectSimulatorClick = (_simulator: simulator._Simulator) => {
+  friend.value = _simulator
+  selectingSimulator.value = false
+
+  messages.value[0] = {
+    message: language.value === '中文' ?
+      `您好，我是${friend.value.simulator}，是你在AGI世界的伙伴。我的模型是${_model.value.name}。你可以和我聊任何你想聊的话题，记得要健康哦！如果你想和其他伙伴沟通，可以点击对话框旁边的按钮切换伙伴哦！现在，开始我们愉快的聊天吧！` :
+      `Hello, I'm ${friend.value.simulator}, your friend in AGI world. I'm driven by llm model ${_model.value.name}. Now you can talk with me about any topic. If you would like to chat with other guys, switch with button besides the input box. Now let's go!`,
+    send: false,
+    createdAt: Date.now(),
+    displayName: friend.value.simulator,
+    hint: true,
+    avatar: friend.value.simulator_avatar_url
+  }
+}
+
+const onSimulatorSelectorClose = () => {
+  selectingSimulator.value = false
+}
+
+const onCancelSelectSimulatorClick = () => {
+  selectingSimulator.value = false
 }
 
 const onSendClick = () => {

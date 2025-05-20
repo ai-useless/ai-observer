@@ -10,12 +10,14 @@
       showsVerticalScrollIndicator={false}
     >
       <View v-for='(image, index) in images' :key='index' :style='{borderBottom: index < images.length - 1 ? "1px solid lightgray" : "", padding: "8px 0"}'>
-        <Image :src='image.image' mode='widthFix' style='width: 100%;' />
+        <View style='width: 100%' @click='onPreviewImageClick(image.image, [image.image])'>
+          <Image :src='image.image' mode='widthFix' style='width: 100%;' />
+        </View>
         <Text style='margin-top: 4px; font-size: 12px; color: gray;'>{{ image.prompt }}</Text>
       </View>
     </scroll-view>
     <View style='display: flex;'>
-      <ComplexInput v-model:prompt='prompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='随便问点儿啥'>
+      <ComplexInput v-model:prompt='prompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='随便搞笑一下~'>
         <template #actions>
           <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onGenerateClick'>
             <Image :src='send' style='width: 18px; height: 18px;' />
@@ -36,7 +38,7 @@ import ComplexInput from '../input/ComplexInput.vue'
 import { send } from 'src/assets'
 import Taro from '@tarojs/taro'
 
-const prompt = ref('尴尬的天鹅走在乡间小路上，一边是友情，一边是爱情')
+const prompt = ref('一只极度震惊的猫咪，漫画风格，表情夸张，带有“当你发现代码全错了”的文字，上下标题格式')
 
 const audioInput = ref(false)
 const audioError = ref('')
@@ -61,7 +63,7 @@ const generate = (_prompt: string) => {
   Taro.showLoading({
     title: '正在创作...'
   })
-  entityBridge.EImage.generate(prompt.value, 'Meme风格，带有寓意', true, '', false, false, (_image: string) => {
+  entityBridge.EImage.generate(prompt.value, 'Meme风格，带有寓意', true, '', false, '16:9', (_image: string) => {
     images.value.push({
       prompt: _prompt,
       image: _image
@@ -102,5 +104,15 @@ onMounted(async () => {
     memeHeight.value = Taro.getWindowInfo().windowHeight - 32
   }
 })
+
+const onPreviewImageClick = (image: string, _images: string[]) => {
+  Taro.previewImage({
+    current: image,
+    urls: _images,
+    enablesavephoto: true,
+    enableShowPhotoDownload: true,
+    showmenu: true
+  })
+}
 
 </script>

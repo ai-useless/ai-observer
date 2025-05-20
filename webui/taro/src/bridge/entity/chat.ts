@@ -45,9 +45,12 @@ export class EChat {
       })
   }
 
-  static refine = async (prompt: string, modelId: number) => {
+  static refine = async (prompt: string, style: string, letters: number, modelId: number) => {
     const payload = await refineWorker.RefineRunner.handleGenerateRequest({
+      intent: refineWorker.Intent.GENERATE,
       prompt,
+      style,
+      letters,
       modelId
     })
     if (!payload || !payload.text || !payload.text.length) return undefined

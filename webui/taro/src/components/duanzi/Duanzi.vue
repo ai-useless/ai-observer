@@ -83,6 +83,7 @@ const lastModelId = ref(-1 as unknown as number)
 const duanziContentHeight = ref(0)
 const scrollTop = ref(999999)
 const generating = ref(true)
+const images = ref(new Map<number, string>())
 
 const modelLogo = (modelId: number) => {
   const model = models.value.find((el) => el.id === modelId)
@@ -110,14 +111,18 @@ const generate = async () => {
         text: purify.purifyThink(text),
         isTitle,
         audio: audio || '',
-        index
+        index,
+        image: images.value.get(index)
       })
 
+      images.value.delete(index)
+
       Taro.hideLoading()
-    }, (index: number, image?: string) => {
+    }, (index: number, image: string) => {
       const messages = [...displayMessages.value, ...(lastDisplayMessage.value ? [lastDisplayMessage.value] : []), ...(typingMessage.value ? [typingMessage.value] : []), ...waitMessages.value]
       const message = messages.find((el) => el.index === index)
       if (message) message.image = image
+      else images.value.set(index, image)
     }, true)
   }
 }

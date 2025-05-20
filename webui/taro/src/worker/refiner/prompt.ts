@@ -1,5 +1,6 @@
 export enum Intent {
-  GENERATE = 'Generate'
+  GENERATE = 'Generate',
+  REFINE_PROMPT = 'RefinePrompt'
 }
 
 enum PromptType {
@@ -48,6 +49,17 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
     ]
+  ],
+  [
+    Intent.REFINE_PROMPT,
+    [
+      PromptType.NO_EMOJI,
+      PromptType.SEGMENT,
+      PromptType.NO_HEAD_SPACE,
+      PromptType.MERGE_SPACES,
+      PromptType.WITHOUT_POLITICAL,
+      PromptType.MUST_OBEY
+    ]
   ]
 ])
 
@@ -71,7 +83,12 @@ const intentRequirements = (
 export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.GENERATE,
-    ((prompt: string) => `你是遣词造句的大师, 现在用户的心情${prompt}，请为此时此刻的心情写一段60字以内的深邃且具有哲思的话。
+    ((prompt: string, style: string, letters: number) => `你是遣词造句的大师, 请以${prompt}为素材写一段${letters}字以内的${style}的话。
+          要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
+  ],
+  [
+    Intent.REFINE_PROMPT,
+    ((prompt: string) => `你是文生图提示词编写大师, 请为文字 ${prompt} 编写一段合适的提示词，只返回编写的这一段提示词即可。
           要求: ${intentRequirements(Intent.GENERATE)}`) as IntentFunc
   ]
 ])

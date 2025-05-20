@@ -5,6 +5,7 @@ import hashlib
 import uuid
 import time
 import os
+import random
 
 from include import *
 from config import config
@@ -17,21 +18,21 @@ class ImageGenerator:
         except Exception as e:
             logger.error(f'{BOLD}{image_uid}{RESET} {RED}Generate image FAIL{RESET} ... {e}')
 
-    async def generate_image_async(self, prompt: str, high_resolution: bool, square: bool) -> str:
+    async def generate_image_async(self, prompt: str, high_resolution: bool, ratio: str) -> str:
         image_uid = f'{uuid.uuid4()}'
         db.new_image(image_uid)
 
-        task = asyncio.create_task(self.generate_image_and_save(image_uid, prompt, high_resolution, square))
+        task = asyncio.create_task(self.generate_image_and_save(image_uid, prompt, high_resolution, ratio))
         task.add_done_callback(lambda t: self.on_generate_image_done(t, image_uid))
 
         return image_uid
 
-    async def generate_image_and_save(self, image_uid: str, prompt: str, high_resolution: bool, square: bool):
+    async def generate_image_and_save(self, image_uid: str, prompt: str, high_resolution: bool, ratio: str):
         start_time = time.time()
         try:
             logger.info(f'{BOLD}{image_uid}{RESET} {GREEN}Generating image{RESET} ...')
 
-            image_bytes = await self.generate_image(prompt, high_resolution, square)
+            image_bytes = await self.generate_image(prompt, high_resolution, ratio)
 
             file_cid = hashlib.sha256(image_bytes).hexdigest()
             output_dir = f'{config.data_dir}/images'
@@ -48,21 +49,50 @@ class ImageGenerator:
             db.update_image(image_uid, None, repr(e))
             logger.error(f'{BOLD}{image_uid}{RESET} {RED}Generate image FAIL {e}{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
 
-    async def generate_image(self, prompt: str, high_resolution: bool, square: bool):
-        width = 1024 if high_resolution is True else 736
-        height = 960 if high_resolution is True else 320
-        if square is True:
-            height = width
+    async def generate_image(self, prompt: str, high_resolution: bool, ratio: str):
+        # width = 1024
+        # if ratio == '1:1':
+        #     height = 1024
+        # elif ratio == '4:3':
+        #     height = 768
+        # else:
+        #     height = 576
+
+        # if high_resolution is False:
+        #     width = width / 2
+        #     height = height / 2
+
+        # payload = {
+        #     'prompt': prompt,
+        #     'scales': 3.5,
+        #     'steps': 20,
+        #     'width': width,
+        #     'height': height,
+        # }
+        # url = 'https://kikakkz-cogview4.chutes.ai/v1/generate'
+
+        if ratio == '1:1':
+            width = 1024
+            height = 1024
+        elif ratio == '4:3':
+            width = 1168
+            height = 880
+        else:
+            width = 1360
+            height = 768
 
         payload = {
             'prompt': prompt,
-            'scales': 3.5,
-            'steps': 20,
+            'seed': random.randint(0, 100),
             'width': width,
             'height': height,
+            # 'resolution': f'{height}x{width}',
+            'guidance_scale': 5,
+            'num_inference_steps': 16
         }
+        url = 'https://kikakkz-hidream-i1-full.chutes.ai/generate'
+        # url = 'https://chutes-hidream.chutes.ai/generate'
 
-        url = 'https://kikakkz-cogview4.chutes.ai/v1/generate'
         headers = {
             'Authorization': f'Bearer {config.api_token}',
             'Content-Type': 'application/json'
