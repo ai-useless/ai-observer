@@ -57,11 +57,6 @@
         <View style='margin-top: 8px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
         <View style='display: flex; margin-top: 4px; flex-direction: row-reverse;'>
           <View>
-            <Button class='plain-btn' size='mini' plain style='width: 24px; height: 24px;' :loading='downloading' :disabled='_images.successes < _images.total || downloading' @click='onDownloadClick(_images)'>
-              <Image :src='download' style='width: 16px; height: 16px;' />
-            </Button>
-          </View>
-          <View>
             <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt' :disabled='_images.successes < _images.total'>
               <Image :src='share' style='width: 16px; height: 16px;' />
             </Button>
@@ -191,7 +186,7 @@ import { model } from 'src/localstores'
 
 import ComplexInput from '../input/ComplexInput.vue'
 
-import { send, share, check, fail, download } from 'src/assets'
+import { send, share, check, fail } from 'src/assets'
 
 const audioInput = ref(false)
 const audioError = ref('')
@@ -201,7 +196,6 @@ const postHeight = ref(0)
 const scrollTop = ref(999999)
 
 const generating = ref(false)
-const downloading = ref(false)
 
 const configuring = ref(false)
 const imageNumber = ref(1)
@@ -327,12 +321,14 @@ const prepareShareData = (_prompt: string) => {
 }
 
 const lruPromptCache = (_prompt: string) => {
+  cachePrompts.value.push(_prompt)
+
   if (cachePrompts.value.length < 20) {
     prepareShareData(_prompt)
     return
   }
 
-  const _images = images.value.get(_prompt) as PromptImage
+  const _images = images.value.get(cachePrompts.value[0]) as PromptImage
   _images.images.forEach((el) => {
     const fs = Taro.getFileSystemManager()
     fs.unlink({
@@ -514,27 +510,6 @@ const onPromptStyleClick = (_prompt: string) => {
 
 const onPromptStyleInput = (e: { detail: { value: string } }) => {
   promptStyle.value = e.detail.value
-}
-
-const onDownloadClick = (_images: PromptImage) => {
-  downloading.value = true
-  let count = 0
-
-  _images.images.forEach((image) => {
-    const fs = Taro.getFileSystemManager()
-    fs.saveFile({
-      tempFilePath: image.imagePath,
-      success: () => {
-        count += 1
-        if (count === _images.total) downloading.value = false
-      },
-      fail: (e) => {
-        count += 1
-        if (count === _images.total) downloading.value = false
-        console.log(`Failed save file: ${JSON.stringify(e)}`)
-      }
-    })
-  })
 }
 
 const posterImageWidth = (count: number) => {
