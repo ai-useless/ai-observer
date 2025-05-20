@@ -1,5 +1,5 @@
 <template>
-  <View style='padding: 0 16px;'>
+  <View>
     <Xiangsheng />
   </View>
 </template>

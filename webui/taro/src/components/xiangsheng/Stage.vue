@@ -1,79 +1,87 @@
 <template>
   <View>
-    <scroll-view
-      scrollY={true}
-      :scroll-with-animation='true'
-      :style='{ height: chatBoxHeight + "px" }'
-      :scroll-top='scrollTop'
-      showScrollbar={false}
-      enhanced={true}
-      showsVerticalScrollIndicator={false}
-    >
-      <View style='width: 100%; transition: 500ms; display: flex; border-top: 1px solid lightgray; border-bottom: 1px solid lightgray; padding: 8px 0;'>
-        <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
-          <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
-          <View style='margin-left: 8px;'>
-            <View style='width: 64px'>
-              逗哏：
-            </View>
-            <View style='color: blue'>
-              {{ host.simulator.simulator }}
+    <View :style='{height: stageHeight + "px"}'>
+      <Image :src='backgroundImage' style='width: 100%;' mode='widthFix' />
+      <View style='margin-top: -120px;'>
+        <View style='font-size: 16px; font-weight: 600; color: white; background-color: rgba(128, 128, 128, 0.3); padding: 0 32px; height: 36px;'>{{ currentTopic }}</View>
+        <View style='width: 100%; display: flex; padding: 8px 0; background-color: rgba(128, 128, 128, 0.3); padding: 8px 32px; color: white;'>
+          <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
+            <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
+            <View style='margin-left: 8px;'>
+              <View style='width: 64px'>
+                逗哏：
+              </View>
+              <View style='color: white'>
+                {{ host.simulator.simulator }}
+              </View>
             </View>
           </View>
-        </View>
-        <View style='font-size: 14px; display: flex;'>
-          <Image v-if='guests.length' :src='guests[0].simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
-          <View style='margin-left: 8px;'>
-            <View style='width: 64px'>
-              捧哏：
-            </View>
-            <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: blue'>
-              <Text
-                style='margin-right: 16px;'
-                v-for='(guest, index) in guests'
-                :key='index'
-              >
-                {{ guest.simulator.simulator }}
-              </Text>
+          <View style='font-size: 14px; display: flex;'>
+            <Image v-if='guests.length' :src='guests[0].simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
+            <View style='margin-left: 8px;'>
+              <View style='width: 64px'>
+                捧哏：
+              </View>
+              <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: white'>
+                <Text
+                  style='margin-right: 16px;'
+                  v-for='(guest, index) in guests'
+                  :key='index'
+                >
+                  {{ guest.simulator.simulator }}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
       </View>
-      <View style='margin-top: 16px;'>
-        <View v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
-          <MessageCard :message='message' />
+    </View>
+    <View style='padding: 0 16px'>
+      <scroll-view
+        scrollY={true}
+        :scroll-with-animation='true'
+        :style='{ height: chatBoxHeight + "px" }'
+        :scroll-top='scrollTop'
+        showScrollbar={false}
+        enhanced={true}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style='margin-top: 16px;'>
+          <View v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
+            <MessageCard :message='message' />
+          </View>
+          <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
         </View>
-        <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
+        <View id='scrollBottomView'  />
+      </scroll-view>
+      <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; height: 24px;'>
+        <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
+          <View :style='{borderRight: "1px solid gray", height: "24px", opacity: editing ? 1 : 0.4, backgroundColor: "white" }' @click='onEditTopicClick'>
+            <Image :src='editing ? arrowForward : editSquare' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+          <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
+            <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+          <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
+            <Image :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+          <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
+            <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+          <View :style='{borderRight: "1px solid gray", height: "24px", opacity: playScripts ? 1 : 0.4, backgroundColor: "white" }' @click='onPlayScriptsClick'>
+            <Image :src='dominoMask' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+          <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
+            <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
+        </View>
+        <Input
+          v-if='editing'
+          :value='topic'
+          @input='onTopicInput'
+          style='font-size: 14px; height: 18px; border: 1px solid gray; border-radius: 4px; padding: 0 8px; margin-right: 8px; background-color: rgba(160, 160, 160, 0.5);'
+        />
       </View>
-      <View id='scrollBottomView'  />
-    </scroll-view>
-    <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; height: 24px;'>
-      <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
-        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: editing ? 1 : 0.4, backgroundColor: "white" }' @click='onEditTopicClick'>
-          <Image :src='editing ? arrowForward : editSquare' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
-          <Image :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-        <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
-          <Image :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
-          <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-        <View :style='{borderRight: "1px solid gray", height: "24px", opacity: playScripts ? 1 : 0.4, backgroundColor: "white" }' @click='onPlayScriptsClick'>
-          <Image :src='dominoMask' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-        <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
-          <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
-        </View>
-      </View>
-      <Input
-        v-if='editing'
-        :value='topic'
-        @input='onTopicInput'
-        style='font-size: 14px; height: 18px; border: 1px solid gray; border-radius: 4px; padding: 0 8px; margin-right: 8px; background-color: rgba(160, 160, 160, 0.5);'
-      />
     </View>
   </View>
 </template>
@@ -96,10 +104,12 @@ import { xiangshengWorker } from 'src/worker'
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
+const backgroundImage = ref(undefined as unknown as string)
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBoxHeight = ref(0)
+const stageHeight = ref(0)
 const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
@@ -365,6 +375,8 @@ const startXiangsheng = async () => {
   if (playScripts.value) eXiangsheng.value.startScripts()
   else eXiangsheng.value.start()
 
+  backgroundImage.value = await eXiangsheng.value.generateStageBackground() as string
+
   typingTicker.value = window.setInterval(typing, 100)
 }
 
@@ -378,7 +390,8 @@ onMounted(async () => {
   })
 
   if (Taro.getWindowInfo()) {
-    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - 32
+    stageHeight.value = Taro.getWindowInfo().windowWidth
+    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 32
   }
 
   const participators = dbBridge._Participator.participators(_uid.value)

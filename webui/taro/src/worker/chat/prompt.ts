@@ -86,8 +86,8 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
       myName: string,
       historyMessages: string[],
       language: string
-    ) => `你叫${simulator}, 是一个${personality},
-          你现在在和${myName}聊天，请你根据你们下面已经存在的聊天内容合理推进聊天进程。如果还没有任何内容，那么跟你的伙伴打个招呼吧。使用地道的${language}语言来回答。
+    ) => `你叫${simulator}, 是一个${personality}, 你现在在和${myName}聊天。请你根据你们下面已经存在的聊天内容合理推进聊天进程。
+          如果还没有任何内容，那么跟你的伙伴打个招呼吧。使用地道的${language}语言来回答。
           要求: ${intentRequirements(Intent.GENERATE, historyMessages)}`) as IntentFunc
   ]
 ])
