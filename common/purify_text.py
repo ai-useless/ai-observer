@@ -13,7 +13,7 @@ def purify_text(text):
 def chunk_text(text, chunk_size=50):
     punctuation_pattern = r'(?<=[。！？])'
 
-    sentences = re.split(punctuation_pattern, text)
+    sentences = re.findall(punctuation_pattern, text)
     sentences = [s.strip() for s in sentences if s.strip()]
 
     chunks = []
