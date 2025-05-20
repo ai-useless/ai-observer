@@ -24,7 +24,7 @@
         </View>
       </View>
     </View>
-    <View style='padding: 16px 16px; width: calc(100% - 32px); background: linear-gradient(0deg, #ff7e5f, #feb47b);'>
+    <View style='padding: 16px 16px; width: calc(100% - 32px); background: linear-gradient(0deg, #0A3D62, #1E90FF, #3C9EE7);'>
       <scroll-view
         scrollY={true}
         :scroll-with-animation='true'
@@ -34,7 +34,7 @@
         enhanced={true}
         showsVerticalScrollIndicator={false}
       >
-        <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray; width: 100%; padding-bottom: 4px;'>
+        <View style='font-size: 24px; font-weight: 600; margin: 0 0 16px 0; transition: 500ms; border-bottom: 1px solid gray; width: 100%; padding-bottom: 4px; color: white;'>
           {{ topic }}
         </View>
         <Outline :json='outline' :active-topic='activeTopic || ""' />
@@ -94,7 +94,7 @@ const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
 
-const backgroundImage = ref(undefined as unknown as string)
+const backgroundImage = ref('http://106.15.6.50:81/download/images/yuanzhuotaolun.png')
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))

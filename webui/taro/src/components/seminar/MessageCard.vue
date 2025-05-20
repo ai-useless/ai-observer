@@ -19,9 +19,9 @@
         {{ message.model.name }}
       </View>
     </View>
-    <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px;' />
+    <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px; color: white;' />
   </View>
-  <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600;'>
+  <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600; color: white;'>
     {{ message.subTopic }}
   </View>
 </template>
