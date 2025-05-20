@@ -200,8 +200,8 @@ const generating = ref(false)
 const configuring = ref(false)
 const imageNumber = ref(1)
 const letterNumber = ref(20)
-const imageRatio = ref('1:1')
-const imageResolution = ref('标清')
+const imageRatio = ref('4:3')
+const imageResolution = ref('高清')
 
 const cachePrompts = ref([] as string[])
 
@@ -392,9 +392,10 @@ const refinePrompt = (_prompt: string) => {
     }
   }).catch((e) => {
     generating.value = false
-    _images.errors = _images.total
-    images.value.set(_prompt, _images)
     console.log(`Failed refine prompt: ${e}`)
+    setTimeout(() => {
+      refinePrompt(_prompt)
+    }, 1000)
   })
 }
 
@@ -421,6 +422,9 @@ const refineText = (_prompt: string) => {
   }).catch((e) => {
     generating.value = false
     console.log(`Failed refine text: ${e}`)
+    setTimeout(() => {
+      refineText(_prompt)
+    }, 1000)
   })
 }
 
@@ -543,7 +547,9 @@ onMounted(async () => {
   if (Taro.getWindowInfo()) {
     postHeight.value = Taro.getWindowInfo().windowHeight - 32
   }
-  model.Model.getModels()
+  model.Model.getModels(() => {
+    refineText(prompt.value)
+  })
 })
 
 const sharePoster = async (title: string) => {
