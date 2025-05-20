@@ -2,45 +2,33 @@
   <View>
     <View :style='{height: stageHeight + "px"}'>
       <Image :src='backgroundImage' style='width: 100%;' mode='widthFix' />
-      <View style='margin-top: -120px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.6; padding: 8px 32px;'>
-        <View style='font-size: 16px; font-weight: 600; color: white; padding: 0 0 4px 0; min-height: 36px;'>{{ currentTopic }}</View>
-        <View style='width: 100%; display: flex; padding: 8px 0; padding: 4px 0 0 0; color: white;'>
-          <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
+      <View style='margin-top: -120px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.8; padding: 8px 32px; text-align: center;'>
+        <View style='font-size: 16px; font-weight: 600; color: white; padding: 0 0 4px 0; min-height: 18px;'>{{ currentTopic }}</View>
+        <View style='display: flex; padding: 8px 0; padding: 4px 0 0 0; color: white; justify-content: center; align-items: center;'>
+          <View v-if='host && host.simulator' style='font-size: 14px;'>
             <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
-            <View style='margin-left: 8px;'>
-              <View style='width: 64px'>
-                逗哏：
-              </View>
-              <View style='color: white'>
-                {{ host.simulator.simulator }}
-              </View>
+            <View style='margin-left: 4px; color: white;'>
+              {{ host.simulator.simulator }}
             </View>
           </View>
           <View style='font-size: 14px; display: flex;'>
-            <Image v-if='guests.length' :src='guests[0].simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
-            <View style='margin-left: 8px;'>
-              <View style='width: 64px'>
-                捧哏：
-              </View>
-              <View style='display: flex; flex-wrap: wrap; justify-content: left; align-items: start; color: white'>
-                <Text
-                  style='margin-right: 16px;'
-                  v-for='(guest, index) in guests'
-                  :key='index'
-                >
+            <View style='margin-left: 8px;  color: white; display: flex; flex-wrap: wrap;'>
+              <View v-for='(guest, index) in guests' :key='index' style='color: white; margin-left: 8px;'>
+                <Image v-if='guests.length' :src='guest.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
+                <View style='margin-left: 4px;'>
                   {{ guest.simulator.simulator }}
-                </Text>
+                </View>
               </View>
             </View>
           </View>
         </View>
       </View>
     </View>
-    <View style='padding: 16px 16px'>
+    <View style='padding: 16px 16px; width: calc(100% - 32px);'>
       <scroll-view
         scrollY={true}
         :scroll-with-animation='true'
-        :style='{ height: chatBoxHeight + "px" }'
+        :style='{ height: chatBoxHeight + "px", width: "100%" }'
         :scroll-top='scrollTop'
         showScrollbar={false}
         enhanced={true}
@@ -52,7 +40,6 @@
           </View>
           <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
         </View>
-        <View id='scrollBottomView'  />
       </scroll-view>
       <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; height: 24px;'>
         <View style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
@@ -104,7 +91,7 @@ import { xiangshengWorker } from 'src/worker'
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
-const backgroundImage = ref(undefined as unknown as string)
+const backgroundImage = ref('http://106.15.6.50:81/download/images/xiangshengwutai.png')
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
@@ -135,7 +122,7 @@ const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMes
 const typingMessage = ref(undefined as unknown as Message)
 const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
 const typingMessageIndex = ref(0)
-const currentTopic = ref(undefined as unknown as string)
+const currentTopic = ref(topic.value)
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
