@@ -121,17 +121,17 @@
           </View>
         </View>
         <View style='display: flex; line-height: 18px; margin-top: 4px;'>
-          <View style='width: 20%; display: flex;'>
-            <View style='font-size: 14px; color: gray;'>风格</View>
+          <View style='width: 30%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>图片风格</View>
           </View>
-          <View style='width: 80%;'>
+          <View style='width: 70%;'>
             <View style='display: flex; flex-wrap: wrap;'>
               <View v-for='(style, index) in styles' :key='index' @click='onStyleClick(style)'>
                 <Text style='font-size: 12px; color: blue; margin-left: 4px;'>{{ style }}</Text>
               </View>
             </View>
             <View style='margin-top: 8px; display: flex; flex-direction: row;'>
-              <Input :value='imageStyle' placeholder='任何你喜欢的风格' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onImageStyleInput' />
+              <Input :value='imageStyle' placeholder='你喜欢的图片风格' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onImageStyleInput' />
               <View style='font-size: 12px; color: blue; margin-left: 4px; width: 36px;' @click='onStyleClick(imageStyle)'>确定</View>
             </View>
             <View style='margin-top: 4px;' />
@@ -140,6 +140,21 @@
                 <Text style='font-size: 12px; color: gray; padding: 0 4px;'>{{ style }}</Text>
                 <Text style='font-size: 10px; color: gray; margin-right: 4px;'>| 删除</Text>
               </View>
+            </View>
+          </View>
+        </View>
+        <View style='display: flex; line-height: 18px; margin-top: 4px;'>
+          <View style='width: 30%; display: flex;'>
+            <View style='font-size: 14px; color: gray;'>文案要求</View>
+          </View>
+          <View style='width: 70%;'>
+            <View style='display: flex; flex-wrap: wrap;'>
+              <View v-for='(_prompt, index) in presetStyles' :key='index' @click='onPromptClick(_prompt)'>
+                <Text style='font-size: 12px; color: blue; margin-left: 4px;'>{{ _prompt }}</Text>
+              </View>
+            </View>
+            <View style='margin-top: 8px; display: flex; flex-direction: row;'>
+              <Input :value='promptStyle' placeholder='你喜欢的文案要求' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onPromptInput' />
             </View>
           </View>
         </View>
@@ -163,11 +178,6 @@ import { model } from 'src/localstores'
 import ComplexInput from '../input/ComplexInput.vue'
 
 import { send, share, check, fail } from 'src/assets'
-
-const prompt = ref('忐忑又充满希望')
-
-const timelinePrompt = ref(prompt.value)
-const timelinePosterPath = ref(undefined as unknown as string)
 
 const audioInput = ref(false)
 const audioError = ref('')
@@ -199,6 +209,18 @@ const styles = [
 const imageStyles = ref([styles[0]] as string[])
 const imageStyle = ref(styles[0])
 
+const presetStyles = [
+  '带典故的心灵鸡汤',
+  '和今天的黄历相符的心情描述',
+  '带典故，充满人生哲理',
+  '小人物的日常感悟',
+  '让人捧腹大笑'
+]
+const prompt = ref('最是仓皇辞庙日，教坊犹奏离别歌，垂泪对宫娥！')
+const promptStyle = ref('带典故，充满人生哲理')
+const timelinePrompt = ref(prompt.value)
+const timelinePosterPath = ref(undefined as unknown as string)
+
 interface ImageData {
   imageUrl: string
   imagePath: string
@@ -218,6 +240,10 @@ const imageCount = computed(() => images.value.size)
 watch(imageCount, async () => {
   await nextTick()
   scrollTop.value += 1
+})
+
+watch(imageNumber, () => {
+  imageNumber.value = imageNumber.value > 0 || imageNumber.value <= 0 ? 9 : imageNumber.value
 })
 
 const imageWidth = (count: number) => {
@@ -334,7 +360,7 @@ const generate = (_prompt: string, style: string) => {
 const refine = (_prompt: string) => {
   generating.value = true
 
-  entityBridge.EChat.refine(_prompt, dbBridge._Model.topicModelId()).then((__prompt) => {
+  entityBridge.EChat.refine(_prompt, promptStyle.value, dbBridge._Model.topicModelId()).then((__prompt) => {
     generating.value = false
     if (!__prompt) {
       return
@@ -429,6 +455,14 @@ const onImageStyleInput = (e: { detail: { value: string } }) => {
 
 const onImageNumberInput = (e: { detail: { value: any } }) => {
   imageNumber.value = Number(e.detail.value)
+}
+
+const onPromptClick = (_prompt: string) => {
+  promptStyle.value = _prompt
+}
+
+const onPromptInput = (e: { detail: { value: string } }) => {
+  prompt.value = e.detail.value
 }
 
 const posterImageWidth = (count: number) => {

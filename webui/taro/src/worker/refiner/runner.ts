@@ -14,6 +14,7 @@ export enum RefineEventType {
 export interface GenerateRequestPayload {
   intent: Intent
   prompt: string
+  style: string
   modelId: number
 }
 
@@ -36,17 +37,20 @@ export type ErrorResponsePayload = {
 export class RefineRunner {
   static prompt = (
     intent: Intent,
-    prompt: string
+    prompt: string,
+    style: string
   ) => {
     return Prompt.prompt(
       intent,
-      prompt
+      prompt,
+      style
     )
   }
 
   static requestGenerate = async (
     intent: Intent,
     prompt: string,
+    style: string,
     modelId?: number
   ) => {
     const model = dbBridge._Model.model(modelId as number)
@@ -54,7 +58,8 @@ export class RefineRunner {
 
     const _prompt = RefineRunner.prompt(
       intent,
-      prompt
+      prompt,
+      style
     )
 
     const textResp = await axios.post(constants.FALLBACK_API, {
@@ -79,12 +84,14 @@ export class RefineRunner {
     const {
       intent,
       prompt,
+      style,
       modelId
     } = payload
 
     const response = await RefineRunner.requestGenerate(
       intent,
       prompt,
+      style,
       modelId
     )
     if (!response || !response.text || !response.text.length) return
