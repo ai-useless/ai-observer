@@ -15,6 +15,8 @@ def chunk_text(text, chunk_size=50):
 
     # sentences = re.split(punctuation_pattern, text)
     sentences = re.findall(punctuation_pattern, text)
+    if letn(sentences) == 0:
+        sentences = [text]
     sentences = [s.strip() for s in sentences if s.strip()]
 
     chunks = []
