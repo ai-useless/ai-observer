@@ -4,7 +4,7 @@
       <Image :src='backgroundImage' style='width: 100%;' mode='widthFix' />
       <View style='margin-top: -120px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.8; padding: 8px 32px; text-align: center;'>
         <View style='font-size: 16px; font-weight: 600; color: white; padding: 0 0 4px 0; min-height: 18px; max-height: 36px; overflow: scroll;'>{{ currentTopic }}</View>
-        <View style='display: flex; padding: 8px 0; padding: 4px 0 0 0; color: white; justify-content: center; align-items: center;'>
+        <View style='display: flex; padding: 8px 0; color: white; justify-content: center; align-items: center;'>
           <View v-if='host && host.simulator' style='font-size: 14px;'>
             <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
             <View style='margin-left: 4px; color: white;'>
