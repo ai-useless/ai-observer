@@ -149,12 +149,12 @@
           </View>
           <View style='width: 70%;'>
             <View style='display: flex; flex-wrap: wrap;'>
-              <View v-for='(_prompt, index) in presetStyles' :key='index' @click='onPromptClick(_prompt)'>
+              <View v-for='(_prompt, index) in presetStyles' :key='index' @click='onPromptStyleClick(_prompt)'>
                 <Text style='font-size: 12px; color: blue; margin-left: 4px;'>{{ _prompt }}</Text>
               </View>
             </View>
             <View style='margin-top: 8px; display: flex; flex-direction: row;'>
-              <Input :value='promptStyle' placeholder='你喜欢的文案要求' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onPromptInput' />
+              <Input :value='promptStyle' placeholder='你喜欢的文案要求' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onPromptStyleInput' />
             </View>
           </View>
         </View>
@@ -236,6 +236,7 @@ interface ImageData {
   imagePath: string
 }
 interface PromptImage {
+  imagePrompt: string
   total: number
   ratio: string
   responds: number
@@ -360,7 +361,7 @@ const cacheImageUrl = (_prompt: string, _image: string) => {
 const generate = (_prompt: string, style: string) => {
   const _images = images.value.get(_prompt) as PromptImage
 
-  entityBridge.EImage.generate(_prompt, style, false, '', imageResolution.value === '高清', imageRatio.value, (_image: string) => {
+  entityBridge.EImage.generate(_images.imagePrompt, style, false, '', imageResolution.value === '高清', imageRatio.value, (_image: string) => {
     _images.responds += 1
     _images.successes += 1
     cacheImageUrl(_prompt, _image)
@@ -371,15 +372,35 @@ const generate = (_prompt: string, style: string) => {
   })
 }
 
-const refine = (_prompt: string) => {
-  generating.value = true
+const refinePrompt = (_prompt: string) => {
+  const _images = images.value.get(_prompt) as PromptImage
 
-  entityBridge.EChat.refine(_prompt, promptStyle.value, letterNumber.value, dbBridge._Model.topicModelId()).then((__prompt) => {
+  entityBridge.EChat.refinePrompt(_prompt, dbBridge._Model.topicModelId()).then((__prompt) => {
     generating.value = false
     if (!__prompt) {
       return
     }
+    _images.imagePrompt = __prompt
+    images.value.set(_prompt, _images)
+    for (let i = 0; i < imageNumber.value; i++) {
+      generate(_prompt, imageStyles.value[i % imageStyles.value.length])
+    }
+  }).catch((e) => {
+    generating.value = false
+    console.log(`Failed refine prompt: ${e}`)
+  })
+}
+
+const refineText = (_prompt: string) => {
+  generating.value = true
+
+  entityBridge.EChat.refineText(_prompt, promptStyle.value, letterNumber.value, dbBridge._Model.topicModelId()).then((__prompt) => {
+    if (!__prompt) {
+      return
+    }
+
     const _images = images.value.get(__prompt) || {
+      imagePrompt: __prompt,
       total: imageNumber.value,
       ratio: imageRatio.value,
       successes: 0,
@@ -388,12 +409,11 @@ const refine = (_prompt: string) => {
       images: []
     } as PromptImage
     images.value.set(__prompt, _images)
-    for (let i = 0; i < imageNumber.value; i++) {
-      generate(__prompt, imageStyles.value[i % imageStyles.value.length])
-    }
+
+    refinePrompt(__prompt)
   }).catch((e) => {
     generating.value = false
-    console.log(`Failed refine: ${e}`)
+    console.log(`Failed refine text: ${e}`)
   })
 }
 
@@ -410,7 +430,7 @@ watch(generating, () => {
 watch(prompt, () => {
   if (!audioInput.value || !prompt.value || !prompt.value.length) return
 
-  refine(prompt.value)
+  refineText(prompt.value)
 })
 
 watch(audioError, () => {
@@ -432,7 +452,7 @@ const onGenerateClick = () => {
 
 const onConfirmConfigureClick = () => {
   configuring.value = false
-  refine(prompt.value)
+  refineText(prompt.value)
 }
 
 const onCancelConfigureClick = () => {
@@ -475,12 +495,12 @@ const onLetterNumberInput = (e: { detail: { value: any } }) => {
   letterNumber.value = Number(e.detail.value)
 }
 
-const onPromptClick = (_prompt: string) => {
+const onPromptStyleClick = (_prompt: string) => {
   promptStyle.value = _prompt
 }
 
-const onPromptInput = (e: { detail: { value: string } }) => {
-  prompt.value = e.detail.value
+const onPromptStyleInput = (e: { detail: { value: string } }) => {
+  promptStyle.value = e.detail.value
 }
 
 const posterImageWidth = (count: number) => {
