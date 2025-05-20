@@ -148,7 +148,7 @@
             <View style='font-size: 14px; color: gray;'>文案要求</View>
           </View>
           <View style='width: 70%;'>
-            <View style='display: flex; flex-wrap: wrap;'>
+            <View>
               <View v-for='(_prompt, index) in presetStyles' :key='index' @click='onPromptStyleClick(_prompt)'>
                 <Text style='font-size: 12px; color: blue; margin-left: 4px;'>{{ _prompt }}</Text>
               </View>
@@ -224,7 +224,8 @@ const presetStyles = [
   '和今天的黄历相符的心情描述',
   '带典故，充满人生哲理',
   '小人物的日常感悟',
-  '让人捧腹大笑'
+  '让人捧腹大笑',
+  '适合给小朋友做科普'
 ]
 const prompt = ref('最是仓皇辞庙日，教坊犹奏离别歌，垂泪对宫娥！')
 const promptStyle = ref('带典故，充满人生哲理')
