@@ -116,7 +116,8 @@ class AudioGenerator:
         min_delay_ms: float = 50,
         max_delay_ms: float = 300
     ) -> bytes:
-        url = 'https://kikakkz-cosy-voice-tts.chutes.ai/v1/speak'
+        # url = 'https://kikakkz-cosy-voice-tts.chutes.ai/v1/speak'
+        url = 'https://kikakkz-cosy-voice-tts-16g.chutes.ai/v1/speak'
         headers = {
             'Authorization': f'Bearer {config.api_token}',
             'Content-Type': 'application/json'
@@ -159,7 +160,8 @@ class AudioGenerator:
         min_delay_ms: float = 50,
         max_delay_ms: float = 300
     ) -> bytes:
-        url = 'https://kikakkz-cosy-voice-tts.chutes.ai/v2/speak'
+        # url = 'https://kikakkz-cosy-voice-tts.chutes.ai/v2/speak'
+        url = 'https://kikakkz-cosy-voice-tts-16g.chutes.ai/v2/speak'
         headers = {
             'Authorization': f'Bearer {config.api_token}',
             'Content-Type': 'application/json'
