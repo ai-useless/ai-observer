@@ -24,7 +24,7 @@
         </View>
       </View>
     </View>
-    <View style='padding: 16px 16px; width: calc(100% - 32px); background: linear-gradient(0deg, #0A3D62, #1E90FF, #3C9EE7);'>
+    <View style='padding: 16px 16px; width: calc(100% - 32px); background: linear-gradient(0deg, #040B12 0%, #0A243B 45%, #144663 80%, #1E5A7E 100%);'>
       <scroll-view
         scrollY={true}
         :scroll-with-animation='true'
