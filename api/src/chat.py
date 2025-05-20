@@ -127,6 +127,12 @@ async def chat(
                         if 'object' in obj and obj['object'] == 'error':
                             logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{obj["message"]}{RESET}')
                             raise Exception(f'Response error: {obj["message"]}')
+                        if 'error' in obj and 'object' in obj['error'] and obj['error']['object'] == 'error':
+                            if 'message' in obj['error']['object']:
+                                logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{obj["error"]["message"]}{RESET}')
+                                raise Exception(f'Response error: {obj["error"]["message"]}')
+                            logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{obj["error"]}{RESET}')
+                            raise Exception(f'Response error: {obj["error"]}')
                         if 'status' in obj and obj['status'] == 500:
                             logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{line}{RESET}')
                             raise Exception(f'Response error: {line}')
