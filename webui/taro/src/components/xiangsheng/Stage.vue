@@ -2,9 +2,9 @@
   <View>
     <View :style='{height: stageHeight + "px"}'>
       <Image :src='backgroundImage' style='width: 100%;' mode='widthFix' />
-      <View style='margin-top: -120px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.4;'>
-        <View style='font-size: 16px; font-weight: 600; color: white; padding: 0 32px; height: 36px;'>{{ currentTopic }}</View>
-        <View style='width: 100%; display: flex; padding: 8px 0; padding: 8px 32px; color: white;'>
+      <View style='margin-top: -120px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.6; padding: 8px 32px;'>
+        <View style='font-size: 16px; font-weight: 600; color: white; padding: 0 0 4px 0; min-height: 36px;'>{{ currentTopic }}</View>
+        <View style='width: 100%; display: flex; padding: 8px 0; padding: 4px 0 0 0; color: white;'>
           <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
             <Image :src='host.simulator.simulator_avatar_url' style='width: 32px; height: 32px; border-radius: 50%;' />
             <View style='margin-left: 8px;'>
@@ -36,7 +36,7 @@
         </View>
       </View>
     </View>
-    <View style='padding: 0 16px'>
+    <View style='padding: 16px 16px'>
       <scroll-view
         scrollY={true}
         :scroll-with-animation='true'
@@ -391,7 +391,7 @@ onMounted(async () => {
 
   if (Taro.getWindowInfo()) {
     stageHeight.value = Taro.getWindowInfo().windowWidth
-    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 32
+    chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 32 - 16
   }
 
   const participators = dbBridge._Participator.participators(_uid.value)
