@@ -11,7 +11,7 @@ def purify_text(text):
     return cleaned_space
 
 def chunk_text(text, chunk_size=50):
-    punctuation_pattern = r'([^。！？]*[。！？])'
+    punctuation_pattern = r'([^。.！!？?]*[。.！!？?])'
 
     # sentences = re.split(punctuation_pattern, text)
     sentences = re.findall(punctuation_pattern, text)
