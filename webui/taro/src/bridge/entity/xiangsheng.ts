@@ -202,13 +202,15 @@ export class EXiangsheng {
       .then((payload) => {
         if (payload) {
           this.onGenerateResponse(payload)
-        } else
+        } else {
           setTimeout(() => {
+            this.generating = false
             this.start()
           }, 1000)
+        }
       })
       .catch((e) => {
-        this.generating = true
+        this.generating = false
         console.log(`Failed start xiangsheng: ${e}`)
         setTimeout(() => {
           this.start()
@@ -230,13 +232,15 @@ export class EXiangsheng {
       .then((payload) => {
         if (payload) {
           this.onScriptsResponse(payload)
-        } else
+        } else {
           setTimeout(() => {
+            this.generating = false
             this.startScripts()
           }, 1000)
+        }
       })
       .catch((e) => {
-        this.generating = true
+        this.generating = false
         console.log(`Failed start scripts: ${e}`)
         setTimeout(() => {
           this.startScripts()
