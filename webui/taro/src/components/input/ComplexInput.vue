@@ -1,6 +1,6 @@
 <template>
   <View style='display: flex; width: 100%; margin: 4px 0;'>
-    <View style='height: 36px; width: 32px; background-color: white; padding: 6px 0;' @click='onRecordClick'>
+    <View style='height: 36px; width: 32px; background-color: transparent; padding: 6px 0;' @click='onRecordClick'>
       <Image :src='audioInput ? keyboardAlt : volumeUp' mode='widthFix' style='width: 24px; height: 24px;' />
     </View>
     <View v-if='audioInput' style='width: 100%; height: 36px;'>

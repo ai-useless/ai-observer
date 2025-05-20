@@ -62,12 +62,7 @@
             <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
           </View>
         </View>
-        <Input
-          v-if='editing'
-          :value='topic'
-          @input='onTopicInput'
-          style='font-size: 14px; height: 18px; border: 1px solid gray; border-radius: 4px; padding: 0 8px; margin-right: 8px; background-color: rgba(160, 160, 160, 0.5);'
-        />
+        <ComplexInput v-if='editing' v-model:prompt='topic' v-model:error='inputError' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='新的相声主题' style='margin-top: 8px; margin-bottom: -4px;' />
       </View>
     </View>
   </View>
@@ -79,12 +74,13 @@ import { xiangsheng, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
-import { View, ScrollView, Text, Image, Input } from '@tarojs/components'
+import { View, ScrollView, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
 
 import MessageCard from './MessageCard.vue'
+import ComplexInput from '../input/ComplexInput.vue'
 
 import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, editSquare, arrowForward, dominoMask } from 'src/assets'
 import { xiangshengWorker } from 'src/worker'
@@ -106,12 +102,11 @@ const hostParticipator = computed(() => participators.value.find((el) => el.role
 const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
-const topic = computed(() => xiangsheng.Xiangsheng.topic())
+const topic = ref(xiangsheng.Xiangsheng.topic())
 const editing = ref(false)
-
-const onTopicInput = (e: { detail: { value: string } }) => {
-  xiangsheng.Xiangsheng.setTopic(e.detail.value)
-}
+const audioInput = ref(false)
+const inputError = ref('')
+const inputHeight = ref(0)
 
 const displayMessages = ref([] as Message[])
 const loading = ref(false)
@@ -147,6 +142,19 @@ watch(lastMessageText, async () => {
   if (!autoScroll.value) return
   await nextTick()
   scrollTop.value += 1
+})
+
+watch(topic, () => {
+  if (!audioInput.value || !topic.value || !topic.value.length) return
+
+  xiangsheng.Xiangsheng.setTopic(topic.value)
+  topic.value = ''
+})
+
+watch(inputError, () => {
+  if (!audioInput.value || !inputError.value || !inputError.value.length) return
+
+  inputError.value = ''
 })
 
 const onAutoScrollClick = () => {
