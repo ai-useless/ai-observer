@@ -2,7 +2,7 @@
   <View>
     <View :style='{height: stageHeight + "px"}'>
       <Image :src='backgroundImage' style='width: 100%;' mode='widthFix' />
-      <View style='margin-top: -120px; background-color: rgba(128, 128, 128, 0.8);'>
+      <View style='margin-top: -120px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.4;'>
         <View style='font-size: 16px; font-weight: 600; color: white; padding: 0 32px; height: 36px;'>{{ currentTopic }}</View>
         <View style='width: 100%; display: flex; padding: 8px 0; padding: 8px 32px; color: white;'>
           <View v-if='host && host.simulator' style='font-size: 14px; display: flex;'>
