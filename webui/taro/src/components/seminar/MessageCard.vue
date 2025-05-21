@@ -17,7 +17,14 @@
         {{ message.model.name }}
       </View>
     </View>
-    <rich-text :nodes='message.message' user-select style='font-size: 14px; margin-top: 16px; color: white;' />
+    <View style='font-size: 14px; margin-top: 16px; color: white;'>
+      <rich-text
+        v-for='(_message, index) in messages'
+        :key='index'
+        :nodes='_message'
+        user-select
+        style='margin-top: 4px;' />
+    </View>
   </View>
   <View v-else style='font-size: 24px; margin: 24px 0; font-weight: 600; color: white;'>
     {{ message.subTopic }}
@@ -25,7 +32,7 @@
 </template>
 
 <script setup lang='ts'>
-import { toRef } from 'vue';
+import { toRef, computed } from 'vue'
 import { Message } from './Message'
 import { dbModel } from 'src/model'
 import { View, RichText, Image } from '@tarojs/components'
@@ -35,5 +42,7 @@ interface Props {
 }
 const props = defineProps<Props>()
 const message = toRef(props, 'message')
+
+const messages = computed(() => message.value.message.split('\n'))
 
 </script>

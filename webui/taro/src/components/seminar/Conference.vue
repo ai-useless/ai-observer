@@ -198,14 +198,17 @@ const typing = () => {
 
   // If we have a message in typing, finish it
   if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
-    if (lastDisplayMessage.value.message.length > 0 && audioPlayer.value && !audioPlayer.value.playing) {
-      lastDisplayMessage.value.message = typingMessage.value.message
-      return
+    while (true) {
+      if (lastDisplayMessage.value.message.length > 0 && audioPlayer.value && !audioPlayer.value.playing) {
+        lastDisplayMessage.value.message = typingMessage.value.message
+        return
+      }
+      let matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
+      if (matches.length === 0) matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/<style>[\s\S]*?<\/style>/) || []
+      const appendLen = matches[0] ? matches[0].length + 1 : 1
+      lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
+      if (matches.length == 0) return
     }
-    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
-    const appendLen = matches[0] ? matches[0].length + 1 : 1
-    lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
-    return
   }
 
   if (lastDisplayMessage.value) {
