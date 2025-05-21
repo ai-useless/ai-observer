@@ -7,7 +7,9 @@ export class Duanzi {
   static refineImagePrompt = async (text: string, baseIndex: number, index: number, onImage: (index: number, image: string) => void) => {
     refineWorker.RefineRunner.handleGenerateRequest({
       intent: refineWorker.Intent.REFINE_PROMPT,
+      style: '内涵无厘头搞笑',
       prompt: text,
+      letters: 0,
       modelId: _Model.topicModelId()
     }).then((payload) => {
       if (!payload || !payload.text || !payload.text.length) return
