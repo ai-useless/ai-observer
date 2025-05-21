@@ -3,7 +3,7 @@
     <q-list>
       <q-item style='height: 64px;'>
         <q-item-section v-if='!collapsed' avatar>
-          <div class='row'>
+          <div class='row' @click='onMenuClick("home")'>
             <q-avatar>
               <q-img :src='meipuAgiLogo' />
             </q-avatar>
@@ -24,64 +24,58 @@
         </q-item-section>
       </q-item>
       <q-separator />
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("home")' :class='[ menu === "home" ? "selected" : "" ]'>
         <q-item-section avatar class='q-w-xs'>
           <q-icon name='home' />
         </q-item-section>
         <q-item-section>首页</q-item-section>
       </q-item>
       <q-separator />
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("observer")' :class='[ menu === "observer" ? "selected" : "" ]'>
         <q-item-section avatar>
           <q-icon name='public' />
         </q-item-section>
         <q-item-section>看世界</q-item-section>
       </q-item>
       <q-separator />
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("xiangsheng")' :class='[ menu === "xiangsheng" ? "selected" : "" ]'>
         <q-item-section avatar>
           <q-icon name='child_care' />
         </q-item-section>
         <q-item-section>相声社</q-item-section>
       </q-item>
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("duanzi")' :class='[ menu === "duanzi" ? "selected" : "" ]'>
         <q-item-section avatar>
           <q-icon name='mood' />
         </q-item-section>
         <q-item-section>有内涵</q-item-section>
       </q-item>
       <q-item clickable v-ripple>
-        <q-item-section avatar>
+        <q-item-section avatar @click='onMenuClick("meme")' :class='[ menu === "meme" ? "selected" : "" ]'>
           <q-icon name='sentiment_satisfied' />
         </q-item-section>
         <q-item-section>超有梗</q-item-section>
       </q-item>
-      <q-item clickable v-ripple>
-        <q-item-section avatar>
-          <q-icon name='sentiment_neutral' />
-        </q-item-section>
-        <q-item-section>造Meme</q-item-section>
-      </q-item>
       <q-separator />
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("chat")' :class='[ menu === "chat" ? "selected" : "" ]'>
         <q-item-section avatar>
           <q-icon name='chat' />
         </q-item-section>
         <q-item-section>轻松聊</q-item-section>
       </q-item>
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("post")' :class='[ menu === "post" ? "selected" : "" ]'>
         <q-item-section avatar>
           <q-icon name='wysiwyg' />
         </q-item-section>
         <q-item-section>超有才</q-item-section>
       </q-item>
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("nianjing")' :class='[ menu === "nianjing" ? "selected" : "" ]'>
         <q-item-section avatar>
           <q-icon name='psychology' />
         </q-item-section>
         <q-item-section>妙音坊</q-item-section>
       </q-item>
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("english")' :class='[ menu === "english" ? "selected" : "" ]'>
         <q-item-section avatar>
           <q-icon name='local_library' />
         </q-item-section>
@@ -115,10 +109,22 @@
 </template>
 
 <script setup lang='ts'>
-import { defineModel } from 'vue'
+import { computed, defineModel } from 'vue'
+import { setting } from 'src/localstores'
 
 import { meipuAgiLogo } from 'src/assets'
 
 const collapsed = defineModel<boolean>('collapsed')
+const menu = computed(() => setting.Setting.currentMenu())
+
+const onMenuClick = (menu: string) => {
+  setting.Setting.setCurrentMenu(menu)
+}
 
 </script>
+
+<style scoped lang='sass'>
+.selected
+  border-right: 4px solid $blue-2
+  color: $blue-6
+</style>
