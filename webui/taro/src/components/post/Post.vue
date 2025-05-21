@@ -100,7 +100,7 @@
             <View style='font-size: 12px; color: gray;'>(最多9张)</View>
           </View>
           <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
-            <Input :value='imageNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onImageNumberInput' />
+            <Input :value='imageNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onImageNumberInput' />
           </View>
         </View>
         <View style='display: flex; line-height: 18px; margin-top: 4px;'>
@@ -166,7 +166,7 @@
             <View style='font-size: 12px; color: gray;'>(20~200字)</View>
           </View>
           <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
-            <Input :value='letterNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onLetterNumberInput' />
+            <Input :value='letterNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onLetterNumberInput' />
           </View>
         </View>
       </View>
@@ -202,7 +202,9 @@ const imageGenerating = ref(false)
 
 const configuring = ref(false)
 const imageNumber = ref(1)
+const imageNumberStr = ref(imageNumber.value.toString())
 const letterNumber = ref(20)
+const letterNumberStr = ref(letterNumber.value.toString())
 const imageRatio = ref('4:3')
 const imageResolution = ref('高清')
 
@@ -506,18 +508,16 @@ const onImageStyleInput = (e: { detail: { value: string } }) => {
 
 const onImageNumberInput = (e: { detail: { value: any } }) => {
   const str = e.detail.value as string
+  imageNumberStr.value = str
   imageNumber.value = Number(e.detail.value)
-  if (str.length > 0) {
-    imageNumber.value = imageNumber.value > 9 || imageNumber.value <= 0 ? 9 : imageNumber.value
-  }
+  imageNumber.value = imageNumber.value > 9 || imageNumber.value <= 0 ? 9 : imageNumber.value
 }
 
 const onLetterNumberInput = (e: { detail: { value: any } }) => {
   const str = e.detail.value as string
+  letterNumberStr.value = str
   letterNumber.value = Number(e.detail.value)
-  if (str.length >= 2) {
-    letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value < 20 ? 20 : letterNumber.value
-  }
+  letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value < 20 ? 20 : letterNumber.value
 }
 
 const onPromptStyleClick = (_prompt: string) => {
