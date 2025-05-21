@@ -39,7 +39,8 @@ def main():
             author_logo_cid,
             model_logo_cid,
             vendor_logo_cid,
-            model['hostModel'])
+            model['hostModel'],
+            model['maxTokens'])
 
 if __name__ == '__main__':
     main()
