@@ -279,7 +279,7 @@ export class SeminarRunner {
       model: model.name,
       messages: (prompts.historyMessages || []).map((el) => {
         return {
-          role: el.participatorId === participatorId ? 'assistant' : 'user',
+          role: 'user',
           content: purify.purifyText(el.content)
         }
       }),

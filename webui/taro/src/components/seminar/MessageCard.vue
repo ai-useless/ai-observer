@@ -1,8 +1,6 @@
 <template>
   <View
     v-if='!message.subTopicTitle'
-    :stamp='message.datetime'
-    :text='[message.message]'
     style='width: 100%;'
   >
     <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px; margin-bottom: 8px; padding-bottom: 8px;'>

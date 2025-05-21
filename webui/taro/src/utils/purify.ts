@@ -1,6 +1,7 @@
 import * as cheerio from 'cheerio'
 
 export const purifyText = (html: string): string => {
+  html = html.slice(html.indexOf('</think>') + 8)
   const $ = cheerio.load(html)
   $('script').remove()
   $('style').remove()
@@ -10,6 +11,8 @@ export const purifyText = (html: string): string => {
     .trim()
     .replace(/^\[\d\].*$/gm, '')
     .replace('```html', '')
+    .replace('```txt', '')
+    .replace(' ', '')
     .replace('```plaintext', '')
     .replace('```', '')
     .replace('#', '')
@@ -26,10 +29,12 @@ export const purifyText = (html: string): string => {
 }
 
 export const purifyThink = (html: string): string => {
+  html = html.slice(html.indexOf('</think>') + 8)
   const $ = cheerio.load(html)
   $('think').remove()
   return $.html()
     .replace('```html', '')
+    .replace('```txt', '')
     .replace('```plaintext', '')
     .replace('```', '')
     .replace('#', '')

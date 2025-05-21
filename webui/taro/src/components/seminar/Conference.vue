@@ -84,7 +84,7 @@
 import { dbBridge, entityBridge } from 'src/bridge'
 import { seminar, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { View, ScrollView, Button, Image } from '@tarojs/components'
@@ -377,23 +377,32 @@ const onOutline = (json: Record<string, unknown>) => {
 
 const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
   const messages = new Map<string, seminarWorker.HistoryMessage[]>()
+  const maxTokens = 32768
+  let tokens = 0
 
-  displayMessages.value.slice(0, displayMessages.value.length - 1).filter((el) => el.message.length && !el.subTopicTitle && el.subTopic === lastTopic.value).forEach((el) => {
-    const _messages = messages.get(el.subTopic) || []
-    _messages.push({
-      participatorId: el.participator.id as number,
-      content: el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
-    })
-    messages.set(el.subTopic, _messages)
-  })
   waitMessages.value.filter((el) => el.subTopic === lastTopic.value).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
     _messages.push({
       participatorId: el.participator.id as number,
       content: purify.purifyText(el.message)
     })
+    tokens += purify.purifyText(el.message).length
     messages.set(el.subTopic, _messages)
   })
+
+  for (let i = displayMessages.value.length - 2; i >= 0; i--) {
+    const el = displayMessages.value[i]
+
+    tokens += purify.purifyText(el.message).length
+    if (tokens > maxTokens) break
+
+    const _messages = messages.get(el.subTopic) || []
+    _messages.splice(0, 0, {
+      participatorId: el.participator.id as number,
+      content: el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
+    })
+    messages.set(el.subTopic, _messages)
+  }
 
   return messages
 }
@@ -445,16 +454,6 @@ onMounted(async () => {
     stageHeight.value = Taro.getWindowInfo().windowWidth
     chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 40
   }
-
-  _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
-
-  const participators = dbBridge._Participator.participators(_uid.value)
-  if (!topic.value || !_uid.value || !participators.length) {
-    Taro.navigateTo({ url: '/pages/seminar/guest/GuestsPage' })
-    return
-  }
-
-  startSeminar()
 })
 
 useDidShow(() => {
@@ -466,14 +465,6 @@ useDidShow(() => {
     return
   }
   startSeminar()
-})
-
-onBeforeUnmount(() => {
-  if (eSeminar.value) eSeminar.value.stop()
-  if (typingTicker.value) {
-    window.clearInterval(typingTicker.value)
-    typingTicker.value = -1
-  }
 })
 
 useDidHide(() => {
