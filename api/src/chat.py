@@ -6,6 +6,7 @@ import uuid
 
 from config import config
 from include import *
+from db import db
 
 class ChatMessage(BaseModel):
     role: str
@@ -35,10 +36,16 @@ async def chat(
     messages: list[ChatMessage],
     prompt: str
 ):
+    _model = db.get_model_with_name(model)
+    if _model is None:
+        raise Exception('Invalid model')
+
     url = 'https://llm.chutes.ai/v1/chat/completions'
     # url = 'http://47.238.224.37:8091/v1/chat/completions'
 
-    max_tokens = 40960 - sum(len(message.content) for message in messages) - len(prompt)
+    max_tokens = _model['max_tokens'] if 'max_tokens' in _model and _model['max_tokens'] is not None else 32768
+
+    max_tokens = max_tokens - sum(len(message.content) for message in messages) - len(prompt)
     if max_tokens <= 512:
         raise Exception('Too many tokens')
 

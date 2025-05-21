@@ -130,6 +130,7 @@ class Db:
                     author_logo VARCHAR(256),
                     model_logo VARCHAR(256),
                     vendor_logo VARCHAR(256),
+                    max_tokens INT UNSIGNED,
                     host_model TINYINT,
                     timestamp INT UNSIGNED,
                     PRIMARY KEY (id),
@@ -285,10 +286,10 @@ class Db:
                 WHERE audio_id="{audio_id}"
             '''
         )
-        results = cursor_dict.fetchone()
+        result = cursor_dict.fetchone()
         cursor_dict.close()
 
-        return results
+        return result
 
     def ban(self, wechat_openid, ban_by_reason, ban_by_id):
         cursor = self.connection.cursor()
@@ -346,18 +347,18 @@ class Db:
                 WHERE wechat_openid="{wechat_openid}"
             '''
         )
-        results = cursor_dict.fetchone()
+        result = cursor_dict.fetchone()
         cursor_dict.close()
 
-        return results
+        return result
 
-    def new_model(self, name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model):
+    def new_model(self, name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model, max_tokens):
         cursor = self.connection.cursor()
         cursor.execute(
             f'''
                 INSERT INTO {self.table_models}
-                (name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model, timestamp)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+                (name, endpoint, vendor, author, author_logo, model_logo, vendor_logo, host_model, max_tokens, timestamp)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 author_logo=alias.author_logo
             ''',
@@ -369,6 +370,7 @@ class Db:
              model_logo,
              vendor_logo,
              host_model,
+             max_tokens,
              int(time.time()))
         )
         self.connection.commit()
@@ -388,6 +390,20 @@ class Db:
         cursor_dict.close()
 
         return results
+
+    def get_model_with_name(self, name: str):
+        cursor_dict = self.connection.cursor(dictionary=True)
+
+        cursor_dict.execute(
+            f'''
+                SELECT * FROM {self.table_models}
+                WHERE name="{name}"
+            '''
+        )
+        result = cursor_dict.fetchone()
+        cursor_dict.close()
+
+        return result
 
     def new_audio(self, audio_uid):
         cursor = self.connection.cursor()

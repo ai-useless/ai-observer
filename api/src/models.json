@@ -6,7 +6,8 @@
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": true
+    "hostModel": true,
+    "maxTokens": 40960
 }, {
     "name": "chutesai/Mistral-Small-3.1-24B-Instruct-2503",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -15,7 +16,8 @@
     "authorLogo": "https://img-blog.csdnimg.cn/direct/ae51fcbd18004bfe90aee1f30d99613f.png",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mistral.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": false
+    "hostModel": false,
+    "maxTokens": 40960
 }, {
     "name": "deepseek-ai/DeepSeek-R1",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -24,7 +26,8 @@
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": true
+    "hostModel": true,
+    "maxTokens": 40960
 }, {
     "name": "chutesai/Llama-4-Maverick-17B-128E-Instruct-FP8",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -33,7 +36,8 @@
     "authorLogo": "https://bkimg.cdn.bcebos.com/pic/472309f790529822720ed5849b9f6ccb0a46f21f7e64",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/mvrck.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": true
+    "hostModel": true,
+    "maxTokens": 40960
 }, {
     "name": "Qwen/Qwen3-235B-A22B",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -42,7 +46,8 @@
     "authorLogo": "https://registry.npmmirror.com/@lobehub/icons-static-png/latest/files/dark/alibabacloud-color.png",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/qwen.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": true
+    "hostModel": true,
+    "maxTokens": 40960
 }, {
     "name": "deepseek-ai/DeepSeek-Prover-V2-671B",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -51,7 +56,8 @@
     "authorLogo": "https://avatars.githubusercontent.com/u/148330874?s=48&v=4",
     "modelLogo": "https://cdn.rayonlabs.ai/chutes/logos/deepseek.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": false
+    "hostModel": false,
+    "maxTokens": 40960
 }, {
     "name": "THUDM/GLM-4-32B-0414",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -60,7 +66,8 @@
     "authorLogo": "https://pic4.zhimg.com/v2-a7e622e970c0795295338e1761463a83_r.jpg",
     "modelLogo": "https://logos.chutes.ai/logos/ac57aca6-f401-438a-982e-ddc05e36d04d.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": false
+    "hostModel": false,
+    "maxTokens": 32768
 }, {
     "name": "THUDM/GLM-Z1-32B-0414",
     "endpoint": "https://llm.chutes.ai/v1/chat/completions",
@@ -69,5 +76,6 @@
     "authorLogo": "https://pic4.zhimg.com/v2-a7e622e970c0795295338e1761463a83_r.jpg",
     "modelLogo": "https://logos.chutes.ai/logos/3c4f493a-aec1-43fc-86b1-fc6ab2bd2a46.webp",
     "vendorLogo": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://chutes.ai/&size=256",
-    "hostModel": false
+    "hostModel": false,
+    "maxTokens": 32768
 }]
