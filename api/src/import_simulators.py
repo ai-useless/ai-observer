@@ -44,6 +44,7 @@ def audio_2_text(audio_b64: str):
 def fetch_audio_then_save(audio_url: str):
     print(f'    Downloading {BOLD}{audio_url}{RESET}')
     resp = requests.get(audio_url)
+    resp.raise_for_status()
 
     audio_bytes = resp.content
 
