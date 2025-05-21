@@ -115,7 +115,7 @@ import { setting } from 'src/localstores'
 import { meipuAgiLogo } from 'src/assets'
 
 const collapsed = defineModel<boolean>('collapsed')
-const menu = computed(() => setting.Setting.currentMenu())
+const menu = computed(() => setting.Setting.currentMenu().length ? setting.Setting.currentMenu() : 'observer')
 
 const onMenuClick = (menu: string) => {
   setting.Setting.setCurrentMenu(menu)

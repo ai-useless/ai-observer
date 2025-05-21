@@ -1,17 +1,20 @@
 <template>
   <div class='text-center'>
     <h3 class='text-grey-9'>
-      您想让AGI们讨论点儿什么 ?
+      可以玩的AGI
     </h3>
     <q-input
       rounded
       outlined
       v-model='topic'
-      placeholder='Key in any topic you are interesting in'
+      placeholder='任何你想讨论的话题'
       type='textarea'
       style='width: 800px; font-size: 20px;'
       @keyup.enter.stop='onEnter'
     />
+    <q-btn flat class='q-mt-lg full-width action-btn' @click='onEnter'>
+      选择AGI成员开始圆桌讨论
+    </q-btn>
     <div style='margin-top: 24px; max-width: 800px;'>
       <q-btn
         rounded
@@ -19,7 +22,7 @@
         dense
         :label='clazz'
         no-caps
-        class='text-grey-7 border'
+        :class='[ "border q-px-md", clazz === topicType ? "bg-blue-2 text-gray-9" : "text-grey-7" ]'
         v-for='clazz in presetClasses'
         :key='clazz'
         @click='onGenerateTopics(clazz)'
@@ -31,6 +34,11 @@
         <div style='color: gray;'>
           {{ topicType }}
         </div>
+        <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
+          <q-tooltip style='font-size: 14px;'>
+            您知道吗：这些话题都是AGI实时生成的。
+          </q-tooltip>
+        </q-icon>
         <q-space />
         <q-btn
           label='换一批'
@@ -45,7 +53,7 @@
       <div
         v-for='_topic in topics'
         :key='_topic'
-        style='color: blue;' class='text-left cursor-pointer'
+        style='color: blue; font-size: 16px;' class='text-left cursor-pointer'
         @click='onTopicClick(_topic)'
       >
         {{ _topic }}
@@ -99,9 +107,11 @@ const presetClasses = [
   '大航海时代',
   '文艺复兴',
   '羊吃人运动',
-  '微博热点',
-  '央视热点',
-  '今日热搜'
+  '计算机密码学',
+  '宇宙大爆炸',
+  '诸子百家',
+  '区块链技术',
+  '莲蓬鬼话'
 ]
 
 const topic = ref(seminar.Seminar.topic() || initialTopics[Math.floor(Math.random() * initialTopics.length)])
@@ -177,5 +187,11 @@ onMounted(async () => {
 
 <style scoped lang='sass'>
 .border
-  border: 1px solid $red-3
+  border: 1px solid $blue-2
+
+.action-btn
+  background-color: $blue-2
+  border-radius: 16px
+  color: $grey-9
+  font-size: 16px
 </style>
