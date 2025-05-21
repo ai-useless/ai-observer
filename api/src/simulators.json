@@ -49,7 +49,7 @@
     "personality": "大月子，AGI没谱社相声演员，以憨厚幽默风格走红，深受观众喜爱",
     "host": false,
     "audio_id": "xiaoyueyue",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xiaoyueyue.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xiaoyueyue.mp3",
     "archetype": "小岳岳",
     "title": "喜剧演员 大月子"
 }, {
@@ -58,7 +58,7 @@
     "personality": "孙小刀，没谱社相声演员，捧哏名家，以稳重幽默风格广受喜爱。",
     "host": false,
     "audio_id": "sunyue",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/sunyue.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/sunyue.mp3",
     "archetype": "孙越",
     "title": "AGI没谱社资深捧哏演员"
 }, {
