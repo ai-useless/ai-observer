@@ -17,7 +17,7 @@
         {{ message.model.name }}
       </View>
     </View>
-    <View style='font-size: 14px; margin-top: 16px; color: white;'>
+    <View style='font-size: 14px; margin-top: 4px; color: white;'>
       <rich-text
         v-for='(_message, index) in messages'
         :key='index'
