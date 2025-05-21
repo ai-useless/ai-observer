@@ -259,14 +259,6 @@ watch(imageCount, async () => {
   scrollTop.value += 1
 })
 
-watch(imageNumber, () => {
-  imageNumber.value = imageNumber.value > 0 || imageNumber.value <= 0 ? 9 : imageNumber.value
-})
-
-watch(imageNumber, () => {
-  letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value <= 20 ? 20 : letterNumber.value
-})
-
 const imageWidth = (count: number) => {
   if (count === 1) return '100%'
   else if (count === 2 || count == 4) return '50%'
@@ -513,11 +505,19 @@ const onImageStyleInput = (e: { detail: { value: string } }) => {
 }
 
 const onImageNumberInput = (e: { detail: { value: any } }) => {
+  const str = e.detail.value as string
   imageNumber.value = Number(e.detail.value)
+  if (str.length > 0) {
+    imageNumber.value = imageNumber.value > 9 || imageNumber.value <= 0 ? 9 : imageNumber.value
+  }
 }
 
 const onLetterNumberInput = (e: { detail: { value: any } }) => {
+  const str = e.detail.value as string
   letterNumber.value = Number(e.detail.value)
+  if (str.length >= 2) {
+    letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value < 20 ? 20 : letterNumber.value
+  }
 }
 
 const onPromptStyleClick = (_prompt: string) => {
