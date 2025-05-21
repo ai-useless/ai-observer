@@ -72,7 +72,7 @@
 import { dbBridge, entityBridge } from 'src/bridge'
 import { xiangsheng, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { View, ScrollView, Image } from '@tarojs/components'
 import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
@@ -392,16 +392,9 @@ onMounted(async () => {
     chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 32 - 16
   }
 
-  const participators = dbBridge._Participator.participators(_uid.value)
-  if (!topic.value || !_uid.value || !participators.length) {
-    Taro.navigateTo({ url: '/pages/xiangsheng/role/RolesPage' })
-    return
-  }
-
   Taro.setNavigationBarTitle({
     title: topic.value
   })
-  startXiangsheng()
 })
 
 useDidShow(() => {
@@ -411,14 +404,6 @@ useDidShow(() => {
     return
   }
   startXiangsheng()
-})
-
-onBeforeUnmount(() => {
-  if (eXiangsheng.value) eXiangsheng.value.stop()
-  if (typingTicker.value) {
-    window.clearInterval(typingTicker.value)
-    typingTicker.value = -1
-  }
 })
 
 useDidHide(() => {
