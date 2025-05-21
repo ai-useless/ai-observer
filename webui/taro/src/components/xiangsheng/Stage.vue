@@ -75,7 +75,7 @@ import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { View, ScrollView, Image } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
 
@@ -404,10 +404,26 @@ onMounted(async () => {
   startXiangsheng()
 })
 
+useDidShow(() => {
+  startXiangsheng()
+})
+
 onBeforeUnmount(() => {
   if (eXiangsheng.value) eXiangsheng.value.stop()
-  if (typingTicker.value) window.clearInterval(typingTicker.value)
+  if (typingTicker.value) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
 })
+
+useDidHide(() => {
+  if (eXiangsheng.value) eXiangsheng.value.stop()
+  if (typingTicker.value) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+})
+
 </script>
 
 <style>

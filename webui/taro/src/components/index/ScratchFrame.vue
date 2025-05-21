@@ -144,7 +144,7 @@ import { dbBridge, entityBridge } from 'src/bridge'
 import { search, seminar, xiangsheng } from 'src/localstores'
 import { ref, watch, computed, onMounted } from 'vue'
 import { View, Button, Text, Textarea } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 
 const initialTopics = [
   '油条的工艺与口味以及外观',
@@ -185,9 +185,9 @@ const presetClasses = [
   '大航海时代',
   '文艺复兴',
   '羊吃人运动',
-  '微博热点',
-  '央视热点',
-  '今日热搜'
+  // '微博热点',
+  // '央视热点',
+  // '今日热搜'
 ]
 
 const _seminar = computed(() => dbBridge._Seminar.seminar(seminar.Seminar.seminar()))
@@ -325,6 +325,10 @@ const onChangeTopicsClick = async () => {
 }
 
 onMounted(async () => {
+  await generateTopics()
+})
+
+useDidShow(async () => {
   await generateTopics()
 })
 

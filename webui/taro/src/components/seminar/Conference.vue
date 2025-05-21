@@ -88,7 +88,7 @@ import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { View, ScrollView, Button, Image } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
 import { seminarWorker } from 'src/worker'
@@ -449,9 +449,24 @@ onMounted(async () => {
   startSeminar()
 })
 
+useDidShow(() => {
+  startSeminar()
+})
+
 onBeforeUnmount(() => {
   if (eSeminar.value) eSeminar.value.stop()
-  if (typingTicker.value) window.clearInterval(typingTicker.value)
+  if (typingTicker.value) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+})
+
+useDidHide(() => {
+  if (eSeminar.value) eSeminar.value.stop()
+  if (typingTicker.value) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
 })
 </script>
 
