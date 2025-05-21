@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio'
 
 export const purifyText = (html: string): string => {
-  html = html.slice(html.indexOf('</think>') + 8)
+  html = html.slice(html.indexOf('</think>') < 0 ? 0 : html.indexOf('</think>') + 8)
   const $ = cheerio.load(html)
   $('script').remove()
   $('style').remove()
@@ -29,7 +29,7 @@ export const purifyText = (html: string): string => {
 }
 
 export const purifyThink = (html: string): string => {
-  html = html.slice(html.indexOf('</think>') + 8)
+  html = html.slice(html.indexOf('</think>') < 0 ? 0 : html.indexOf('</think>') + 8)
   const $ = cheerio.load(html)
   $('think').remove()
   return $.html()
