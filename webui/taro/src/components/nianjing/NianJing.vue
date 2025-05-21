@@ -203,6 +203,8 @@ onMounted(async () => {
   typingTicker.value = window.setInterval(typing, typingInterval.value)
 
   bgPlayer.value = await playAudio('http://106.15.6.50:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
+
+  generate()
 })
 
 onBeforeUnmount(() => {
