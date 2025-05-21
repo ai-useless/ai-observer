@@ -448,7 +448,8 @@ export class ESeminar {
 
   generateStageBackground = async () => {
     const participators = this.participators()
-    const prompt = `现场论坛背景，大屏幕科技风，背景墙有明显的 AGI观点 标志，来自各领域的${participators.length}个专家正在讨论话题${this.seminar.topic}。主持人站在最左边，嘉宾们分别坐在各自的位置。`
+    const prompt = `现场论坛背景，大屏幕科技风，背景墙有明显的 AGI观点 标志，来自各领域的${participators.length}个专家正在讨论话题${this.seminar.topic}。主持人站着，
+                    嘉宾们分别坐在各自的位置。图上的嘉宾和主持人人数为${participators.length}个，背景墙的海报和${this.seminar.topic}相关`
     const payload = await imageWorker.ImageRunner.handleGenerateRequest({
       style: '科技感',
       prompt,
