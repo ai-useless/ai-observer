@@ -160,7 +160,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
           捧哏：您客气，您有名着呢。
           谢场要有多样性和随机性，不要用过于套路式的谢场。剧本展开过程合理使用诸如${skill1}，${skill2}，${skill3}，${skill4}，${skill5}等经典相声技法，层层递进。
           逗哏为相声演员${host}，捧哏为相声演员${guest}。剧本应该包含合理的开场和谢场部分。
-          返回纯文本，返回格式如下：
+          返回纯文本，返回格式如下，格式中的逗哏和捧哏标识保持逗哏和捧哏文本，不要替换成演员名字：
           标题：xxxxxxxxxx
           逗哏：xxxxxxxxxxxxxxx
           捧哏：xxxxxxxxxxxxxxx

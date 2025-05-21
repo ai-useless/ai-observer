@@ -119,7 +119,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.PURE_TEXT,
-    (() => ') 返回纯文本，不要返回Markdown或html。') as RequirementFunc
+    (() => ') 返回纯文本，不要返回Markdown或html。返回文本不需要以发言人作为开头标识。') as RequirementFunc
   ],
   [
     PromptType.MUST_OBEY,
