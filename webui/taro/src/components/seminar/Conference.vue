@@ -71,7 +71,7 @@
     <AtModalHeader>目录</AtModalHeader>
     <AtModalContent>
       <View>
-        <Outline :active-topic='activeTopic' :json='outline' />
+        <Outline :active-topic='activeTopic || ""' :json='outline' />
       </View>
     </AtModalContent>
     <AtModalAction>
