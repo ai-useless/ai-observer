@@ -1,27 +1,28 @@
 <template>
   <q-layout view='hHh Lpr lFf'>
-    <q-header>
-      <q-toolbar class='text-white bg-white vertical-menu-padding'>
-        <Header class='full-width' />
-      </q-toolbar>
-    </q-header>
+    <q-drawer
+      :mini='collapsed'
+      show-if-above
+      bordered
+      :breakpoint='500'
+      :width='240'
+      transition-show='slide-in-left'
+      transition-hide='slide-out-left'
+      class='bg-grey-2'
+    >
+      <SidebarMenu v-model:collapsed='collapsed' />
+    </q-drawer>
     <q-page-container>
       <router-view />
     </q-page-container>
-    <q-footer>
-      <q-toolbar class='text-white bg-white vertical-menu-padding'>
-        <Footer class='full-width' />
-      </q-toolbar>
-    </q-footer>
   </q-layout>
 </template>
 
 <script setup lang='ts'>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { notify } from 'src/localstores'
 
-import Header from 'src/components/header/Header.vue'
-import Footer from 'src/components/footer/Footer.vue'
+import SidebarMenu from 'src/components/sidebar/SidebarMenu.vue'
 
 const _notify = notify.useNotificationStore()
 
@@ -35,5 +36,7 @@ onMounted(() => {
     })
   })
 })
+
+const collapsed = ref(false)
 
 </script>

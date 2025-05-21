@@ -33,25 +33,15 @@ export type ErrorResponsePayload = {
 }
 
 export class NianJingRunner {
-  static prompt = (
-    name: string
-  ) => {
-    return Prompt.prompt(
-      Intent.GENERATE,
-      name
-    )
+  static prompt = (name: string) => {
+    return Prompt.prompt(Intent.GENERATE, name)
   }
 
-  static requestGenerate = async (
-    name: string,
-    modelId?: number
-  ) => {
+  static requestGenerate = async (name: string, modelId?: number) => {
     const model = dbBridge._Model.model(modelId as number)
     if (!model) return
 
-    const _prompt = NianJingRunner.prompt(
-      name
-    )
+    const _prompt = NianJingRunner.prompt(name)
 
     const textResp = await axios.post(constants.FALLBACK_API, {
       model: model.name,
@@ -64,7 +54,9 @@ export class NianJingRunner {
       }
     }
 
-    const texts = Prompt.postProcess((textResp.data as Record<string, string>).content)
+    const texts = Prompt.postProcess(
+      (textResp.data as Record<string, string>).content
+    )
     return {
       texts: texts
     }
@@ -73,15 +65,9 @@ export class NianJingRunner {
   static handleGenerateRequest = async (
     payload: GenerateRequestPayload
   ): Promise<GenerateResponsePayload | undefined> => {
-    const {
-      name,
-      modelId
-    } = payload
+    const { name, modelId } = payload
 
-    const response = await NianJingRunner.requestGenerate(
-      name,
-      modelId
-    )
+    const response = await NianJingRunner.requestGenerate(name, modelId)
     if (!response || !response.texts || !response.texts.length) return
 
     return {

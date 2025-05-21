@@ -110,11 +110,7 @@ const intentRequirements = (
 export const IntentPrompt = new Map<Intent, IntentFunc>([
   [
     Intent.GENERATE,
-    ((
-      topic: string,
-      host: string,
-      guest: string
-    ) => {
+    ((topic: string, host: string, guest: string) => {
       const skills = [
         '扑盲子',
         '三翻四抖',

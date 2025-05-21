@@ -1,37 +1,50 @@
-import { duanziWorker, imageWorker, refineWorker, speakWorker } from 'src/worker'
+import {
+  duanziWorker,
+  imageWorker,
+  refineWorker,
+  speakWorker
+} from 'src/worker'
 import { _Model } from '../db'
 
 export class Duanzi {
   private static baseTextIndex = 0
 
-  static refineImagePrompt = async (text: string, baseIndex: number, index: number, onImage: (index: number, image: string) => void) => {
+  static refineImagePrompt = async (
+    text: string,
+    baseIndex: number,
+    index: number,
+    onImage: (index: number, image: string) => void
+  ) => {
     refineWorker.RefineRunner.handleGenerateRequest({
       intent: refineWorker.Intent.REFINE_PROMPT,
       style: '内涵无厘头搞笑',
       prompt: text,
       letters: 0,
       modelId: _Model.topicModelId()
-    }).then((payload) => {
-      if (!payload || !payload.text || !payload.text.length) return
-
-      imageWorker.ImageRunner.handleGenerateRequest({
-        prompt: payload.text,
-        style: '内涵无厘头搞笑漫画',
-        dialog: false,
-        extra: '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。不允许出现真人头像。',
-        highResolution: false,
-        ratio: '16:9'
-      })
-        .then((_payload) => {
-          if (_payload && _payload.image)
-            onImage(baseIndex + index, _payload.image)
-        })
-        .catch((e) => {
-          console.log(`Failed generate image: ${e}`)
-        })
-    }).catch((e) => {
-      console.log(`Failed refine: ${e}`)
     })
+      .then((payload) => {
+        if (!payload || !payload.text || !payload.text.length) return
+
+        imageWorker.ImageRunner.handleGenerateRequest({
+          prompt: payload.text,
+          style: '内涵无厘头搞笑漫画',
+          dialog: false,
+          extra:
+            '图片中的搞笑人物头像可以使用不同的搞笑表情包头像。不允许出现真人头像。',
+          highResolution: false,
+          ratio: '16:9'
+        })
+          .then((_payload) => {
+            if (_payload && _payload.image)
+              onImage(baseIndex + index, _payload.image)
+          })
+          .catch((e) => {
+            console.log(`Failed generate image: ${e}`)
+          })
+      })
+      .catch((e) => {
+        console.log(`Failed refine: ${e}`)
+      })
   }
 
   static generateMedia = (

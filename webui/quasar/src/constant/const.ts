@@ -1,7 +1,9 @@
 export const CHAT_API = 'http://106.15.6.50:8091/api/v1/chat'
 export const TEXT2SPEECH_API = 'http://106.15.6.50:8091/api/v1/speak'
-export const TEXT2SPEECH_ASYNC_API = 'http://106.15.6.50:8091/api/v1/speak_async'
-export const TEXT2SPEECH_ASYNC_V2_API = 'http://106.15.6.50:8091/api/v2/speak_async'
+export const TEXT2SPEECH_ASYNC_API =
+  'http://106.15.6.50:8091/api/v1/speak_async'
+export const TEXT2SPEECH_ASYNC_V2_API =
+  'http://106.15.6.50:8091/api/v2/speak_async'
 export const QUERY_AUDIO_API = 'http://106.15.6.50:8091/api/v1/audios'
 export const COOK_SIMULATOR_API =
   'http://106.15.6.50:8091/api/v1/cook_simulator'

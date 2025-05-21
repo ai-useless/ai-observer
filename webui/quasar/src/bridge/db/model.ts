@@ -16,14 +16,17 @@ export class _Model {
 
   static randomPeek = async (hostModel?: boolean) => {
     const models = (await dbSeminar.models.toArray()).filter(
-      (op) => (hostModel === undefined || op.host_model === hostModel) && !op.disabled
+      (op) =>
+        (hostModel === undefined || op.host_model === hostModel) && !op.disabled
     )
     const index = Math.floor(Math.random() * models.length)
     return models[index]
   }
 
   static model = async (id: number) => {
-    return (await dbSeminar.models.toArray()).filter((el) => !el.disabled).find((el) => el.id === id)
+    return (await dbSeminar.models.toArray())
+      .filter((el) => !el.disabled)
+      .find((el) => el.id === id)
   }
 
   static _topicModel = () => {

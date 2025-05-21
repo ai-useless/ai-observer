@@ -1,9 +1,9 @@
 {
   "name": "ai-observer",
   "version": "0.0.1",
-  "description": "Let AI analyze what you're interesting in",
-  "productName": "AI Observer",
-  "author": "AI Useless Team <useless@useless.ai>",
+  "description": "可以玩的AGI",
+  "productName": "没谱儿AGI",
+  "author": "没谱儿AGI <useless@useless.ai>",
   "private": true,
   "scripts": {
     "start": "quasar dev",

@@ -115,11 +115,13 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   ],
   [
     PromptType.NO_CODE,
-    (() => ') 这是一个聊天节目，直接返回谈话内容，不允许返回任何编程语言代码。') as RequirementFunc
+    (() =>
+      ') 这是一个聊天节目，直接返回谈话内容，不允许返回任何编程语言代码。') as RequirementFunc
   ],
   [
     PromptType.PURE_TEXT,
-    (() => ') 返回纯文本，不要返回Markdown或html。返回文本不需要以发言人作为开头标识。') as RequirementFunc
+    (() =>
+      ') 返回纯文本，不要返回Markdown或html。返回文本不需要以发言人作为开头标识。') as RequirementFunc
   ],
   [
     PromptType.MUST_OBEY,

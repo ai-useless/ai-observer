@@ -1,7 +1,19 @@
 import { nianjingWorker, speakWorker } from 'src/worker'
 
 export class ENianJing {
-  static speak = (simulatorId: number, texts: string[], index: number, steps: number, onMessage: (message: string, index: number, first: boolean, last: boolean, audio?: string) => void) => {
+  static speak = (
+    simulatorId: number,
+    texts: string[],
+    index: number,
+    steps: number,
+    onMessage: (
+      message: string,
+      index: number,
+      first: boolean,
+      last: boolean,
+      audio?: string
+    ) => void
+  ) => {
     if (index >= texts.length) return
 
     const text = texts[index]
@@ -12,11 +24,23 @@ export class ENianJing {
     }).then((payload1) => {
       if (!payload1 || !payload1.audio || !payload1.audio.length) {
         ENianJing.speak(simulatorId, texts, index + steps, steps, onMessage)
-        onMessage(text, index, index === 0, index === texts.length - 1, undefined)
+        onMessage(
+          text,
+          index,
+          index === 0,
+          index === texts.length - 1,
+          undefined
+        )
         return
       }
       ENianJing.speak(simulatorId, texts, index + steps, steps, onMessage)
-      onMessage(text, index, index === 0, index === texts.length - 1, payload1.audio)
+      onMessage(
+        text,
+        index,
+        index === 0,
+        index === texts.length - 1,
+        payload1.audio
+      )
     })
   }
 
@@ -24,7 +48,13 @@ export class ENianJing {
     name: string,
     simulatorId: number,
     modelId: number,
-    onMessage: (message: string, index: number, first: boolean, last: boolean, audio?: string) => void
+    onMessage: (
+      message: string,
+      index: number,
+      first: boolean,
+      last: boolean,
+      audio?: string
+    ) => void
   ) => {
     nianjingWorker.NianJingRunner.handleGenerateRequest({
       name,

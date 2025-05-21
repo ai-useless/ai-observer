@@ -144,9 +144,9 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: 'AI Observer',
-        short_name: 'AI Observer',
-        description: 'Round table seminar of AIs',
+        name: '没谱儿AGI',
+        short_name: '没谱儿AGI',
+        description: '可以玩的AGI',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
@@ -183,7 +183,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'ai-observer'
+        appId: 'meipu-agi'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
