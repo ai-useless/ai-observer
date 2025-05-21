@@ -1,4 +1,22 @@
 [{
+    "name": "谢言之",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xielian.png",
+    "personality": "心怀慈悲、温柔坚定、不求回报",
+    "host": false,
+    "audio_id": "xieyanzhi",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xielian.mp3",
+    "archetype": "漫画男主",
+    "title": "温柔大男主"
+}, {
+    "name": "冷宴",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/",
+    "personality": "反抗命运，甚至与天地为敌",
+    "host": false,
+    "audio_id": "lengyan",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/.mp3",
+    "archetype": "漫画男主",
+    "title": "炽热执着的弟弟"
+}, {
     "name": "觉一法师",
     "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/yaoshizhoufashi.jpg",
     "personality": "专修《药师琉璃光如来本愿功德经》与药师咒持诵之法，声音沉稳清净，蕴含疗愈力。",
