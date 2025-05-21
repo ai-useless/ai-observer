@@ -45,7 +45,7 @@ async def chat(
 
     max_tokens = _model['max_tokens'] if 'max_tokens' in _model else 32768
 
-    max_tokens = _max_tokens - sum(len(message.content) for message in messages) - len(prompt)
+    max_tokens = max_tokens - sum(len(message.content) for message in messages) - len(prompt)
     if max_tokens <= 512:
         raise Exception('Too many tokens')
 
