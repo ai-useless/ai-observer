@@ -150,7 +150,7 @@ export const IntentPrompt = new Map<Intent, IntentFunc>([
           或两个人打趣的形式开始，
           例如：
           逗哏：孙老师。
-          捧哏：您老师。
+          捧哏：不敢当，您老师。
           逗哏：今天我要给大家介绍孙老师。
           捧哏：您客气。
           或者传统相声开场，
