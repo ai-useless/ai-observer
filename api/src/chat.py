@@ -43,7 +43,7 @@ async def chat(
     url = 'https://llm.chutes.ai/v1/chat/completions'
     # url = 'http://47.238.224.37:8091/v1/chat/completions'
 
-    max_tokens = _model['max_tokens'] if 'max_tokens' in _model else 32768
+    max_tokens = _model['max_tokens'] if 'max_tokens' in _model and _model['max_tokens'] is not None else 32768
 
     max_tokens = max_tokens - sum(len(message.content) for message in messages) - len(prompt)
     if max_tokens <= 512:
