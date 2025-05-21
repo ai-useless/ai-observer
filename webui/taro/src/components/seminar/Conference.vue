@@ -385,24 +385,27 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
 
   waitMessages.value.filter((el) => el.subTopic === lastTopic.value).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
+    const content = el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
     _messages.push({
       participatorId: el.participator.id as number,
-      content: purify.purifyText(el.message)
+      content
     })
-    tokens += purify.purifyText(el.message).length
+    tokens += content.length
     messages.set(el.subTopic, _messages)
   })
 
   for (let i = displayMessages.value.length - 2; i >= 0; i--) {
     const el = displayMessages.value[i]
+    const content = el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
 
-    tokens += purify.purifyText(el.message).length
+    tokens += content.length
     if (tokens > maxTokens) break
 
     const _messages = messages.get(el.subTopic) || []
+
     _messages.splice(0, 0, {
       participatorId: el.participator.id as number,
-      content: el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
+      content: content
     })
     messages.set(el.subTopic, _messages)
   }
