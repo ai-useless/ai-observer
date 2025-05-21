@@ -1,6 +1,6 @@
 <template>
   <View style='max-width: 280px'>
-    <View style='margin-top: 16px;'>
+    <View>
       <View v-for='title in titles' :key='title' :class='["title", title === activeTopic ? "" : "normal"]' style='margin-left: 24px; margin-top: 8px;'>
         <rich-text style='font-size: 12px;' :nodes='title' />
       </View>

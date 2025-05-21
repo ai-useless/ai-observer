@@ -371,7 +371,9 @@ const startXiangsheng = async () => {
   if (playScripts.value) eXiangsheng.value.startScripts()
   else eXiangsheng.value.start()
 
-  backgroundImage.value = await eXiangsheng.value.generateStageBackground() as string
+  eXiangsheng.value.generateStageBackground().then((image) => {
+    backgroundImage.value = image as string
+  })
 
   typingTicker.value = window.setInterval(typing, 100)
 }

@@ -25,6 +25,7 @@ import share from './Share.svg'
 import check from './Check.svg'
 import fail from './Fail.svg'
 import download from './Download.svg'
+import list from './List.svg'
 
 export {
   chevronRight,
@@ -53,5 +54,6 @@ export {
   share,
   check,
   fail,
-  download
+  download,
+  list
 }

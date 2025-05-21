@@ -57,6 +57,9 @@
           <View :style='{borderRight: "1px solid gray", height: "24px", opacity: autoScroll ? 0.4 : 1, backgroundColor: "white" }' @click='onAutoScrollClick'>
             <Image :src='manualScrollGray' mode='widthFix' style='width: 24px; height: 24px;' />
           </View>
+          <View style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onContentListClick'>
+            <Image :src='list' mode='widthFix' style='width: 24px; height: 24px;' />
+          </View>
           <View style='height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
             <Image :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
           </View>
@@ -64,6 +67,17 @@
       </View>
     </View>
   </View>
+  <AtModal :is-opened='showContentList' @close='onContentListClose'>
+    <AtModalHeader>目录</AtModalHeader>
+    <AtModalContent>
+      <View>
+        <Outline :active-topic='activeTopic' :json='outline' />
+      </View>
+    </AtModalContent>
+    <AtModalAction>
+      <Button @click='onContentListClose'>关闭</Button>
+    </AtModalAction>
+  </AtModal>
 </template>
 
 <script setup lang='ts'>
@@ -71,8 +85,9 @@ import { dbBridge, entityBridge } from 'src/bridge'
 import { seminar, model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
+import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
-import { View, ScrollView, Text, Image } from '@tarojs/components'
+import { View, ScrollView, Button, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
@@ -81,7 +96,7 @@ import { seminarWorker } from 'src/worker'
 import Outline from './Outline.vue'
 import MessageCard from './MessageCard.vue'
 
-import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp } from 'src/assets'
+import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, list } from 'src/assets'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -93,6 +108,7 @@ const chatBoxHeight = ref(0)
 const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
+const showContentList = ref(false)
 
 const backgroundImage = ref('http://106.15.6.50:81/download/images/yuanzhuotaolun.png')
 
@@ -116,6 +132,7 @@ const outline = ref({
 } as unknown as Record<string, unknown>)
 const activeTopic = ref('')
 const lastTopic = ref(undefined as unknown as string)
+const titles = computed(() => outline.value.titles as string[])
 
 class AudioPlayer {
   context: Taro.InnerAudioContext
@@ -158,6 +175,15 @@ const onGotoTopClick = () => {
 
 const onPlayClick = () => {
   enablePlay.value = !enablePlay.value
+}
+
+const onContentListClose = () => {
+  showContentList.value = false
+}
+
+const onContentListClick = () => {
+  if (!titles.value || !titles.value.length) return
+  showContentList.value = true
 }
 
 const calculateTypingInterval = (duration: number) => {
@@ -398,7 +424,9 @@ const startSeminar = async () => {
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
   loading.value = true
 
-  backgroundImage.value = await eSeminar.value.generateStageBackground() as string
+  eSeminar.value.generateStageBackground().then((image) => {
+    backgroundImage.value = image as string
+  })
   eSeminar.value.start()
 
   typingTicker.value = window.setInterval(typing, 100)
