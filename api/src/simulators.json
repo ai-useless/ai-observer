@@ -1,6 +1,6 @@
 [{
     "name": "谢言之",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xielian.png",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xieyanzhi.png",
     "personality": "心怀慈悲、温柔坚定、不求回报",
     "host": false,
     "audio_id": "xieyanzhi",
@@ -9,11 +9,11 @@
     "title": "温柔大男主"
 }, {
     "name": "冷宴",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/lengyan.png",
     "personality": "反抗命运，甚至与天地为敌",
     "host": false,
     "audio_id": "lengyan",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/yyqx.mp3",
     "archetype": "漫画男主",
     "title": "炽热执着的弟弟"
 }, {
