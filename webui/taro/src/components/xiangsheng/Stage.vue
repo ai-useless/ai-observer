@@ -405,6 +405,11 @@ onMounted(async () => {
 })
 
 useDidShow(() => {
+  const participators = dbBridge._Participator.participators(_uid.value)
+  if (!topic.value || !_uid.value || !participators.length) {
+    Taro.navigateTo({ url: '/pages/xiangsheng/role/RolesPage' })
+    return
+  }
   startXiangsheng()
 })
 

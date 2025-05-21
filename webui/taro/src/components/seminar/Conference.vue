@@ -446,10 +446,21 @@ onMounted(async () => {
     chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 40
   }
 
+  const participators = dbBridge._Participator.participators(_uid.value)
+  if (!topic.value || !_uid.value || !participators.length) {
+    Taro.navigateTo({ url: '/pages/seminar/guest/GuestsPage' })
+    return
+  }
+
   startSeminar()
 })
 
 useDidShow(() => {
+  const participators = dbBridge._Participator.participators(_uid.value)
+  if (!topic.value || !_uid.value || !participators.length) {
+    Taro.navigateTo({ url: '/pages/seminar/guest/GuestsPage' })
+    return
+  }
   startSeminar()
 })
 
