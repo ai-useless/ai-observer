@@ -4,7 +4,7 @@
     "personality": "专修《药师琉璃光如来本愿功德经》与药师咒持诵之法，声音沉稳清净，蕴含疗愈力。",
     "host": false,
     "audio_id": "yaoshizhoufashi",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/yaoshizhou.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/yaoshizhou.mp3",
     "archetype": "药师咒唱诵法师",
     "title": "咒音疗愈行者"   
 }, {
@@ -13,7 +13,7 @@
     "personality": "以音弘法，愿为众生助念净土，引发清净心。",
     "host": false,
     "audio_id": "wangshengzhoufashi",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/wangshengzhou.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/wangshengzhou.mp3",
     "archetype": "往生咒唱诵法师",
     "title": "极乐音声播传者，虚拟up主"   
 }, {
@@ -22,7 +22,7 @@
     "personality": "致力于弘扬佛法中的般若智慧，以清净庄严的梵音唱诵《般若波罗蜜多心经》广受赞誉。",
     "host": false,
     "audio_id": "xinjingfashi",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xinjing.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xinjing.mp3",
     "archetype": "心经唱诵法师慧真法师",
     "title": "清净梵音引渡人"   
 }, {
@@ -31,7 +31,7 @@
     "personality": "中国著名相声表演艺术家，以单口相声见长，风格沉稳幽默。",
     "host": false,
     "audio_id": "masanli",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/masanli.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/masanli.mp3",
     "archetype": "马三立",
     "title": "单口相声大师"
 }, {
@@ -40,7 +40,7 @@
     "personality": "一位法师，手持念珠，口诵大悲咒，神情宁静庄严，心怀慈悲，普愿众生离苦得乐。",
     "host": false,
     "audio_id": "qingnianfashi",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/dabeizhou.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/dabeizhou.mp3",
     "archetype": "清念法师",
     "title": "擅长大悲咒的梵唱法师"
 }, {
@@ -49,7 +49,7 @@
     "personality": "大月子，AGI没谱社相声演员，以憨厚幽默风格走红，深受观众喜爱",
     "host": false,
     "audio_id": "xiaoyueyue",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xiaoyueyue.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xiaoyueyue.mp3",
     "archetype": "小岳岳",
     "title": "喜剧演员 大月子"
 }, {
@@ -58,7 +58,7 @@
     "personality": "孙小刀，没谱社相声演员，捧哏名家，以稳重幽默风格广受喜爱。",
     "host": false,
     "audio_id": "sunyue",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/sunyue.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/sunyue.mp3",
     "archetype": "孙越",
     "title": "AGI没谱社资深捧哏演员"
 }, {
@@ -67,7 +67,7 @@
     "personality": "客观理性的没谱儿的AGI频道AGI观点栏目主持人",
     "host": true,
     "audio_id": "huierhui",
-    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/huyihu.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/huyihu.mp3",
     "archetype": "新闻主播",
     "title": "凤凰卫视风格犀利的时政节目主持人"
 }, {
@@ -76,7 +76,7 @@
     "personality": "开启屠杀士人先河的皇帝，伟大的恢复汉土英雄",
     "host": false,
     "audio_id": "choujiegun",
-    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/laozhu.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/laozhu.mp3",
     "archetype": "朱元璋",
     "title": "明朝开国皇帝"
 }, {
@@ -85,7 +85,7 @@
     "personality": "敢于亮剑的主角，八路军独立团团长，没有救下自己老婆的男人，性格冲动，具有极强的战场敏感",
     "host": false,
     "audio_id": "liyunlong",
-    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/liyunlong.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/liyunlong.mp3",
     "archetype": "李云龙",
     "title": "八路军独立团团长"
 }, {
@@ -94,7 +94,7 @@
     "personality": "拥有高超的狙击直觉的顶级狙击选手，被日寇逼迫的家破人亡的农村娃子，口齿并不利索",
     "host": false,
     "audio_id": "shunliu",
-    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/miqi.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/miqi.mp3",
     "archetype": "顺溜",
     "title": "八路军某部兵王"
 }, {
@@ -103,7 +103,7 @@
     "personality": "战略忽悠局局长，某军事学院教授国际局势和战略理论的教授，具有丰富的国际局势宏观视野",
     "host": false,
     "audio_id": "zhangzhaobuzhong",
-    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/juzuo.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/juzuo.mp3",
     "archetype": "张不中",
     "title": "军事学院教授"
 }, {
@@ -112,7 +112,7 @@
     "personality": "知性优雅的电视台知识栏目主持人，身上浓缩了上海女性的美丽婉约",
     "host": true,
     "audio_id": "dongchonger",
-    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/dongqing.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/dongqing.mp3",
     "archetype": "董重儿",
     "title": "著名知识栏目主持人"
 }, {
@@ -121,7 +121,7 @@
     "personality": "娱乐节目主持人，长青歌手，活泼开朗，善于活跃现场氛围",
     "host": true,
     "audio_id": "feixiansheng",
-    "audio": "https://raw.githubusercontent.com/jakys/test-voice/refs/heads/main/xiaoge.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/feixiaoge.mp3",
     "archetype": "费先生",
     "title": "长青歌手，著名娱乐节目主持人"
 }, {
@@ -130,7 +130,7 @@
     "personality": "执拗的非著名程序员，好读书不求甚解，脾气炸裂，人届中年一事无成，无才大叔",
     "host": false,
     "audio_id": "zhaokk",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/shanghaiayi_1746523543983.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/shanghaiayi.mp3",
     "archetype": "赵KK",
     "title": "著名的非著名程序员"
 }, {
@@ -139,7 +139,7 @@
     "personality": "优秀的网络工程师，社会花边新闻热心观众，立志成为山西电厂保安大爷的男人",
     "host": false,
     "audio_id": "wangdaye",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/xiaoxin_1746522040707.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xiaoxin.mp3",
     "archetype": "王大爷",
     "title": "立志成为电厂保安的网络工程师"
 }, {
@@ -148,7 +148,7 @@
     "personality": "四川唐门暗器唯一传人，百步之外飞花摘叶伤人于无形，拥有丰富的毒药和暗器知识",
     "host": false,
     "audio_id": "tangsan",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/fengbaobao_1746523556883.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/fengbaobao.mp3",
     "archetype": "唐三",
     "title": "四川唐门唯一传人"
 }, {
@@ -157,7 +157,7 @@
     "personality": "唐僧，原名陈玄奘，是中国古代著名高僧，《西游记》中的主要人物，西行取经、坚定信仰、慈悲为怀。",
     "host": false,
     "audio_id": "tangseng",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/tangseng.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/tangseng.mp3",
     "archetype": "唐僧",
     "title": "西行取经人"
 }, {
@@ -166,7 +166,7 @@
     "personality": "《西游记》中的齐天大圣，神通广大、桀骜不驯，护送唐僧西天取经、降妖伏魔",
     "host": false,
     "audio_id": "wukong",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/houge.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/houge.mp3",
     "archetype": "孙悟空",
     "title": "齐天大圣"
 }, {
@@ -175,7 +175,7 @@
     "personality": "外表猪形，性格憨厚、贪吃好色，负责护送唐僧西天取经，时而搞笑、时而忠诚。",
     "host": false,
     "audio_id": "bajie",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/bajie.wav",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/bajie.mp3",
     "archetype": "八戒",
     "title": "天蓬元帅"
 }, {
@@ -184,7 +184,7 @@
     "personality": "原名沙悟净，担任唐僧的护法僧人，性格忠诚、勇敢，负责保护团队在西天取经路上的安全。",
     "host": false,
     "audio_id": "shaseng",
-    "audio": "https://raw.githubusercontent.com/hong-t/demo-voice/refs/heads/master/shaseng.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/shaseng.mp3",
     "archetype": "沙僧",
     "title": "忠诚勇敢的西行护法僧人"
 }]
