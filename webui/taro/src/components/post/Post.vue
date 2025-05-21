@@ -54,7 +54,7 @@
             </View>
           </View>
         </View>
-        <View style='margin-top: 8px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
+        <View style='margin-top: 8px; font-size: 12px; color: gray;' @longpress='onPromptLongPress(_prompt)'>{{ _prompt }}</View>
         <View style='display: flex; margin-top: 4px; flex-direction: row-reverse;'>
           <View>
             <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt' :disabled='_images.successes < _images.total'>
@@ -86,7 +86,9 @@
         </template>
       </ComplexInput>
     </View>
-    <Canvas canvasId='canvas' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+    <Canvas canvasId='canvas-1-1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+    <Canvas canvasId='canvas-4-3' style='width: 900px; height: 675px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+    <Canvas canvasId='canvas-16-9' style='width: 900px; height: 507px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
   </View>
   <AtModal :is-opened='configuring' @close='onConfigureClose'>
     <AtModalHeader>创作设置</AtModalHeader>
@@ -98,7 +100,7 @@
             <View style='font-size: 12px; color: gray;'>(最多9张)</View>
           </View>
           <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
-            <Input :value='imageNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onImageNumberInput' />
+            <Input :value='imageNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onImageNumberInput' />
           </View>
         </View>
         <View style='display: flex; line-height: 18px; margin-top: 4px;'>
@@ -164,7 +166,7 @@
             <View style='font-size: 12px; color: gray;'>(20~200字)</View>
           </View>
           <View style='width: 40%; display: flex; flex-direction: row-reverse;'>
-            <Input :value='letterNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onLetterNumberInput' />
+            <Input :value='letterNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onLetterNumberInput' />
           </View>
         </View>
       </View>
@@ -196,10 +198,13 @@ const postHeight = ref(0)
 const scrollTop = ref(999999)
 
 const generating = ref(false)
+const imageGenerating = ref(false)
 
 const configuring = ref(false)
 const imageNumber = ref(1)
+const imageNumberStr = ref(imageNumber.value.toString())
 const letterNumber = ref(20)
+const letterNumberStr = ref(letterNumber.value.toString())
 const imageRatio = ref('4:3')
 const imageResolution = ref('高清')
 
@@ -256,14 +261,6 @@ watch(imageCount, async () => {
   scrollTop.value += 1
 })
 
-watch(imageNumber, () => {
-  imageNumber.value = imageNumber.value > 0 || imageNumber.value <= 0 ? 9 : imageNumber.value
-})
-
-watch(imageNumber, () => {
-  letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value <= 20 ? 20 : letterNumber.value
-})
-
 const imageWidth = (count: number) => {
   if (count === 1) return '100%'
   else if (count === 2 || count == 4) return '50%'
@@ -316,7 +313,9 @@ const prepareShareData = (_prompt: string) => {
     _images.posterPath = posterPath as string
     timelinePrompt.value = _prompt
     timelinePosterPath.value = posterPath as string
+    imageGenerating.value = false
   }).catch((e) => {
+    imageGenerating.value = false
     console.log(`Failed generate poster: ${e}`)
   })
 }
@@ -383,6 +382,7 @@ const refinePrompt = (_prompt: string) => {
   entityBridge.EChat.refinePrompt(_prompt, dbBridge._Model.topicModelId()).then((__prompt) => {
     generating.value = false
     if (!__prompt) {
+      imageGenerating.value = false
       return
     }
     _images.imagePrompt = __prompt
@@ -392,6 +392,7 @@ const refinePrompt = (_prompt: string) => {
     }
   }).catch((e) => {
     generating.value = false
+    imageGenerating.value = false
     console.log(`Failed refine prompt: ${e}`)
     setTimeout(() => {
       refinePrompt(_prompt)
@@ -401,6 +402,7 @@ const refinePrompt = (_prompt: string) => {
 
 const refineText = (_prompt: string) => {
   generating.value = true
+  imageGenerating.value = true
 
   entityBridge.EChat.refineText(_prompt, promptStyle.value, letterNumber.value, dbBridge._Model.topicModelId()).then((__prompt) => {
     if (!__prompt) {
@@ -421,6 +423,7 @@ const refineText = (_prompt: string) => {
     refinePrompt(__prompt)
   }).catch((e) => {
     generating.value = false
+    imageGenerating.value = false
     console.log(`Failed refine text: ${e}`)
     setTimeout(() => {
       refineText(_prompt)
@@ -441,7 +444,7 @@ watch(generating, () => {
 watch(prompt, () => {
   if (!audioInput.value || !prompt.value || !prompt.value.length) return
 
-  if (generating.value) return
+  if (generating.value || imageGenerating.value) return
   configuring.value = true
 })
 
@@ -458,7 +461,7 @@ watch(inputHeight, () => {
 })
 
 const onGenerateClick = () => {
-  if (generating.value) return
+  if (generating.value || imageGenerating.value) return
   configuring.value = true
 }
 
@@ -504,11 +507,17 @@ const onImageStyleInput = (e: { detail: { value: string } }) => {
 }
 
 const onImageNumberInput = (e: { detail: { value: any } }) => {
+  const str = e.detail.value as string
+  imageNumberStr.value = str
   imageNumber.value = Number(e.detail.value)
+  imageNumber.value = imageNumber.value > 9 || imageNumber.value <= 0 ? 9 : imageNumber.value
 }
 
 const onLetterNumberInput = (e: { detail: { value: any } }) => {
+  const str = e.detail.value as string
+  letterNumberStr.value = str
   letterNumber.value = Number(e.detail.value)
+  letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value < 20 ? 20 : letterNumber.value
 }
 
 const onPromptStyleClick = (_prompt: string) => {
@@ -553,11 +562,11 @@ onMounted(async () => {
 })
 
 const sharePoster = async (title: string) => {
-  const canvasId = 'canvas'
-  const canvasCtx = Taro.createCanvasContext(canvasId)
-
   const _images = images.value.get(title) || {} as PromptImage
   if (!_images || !_images.images || !_images.images.length) return undefined
+
+  const canvasId = _images.ratio === '1:1' ? 'canvas-1-1' : _images.ratio === '4:3' ? 'canvas-4-3' : 'canvas-16-9'
+  const canvasCtx = Taro.createCanvasContext(canvasId)
 
   if (_images.total === 1) return Promise.resolve(_images.images[0].imagePath)
 
@@ -612,6 +621,24 @@ const onPreviewImageClick = (image: string, _images: string[]) => {
     enablesavephoto: true,
     enableShowPhotoDownload: true,
     showmenu: true
+  })
+}
+
+const onPromptLongPress = (_prompt: string) => {
+  Taro.setClipboardData({
+    data: _prompt,
+    success() {
+      Taro.showToast({
+        title: '复制成功!',
+        icon: 'success'
+      })
+    },
+    fail() {
+      Taro.showToast({
+        title: '复制失败!',
+        icon: 'error'
+      })
+    }
   })
 }
 

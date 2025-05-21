@@ -1,6 +1,8 @@
 <template>
   <View>
-    <View style='display: flex;'>
+    <View style='font-size: 12px; color: gray;'>讨论主题</View>
+    <Input :value='topic' style='border: 1px solid lightgray; border-radius: 4px; width: calc(100% - 48px); padding: 4px 8px; margin-top: 8px;' @input='onTopicInput' />
+    <View style='display: flex; margin-top: 16px;'>
       <View style='font-size: 12px; color: gray;'>选择讨论阵容或</View>
       <View style='font-size: 12px; color: blue;' @click='onRandomGuestClick'>随机</View>
     </View>
@@ -76,7 +78,7 @@ const selectingSimulator = ref(false)
 const selectingModel = ref(false)
 const guests = ref([] as simulator._Simulator[])
 const _models = ref([] as model._Model[])
-const ready = computed(() => guests.value.findIndex((el) => !el) < 0 && _models.value.findIndex((el) => !el) < 0)
+const ready = computed(() => guests.value.findIndex((el) => !el) < 0 && _models.value.findIndex((el) => !el) < 0 && topic.value && topic.value.length)
 
 const models = computed(() => model.Model.models())
 const simulators = computed(() => simulator.Simulator.allSimulators().filter((el) => guests.value.findIndex((_el) => _el && _el.simulator === el.simulator) < 0))
@@ -175,6 +177,10 @@ const onSelectModelClick = (_model: model._Model) => {
 
 const onCancelSelectModelClick = () => {
   selectingModel.value = false
+}
+
+const onTopicInput = (e: { detail: { value: string } }) => {
+  seminar.Seminar.setTopic(e.detail.value)
 }
 
 </script>

@@ -63,7 +63,7 @@ import { View, Image, Button } from '@tarojs/components'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { dbBridge, entityBridge } from 'src/bridge'
-import Taro from '@tarojs/taro'
+import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
 import { model, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
 
@@ -203,14 +203,35 @@ onMounted(async () => {
   typingTicker.value = window.setInterval(typing, typingInterval.value)
 
   bgPlayer.value = await playAudio('http://106.15.6.50:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
+
+  generate()
+})
+
+useDidShow(async () => {
+  typingTicker.value = window.setInterval(typing, typingInterval.value)
+  bgPlayer.value = await playAudio('http://106.15.6.50:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
+  generate()
 })
 
 onBeforeUnmount(() => {
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
   }
   if (bgPlayer.value && bgPlayer.value.context) {
     bgPlayer.value.context.stop()
+    bgPlayer.value = undefined as unknown as AudioPlayer
+  }
+})
+
+useDidHide(() => {
+  if (typingTicker.value >= 0) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+  if (bgPlayer.value && bgPlayer.value.context) {
+    bgPlayer.value.context.stop()
+    bgPlayer.value = undefined as unknown as AudioPlayer
   }
 })
 

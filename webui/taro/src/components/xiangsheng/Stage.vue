@@ -75,7 +75,7 @@ import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount, nextTick } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { View, ScrollView, Image } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
 
@@ -371,7 +371,9 @@ const startXiangsheng = async () => {
   if (playScripts.value) eXiangsheng.value.startScripts()
   else eXiangsheng.value.start()
 
-  backgroundImage.value = await eXiangsheng.value.generateStageBackground() as string
+  eXiangsheng.value.generateStageBackground().then((image) => {
+    backgroundImage.value = image as string
+  })
 
   typingTicker.value = window.setInterval(typing, 100)
 }
@@ -402,10 +404,31 @@ onMounted(async () => {
   startXiangsheng()
 })
 
+useDidShow(() => {
+  const participators = dbBridge._Participator.participators(_uid.value)
+  if (!topic.value || !_uid.value || !participators.length) {
+    Taro.navigateTo({ url: '/pages/xiangsheng/role/RolesPage' })
+    return
+  }
+  startXiangsheng()
+})
+
 onBeforeUnmount(() => {
   if (eXiangsheng.value) eXiangsheng.value.stop()
-  if (typingTicker.value) window.clearInterval(typingTicker.value)
+  if (typingTicker.value) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
 })
+
+useDidHide(() => {
+  if (eXiangsheng.value) eXiangsheng.value.stop()
+  if (typingTicker.value) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+})
+
 </script>
 
 <style>

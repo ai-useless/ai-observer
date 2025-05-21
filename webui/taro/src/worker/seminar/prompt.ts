@@ -13,9 +13,6 @@ export enum Intent {
 
 enum PromptType {
   NO_HEAD_SPACE,
-  IDENT_2_SPACE,
-  WITH_HTML,
-  HTML_STYLE,
   SEGMENT,
   NO_EMOJI,
   DURATION,
@@ -27,7 +24,6 @@ enum PromptType {
   AS_HOST,
   DONT_DESCRIBE_PERSONALITY,
   NO_VIRTUAL_WORDS,
-  WITH_EVENT,
   WITH_HISTORY_ANALYSIS,
   WITH_HISTORY_CONCLUSION,
   WITH_HUMAN_WORDS,
@@ -40,17 +36,6 @@ type RequirementFunc = (...args: (string | number | string[])[]) => string
 
 const Requirements = new Map<PromptType, RequirementFunc>([
   [PromptType.NO_HEAD_SPACE, (() => ') 行首不要有空格；') as RequirementFunc],
-  [
-    PromptType.IDENT_2_SPACE,
-    (() =>
-      ') 资料分级采用两个空格缩进，参考文献、链接独立成行并用方括号加数字标识；') as RequirementFunc
-  ],
-  [PromptType.WITH_HTML, (() => ') 输出格式为纯HTML；') as RequirementFunc],
-  [
-    PromptType.HTML_STYLE,
-    (() =>
-      ') 一级标题字体14px加粗，二级标题12px加粗，正文12px常规字体，行高1.5em；') as RequirementFunc
-  ],
   [PromptType.SEGMENT, (() => ') 根据语义合理分段；') as RequirementFunc],
   [
     PromptType.NO_EMOJI,
@@ -64,7 +49,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.PERSONALITY,
     (() =>
-      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例，包含具体事例链接。引用内容符合人物原型，禁止编造事实；') as RequirementFunc
+      ') 发言内容符合自己的人设，观点明确，事实充分，携带自己的分析和具体事例。引用内容符合人物原型，禁止编造事实；') as RequirementFunc
   ],
   [
     PromptType.EMOTION,
@@ -99,11 +84,6 @@ const Requirements = new Map<PromptType, RequirementFunc>([
     PromptType.NO_VIRTUAL_WORDS,
     (() =>
       ') 禁止使用用主题开头的语句，禁止使用类似于深远影响的虚拟词汇；') as RequirementFunc
-  ],
-  [
-    PromptType.WITH_EVENT,
-    (() =>
-      ') 若资料含具体事例，列出带链接的上标，鼠标悬停显示链接，点击可跳转；') as RequirementFunc
   ],
   [
     PromptType.WITH_HISTORY_ANALYSIS,
@@ -144,14 +124,10 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
     Intent.OUTLINE,
     [
       PromptType.NO_EMOJI,
-      PromptType.IDENT_2_SPACE,
-      PromptType.WITH_HTML,
-      PromptType.HTML_STYLE,
       PromptType.SEGMENT,
       PromptType.NO_HEAD_SPACE,
       PromptType.MERGE_SPACES,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
@@ -166,14 +142,10 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
-      PromptType.IDENT_2_SPACE,
-      PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
-      PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.DONT_DESCRIBE_PERSONALITY,
       PromptType.NO_VIRTUAL_WORDS,
-      PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_ANALYSIS,
       PromptType.WITH_HUMAN_WORDS,
       PromptType.WITHOUT_ABSENT_GUESTS,
@@ -188,13 +160,9 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.DURATION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
-      PromptType.IDENT_2_SPACE,
-      PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
-      PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
@@ -208,13 +176,9 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
-      PromptType.IDENT_2_SPACE,
-      PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
-      PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
@@ -228,13 +192,9 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
-      PromptType.IDENT_2_SPACE,
-      PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
-      PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
@@ -248,13 +208,9 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
-      PromptType.IDENT_2_SPACE,
-      PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
-      PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_CONCLUSION,
       PromptType.WITHOUT_ABSENT_GUESTS,
       PromptType.WITHOUT_POLITICAL,
@@ -269,13 +225,9 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
-      PromptType.IDENT_2_SPACE,
-      PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
-      PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT,
       PromptType.WITHOUT_ABSENT_GUESTS,
       PromptType.WITHOUT_POLITICAL,
       PromptType.MUST_OBEY
@@ -289,13 +241,9 @@ const IntentRequirements = new Map<Intent, PromptType[]>([
       PromptType.EMOTION,
       PromptType.NO_ANALYSIS,
       PromptType.NO_HEAD_SPACE,
-      PromptType.IDENT_2_SPACE,
-      PromptType.WITH_HTML,
       PromptType.MERGE_SPACES,
-      PromptType.HTML_STYLE,
       PromptType.DONT_START_WITH_TOPIC,
       PromptType.AS_HOST,
-      PromptType.WITH_EVENT,
       PromptType.WITH_HISTORY_CONCLUSION,
       PromptType.WITHOUT_ABSENT_GUESTS,
       PromptType.WITHOUT_POLITICAL,

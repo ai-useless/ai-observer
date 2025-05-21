@@ -53,11 +53,11 @@
 
 <script setup lang='ts'>
 import { View, Image, ScrollView } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import Taro, { useDidHide } from '@tarojs/taro'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { model, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
-import { computed, onMounted, ref, watch, nextTick } from 'vue'
+import { computed, onMounted, ref, watch, nextTick, onBeforeUnmount } from 'vue'
 
 import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, threeDotsVertical } from 'src/assets'
 
@@ -151,6 +151,28 @@ onMounted(async () => {
   }
 
   typingTicker.value = window.setInterval(typing, 100)
+})
+
+onBeforeUnmount(() => {
+  if (typingTicker.value >= 0) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+  if (audioPlayer.value) {
+    audioPlayer.value.context.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
+})
+
+useDidHide(() => {
+  if (typingTicker.value >= 0) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+  if (audioPlayer.value) {
+    audioPlayer.value.context.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
 })
 
 class AudioPlayer {

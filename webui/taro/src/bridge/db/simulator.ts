@@ -9,7 +9,7 @@ export class _Simulator {
 
   static randomPeek = (host?: boolean) => {
     const simulators = simulator.Simulator.allSimulators().filter(
-      (el) => !host || el.host === host
+      (el) => host === undefined || !!el.host === host
     )
     const index = Math.floor(Math.random() * simulators.length)
     return simulators[index]
