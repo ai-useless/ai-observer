@@ -446,6 +446,8 @@ onMounted(async () => {
     chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 40
   }
 
+  _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
+
   const participators = dbBridge._Participator.participators(_uid.value)
   if (!topic.value || !_uid.value || !participators.length) {
     Taro.navigateTo({ url: '/pages/seminar/guest/GuestsPage' })
@@ -456,6 +458,8 @@ onMounted(async () => {
 })
 
 useDidShow(() => {
+  _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
+
   const participators = dbBridge._Participator.participators(_uid.value)
   if (!topic.value || !_uid.value || !participators.length) {
     Taro.navigateTo({ url: '/pages/seminar/guest/GuestsPage' })
