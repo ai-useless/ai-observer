@@ -65,8 +65,8 @@ export class EXiangsheng {
     xiangshengWorker.XiangshengRunner.handleSpeakRequest({
       participatorId,
       text: text
-        .replace(/^逗[哏哙哭哐]\s*[:：]*\s*/, '')
-        .replace(/捧[哏哙哭哐]\s*[:：]*\s*/, '')
+        .replace(/^逗[哏哙哭哐诨]\s*[:：]*\s*/, '')
+        .replace(/捧[哏哙哭哐诨]\s*[:：]*\s*/, '')
     })
       .then((payload) => {
         const { audio } = payload as xiangshengWorker.SpeakResponsePayload
@@ -74,8 +74,8 @@ export class EXiangsheng {
           `${topic}之${subTopic}`,
           participatorId,
           text
-            .replace(/逗[哏哙哭哐]\s*[:：]*\s*/, '')
-            .replace(/捧[哏哙哭哐]\s*[:：]*\s*/, ''),
+            .replace(/逗[哏哙哭哐诨]\s*[:：]*\s*/, '')
+            .replace(/捧[哏哙哭哐诨]\s*[:：]*\s*/, ''),
           audio,
           index,
           index === 0,
