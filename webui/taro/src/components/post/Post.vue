@@ -86,7 +86,9 @@
         </template>
       </ComplexInput>
     </View>
-    <Canvas canvasId='canvas' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+    <Canvas canvasId='canvas-1-1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+    <Canvas canvasId='canvas-4-3' style='width: 900px; height: 675px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+    <Canvas canvasId='canvas-16-9' style='width: 900px; height: 507px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
   </View>
   <AtModal :is-opened='configuring' @close='onConfigureClose'>
     <AtModalHeader>创作设置</AtModalHeader>
@@ -196,6 +198,7 @@ const postHeight = ref(0)
 const scrollTop = ref(999999)
 
 const generating = ref(false)
+const imageGenerating = ref(false)
 
 const configuring = ref(false)
 const imageNumber = ref(1)
@@ -316,7 +319,9 @@ const prepareShareData = (_prompt: string) => {
     _images.posterPath = posterPath as string
     timelinePrompt.value = _prompt
     timelinePosterPath.value = posterPath as string
+    imageGenerating.value = false
   }).catch((e) => {
+    imageGenerating.value = false
     console.log(`Failed generate poster: ${e}`)
   })
 }
@@ -383,6 +388,7 @@ const refinePrompt = (_prompt: string) => {
   entityBridge.EChat.refinePrompt(_prompt, dbBridge._Model.topicModelId()).then((__prompt) => {
     generating.value = false
     if (!__prompt) {
+      imageGenerating.value = false
       return
     }
     _images.imagePrompt = __prompt
@@ -392,6 +398,7 @@ const refinePrompt = (_prompt: string) => {
     }
   }).catch((e) => {
     generating.value = false
+    imageGenerating.value = false
     console.log(`Failed refine prompt: ${e}`)
     setTimeout(() => {
       refinePrompt(_prompt)
@@ -401,6 +408,7 @@ const refinePrompt = (_prompt: string) => {
 
 const refineText = (_prompt: string) => {
   generating.value = true
+  imageGenerating.value = true
 
   entityBridge.EChat.refineText(_prompt, promptStyle.value, letterNumber.value, dbBridge._Model.topicModelId()).then((__prompt) => {
     if (!__prompt) {
@@ -421,6 +429,7 @@ const refineText = (_prompt: string) => {
     refinePrompt(__prompt)
   }).catch((e) => {
     generating.value = false
+    imageGenerating.value = false
     console.log(`Failed refine text: ${e}`)
     setTimeout(() => {
       refineText(_prompt)
@@ -441,7 +450,7 @@ watch(generating, () => {
 watch(prompt, () => {
   if (!audioInput.value || !prompt.value || !prompt.value.length) return
 
-  if (generating.value) return
+  if (generating.value || imageGenerating.value) return
   configuring.value = true
 })
 
@@ -458,7 +467,7 @@ watch(inputHeight, () => {
 })
 
 const onGenerateClick = () => {
-  if (generating.value) return
+  if (generating.value || imageGenerating.value) return
   configuring.value = true
 }
 
@@ -553,11 +562,11 @@ onMounted(async () => {
 })
 
 const sharePoster = async (title: string) => {
-  const canvasId = 'canvas'
-  const canvasCtx = Taro.createCanvasContext(canvasId)
-
   const _images = images.value.get(title) || {} as PromptImage
   if (!_images || !_images.images || !_images.images.length) return undefined
+
+  const canvasId = _images.ratio === '1:1' ? 'canvas-1-1' : _images.ratio === '4:3' ? 'canvas-4-3' : 'canvas-16-9'
+  const canvasCtx = Taro.createCanvasContext(canvasId)
 
   if (_images.total === 1) return Promise.resolve(_images.images[0].imagePath)
 

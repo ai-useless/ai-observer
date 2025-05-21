@@ -13,6 +13,10 @@ export class EImage {
       .then((payload) => {
         if (payload && payload.image)
           onImage(payload.image)
+        else {
+          console.log(`Failed generate image`)
+          if (onError) onError()
+        }
       })
       .catch((e) => {
         console.log(`Failed generate image: ${e}`)
