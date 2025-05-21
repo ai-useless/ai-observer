@@ -116,7 +116,7 @@ import { useRouter } from 'vue-router'
 import { meipuAgiLogo } from 'src/assets'
 
 const collapsed = defineModel<boolean>('collapsed')
-const menu = computed(() => setting.Setting.currentMenu().length ? setting.Setting.currentMenu() : 'observer')
+const menu = computed(() => setting.Setting.currentMenu().length ? setting.Setting.currentMenu() : 'home')
 
 const router = useRouter()
 
@@ -125,7 +125,7 @@ const onMenuClick = (_menu: string) => {
 
   switch (_menu) {
     case 'home': void router.push({ path: '/' }); break
-    case 'observer': void router.push({ path: '/seminar' }); break
+    case 'observer': void router.push({ path: '/seminar/guests' }); break
   }
 }
 

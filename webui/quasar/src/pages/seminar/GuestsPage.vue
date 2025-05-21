@@ -1,12 +1,12 @@
 <template>
   <q-page>
-    <Seminar style='width: 100%; height: 100%' />
+    <InviteGuests />
   </q-page>
 </template>
 
 <script setup lang='ts'>
 
-import Seminar from '../components/seminar/Seminar.vue'
+import InviteGuests from '../../components/seminar/InviteGuests.vue'
 
 </script>
 

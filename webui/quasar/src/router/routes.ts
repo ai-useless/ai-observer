@@ -1,10 +1,5 @@
 import { RouteRecordRaw } from 'vue-router'
 
-declare module 'vue-router' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface RouteMetaImpl {}
-}
-
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
@@ -12,17 +7,15 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('pages/IndexPage.vue'),
-        meta: {
-          NeedLogined: false
-        }
+        component: () => import('pages/IndexPage.vue')
       },
       {
         path: '/seminar',
-        component: () => import('pages/SeminarPage.vue'),
-        meta: {
-          NeedLogined: false
-        }
+        component: () => import('pages/seminar/SeminarPage.vue')
+      },
+      {
+        path: '/seminar/guests',
+        component: () => import('pages/seminar/GuestsPage.vue')
       }
     ]
   },

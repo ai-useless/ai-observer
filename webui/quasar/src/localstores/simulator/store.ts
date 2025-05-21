@@ -81,4 +81,6 @@ export class Simulator {
 
   static mySimulators = () => simulator.simulators.filter((el) => el.mine)
   static allSimulators = () => simulator.simulators
+
+  static simulator = (id: number) => simulator.simulators.find((el) => el.id === id)
 }

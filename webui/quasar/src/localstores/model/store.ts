@@ -44,4 +44,6 @@ export class Model {
   static getModels = () => model.getModels()
 
   static models = () => model.models
+
+  static model = (id: number) => model.models.find((el) => el.id === id)
 }

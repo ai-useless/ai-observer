@@ -1,8 +1,13 @@
 <template>
   <div class='text-center'>
-    <h3 class='text-grey-9'>
-      可以玩的AGI
-    </h3>
+    <div class='row full-width text-center justify-center items-center'>
+      <q-avatar>
+        <q-img :src='meipuAgiLogo' />
+      </q-avatar>
+      <h3 class='gradient-text q-ml-md' style='opacity: 0.6;'>
+        可以玩的AGI
+      </h3>
+    </div>
     <q-input
       rounded
       outlined
@@ -68,6 +73,8 @@ import { seminar } from 'src/localstores'
 import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { meipuAgiLogo } from 'src/assets'
+
 const initialTopics = [
   '油条的工艺与口味以及外观',
   '房产新政与房价调控',
@@ -130,7 +137,7 @@ const startSeminar = async () => {
   const _uid = await dbBridge._Seminar.create(topic.value)
   seminar.Seminar.setTopic(topic.value)
   seminar.Seminar.setSeminar(_uid)
-  void router.push({ path: '/seminar' })
+  void router.push({ path: '/seminar/guests' })
 }
 
 const onEnter = async () => {
@@ -194,4 +201,9 @@ onMounted(async () => {
   border-radius: 16px
   color: $grey-9
   font-size: 16px
+
+.gradient-text
+  background: linear-gradient(to right, #3f51b5, #e91e63)
+  -webkit-background-clip: text
+  color: transparent
 </style>
