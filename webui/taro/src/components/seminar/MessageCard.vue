@@ -6,7 +6,7 @@
     style='width: 100%;'
   >
     <View style='padding-bottom: 4px; line-height: 24px; border-bottom: 1px solid gray; border-top: 1px solid gray; margin-top: 8px; padding-top: 4px; margin-bottom: 8px; padding-bottom: 8px;'>
-      <View style='display: flex; height: 24px; justify-content: center; align-items: center;'>
+      <View style='display: flex; height: 24px; align-items: center;'>
         <View style='color: white;'>{{ message.participator.role === dbModel.Role.HOST ? '主持人' : '嘉宾' }}</View>
         <Image :src='message.simulator.simulator_avatar_url' mode='widthFix' style='margin-left: 4px; width: 24px; border-radius: 50%;' />
         <View style='color: white; font-weight: 600; margin-left: 8px;'>{{ message.simulator.simulator }}</View>
