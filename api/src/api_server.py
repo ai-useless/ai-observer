@@ -15,7 +15,7 @@ from typing import Optional
 from audio import generator as audio_generator
 from image import generator as image_generator
 from include import *
-from chat import chat as _chat, ChatMessage
+from chat import chat_non_stream as _chat, ChatMessage
 from config import config
 from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators, get_user as _get_user, cook_user as _cook_user, audio_2_text
 from db import db

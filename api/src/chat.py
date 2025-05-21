@@ -16,7 +16,10 @@ class ModelChatChoice:
     message: ChatMessage
 
     def __init__(self, api_choice: dict):
-        message = api_choice['delta']
+        message = api_choice['delta'] if 'delta' in api_choice else api_choice['message'] if 'message' in api_choice else None
+        if message is None:
+            self.message = None
+            return
         if message['content'] is None:
             self.message = None
             return
@@ -157,3 +160,50 @@ async def chat(
     logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}You should not be here{RESET} ... {content}{BOLD}{time.time() - start_time}{RESET}s')
     logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {BOLD}Raw{RESET}: {raw_chunks} ...')
     raise Exception(f'Invalid response: {content}')
+
+async def chat_non_stream(
+    model: str,
+    messages: list[ChatMessage],
+    prompt: str
+):
+    _model = db.get_model_with_name(model)
+    if _model is None:
+        raise Exception('Invalid model')
+
+    url = 'https://llm.chutes.ai/v1/chat/completions'
+    # url = 'http://47.238.224.37:8091/v1/chat/completions'
+
+    max_tokens = _model['max_tokens'] if 'max_tokens' in _model and _model['max_tokens'] is not None else 32768
+
+    max_tokens = max_tokens - sum(len(message.content) for message in messages) - len(prompt)
+    if max_tokens <= 512:
+        raise Exception('Too many tokens')
+
+    payload = {
+        'model': model,
+        'messages': [
+            *[{ 'role': message.role, 'content': message.content } for message in messages],
+            {'role': 'user', 'content': prompt}
+        ],
+        'stream': False,
+        'max_tokens': max_tokens,
+        'temperature': 0.8
+    }
+    headers = {
+        'Authorization': f'Bearer {config.api_token}',
+        'Content-Type': 'application/json'
+    }
+
+    start_time = time.time()
+    chat_uid = f'{uuid.uuid4()}'
+
+    logger.info(f'{BOLD}{model} - {chat_uid}{RESET} {BOLD}Requesting{RESET} ...')
+
+    timeout = aiohttp.ClientTimeout(connect=10, total=59)
+    async with aiohttp.ClientSession(timeout=timeout, raise_for_status=True) as session:
+        async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
+            chat_response = ModelChatResponse(await response.json())
+            choice = chat_response.choices[0]
+            if choice.message is None or choice.message.content is None:
+                return ''
+            return chat_response.choices[0].message.content
