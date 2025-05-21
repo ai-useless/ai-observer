@@ -1,7 +1,7 @@
 <template>
   <View style='max-width: 280px'>
     <View>
-      <View v-for='title in titles' :key='title' :class='["title", title === activeTopic ? "" : "normal"]' style='margin-left: 24px; margin-top: 8px;'>
+      <View v-for='(title, index) in titles' :key='index' :class='["title", title === activeTopic ? "" : "normal"]' :style='{marginLeft: "24px", marginTop: index > 0 ? "8px" : "0"}'>
         <rich-text style='font-size: 12px;' :nodes='title' />
       </View>
     </View>
