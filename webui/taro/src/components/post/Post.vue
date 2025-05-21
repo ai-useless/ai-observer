@@ -54,7 +54,7 @@
             </View>
           </View>
         </View>
-        <View style='margin-top: 8px; font-size: 12px; color: gray;'>{{ _prompt }}</View>
+        <View style='margin-top: 8px; font-size: 12px; color: gray;' @longpress='onPromptLongPress(_prompt)'>{{ _prompt }}</View>
         <View style='display: flex; margin-top: 4px; flex-direction: row-reverse;'>
           <View>
             <Button class='plain-btn' size='mini' plain open-type='share' style='width: 24px; height: 24px;' :data-id='index' :data-title='_prompt' :disabled='_images.successes < _images.total'>
@@ -621,6 +621,24 @@ const onPreviewImageClick = (image: string, _images: string[]) => {
     enablesavephoto: true,
     enableShowPhotoDownload: true,
     showmenu: true
+  })
+}
+
+const onPromptLongPress = (_prompt: string) => {
+  Taro.setClipboardData({
+    data: _prompt,
+    success() {
+      Taro.showToast({
+        title: '复制成功!',
+        icon: 'success'
+      })
+    },
+    fail() {
+      Taro.showToast({
+        title: '复制失败!',
+        icon: 'error'
+      })
+    }
   })
 }
 
