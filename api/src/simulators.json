@@ -1,4 +1,13 @@
 [{
+    "name": "小辣椒",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/yaomei.png",
+    "personality": "爽朗泼辣、仗义执言、爱笑爱闹、敢说敢做",
+    "host": false,
+    "audio_id": "yaomei",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/yaomei.mp3",
+    "archetype": " 火锅店老板娘",
+    "title": "又乖又飒"
+}, {
     "name": "谢言之",
     "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xieyanzhi.png",
     "personality": "心怀慈悲、温柔坚定、不求回报",
