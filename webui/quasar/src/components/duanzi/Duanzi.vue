@@ -56,16 +56,16 @@
         <template #default>
           <div style='display: flex; justify-content: center; align-items: center; width: 100%; height: 24px;'>
             <div style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
-              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
+              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick' class='cursor-pointer'>
                 <q-img :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
               </div>
-              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
+              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick' class='cursor-pointer'>
                 <q-img :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
               </div>
-              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
+              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick' class='cursor-pointer'>
                 <q-img :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
               </div>
-              <div style='height: 24px; opacity: 0.4; background-color: white;' @click='onMoreClick'>
+              <div style='height: 24px; opacity: 0.4; background-color: white;' @click='onMoreClick' class='cursor-pointer'>
                 <q-img :src='threeDotsVertical' mode='widthFix' style='width: 24px; height: 24px;' />
               </div>
             </div>
