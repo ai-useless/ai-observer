@@ -13,10 +13,10 @@
           </div>
         </q-item-section>
         <q-space v-if='!collapsed' />
-        <q-item-section side>
+        <q-item-section side class='q-pr-none'>
           <q-btn
             flat
-            round
+            rounded
             dense
             :icon='collapsed ? "menu_open" : "menu"'
             @click='collapsed = !collapsed'
@@ -25,7 +25,7 @@
       </q-item>
       <q-separator />
       <q-item clickable v-ripple @click='onMenuClick("home")' :class='[ menu === "home" ? "selected" : "" ]'>
-        <q-item-section avatar class='q-w-xs'>
+        <q-item-section avatar>
           <q-icon name='home' />
         </q-item-section>
         <q-item-section>首页</q-item-section>
