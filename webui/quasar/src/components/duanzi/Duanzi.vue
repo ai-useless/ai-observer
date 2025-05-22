@@ -15,7 +15,7 @@
           <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: "16px"}'>
             <div v-if='message.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
               <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
-              <div style='font-weight: 400; font-size: 14px;' class='text-grey-6'>
+              <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
                 {{ modelName(message.modelId) }}
               </div>
             </div>
@@ -27,7 +27,7 @@
           <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: "16px"}'>
             <div v-if='lastDisplayMessage.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
               <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
-              <div style='font-weight: 400; font-size: 14px;' class='text-grey-6'>
+              <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
                 {{ modelName(lastDisplayMessage.modelId) }}
               </div>
             </div>
@@ -39,7 +39,7 @@
         </div>
       </q-scroll-area>
     </div>
-    <div class='flex justify-center items-center bg-red' style='height: 20px;'>
+    <div class='flex justify-center items-center'>
       <BottomFixArea>
         <template #default>
           <div style='display: flex; justify-content: center; align-items: center; width: 100%; height: 24px;'>
