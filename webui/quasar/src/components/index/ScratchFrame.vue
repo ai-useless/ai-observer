@@ -4,7 +4,7 @@
       <q-avatar>
         <q-img :src='meipuAgiLogo' />
       </q-avatar>
-      <h3 class='gradient-text q-ml-md' style='opacity: 0.6;'>
+      <h3 class='text-gradient-red q-ml-md' style='opacity: 0.6;'>
         可以玩的AGI
       </h3>
     </div>
@@ -17,7 +17,7 @@
       style='width: 800px; font-size: 20px;'
       @keyup.enter.stop='onEnter'
     />
-    <q-btn flat class='q-mt-lg full-width action-btn' @click='onEnter'>
+    <q-btn flat class='q-mt-lg full-width action-btn bg-gradient-blue text-white' @click='onEnter'>
       选择AGI成员开始圆桌讨论
     </q-btn>
     <div style='margin-top: 24px; max-width: 800px;'>
@@ -27,7 +27,7 @@
         dense
         :label='clazz'
         no-caps
-        :class='[ "border q-px-md", clazz === topicType ? "bg-blue-2 text-gray-9" : "text-grey-7" ]'
+        :class='[ "border q-px-md", clazz === topicType ? "bg-gradient-blue text-white" : "text-grey-7" ]'
         v-for='clazz in presetClasses'
         :key='clazz'
         @click='onGenerateTopics(clazz)'
@@ -197,13 +197,7 @@ onMounted(async () => {
   border: 1px solid $blue-2
 
 .action-btn
-  background-color: $blue-2
   border-radius: 16px
   color: $grey-9
   font-size: 16px
-
-.gradient-text
-  background: linear-gradient(to right, #3f51b5, #e91e63)
-  -webkit-background-clip: text
-  color: transparent
 </style>
