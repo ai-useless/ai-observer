@@ -56,7 +56,9 @@
                   <q-img :src='message.model.author_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
                   <q-img :src='message.model.vendor_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
                   <q-img :src='message.model.model_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <div> | {{ message.simulator.origin_personality }}</div>
+                  <div class='single-line-nowrap' style='max-width: 280px;'>
+                    | {{ message.simulator.origin_personality }}
+                  </div>
                 </div>
               </template>
               <div v-html='message.message' style='line-height: 1.5em;' />
