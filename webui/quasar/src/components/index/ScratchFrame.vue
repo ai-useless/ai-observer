@@ -22,12 +22,11 @@
     </q-btn>
     <div style='margin-top: 24px; max-width: 800px;'>
       <q-btn
-        rounded
         flat
         dense
         :label='clazz'
         no-caps
-        :class='[ "border q-px-md", clazz === topicType ? "bg-gradient-blue text-white" : "text-grey-7" ]'
+        :class='[ "q-px-md border-radius-16px hover-slide-up-4px", clazz === topicType ? "border-gradient-bg-blue text-white" : "border-gradient-bg-white text-grey-7" ]'
         v-for='clazz in presetClasses'
         :key='clazz'
         @click='onGenerateTopics(clazz)'
@@ -77,26 +76,16 @@ import { meipuAgiLogo } from 'src/assets'
 
 const initialTopics = [
   '油条的工艺与口味以及外观',
-  '房产新政与房价调控',
-  '富士康“九连跳”事件',
   '唐骏“学历门”诚信危机',
   '个税调整与两会热点',
   '移民潮及技术精英移民现象',
   '曹操墓真伪考古争议',
-  '东莞扫黄行动',
-  '吴英案死刑争议',
-  '中美关系走向及台海军售争议',
   '朝韩军事冲突可能性与中美博弈',
-  '钓鱼岛争端及中日关系',
   '美乌再谈判局势',
   '美国政府“关门”及其影响',
   '奥巴马亚洲行意图分析',
   '日本武器出口政策',
   '印度新政对中印关系影响',
-  '人民币汇率改革与国际压力',
-  '央行降息与经济新常态',
-  '股市走势与金融危机影响',
-  '延迟退休政策',
   '制造业发展与转型',
   '电影票房现象（如《哪吒》）与文化重构',
   'AI技术发展与全球权力格局',
@@ -187,17 +176,11 @@ const onChangeTopicsClick = async () => {
 }
 
 onMounted(async () => {
+  seminar.Seminar.setTopic(topic.value)
   await generateTopics()
 })
 
 </script>
 
 <style scoped lang='sass'>
-.border
-  border: 1px solid $blue-2
-
-.action-btn
-  border-radius: 16px
-  color: $grey-9
-  font-size: 16px
 </style>

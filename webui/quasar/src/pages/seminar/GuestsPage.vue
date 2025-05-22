@@ -1,6 +1,6 @@
 <template>
-  <q-page>
-    <InviteGuests />
+  <q-page class='flex justify-center items-center'>
+    <InviteGuests class='full-width' />
   </q-page>
 </template>
 
