@@ -1,8 +1,8 @@
 <template>
-  <q-page class='flex justify-center items-center'>
-    <div style='width: min(100%, 600px); height: 100%;'>
+  <q-page>
+    <div style='height: 100%;' class='full-width flex justify-center items-center'>
       <q-scroll-area
-        style='height: 100vh; width: 100%; padding: 0 24px;'
+        style='height: calc(100vh - 4px); width: min(100%, 600px);'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
         :thumb-style='{ width: "2px" }'
@@ -26,39 +26,46 @@
               <div style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(lastDisplayMessage.modelId) }}</div>
             </div>
             <q-img v-if='lastDisplayMessage.image' mode='widthFix' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
-            <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>{{ lastDisplayMessage.text }}</div>
+            <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>
+              {{ lastDisplayMessage.text }}
+            </div>
           </div>
         </div>
       </q-scroll-area>
-      <div style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; height: 24px;'>
-        <div style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
-          <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
-            <q-img :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
+    </div>
+    <div class='flex justify-center items-center bg-red' style='height: 20px;'>
+      <BottomFixArea>
+        <template #default>
+          <div style='display: flex; justify-content: center; align-items: center; width: 100%; height: 24px;'>
+            <div style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
+              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick'>
+                <q-img :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
+              </div>
+              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
+                <q-img :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
+              </div>
+              <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
+                <q-img :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
+              </div>
+              <div style='height: 24px; opacity: 0.4; background-color: white;' @click='onMoreClick'>
+                <q-img :src='threeDotsVertical' mode='widthFix' style='width: 24px; height: 24px;' />
+              </div>
+            </div>
           </div>
-          <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick'>
-            <q-img :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
-          </div>
-          <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick'>
-            <q-img :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
-          </div>
-          <div style='height: 24px; opacity: 0.4; background-color: white;' @click='onMoreClick'>
-            <q-img :src='threeDotsVertical' mode='widthFix' style='width: 24px; height: 24px;' />
-          </div>
-        </div>
-        <div v-if='generating' style='text-align: center; font-size: 12px; padding: 4px 0 4px 0; color: lightgray; height: 18px; margin-right: 16px;'>
-          {{ models.length }}个AGI正在创作 ...
-        </div>
-      </div>
+        </template>
+      </BottomFixArea>
     </div>
   </q-page>
 </template>
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { model, simulator } from 'src/localstores'
+import { model, setting, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
 import { computed, onMounted, ref, onBeforeUnmount } from 'vue'
 import { QScrollArea } from 'quasar'
+
+import BottomFixArea from '../fixed/BottomFixArea.vue'
 
 import { gotoBottom, gotoTop, volumeOff, volumeUp, threeDotsVertical } from 'src/assets'
 
@@ -132,6 +139,8 @@ const onMoreClick = async () => {
 }
 
 onMounted(() => {
+  setting.Setting.setCurrentMenu('duanzi')
+
   model.Model.getModels(() => {
     simulator.Simulator.getSimulators(undefined, () => {
       void generate()
