@@ -132,7 +132,7 @@ onMounted(() => {
 })
 
 const onStartSeminarClick = async () => {
-  await dbBridge._Seminar.create(_uid.value, topic.value, participators.value)
+  await dbBridge._Seminar.create(_uid.value, topic.value, [...participators.value])
   void router.push({ path: '/seminar' })
 }
 
