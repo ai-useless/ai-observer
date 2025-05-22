@@ -4,12 +4,8 @@
       <q-avatar size='128px' class='q-mr-md'>
         <q-img :src='_simulator?.simulator_avatar_url' :alt='role === dbModel.Role.HOST ? "逗哏" : "捧哏"' />
       </q-avatar>
-      <div class='full-width self-end' style='margin-top: -64px;'>
+      <div class='full-width self-end' style='margin-top: -28px;'>
         <div v-if='_simulator'>
-          <div class='text-h6'>
-            <span class='text-bold text-white' style='font-size: 20px;'>{{ _simulator?.simulator }}</span>
-            <span class='q-ml-sm' style='font-size: 12px;'>{{ _simulator?.title }}</span>
-          </div>
           <div v-if='_model' class='row'>
             <div class='border-gradient-bg-white border-radius-round' style='width: 26px;'>
               <q-avatar v-if='_simulator' size='24px'>
@@ -26,6 +22,10 @@
                 <q-img :src='_model.vendor_logo_url' />
               </q-avatar>
             </div>
+          </div>
+          <div class='text-h6'>
+            <span class='text-bold text-white' style='font-size: 20px;'>{{ _simulator?.simulator }}</span>
+            <span class='q-ml-sm' style='font-size: 12px;'>{{ _simulator?.title }}</span>
           </div>
         </div>
         <div v-else class='text-subtitle2'>
