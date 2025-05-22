@@ -53,7 +53,17 @@
         @mouseleave='autoScroll = true'
         class='q-mt-xs cursor-pointer bg-grey-2'
       >
-        <div style='margin-top: 16px;'>
+        <div
+          v-if='!displayMessages.length'
+          style='margin-top: 16px; font-size: 20px;'
+          class='text-center text-grey-8 flex justify-center items-center'
+        >
+          <div>
+            <q-spinner-facebook class='text-red-4' size='128px' />
+            <div>演员正在候场，请稍候。</div>
+          </div>
+        </div>
+        <div v-else style='margin-top: 16px;'>
           <div v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
             <MessageCard :message='message' />
           </div>

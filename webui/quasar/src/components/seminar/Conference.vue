@@ -34,7 +34,7 @@
           class='text-center text-grey-8'
         >
           <q-spinner-facebook class='text-red-4' size='128px' />
-          <div>最靠谱的AGI观点栏目主持人正在准备台本，请大家耐心等待。</div>
+          <div>主持人正在准备台本，请大家耐心等待。</div>
         </div>
         <div v-else style='margin-top: 16px;'>
           <div v-for='(message, index) in displayMessages' :key='index'>
