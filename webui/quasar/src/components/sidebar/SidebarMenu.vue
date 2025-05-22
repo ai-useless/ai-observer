@@ -92,7 +92,7 @@
         </q-item-section>
         <q-item-section>帮助</q-item-section>
       </q-item>
-      <q-item clickable v-ripple>
+      <q-item clickable v-ripple @click='onMenuClick("settings")'>
         <q-item-section avatar>
           <q-icon name='settings' />
         </q-item-section>
@@ -106,12 +106,17 @@
       </q-item>
     </q-list>
   </div>
+  <q-dialog v-model='showSetting'>
+    <Setting />
+  </q-dialog>
 </template>
 
 <script setup lang='ts'>
 import { computed, defineModel } from 'vue'
 import { setting } from 'src/localstores'
 import { useRouter } from 'vue-router'
+
+import Setting from '../setting/Setting.vue'
 
 import { meipuAgiLogo } from 'src/assets'
 
@@ -126,8 +131,16 @@ const onMenuClick = (_menu: string) => {
   switch (_menu) {
     case 'home': void router.push({ path: '/' }); break
     case 'observer': void router.push({ path: '/seminar/guests' }); break
+    case 'settings': setting.Setting.setShowSetting(true); break
   }
 }
+
+const showSetting = computed({
+  get: () => setting.Setting.showSetting(),
+  set: (v: boolean) => {
+    setting.Setting.setShowSetting(v)
+  }
+})
 
 </script>
 

@@ -3,7 +3,9 @@ import { defineStore } from 'pinia'
 export const useSettingStore = defineStore('setting', {
   state: () => ({
     tabIndex: -1,
-    currentMenu: ''
+    currentMenu: '',
+    showSetting: false,
+    currentSettingMenu: ''
   }),
   actions: {},
   getters: {}
@@ -19,4 +21,12 @@ export class Setting {
   static currentMenu = () => setting.currentMenu
 
   static setCurrentMenu = (v: string) => (setting.currentMenu = v)
+
+  static showSetting = () => setting.showSetting
+
+  static setShowSetting = (v: boolean) => (setting.showSetting = v)
+
+  static currentSettingMenu = () => setting.currentSettingMenu
+
+  static setCurrentSettingMenu = (v: string) => (setting.currentSettingMenu = v)
 }
