@@ -12,18 +12,24 @@
       >
         <div>
           <q-resize-observer @resize='onChatBoxResize' />
-          <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: message.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
-            <div v-if='message.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 24px;'>
-              <q-img :src='modelLogo(message.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
-              <div style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(message.modelId) }}</div>
+          <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: "16px"}'>
+            <div v-if='message.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
+              <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
+              <div style='font-weight: 400; font-size: 14px;' class='text-grey-6'>
+                {{ modelName(message.modelId) }}
+              </div>
             </div>
             <q-img v-if='message.image' mode='widthFix' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
-            <div :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>{{ message.text }}</div>
+            <div :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>
+              {{ message.text }}
+            </div>
           </div>
-          <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: lastDisplayMessage.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
-            <div v-if='lastDisplayMessage.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 24px;'>
-              <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
-              <div style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(lastDisplayMessage.modelId) }}</div>
+          <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: "16px"}'>
+            <div v-if='lastDisplayMessage.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
+              <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
+              <div style='font-weight: 400; font-size: 14px;' class='text-grey-6'>
+                {{ modelName(lastDisplayMessage.modelId) }}
+              </div>
             </div>
             <q-img v-if='lastDisplayMessage.image' mode='widthFix' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
             <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>
