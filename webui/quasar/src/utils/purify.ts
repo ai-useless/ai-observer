@@ -1,23 +1,60 @@
 import * as cheerio from 'cheerio'
 
 export const purifyText = (html: string): string => {
+  html = html.slice(
+    html.indexOf('</think>') < 0 ? 0 : html.indexOf('</think>') + 8
+  )
   const $ = cheerio.load(html)
   $('script').remove()
+  $('style').remove()
   $('sup').remove()
   $('think').remove()
   return $.text()
     .trim()
     .replace(/^\[\d\].*$/gm, '')
-    .replace('```html', '')
-    .replace('```plaintext', '')
-    .replace('```', '')
+    .replace('html', '')
+    .replace('txt', '')
+    .replace('text', '')
+    .replace(/ /g, '')
+    .replace('plaintext', '')
+    .replace(/\`/g, '')
+    .replace(/\#/g, '')
+    .replace(/\*/g, '')
+    .replace(/ /g, '')
+    .replace(/<!DOCTYPE html[^>]*>/gi, '')
+    .replace(/<html[^>]*>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<body[^>]*>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .replace(/<head[^>]*>/gi, '')
+    .replace(/<\/head>/gi, '')
+    .trim()
 }
 
 export const purifyThink = (html: string): string => {
+  html = html.slice(
+    html.indexOf('</think>') < 0 ? 0 : html.indexOf('</think>') + 8
+  )
   const $ = cheerio.load(html)
   $('think').remove()
-  return $.html()
-    .replace('```html', '')
-    .replace('```plaintext', '')
-    .replace('```', '')
+  return $.text()
+    .replace('html', '')
+    .replace('txt', '')
+    .replace('text', '')
+    .replace('plaintext', '')
+    .replace(/\`/g, '')
+    .replace(/\#/g, '')
+    .replace(/\*/g, '')
+    .replace(/<!DOCTYPE html[^>]*>/gi, '')
+    .replace(/<html[^>]*>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<body[^>]*>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .replace(/<head[^>]*>/gi, '')
+    .replace(/<\/head>/gi, '')
+    .trim()
+}
+
+export const purifyBracket = (html: string): string => {
+  return html.replace(/[\(（].*?[\)）]/g, '')
 }

@@ -41,7 +41,7 @@ export const useModelStore = defineStore('model', {
 const model = useModelStore()
 
 export class Model {
-  static getModels = () => model.getModels()
+  static getModels = (done?: (error: boolean, rows?: _Model[]) => void) => model.getModels(done)
 
   static models = () => model.models
 

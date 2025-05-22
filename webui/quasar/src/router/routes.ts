@@ -16,6 +16,14 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/seminar/guests',
         component: () => import('pages/seminar/GuestsPage.vue')
+      },
+      {
+        path: '/xiangsheng',
+        component: () => import('pages/xiangsheng/XiangshengPage.vue')
+      },
+      {
+        path: '/xiangsheng/roles',
+        component: () => import('pages/xiangsheng/RolesPage.vue')
       }
     ]
   },

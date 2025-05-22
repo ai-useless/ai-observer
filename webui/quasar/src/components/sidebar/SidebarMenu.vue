@@ -131,6 +131,7 @@ const onMenuClick = (_menu: string) => {
   switch (_menu) {
     case 'home': void router.push({ path: '/' }); break
     case 'observer': void router.push({ path: '/seminar/guests' }); break
+    case 'xiangsheng': void router.push({ path: '/xiangsheng/roles' }); break
     case 'settings': setting.Setting.setShowSetting(true); break
   }
 }

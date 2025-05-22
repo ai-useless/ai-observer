@@ -35,6 +35,13 @@ export interface Message {
   audioCid: string
 }
 
+export interface Xiangsheng {
+  id?: number
+  uid: string
+  topic: string
+  intent: string
+}
+
 export enum SettingKey {
   GENERATE_AUDIO = 'GenerateAudio'
 }

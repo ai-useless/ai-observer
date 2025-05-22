@@ -102,3 +102,17 @@
 .q-dialog__backdrop
   backdrop-filter: blur(6px)
   -webkit-backdrop-filter: blur(6px)
+
+.q-input--standout.q-input--focused .q-field__control:before
+  border-color: var(--q-primary)
+  box-shadow: 0 0 0 2px rgba(var(--q-primary-rgb), 0.2)
+  background: transparent
+
+.hide-scrollbar
+  overflow: auto
+  -ms-overflow-style: none
+  scrollbar-width: none
+
+.hide-scrollbar::-webkit-scrollbar
+  display: none
+

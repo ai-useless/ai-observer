@@ -29,6 +29,13 @@ export class _Model {
       .find((el) => el.id === id)
   }
 
+  static topicModelId = async () => {
+    const topicModel = (await dbSeminar.models.toArray()).find(
+      (el) => el.name === _Model.topicModel
+    )
+    return topicModel ? topicModel.id : 0
+  }
+
   static _topicModel = () => {
     return _Model.topicModel
   }
