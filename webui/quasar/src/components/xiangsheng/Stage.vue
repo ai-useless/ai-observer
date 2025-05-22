@@ -45,7 +45,7 @@
     </div>
     <div style='width: 100%; height: calc(100% - 280px - 4px);'>
       <q-scroll-area
-        style='height: 100%; width: 100%;'
+        style='height: 100%; width: 100%; padding: 0 24px;'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
         :thumb-style='{ width: "2px" }'
