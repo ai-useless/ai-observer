@@ -113,8 +113,8 @@ const inputTopic = ref('')
 
 const displayMessages = ref([] as Message[])
 const loading = ref(false)
-const messageCount = computed(() => displayMessages.value.length + waitMessages.value.length + (lastDisplayMessage.value ? 1 : 0))
-const waitMessages = ref([] as Message[])
+const messageCount = computed(() => displayMessages.value.length + waitMessages.value.size + (lastDisplayMessage.value ? 1 : 0))
+const waitMessages = ref(new Map<string, Message>())
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.message : undefined)
 const typingMessage = ref(undefined as unknown as Message)
@@ -173,7 +173,7 @@ const calculateTypingInterval = (duration: number) => {
 }
 
 const typing = () => {
-  if (!typingMessage.value && !waitMessages.value.length) return
+  if (!typingMessage.value && !waitMessages.value.size) return
 
   // If we have a message in typing, finish it
   if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
@@ -196,19 +196,26 @@ const typing = () => {
     el.datetime = timestamp2HumanReadable(el.timestamp)
   })
 
-  if (!waitMessages.value.length) return
+  if (!waitMessages.value.size) return
   // If audio is still playing, do nothing
   if (audioPlayer.value && audioPlayer.value.playing) return
 
-  const index = waitMessages.value.findIndex((el) => el.index === typingMessageIndex.value && (!currentTopic.value || el.topic === currentTopic.value || el.first))
-  if (index < 0) return
-  typingMessage.value = waitMessages.value[index]
+  let key = undefined as unknown as string
+  for (const [k, v] of waitMessages.value.entries()) {
+    if (v.index === typingMessageIndex.value && ((!currentTopic.value || v.topic === currentTopic.value) || v.first)) {
+      key = k
+      break
+    }
+  }
+  if (!key) return
+
+  typingMessage.value = waitMessages.value.get(key) as Message
 
   if (typingMessageIndex.value === 0 && typingMessage.value.first) currentTopic.value = typingMessage.value.topic
 
-  waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
+  waitMessages.value.delete(key)
 
-  if (waitMessages.value.length < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
+  if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
     if (playScripts.value) void eXiangsheng.value.startScripts()
     else void eXiangsheng.value.start()
   }
@@ -243,6 +250,8 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
   const context = new Audio(audioUrl)
   context.src = audioUrl
 
+  console.log('Try Start', audioUrl)
+
   const player = {
     context: context,
     playing: true,
@@ -261,6 +270,8 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
     context.oncanplay = async () => {
       await context.play()
 
+      console.log('Start', audioUrl)
+
       player.durationTicker = window.setInterval(() => {
         if (context.duration) {
           window.clearInterval(player.durationTicker)
@@ -271,6 +282,7 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
       }, 100)
     }
     context.onended = () => {
+      console.log('End', audioUrl)
       player.playing = false
       if (player.durationTicker >= 0) {
         window.clearInterval(player.durationTicker)
@@ -297,7 +309,7 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
-  waitMessages.value.push({
+  waitMessages.value.set(`${text}-${index}`, {
     topic,
     message: purify.purifyThink(text),
     participator,
@@ -312,9 +324,8 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
     typing: false
   })
 
-  waitMessages.value = waitMessages.value.map((el) => {
-    const timestamp = timestamp2HumanReadable(el.timestamp)
-    return { ...el, datetime: timestamp }
+  waitMessages.value.forEach((v) => {
+    v.datetime = timestamp2HumanReadable(v.timestamp)
   })
 }
 
@@ -322,7 +333,7 @@ const router = useRouter()
 
 const startXiangsheng = async () => {
   displayMessages.value = []
-  waitMessages.value = []
+  waitMessages.value = new Map<string, Message>()
   typingMessage.value = undefined as unknown as Message
   lastDisplayMessage.value = undefined as unknown as Message
 
