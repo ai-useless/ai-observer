@@ -71,7 +71,6 @@ import { entityBridge } from 'src/bridge'
 import { seminar } from 'src/localstores'
 import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { v4 as uuidv4 } from 'uuid'
 
 import { meipuAgiLogo } from 'src/assets'
 
@@ -123,10 +122,8 @@ watch(topic, () => {
 })
 
 const startSeminar = () => {
-  const _uid = uuidv4()
   // TODO: check if it's a valid topic
   seminar.Seminar.setTopic(topic.value)
-  seminar.Seminar.setSeminar(_uid)
   void router.push({ path: '/seminar/guests' })
 }
 

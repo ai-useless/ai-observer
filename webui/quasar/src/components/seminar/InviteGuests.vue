@@ -91,6 +91,7 @@ import { computed, onMounted, ref } from 'vue'
 import { dbModel } from 'src/model'
 import { useRouter } from 'vue-router'
 import { dbBridge } from 'src/bridge'
+import { v4 as uuidv4 } from 'uuid'
 
 import GuestCardVertical from './GuestCardVertical.vue'
 import GuestCardHorizontal from './GuestCardHorizontal.vue'
@@ -112,7 +113,7 @@ const selectedSimulator = ref(undefined as unknown as simulator._Simulator)
 
 const selectedSimulatorIds = computed(() => participators.value.filter((el) => el).map((el) => el.simulatorId))
 const ready = computed(() => {
-  return _uid.value?.length && topic.value?.length && participators.value.findIndex((el) => !el) < 0
+  return topic.value?.length && participators.value.findIndex((el) => !el) < 0
 })
 
 onMounted(() => {
@@ -136,6 +137,9 @@ const onStartSeminarClick = async () => {
 }
 
 const randomSelect = async () => {
+  const _uid = uuidv4()
+  seminar.Seminar.setSeminar(_uid)
+
   for (let i = 0; i < participators.value.length; i++) {
     participators.value[i] = undefined as unknown as dbModel.Participator
   }
@@ -147,7 +151,7 @@ const randomSelect = async () => {
       let _model = await dbBridge._Model.randomPeek(i === 0 ? true : undefined)
       if (!_model) _model = await dbBridge._Model.randomPeek()
       participators.value[i] = {
-        seminarUid: _uid.value,
+        seminarUid: _uid,
         role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
         simulatorId: _simulator.id,
         modelId: _model.id
