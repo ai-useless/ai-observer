@@ -250,8 +250,6 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
   const context = new Audio(audioUrl)
   context.src = audioUrl
 
-  console.log('Try Start', audioUrl)
-
   const player = {
     context: context,
     playing: true,
@@ -270,8 +268,6 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
     context.oncanplay = async () => {
       await context.play()
 
-      console.log('Start', audioUrl)
-
       player.durationTicker = window.setInterval(() => {
         if (context.duration) {
           window.clearInterval(player.durationTicker)
@@ -282,7 +278,6 @@ const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
       }, 100)
     }
     context.onended = () => {
-      console.log('End', audioUrl)
       player.playing = false
       if (player.durationTicker >= 0) {
         window.clearInterval(player.durationTicker)
