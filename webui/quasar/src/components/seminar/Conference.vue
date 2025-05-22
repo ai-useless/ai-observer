@@ -87,6 +87,7 @@ import { purify } from 'src/utils'
 import SimulatorCard from './SimulatorCard.vue'
 import Outline from './Outline.vue'
 import { seminarWorker } from 'src/worker'
+import { useRouter } from 'vue-router'
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
@@ -310,10 +311,15 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
   return messages
 }
 
+const router = useRouter()
+
 onMounted(async () => {
   chatBoxHeight.value = window.innerHeight - 106 - 220
 
-  if (!_uid.value) return
+  if (!_uid.value) {
+    void router.push({ path: '/seminar/guests' })
+    return
+  }
   _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
   eSeminar.value = new entityBridge.ESeminar(_seminar.value, onMessage, onThinking, onOutline, historyMessages)
