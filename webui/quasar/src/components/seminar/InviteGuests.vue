@@ -10,7 +10,13 @@
             <div class='text-white' style='font-size: 16px;'>
               选择您喜欢的AGI模拟器讨论您感兴趣的话题~
             </div>
-            <q-btn class='action-btn text-grey-9 q-mt-lg border-gradient-bg-white full-width border-radius-16px' flat dense>
+            <q-btn
+              class='action-btn text-grey-9 q-mt-lg border-gradient-bg-white full-width border-radius-16px'
+              flat
+              dense
+              @click='onStartSeminarClick'
+              :disabled='!ready'
+            >
               开始讨论
             </q-btn>
           </div>
@@ -105,6 +111,9 @@ const selectingIndex = ref(0)
 const selectedSimulator = ref(undefined as unknown as simulator._Simulator)
 
 const selectedSimulatorIds = computed(() => participators.value.filter((el) => el).map((el) => el.simulatorId))
+const ready = computed(() => {
+  return _uid.value?.length && topic.value?.length && participators.value.findIndex((el) => !el) < 0
+})
 
 onMounted(() => {
   if (!topic.value || !topic.value.length) {
@@ -120,6 +129,11 @@ onMounted(() => {
   simulator.Simulator.getSimulators()
   model.Model.getModels()
 })
+
+const onStartSeminarClick = async () => {
+  await dbBridge._Seminar.create(_uid.value, topic.value, participators.value)
+  void router.push({ path: '/seminar' })
+}
 
 const randomSelect = async () => {
   for (let i = 0; i < participators.value.length; i++) {

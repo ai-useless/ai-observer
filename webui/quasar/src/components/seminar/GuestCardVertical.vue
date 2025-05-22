@@ -49,7 +49,7 @@
         </div>
       </div>
       <div v-else class='full-height flex items-center'>
-        <span>点击我或拖动AGI模拟器和模型到这里设置为主持人~
+        <span>点我设置模拟器和模型为嘉宾~
           <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
             <q-tooltip style='font-size: 14px;'>
               您知道吗：模拟器设置主持人的人格和声音，模型设置主持人的生成内容的LLM模型。

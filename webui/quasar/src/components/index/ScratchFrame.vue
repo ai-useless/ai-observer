@@ -67,10 +67,11 @@
 </template>
 
 <script setup lang='ts'>
-import { dbBridge, entityBridge } from 'src/bridge'
+import { entityBridge } from 'src/bridge'
 import { seminar } from 'src/localstores'
 import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { v4 as uuidv4 } from 'uuid'
 
 import { meipuAgiLogo } from 'src/assets'
 
@@ -121,21 +122,21 @@ watch(topic, () => {
   topic.value = topic.value.replace('\n', '')
 })
 
-const startSeminar = async () => {
+const startSeminar = () => {
+  const _uid = uuidv4()
   // TODO: check if it's a valid topic
-  const _uid = await dbBridge._Seminar.create(topic.value)
   seminar.Seminar.setTopic(topic.value)
   seminar.Seminar.setSeminar(_uid)
   void router.push({ path: '/seminar/guests' })
 }
 
-const onEnter = async () => {
-  await startSeminar()
+const onEnter = () => {
+  startSeminar()
 }
 
-const onTopicClick = async (_topic: string) => {
+const onTopicClick = (_topic: string) => {
   topic.value = _topic
-  await startSeminar()
+  startSeminar()
 }
 
 const generating = ref(false)
