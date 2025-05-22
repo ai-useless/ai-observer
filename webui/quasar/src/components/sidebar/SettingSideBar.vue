@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang='ts'>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { setting } from 'src/localstores'
 
 const settingMenu = computed(() => setting.Setting.currentSettingMenu().length ? setting.Setting.currentSettingMenu() : 'settings')
@@ -53,6 +53,10 @@ const settingMenu = computed(() => setting.Setting.currentSettingMenu().length ?
 const onMenuClick = (_menu: string) => {
   setting.Setting.setCurrentSettingMenu(_menu)
 }
+
+onMounted(() => {
+  setting.Setting.setCurrentSettingMenu(settingMenu.value)
+})
 
 </script>
 
