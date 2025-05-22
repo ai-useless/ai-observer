@@ -4,7 +4,7 @@
       position: fixed;
       bottom: 0;
       width: 100%;
-      background: white;
+      background: transparent;
       z-index: 1000;
       max-width: min(100%, 600px);
       border-radius: 16px;

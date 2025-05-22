@@ -37,7 +37,7 @@
           <div>主持人正在准备台本，请大家耐心等待。</div>
         </div>
         <div v-else style='margin-top: 16px;'>
-          <div v-for='(message, index) in displayMessages' :key='index'>
+          <div v-for='(message, index) in displayMessages' :key='index' class='bg-grey-2 q-px-lg'>
             <q-chat-message
               v-if='!message.subTopicTitle'
               :key='index'
@@ -46,7 +46,6 @@
               :stamp='message.datetime'
               :text='[message.message]'
               text-color='grey-9'
-              bg-color='grey-2'
             >
               <template #name>
                 <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
