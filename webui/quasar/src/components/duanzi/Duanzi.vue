@@ -1,7 +1,19 @@
 <template>
   <q-page>
     <div style='height: 100%;' class='full-width flex justify-center items-center'>
+      <div v-if='!displayMessages.length' class='full-width flex justify-center items-center' style='height: calc(100vh - 4px); width: min(100%, 600px);'>
+        <div
+          style='margin-top: 16px; font-size: 20px;'
+          class='text-center text-grey-8 flex justify-center items-center'
+        >
+          <div>
+            <q-spinner-facebook class='text-red-4' size='128px' />
+            <div>{{ models.length }}个AGI段子手正在创作，请稍候...</div>
+          </div>
+        </div>
+      </div>
       <q-scroll-area
+        v-else
         style='height: calc(100vh - 4px); width: min(100%, 600px);'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
@@ -87,7 +99,7 @@ interface Message {
 const models = computed(() => model.Model.models())
 
 const displayMessages = ref([] as Message[])
-const waitMessages = ref([] as Message[])
+const waitMessages = ref(new Map<string, Message>())
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const typingMessage = ref(undefined as unknown as Message)
 const typingMessageIndex = ref(0)
@@ -116,11 +128,11 @@ const generate = async () => {
 
   for (const model of models.value) {
     const simulator = await dbBridge._Simulator.randomPeek()
-    const messages = [...displayMessages.value, ...waitMessages.value]
+    const messages = [...displayMessages.value, ...waitMessages.value.values()]
     await entityBridge.Duanzi.generate(messages.map((el) => el.text), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
       generating.value = false
 
-      waitMessages.value.push({
+      waitMessages.value.set(`${text}-${index}`, {
         modelId: model.id,
         text: purify.purifyThink(text),
         isTitle,
@@ -131,7 +143,7 @@ const generate = async () => {
 
       images.value.delete(index)
     }, (index: number, image: string) => {
-      const messages = [...displayMessages.value, ...(lastDisplayMessage.value ? [lastDisplayMessage.value] : []), ...(typingMessage.value ? [typingMessage.value] : []), ...waitMessages.value]
+      const messages = [...displayMessages.value, ...(lastDisplayMessage.value ? [lastDisplayMessage.value] : []), ...(typingMessage.value ? [typingMessage.value] : []), ...waitMessages.value.values()]
       const message = messages.find((el) => el.index === index)
       if (message) message.image = image
       else images.value.set(index, image)
@@ -202,7 +214,7 @@ const calculateTypingInterval = (duration: number) => {
 }
 
 const typing = () => {
-  if (!typingMessage.value && !waitMessages.value.length) return
+  if (!typingMessage.value && !waitMessages.value.size) return
 
   // If we have a message in typing, finish it
   if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.text.length < typingMessage.value.text.length) {
@@ -221,20 +233,26 @@ const typing = () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }
 
-  if (!waitMessages.value.length) return
+  if (!waitMessages.value.size) return
   // If audio is still playing, do nothing
   if (audioPlayer.value && audioPlayer.value.playing) return
 
-  const index = waitMessages.value.findIndex((el) => el.index === typingMessageIndex.value)
-  if (index < 0) return
+  let key = undefined as unknown as string
+  for (const [k, v] of waitMessages.value) {
+    if (v.index === typingMessageIndex.value) {
+      key = k
+      break
+    }
+  }
+  if (!key) return
 
-  typingMessage.value = waitMessages.value[index]
-  waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1)]
+  typingMessage.value = waitMessages.value.get(key) as Message
+  waitMessages.value.delete(key)
   typingMessageIndex.value += 1
 
   lastModelId.value = typingMessage.value.modelId
 
-  if (waitMessages.value.length <= 3 && displayMessages.value.length > 3) void generate()
+  if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
 
   if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
     window.clearInterval(typingTicker.value)
