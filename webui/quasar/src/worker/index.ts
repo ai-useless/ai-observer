@@ -1,3 +1,6 @@
 export * as seminarWorker from './seminar'
 export * as xiangshengWorker from './xiangsheng'
 export * as imageWorker from './image'
+export * as duanziWorker from './duanzi'
+export * as refineWorker from './refiner'
+export * as speakWorker from './speak'

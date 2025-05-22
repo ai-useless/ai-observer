@@ -84,7 +84,7 @@
 import { dbBridge, entityBridge } from 'src/bridge'
 import { xiangsheng, model, simulator, setting } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, onMounted, ref, watch, nextTick } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { purify } from 'src/utils'
 import { Message } from './Message'
@@ -104,7 +104,6 @@ const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
 const chatBox = ref<QScrollArea>()
-const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
 const playScripts = ref(false)
@@ -121,7 +120,6 @@ const loading = ref(false)
 const messageCount = computed(() => displayMessages.value.length + waitMessages.value.size + (lastDisplayMessage.value ? 1 : 0))
 const waitMessages = ref(new Map<string, Message>())
 const lastDisplayMessage = ref(undefined as unknown as Message)
-const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.message : undefined)
 const typingMessage = ref(undefined as unknown as Message)
 const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
 const typingMessageIndex = ref(0)
@@ -145,12 +143,6 @@ watch(messageCount, () => {
   }
 })
 
-watch(lastMessageText, async () => {
-  if (!autoScroll.value) return
-  await nextTick()
-  scrollTop.value += 1
-})
-
 const onChatBoxResize = (size: { height: number }) => {
   if (autoScroll.value) chatBox.value?.setScrollPosition('vertical', size.height, 300)
 }
@@ -162,12 +154,10 @@ const onPlayScriptsClick = () => {
 
 const onGotoBottomClick = () => {
   autoScroll.value = true
-  scrollTop.value = 999999
 }
 
 const onGotoTopClick = () => {
   autoScroll.value = false
-  scrollTop.value = 0
 }
 
 const onPlayClick = () => {
