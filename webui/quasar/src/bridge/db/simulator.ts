@@ -16,6 +16,10 @@ export class _Simulator {
     )
   }
 
+  static allSimulators = async () => {
+    return (await dbSeminar.simulators.toArray())
+  }
+
   static randomPeek = async (host?: boolean) => {
     const simulators = (await dbSeminar.simulators.toArray()).filter(
       (el) => !host || el.host === host

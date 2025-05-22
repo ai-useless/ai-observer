@@ -29,6 +29,15 @@
           rounded
           flat
           dense
+          @click='onChangeTopicClick'
+        >
+          换个话题
+        </q-btn>
+        <q-btn
+          class='text-blue-6'
+          rounded
+          flat
+          dense
           @click='onRandomSelectClick'
         >
           随机安排
@@ -37,6 +46,7 @@
       <GuestCardHorizontal
         :participator='host'
         :role='dbModel.Role.HOST'
+        @click='onParticipatorClick(0)'
       />
     </div>
     <div class='q-mb-lg'>
@@ -55,15 +65,21 @@
           <GuestCardVertical
             :participator='guest'
             :role='dbModel.Role.GUEST'
+            @click='onParticipatorClick(index + 1)'
           />
         </div>
       </div>
     </div>
   </div>
+  <q-dialog v-model='selectingSimulator'>
+    <div>
+      <SimulatorSelector v-model:selected='selectedSimulator' @cancel='onCancelSelectSimulator' @selected='onSimulatorSelected' :hide-ids='selectedSimulatorIds' />
+    </div>
+  </q-dialog>
 </template>
 
 <script setup lang='ts'>
-import { model, seminar, simulator } from 'src/localstores'
+import { model, seminar, setting, simulator } from 'src/localstores'
 import { computed, onMounted, ref } from 'vue'
 import { dbModel } from 'src/model'
 import { useRouter } from 'vue-router'
@@ -71,6 +87,7 @@ import { dbBridge } from 'src/bridge'
 
 import GuestCardVertical from './GuestCardVertical.vue'
 import GuestCardHorizontal from './GuestCardHorizontal.vue'
+import SimulatorSelector from '../selector/SimulatorSelector.vue'
 
 const participatorCount = ref(7)
 const participators = ref([] as dbModel.Participator[])
@@ -81,6 +98,12 @@ const topic = computed(() => seminar.Seminar.topic())
 const _uid = computed(() => seminar.Seminar.seminar())
 
 const router = useRouter()
+
+const selectingSimulator = ref(false)
+const selectingIndex = ref(0)
+const selectedSimulator = ref(undefined as unknown as simulator._Simulator)
+
+const selectedSimulatorIds = computed(() => participators.value.filter((el) => el).map((el) => el.simulatorId))
 
 onMounted(() => {
   if (!topic.value || !topic.value.length) {
@@ -121,6 +144,31 @@ const randomSelect = async () => {
 
 const onRandomSelectClick = async () => {
   await randomSelect()
+}
+
+const onChangeTopicClick = () => {
+  setting.Setting.setCurrentMenu('home')
+  void router.push({ path: '/' })
+}
+
+const onParticipatorClick = (index: number) => {
+  selectingSimulator.value = true
+  selectingIndex.value = index
+}
+
+const onCancelSelectSimulator = () => {
+  selectingSimulator.value = false
+}
+
+const onSimulatorSelected = (_simulator: simulator._Simulator) => {
+  selectingSimulator.value = false
+
+  participators.value[selectingIndex.value] = participators.value[selectingIndex.value] ? {
+    ...participators.value[selectingIndex.value],
+    simulatorId: _simulator.id
+  } : {
+    simulatorId: _simulator.id
+  } as dbModel.Participator
 }
 
 </script>

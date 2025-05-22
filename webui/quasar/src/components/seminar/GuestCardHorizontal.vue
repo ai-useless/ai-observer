@@ -67,6 +67,13 @@
       <q-btn
         flat
         dense
+        label='听听声音'
+        class='border-gradient-bg-white border-radius-16px text-grey-9'
+        style='font-size: 12px;'
+      />
+      <q-btn
+        flat
+        dense
         label='选择模型'
         class='bg-gradient-blue border-radius-16px text-white'
         style='font-size: 12px;'

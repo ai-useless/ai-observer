@@ -17,7 +17,7 @@
       style='width: 800px; font-size: 20px;'
       @keyup.enter.stop='onEnter'
     />
-    <q-btn flat class='q-mt-lg full-width action-btn bg-gradient-blue text-white' @click='onEnter'>
+    <q-btn flat class='q-mt-lg full-width action-btn bg-gradient-blue text-white' rounded @click='onEnter'>
       选择AGI成员开始圆桌讨论
     </q-btn>
     <div style='margin-top: 24px; max-width: 800px;'>

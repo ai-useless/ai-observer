@@ -48,17 +48,25 @@
           </div>
         </div>
       </div>
-      <div v-else class='full-height flex justify-center items-center'>
-        <span>点击我或拖动AGI模拟器和模型到这里设置为主持人~</span>
-        <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
-          <q-tooltip style='font-size: 14px;'>
-            您知道吗：模拟器设置主持人的人格和声音，模型设置主持人的生成内容的LLM模型。
-          </q-tooltip>
-        </q-icon>
+      <div v-else class='full-height flex items-center'>
+        <span>点击我或拖动AGI模拟器和模型到这里设置为主持人~
+          <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
+            <q-tooltip style='font-size: 14px;'>
+              您知道吗：模拟器设置主持人的人格和声音，模型设置主持人的生成内容的LLM模型。
+            </q-tooltip>
+          </q-icon>
+        </span>
       </div>
     </q-card-section>
 
     <q-card-actions align='right'>
+      <q-btn
+        flat
+        dense
+        label='听听声音'
+        class='border-gradient-bg-white border-radius-16px text-grey-9'
+        style='font-size: 12px;'
+      />
       <q-btn
         flat
         dense
