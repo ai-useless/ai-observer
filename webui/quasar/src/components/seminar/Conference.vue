@@ -77,7 +77,7 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { model, seminar, simulator } from 'src/localstores'
+import { model, seminar, setting, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
@@ -314,6 +314,8 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
 const router = useRouter()
 
 onMounted(async () => {
+  setting.Setting.setCurrentMenu('observer')
+
   chatBoxHeight.value = window.innerHeight - 220 - 4
 
   if (!_uid.value) {

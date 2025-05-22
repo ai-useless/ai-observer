@@ -68,7 +68,7 @@
 
 <script setup lang='ts'>
 import { entityBridge } from 'src/bridge'
-import { seminar } from 'src/localstores'
+import { seminar, setting } from 'src/localstores'
 import { ref, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -174,6 +174,7 @@ const onChangeTopicsClick = async () => {
 }
 
 onMounted(async () => {
+  setting.Setting.setCurrentMenu('home')
   seminar.Seminar.setTopic(topic.value)
   await generateTopics()
 })

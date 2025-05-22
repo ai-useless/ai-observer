@@ -117,6 +117,8 @@ const ready = computed(() => {
 })
 
 onMounted(() => {
+  setting.Setting.setCurrentMenu('observer')
+
   if (!topic.value || !topic.value.length) {
     void router.push({ path: '/' })
     return

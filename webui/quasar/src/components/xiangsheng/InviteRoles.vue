@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: min(960px, 100%); min-width: 960px; height: calc(100vh - 80px); overflow: scroll;' class='hide-scrollbar'>
+  <div style='max-width: min(800px, 100%); min-width: 800px; height: calc(100vh - 80px); overflow: scroll;' class='hide-scrollbar'>
     <q-card class='bg-gradient-blue no-border-radius'>
       <q-card-section>
         <div class='flex justify-center items-center' style='height: 160px;'>
@@ -89,7 +89,7 @@
         {{ _topic }}
       </div>
     </div>
-    <div>
+    <div class='flex justify-center items-center'>
       <BottomFixInput v-model='inputTopic' placeholder='请输入新的相声主题~' @enter='onTopicEnter' />
     </div>
   </div>

@@ -6,7 +6,7 @@
       width: 100%;
       background: white;
       z-index: 1000;
-      max-width: 960px;
+      max-width: min(100%, 600px);
       border-radius: 16px;
       margin-bottom: 16px;
     '

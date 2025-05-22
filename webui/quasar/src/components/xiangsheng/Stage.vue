@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: min(960px, 100%); min-width: 960px; height: calc(100vh - 80px); overflow: scroll;' class='hide-scrollbar'>
+  <div style='max-width: min(800px, 100%); min-width: 800px; height: 100vh; overflow: scroll;' class='hide-scrollbar'>
     <div style='height: 280px'>
       <q-img :src='backgroundImage' style='width: 100%; height: 280px;' fit='cover' />
       <div style='margin-top: -138px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.8; padding: 8px 32px; text-align: center;'>
@@ -43,15 +43,15 @@
         </div>
       </div>
     </div>
-    <div style='width: 100%; height: calc(100% - 280px - 4px);'>
+    <div style='width: 100%; height: calc(100% - 280px - 4px);' class='bg-grey-2'>
       <q-scroll-area
-        style='height: 100%; width: 100%; padding: 0 24px;'
+        style='height: calc(100% - 80px); width: 100%; padding: 0 24px;'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
         :thumb-style='{ width: "2px" }'
         @mouseenter='autoScroll = false'
         @mouseleave='autoScroll = true'
-        class='q-mt-xs cursor-pointer bg-grey-2'
+        class='q-mt-xs cursor-pointer'
       >
         <div
           v-if='!displayMessages.length'
@@ -64,14 +64,17 @@
           </div>
         </div>
         <div v-else style='margin-top: 16px;'>
-          <div v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
-            <MessageCard :message='message' />
+          <q-resize-observer @resize='onChatBoxResize' />
+          <div>
+            <div v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
+              <MessageCard :message='message' />
+            </div>
+            <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
           </div>
-          <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
         </div>
       </q-scroll-area>
     </div>
-    <div>
+    <div class='flex justify-center items-center'>
       <BottomFixInput v-model='inputTopic' placeholder='请输入新的相声主题~' @enter='onTopicEnter' />
     </div>
   </div>
@@ -87,6 +90,7 @@ import { purify } from 'src/utils'
 import { Message } from './Message'
 import { xiangshengWorker } from 'src/worker'
 import { useRouter } from 'vue-router'
+import { QScrollArea } from 'quasar'
 
 import MessageCard from './MessageCard.vue'
 import BottomFixInput from '../input/BottomFixInput.vue'
@@ -99,6 +103,7 @@ const backgroundImage = ref('http://106.15.6.50:81/download/images/xiangshengwut
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
+const chatBox = ref<QScrollArea>()
 const scrollTop = ref(999999)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
@@ -145,6 +150,10 @@ watch(lastMessageText, async () => {
   await nextTick()
   scrollTop.value += 1
 })
+
+const onChatBoxResize = (size: { height: number }) => {
+  if (autoScroll.value) chatBox.value?.setScrollPosition('vertical', size.height, 300)
+}
 
 const onPlayScriptsClick = () => {
   playScripts.value = !playScripts.value
