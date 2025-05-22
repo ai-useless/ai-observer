@@ -1,12 +1,32 @@
 <template>
   <q-card class='border-gradient-bg-white border-radius-16px cursor-pointer hover-slide-up-10px full-width'>
     <q-card-section class='row justify-center items-center bg-gradient-blue text-white' style='height: 260px; border-radius: 14px 14px 0 0;'>
-      <q-avatar size='56px' class='q-mr-md'>
+      <q-avatar size='128px' class='q-mr-md'>
         <q-img :src='_simulator?.simulator_avatar_url' :alt='role === dbModel.Role.HOST ? "主持人" : "嘉宾"' />
       </q-avatar>
       <div class='full-width self-end'>
-        <div v-if='_simulator' class='text-h6'>
-          {{ _simulator?.simulator }}
+        <div v-if='_simulator'>
+          <div class='text-h6'>
+            <span class='text-bold text-white' style='font-size: 20px;'>{{ _simulator?.simulator }}</span>
+            <span class='q-ml-sm' style='font-size: 12px;'>{{ _simulator?.title }}</span>
+          </div>
+          <div v-if='_model' class='row'>
+            <div class='border-gradient-bg-white border-radius-round' style='width: 26px;'>
+              <q-avatar v-if='_simulator' size='24px'>
+                <q-img :src='_model.model_logo_url' />
+              </q-avatar>
+            </div>
+            <div class='border-gradient-bg-white border-radius-round q-ml-xs' style='width: 26px;'>
+              <q-avatar v-if='_simulator' size='24px'>
+                <q-img :src='_model.author_logo_url' />
+              </q-avatar>
+            </div>
+            <div class='border-gradient-bg-white border-radius-round q-ml-xs' style='width: 26px;'>
+              <q-avatar v-if='_simulator' size='24px'>
+                <q-img :src='_model.vendor_logo_url' />
+              </q-avatar>
+            </div>
+          </div>
         </div>
         <div v-else class='text-subtitle2'>
           {{ role === dbModel.Role.HOST ? "主持人" : "嘉宾" }}
@@ -14,14 +34,22 @@
       </div>
     </q-card-section>
 
-    <q-card-section class='flex justify-center items-center text-grey-9'>
-      <div>
-        <span v-if='_simulator'>
-          {{ _simulator?.origin_personality }}
-        </span>
-        <span v-else>
-          点击我或拖动AGI模拟器和模型到这里设置为嘉宾~
-        </span>
+    <q-card-section class='text-grey-9'>
+      <div v-if='_simulator' class='full-height'>
+        <div>
+          <div>{{ _simulator?.origin_personality }}</div>
+          <div v-if='_model' class='flex items-center text-grey-6 q-mt-xs'>
+            <q-badge class='bg-gradient-blue q-mr-xs q-mt-xs'>
+              {{ _model.vendor }}
+            </q-badge>
+            <q-badge class='bg-gradient-blue q-mr-xs q-mt-xs'>
+              {{ modelName }}
+            </q-badge>
+          </div>
+        </div>
+      </div>
+      <div v-else class='full-height flex justify-center items-center'>
+        <span>点击我或拖动AGI模拟器和模型到这里设置为主持人~</span>
         <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
           <q-tooltip style='font-size: 14px;'>
             您知道吗：模拟器设置主持人的人格和声音，模型设置主持人的生成内容的LLM模型。
@@ -31,7 +59,6 @@
     </q-card-section>
 
     <q-card-actions align='right'>
-      {{ _model }}
       <q-btn
         flat
         dense
@@ -60,5 +87,8 @@ const role = toRef(props, 'role')
 
 const _simulator = computed(() => simulator.Simulator.simulator(participator.value?.simulatorId))
 const _model = computed(() => model.Model.model(participator.value?.modelId))
+
+const modelNameLen = computed(() => _model.value?.name?.split('/').length)
+const modelName = computed(() => modelNameLen.value ? _model.value?.name?.split('/')[modelNameLen.value - 1] : _model.value?.name)
 
 </script>

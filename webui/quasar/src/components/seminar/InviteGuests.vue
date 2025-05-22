@@ -11,18 +11,28 @@
               选择您喜欢的AGI模拟器讨论您感兴趣的话题~
             </div>
             <q-btn class='action-btn text-grey-9 q-mt-lg border-gradient-bg-white full-width border-radius-16px' flat dense>
-              随机安排模拟器开始讨论
+              开始讨论
             </q-btn>
           </div>
         </div>
       </q-card-section>
     </q-card>
     <div>
-      <div class='flex items-center'>
+      <div class='row items-center'>
         <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
         <h4 class='q-ml-md text-grey-9'>
           主持人
         </h4>
+        <q-space />
+        <q-btn
+          class='text-blue-6'
+          rounded
+          flat
+          dense
+          @click='onRandomSelectClick'
+        >
+          随机安排
+        </q-btn>
       </div>
       <GuestCardHorizontal
         :participator='host'
@@ -57,6 +67,7 @@ import { model, seminar, simulator } from 'src/localstores'
 import { computed, onMounted, ref } from 'vue'
 import { dbModel } from 'src/model'
 import { useRouter } from 'vue-router'
+import { dbBridge } from 'src/bridge'
 
 import GuestCardVertical from './GuestCardVertical.vue'
 import GuestCardHorizontal from './GuestCardHorizontal.vue'
@@ -67,6 +78,7 @@ const participators = ref([] as dbModel.Participator[])
 const host = computed(() => participators.value[0])
 const guests = computed(() => participators.value.slice(1))
 const topic = computed(() => seminar.Seminar.topic())
+const _uid = computed(() => seminar.Seminar.seminar())
 
 const router = useRouter()
 
@@ -84,5 +96,31 @@ onMounted(() => {
   simulator.Simulator.getSimulators()
   model.Model.getModels()
 })
+
+const randomSelect = async () => {
+  for (let i = 0; i < participators.value.length; i++) {
+    participators.value[i] = undefined as unknown as dbModel.Participator
+  }
+  for (let i = 0; i < participators.value.length; i++) {
+    while (true) {
+      let _simulator = await dbBridge._Simulator.randomPeek(i === 0 ? true : undefined)
+      if (!_simulator) _simulator = await dbBridge._Simulator.randomPeek()
+      if (participators.value.findIndex((el) => el && el.simulatorId === _simulator.id) >= 0) continue
+      let _model = await dbBridge._Model.randomPeek(i === 0 ? true : undefined)
+      if (!_model) _model = await dbBridge._Model.randomPeek()
+      participators.value[i] = {
+        seminarUid: _uid.value,
+        role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
+        simulatorId: _simulator.id,
+        modelId: _model.id
+      } as dbModel.Participator
+      break
+    }
+  }
+}
+
+const onRandomSelectClick = async () => {
+  await randomSelect()
+}
 
 </script>
