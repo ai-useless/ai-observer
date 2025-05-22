@@ -1,5 +1,5 @@
 <template>
-  <q-card class='border-gradient-bg-white hover-slide-up-10px border-radius-16px full-width row cursor-pointer'>
+  <q-card clickable class='border-gradient-bg-white hover-slide-up-10px border-radius-16px full-width row cursor-pointer'>
     <q-card-section class='row justify-center items-center bg-gradient-blue text-white' style='height: 220px; width: 220px; border-radius: 14px 0 0 14px;'>
       <div class='full-width text-center'>
         <q-avatar v-if='_simulator' size='128px'>
@@ -24,17 +24,17 @@
           <div>{{ _simulator?.origin_personality }}</div>
           <div v-if='_model' class='q-mt-xs row'>
             <div class='border-gradient-bg-white border-radius-round' style='width: 26px;'>
-              <q-avatar v-if='_simulator' size='24px'>
+              <q-avatar v-if='_model' size='24px'>
                 <q-img :src='_model.model_logo_url' />
               </q-avatar>
             </div>
             <div class='border-gradient-bg-white border-radius-round q-ml-xs' style='width: 26px;'>
-              <q-avatar v-if='_simulator' size='24px'>
+              <q-avatar v-if='_model' size='24px'>
                 <q-img :src='_model.author_logo_url' />
               </q-avatar>
             </div>
             <div class='border-gradient-bg-white border-radius-round q-ml-xs' style='width: 26px;'>
-              <q-avatar v-if='_simulator' size='24px'>
+              <q-avatar v-if='_model' size='24px'>
                 <q-img :src='_model.vendor_logo_url' />
               </q-avatar>
             </div>
@@ -77,15 +77,23 @@
         label='选择模型'
         class='bg-gradient-blue border-radius-16px text-white'
         style='font-size: 12px;'
+        @click.stop='onSelectModelClick'
       />
     </q-card-actions>
   </q-card>
+  <q-dialog v-model='selectingModel'>
+    <div>
+      <ModelSelector v-model:selected='selectedModel' @cancel='onCancelSelectModel' @selected='onModelSelected' />
+    </div>
+  </q-dialog>
 </template>
 
 <script setup lang='ts'>
 import { model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, toRef } from 'vue'
+import { computed, ref, toRef } from 'vue'
+
+import ModelSelector from '../selector/ModelSelector.vue'
 
 interface Props {
   participator: dbModel.Participator
@@ -99,5 +107,21 @@ const role = toRef(props, 'role')
 
 const _simulator = computed(() => simulator.Simulator.simulator(participator.value?.simulatorId))
 const _model = computed(() => model.Model.model(participator.value?.modelId))
+
+const selectingModel = ref(false)
+const selectedModel = ref(undefined as unknown as model._Model)
+
+const onSelectModelClick = () => {
+  selectingModel.value = true
+}
+
+const onCancelSelectModel = () => {
+  selectingModel.value = false
+}
+
+const onModelSelected = (_model: model._Model) => {
+  selectingModel.value = false
+  participator.value.modelId = _model.id
+}
 
 </script>

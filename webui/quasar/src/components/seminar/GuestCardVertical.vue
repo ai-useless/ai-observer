@@ -1,5 +1,5 @@
 <template>
-  <q-card class='border-gradient-bg-white border-radius-16px cursor-pointer hover-slide-up-10px full-width'>
+  <q-card clickable class='border-gradient-bg-white border-radius-16px cursor-pointer hover-slide-up-10px full-width'>
     <q-card-section class='row justify-center items-center bg-gradient-blue text-white' style='height: 260px; border-radius: 14px 14px 0 0;'>
       <q-avatar size='128px' class='q-mr-md'>
         <q-img :src='_simulator?.simulator_avatar_url' :alt='role === dbModel.Role.HOST ? "主持人" : "嘉宾"' />
@@ -73,15 +73,23 @@
         label='选择模型'
         class='bg-gradient-blue border-radius-16px text-white'
         style='font-size: 12px;'
+        @click.stop='onSelectModelClick'
       />
     </q-card-actions>
   </q-card>
+  <q-dialog v-model='selectingModel'>
+    <div>
+      <ModelSelector v-model:selected='selectedModel' @cancel='onCancelSelectModel' @selected='onModelSelected' />
+    </div>
+  </q-dialog>
 </template>
 
 <script setup lang='ts'>
 import { model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, toRef } from 'vue'
+import { computed, ref, toRef } from 'vue'
+
+import ModelSelector from '../selector/ModelSelector.vue'
 
 interface Props {
   participator: dbModel.Participator
@@ -98,5 +106,21 @@ const _model = computed(() => model.Model.model(participator.value?.modelId))
 
 const modelNameLen = computed(() => _model.value?.name?.split('/').length)
 const modelName = computed(() => modelNameLen.value ? _model.value?.name?.split('/')[modelNameLen.value - 1] : _model.value?.name)
+
+const selectingModel = ref(false)
+const selectedModel = ref(undefined as unknown as model._Model)
+
+const onSelectModelClick = () => {
+  selectingModel.value = true
+}
+
+const onCancelSelectModel = () => {
+  selectingModel.value = false
+}
+
+const onModelSelected = (_model: model._Model) => {
+  selectingModel.value = false
+  participator.value.modelId = _model.id
+}
 
 </script>

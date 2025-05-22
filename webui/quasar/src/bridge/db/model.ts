@@ -32,4 +32,8 @@ export class _Model {
   static _topicModel = () => {
     return _Model.topicModel
   }
+
+  static models = async () => {
+    return await dbSeminar.models.toArray()
+  }
 }

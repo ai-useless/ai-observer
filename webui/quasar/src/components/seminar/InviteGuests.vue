@@ -43,11 +43,12 @@
           随机安排
         </q-btn>
       </div>
-      <GuestCardHorizontal
-        :participator='host'
-        :role='dbModel.Role.HOST'
-        @click='onParticipatorClick(0)'
-      />
+      <div @click='onParticipatorClick(0)'>
+        <GuestCardHorizontal
+          :participator='host'
+          :role='dbModel.Role.HOST'
+        />
+      </div>
     </div>
     <div class='q-mb-lg'>
       <div class='flex items-center'>
@@ -61,11 +62,11 @@
           v-for='(guest, index) of guests'
           :key='index'
           class='col-12 col-sm-6 col-md-4'
+          @click='onParticipatorClick(index + 1)'
         >
           <GuestCardVertical
             :participator='guest'
             :role='dbModel.Role.GUEST'
-            @click='onParticipatorClick(index + 1)'
           />
         </div>
       </div>
