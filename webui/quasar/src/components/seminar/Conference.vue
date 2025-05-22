@@ -1,15 +1,8 @@
 <template>
   <div class='row'>
     <div style='width: 960px; max-height: 100%;'>
-      <q-scroll-area
-        :style='{ height: chatBoxHeight + "px" }'
-        ref='chatBox'
-        :bar-style='{ width: "2px" }'
-        :thumb-style='{ width: "2px" }'
-        @mouseenter='autoScroll = false'
-        @mouseleave='autoScroll = true'
-      >
-        <div class='text-grey-9 text-left' style='font-size: 24px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
+      <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg' style='height: 220px'>
+        <div class='full-width' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}
         </div>
         <div class='row' style='transition: 500ms;'>
@@ -25,7 +18,16 @@
             />
           </div>
         </div>
-        <q-separator style='margin-top: 16px' />
+      </div>
+      <q-scroll-area
+        :style='{ height: chatBoxHeight + "px" }'
+        ref='chatBox'
+        :bar-style='{ width: "2px" }'
+        :thumb-style='{ width: "2px" }'
+        @mouseenter='autoScroll = false'
+        @mouseleave='autoScroll = true'
+        class='q-mt-lg'
+      >
         <div
           v-if='!displayMessages.length'
           style='margin-top: 16px; font-size: 20px'
@@ -307,7 +309,7 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
 }
 
 onMounted(async () => {
-  chatBoxHeight.value = window.innerHeight - 106
+  chatBoxHeight.value = window.innerHeight - 106 - 220
 
   if (!_uid.value) return
   _seminar.value = await dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar

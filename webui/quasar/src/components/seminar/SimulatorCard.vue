@@ -9,7 +9,7 @@
       </div>
       <q-space />
     </div>
-    <div v-if='!avatarOnly' class='text-grey-8'>
+    <div v-if='!avatarOnly'>
       {{ _simulator.simulator }}
     </div>
   </div>
