@@ -288,7 +288,7 @@ export class SeminarRunner {
       prompts
     )
 
-    const textResp = await axios.post(constants.CHAT_API, {
+    const textResp = await axios.post(constants.FALLBACK_API, {
       model: model.name,
       messages: (prompts.historyMessages || []).map((el) => {
         return {
@@ -465,7 +465,7 @@ export class SeminarRunner {
       (historyMessages || []).map((el) => el.content)
     )
     try {
-      const resp = await axios.post(constants.CHAT_API, {
+      const resp = await axios.post(constants.FALLBACK_API, {
         model,
         messages: [],
         prompt: purify.purifyText(prompt || '')

@@ -26,7 +26,7 @@
         :thumb-style='{ width: "2px" }'
         @mouseenter='autoScroll = false'
         @mouseleave='autoScroll = true'
-        class='q-mt-lg'
+        class='q-mt-xs bg-grey-2'
       >
         <div
           v-if='!displayMessages.length'
@@ -314,7 +314,7 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
 const router = useRouter()
 
 onMounted(async () => {
-  chatBoxHeight.value = window.innerHeight - 106 - 220
+  chatBoxHeight.value = window.innerHeight - 220 - 4
 
   if (!_uid.value) {
     void router.push({ path: '/seminar/guests' })

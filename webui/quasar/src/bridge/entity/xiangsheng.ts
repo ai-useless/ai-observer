@@ -273,7 +273,7 @@ export class EXiangsheng {
       dialog: false,
       extra: '',
       highResolution: true,
-      ratio: '1:1'
+      ratio: '16:9'
     })
     if (!payload || !payload.image || !payload.image.length) return
     return payload.image

@@ -10,6 +10,12 @@ import stopCircle from './StopCircle.svg'
 import threeDotsVertical from './ThreeDotsVertical.svg'
 import meipuAgiLogo from './MeipuAgiLogo.jpg'
 import githubLogo from './Github.svg'
+import gotoBottom from './GotoBottom.svg'
+import gotoTop from './GotoTop.svg'
+import manualScrollGray from './ManualScrollGray.svg'
+import volumeUp from './VolumeUp.svg'
+import volumeOff from './VolumeOff.svg'
+import dominoMask from './DominoMask.svg'
 
 export {
   chevronRight,
@@ -23,5 +29,11 @@ export {
   stopCircle,
   threeDotsVertical,
   meipuAgiLogo,
-  githubLogo
+  githubLogo,
+  gotoBottom,
+  gotoTop,
+  manualScrollGray,
+  volumeUp,
+  volumeOff,
+  dominoMask
 }

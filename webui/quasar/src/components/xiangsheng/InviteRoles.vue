@@ -101,12 +101,13 @@
 </template>
 
 <script setup lang='ts'>
-import { model, simulator, xiangsheng } from 'src/localstores'
+import { model, setting, simulator, xiangsheng } from 'src/localstores'
 import { computed, onMounted, ref } from 'vue'
 import { dbModel } from 'src/model'
 import { useRouter } from 'vue-router'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { v4 as uuidv4 } from 'uuid'
+import { xiangshengWorker } from 'src/worker'
 
 import RoleCardVertical from './RoleCardVertical.vue'
 import SimulatorSelector from '../selector/SimulatorSelector.vue'
@@ -135,6 +136,8 @@ const ready = computed(() => {
 })
 
 onMounted(() => {
+  setting.Setting.setCurrentMenu('xiangsheng')
+
   for (let i = 0; i < participatorCount.value; i++) {
     participators.value.push(undefined as unknown as dbModel.Participator)
   }
@@ -146,8 +149,8 @@ onMounted(() => {
 })
 
 const onStartXiangshengClick = async () => {
-  await dbBridge._Seminar.create(_uid.value, topic.value, [...participators.value])
-  void router.push({ path: '/seminar' })
+  await dbBridge._Xiangsheng.create(_uid.value, topic.value, [...participators.value], xiangshengWorker.Intent.GENERATE)
+  void router.push({ path: '/xiangsheng' })
 }
 
 const randomSelect = async () => {
@@ -205,12 +208,16 @@ const onTopicEnter = (_topic: string) => {
 }
 
 const onChangeTopicsClick = () => {
+  generating.value = true
+
   entityBridge.EXiangsheng.prepareTopics(historyTopics.value).then((payload) => {
+    generating.value = false
     if (!payload?.topics?.length) return
     historyTopics.value.push(...topics.value)
     topics.value = payload.topics
     if (!topic.value?.length) xiangsheng.Xiangsheng.setTopic(topics.value[0])
   }).catch((e) => {
+    generating.value = false
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed prepare topics: ${e}`)
   })
