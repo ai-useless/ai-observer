@@ -106,7 +106,7 @@ const typingMessageIndex = ref(0)
 const lastModelId = ref(-1 as unknown as number)
 
 const chatBox = ref<QScrollArea>()
-const generating = ref(true)
+const generating = ref(false)
 const images = ref(new Map<number, string>())
 
 const modelLogo = (modelId: number) => {
@@ -124,6 +124,8 @@ const onChatBoxResize = (size: { height: number }) => {
 }
 
 const generate = async () => {
+  if (generating.value) return
+
   generating.value = true
 
   for (const model of models.value) {
