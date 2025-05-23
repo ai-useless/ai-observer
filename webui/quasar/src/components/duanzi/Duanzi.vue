@@ -1,7 +1,7 @@
 <template>
   <q-page>
-    <div style='height: 100%;' class='full-width flex justify-center items-center'>
-      <div v-if='!displayMessages.length' class='full-width flex justify-center items-center' style='height: calc(100vh - 4px); width: min(100%, 600px);'>
+    <div style='height: 100%; width: 100%;' class='flex justify-center items-center'>
+      <div v-if='!displayMessages.length' class='flex justify-center items-center bg-grey-2' style='height: calc(100vh - 4px); width: min(100%, 600px);'>
         <div
           style='margin-top: 16px; font-size: 20px;'
           class='text-center text-grey-8 flex justify-center items-center'
@@ -14,7 +14,7 @@
       </div>
       <q-scroll-area
         v-else
-        style='height: calc(100vh - 4px - 80x); width: min(100%, 600px);'
+        style='height: calc(100vh - 4px - 80x); width: 100%;'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
         :thumb-style='{ width: "2px" }'
