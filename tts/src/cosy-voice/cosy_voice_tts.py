@@ -211,9 +211,9 @@ async def speak_v2(self, args: V2InputArgs) -> Response:
 
 
 @chute.cord(
-    path="/v2/speak",
-    passthrough_path="/v2/speak",
-    public_api_path="/v2/speak",
+    path="/v3/speak",
+    passthrough_path="/v3/speak",
+    public_api_path="/v3/speak",
     public_api_method="POST",
     stream=False,
     output_content_type="audio/wav",
