@@ -216,7 +216,8 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
-    lastModelId.value = typingMessage.value.modelId
+
+    if (typingMessage.value) lastModelId.value = typingMessage.value.modelId
 
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
   }).catch((e) => {
