@@ -65,7 +65,8 @@ import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-v
 import { dbBridge, entityBridge } from 'src/bridge'
 import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
 import { model, simulator } from 'src/localstores'
-import { purify } from 'src/utils'
+import { AudioPlayer } from 'src/player'
+import { typing as _typing, Message as MessageBase } from 'src/typing'
 
 import ComplexInput from '../input/ComplexInput.vue'
 import SimulatorCard from '../simulator/SimulatorCard.vue'
@@ -82,23 +83,20 @@ const scriptHeight = ref(0)
 const scrollHeight = ref(0)
 const scrollTop = ref(999999)
 
-interface Message {
-  message: string
-  audio?: string
-  index: number
+interface Message extends MessageBase {
   first: boolean
   last: boolean
 }
 
 const displayMessages = ref([] as Message[])
-const waitMessages = ref([] as Message[])
+const waitMessages = ref(new Map<string, Message>())
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const typingMessage = ref(undefined as unknown as Message)
 const typingMessageIndex = ref(0)
 const typingTicker = ref(-1)
 const typingInterval = ref(40)
 
-const messageCount = computed(() => waitMessages.value.length)
+const messageCount = computed(() => waitMessages.value.size)
 
 const generating = ref(false)
 
@@ -121,7 +119,7 @@ const generate = () => {
   generating.value = true
 
   displayMessages.value = []
-  waitMessages.value = []
+  waitMessages.value = new Map<string, Message>()
   lastDisplayMessage.value = undefined as unknown as Message
   typingMessage.value = undefined as unknown as Message
   if (audioPlayer.value && audioPlayer.value.context) audioPlayer.value.context.stop()
@@ -129,12 +127,13 @@ const generate = () => {
 
   entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
     generating.value = false
-    waitMessages.value.push({
+    waitMessages.value.set(`${message}-${index}`, {
       message,
-      audio,
+      audio: audio as unknown as string,
       index,
       first,
-      last
+      last,
+      timestamp: Date.now()
     })
   })
 }
@@ -177,13 +176,6 @@ const onSimulatorSelectorClose = () => {
 
 const onCancelSelectSimulatorClick = () => {
   selectingSimulator.value = false
-}
-
-const calculateTypingInterval = (duration: number) => {
-  if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
-    const interval = Math.ceil(duration * 1000 / purify.purifyText(typingMessage.value.message).length)
-    typingInterval.value = interval
-  }
 }
 
 onMounted(async () => {
@@ -235,70 +227,30 @@ useDidHide(() => {
   }
 })
 
-class AudioPlayer {
-  context: Taro.InnerAudioContext
-  playing: boolean
-  duration: number
-  durationTicker: number
-}
-
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 const bgPlayer = ref(undefined as unknown as AudioPlayer)
 
 const typing = () => {
-  if (!typingMessage.value && !waitMessages.value.length) return
-
-  // If we have a message in typing, finish it
-  if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
-    if (lastDisplayMessage.value.message.length > 0 && audioPlayer.value && !audioPlayer.value.playing) {
-      lastDisplayMessage.value.message = typingMessage.value.message
-      return
-    }
-    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
-    const appendLen = matches[0] ? matches[0].length + 1 : 1
-    lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
-    return
-  }
-
-  if (lastDisplayMessage.value) {
-    displayMessages.value.push(lastDisplayMessage.value)
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }
+  }, typing).then((rc) => {
+    if (!rc) return
 
-  if (!waitMessages.value.length) return
-  // If audio is still playing, do nothing
-  if (audioPlayer.value && audioPlayer.value.playing) return
+    if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
+    if (rc.lastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage
+    }
+    if (rc.typingInterval) {
+      typingInterval.value = rc.typingInterval
+      typingTicker.value = rc.typingTicker as number
+    }
+    if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
-  const index = waitMessages.value.findIndex((el) => el.index === typingMessageIndex.value)
-  if (index < 0) return
-
-  typingMessage.value = waitMessages.value[index]
-  waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1)]
-  typingMessageIndex.value += 1
-
-  if (typingMessage.value.last) {
-    waitMessages.value = [...displayMessages.value, typingMessage.value]
-    typingMessageIndex.value = 0
-  }
-
-  if (typingMessage.value.audio && typingMessage.value.audio.length) {
-    window.clearInterval(typingTicker.value)
-    playAudio(typingMessage.value.audio).then((player: AudioPlayer) => {
-      if (player && player.duration > 0) {
-        calculateTypingInterval(player.duration)
-        audioPlayer.value = player
-        typingTicker.value = window.setInterval(typing, typingInterval.value)
-      }
-    }).catch((e) => {
-      console.log(`Failed play audio: ${e}`)
-      typingTicker.value = window.setInterval(typing, typingInterval.value)
-    })
-  }
-
-  lastDisplayMessage.value = {
-    ...typingMessage.value,
-    message: ''
-  }
+    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+  }).catch((e) => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.log(`Failed typing: ${e}`)
+  })
 }
 
 const playAudio = (audioUrl: string, loop?: boolean): Promise<AudioPlayer | undefined> => {

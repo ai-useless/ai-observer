@@ -1,37 +1,33 @@
+import Taro from '@tarojs/taro'
+
 export class AudioPlayer {
-  context: HTMLAudioElement
+  context: Taro.InnerAudioContext
   playing = false
   duration = 0
   durationTicker = -1
 
   constructor(url: string) {
-    this.context = new Audio(url)
+    this.context = Taro.createInnerAudioContext()
     this.context.src = url
   }
 
   static play = (url: string, loop?: boolean): Promise<AudioPlayer | undefined> => {
     const player = new AudioPlayer(url)
 
-    player.context.src = url
     player.playing = true
     player.duration = player.context.duration
 
     return new Promise((resolve, reject) => {
-      player.context.onerror = (e) => {
+      player.context.onError((e) => {
         player.playing = false
         if (player.durationTicker >= 0) {
           window.clearInterval(player.durationTicker)
           player.durationTicker = -1
         }
         reject(`Failed play audio: ${JSON.stringify(e)}`)
-      }
-      player.context.oncanplay = async () => {
-        try {
-          await player.context.play()
-        } catch (e) {
-          reject(e)
-          return
-        }
+      })
+      player.context.onCanplay(() => {
+        player.context.play()
 
         player.durationTicker = window.setInterval(() => {
           if (player.context.duration) {
@@ -39,20 +35,22 @@ export class AudioPlayer {
             player.durationTicker = -1
             player.duration = player.context.duration
             resolve(player)
+            return
           }
         }, 100)
-      }
-      player.context.onended = () => {
+      })
+      player.context.onEnded(() => {
         player.playing = false
         if (player.durationTicker >= 0) {
           window.clearInterval(player.durationTicker)
           player.durationTicker = -1
         }
         if (loop) {
-          player.stop()
-          void player.context.play()
+          player.context.seek(0)
+          player.context.stop()
+          player.context.play()
         }
-      }
+      })
     })
   }
 

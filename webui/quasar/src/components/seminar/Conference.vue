@@ -227,7 +227,9 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   lastRound.value = round
   lastTopic.value = subTopic
 
-  waitMessages.value.set(`${subTopic}-${participatorId}-${round}-${index}`, {
+  const key = `${subTopic}-${participatorId}-${round}-${index}`
+
+  waitMessages.value.set(key, {
     round,
     message: strip(purify.purifyThink(message)),
     participator,
@@ -240,6 +242,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     subTopic,
     index
   })
+  lastWaitMessage.value = waitMessages.value.get(key) as Message
 }
 
 const onThinking = (participatorId: number) => {

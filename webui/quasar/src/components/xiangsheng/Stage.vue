@@ -234,10 +234,6 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
     last,
     typing: false
   })
-
-  waitMessages.value.forEach((v) => {
-    v.datetime = timestamp2HumanReadable(v.timestamp)
-  })
 }
 
 const router = useRouter()

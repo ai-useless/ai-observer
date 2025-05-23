@@ -76,6 +76,7 @@ import Taro from '@tarojs/taro'
 import { model, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { timestamp } from 'src/utils'
+import { AudioPlayer } from 'src/player'
 
 import ComplexInput from '../input/ComplexInput.vue'
 import Login from '../user/Login.vue'
@@ -124,56 +125,7 @@ const audioInput = ref(false)
 const friendThinking = ref(false)
 const logining = ref(false)
 
-class AudioPlayer {
-  context: Taro.InnerAudioContext
-  playing: boolean
-  duration: number
-  durationTicker: number
-}
-
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
-
-const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
-  const context = Taro.createInnerAudioContext()
-  context.src = audioUrl
-
-  const player = {
-    context: context,
-    playing: true,
-    duration: context.duration
-  } as AudioPlayer
-
-  return new Promise((resolve, reject) => {
-    context.onError((e) => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-      reject(`Failed play audio: ${JSON.stringify(e)}`)
-    })
-    context.onCanplay(() => {
-      context.play()
-
-      player.durationTicker = window.setInterval(() => {
-        if (context.duration) {
-          window.clearInterval(player.durationTicker)
-          player.durationTicker = -1
-          player.duration = context.duration
-          resolve(player)
-          return
-        }
-      }, 100)
-    })
-    context.onEnded(() => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-    })
-  })
-}
 
 const sendToFriend = (_message: string) => {
   friendThinking.value = true
@@ -200,7 +152,7 @@ const sendToFriend = (_message: string) => {
       audio
     })
     if (audio) {
-       playAudio(audio).then((player) => {
+       AudioPlayer.play(audio).then((player) => {
         if (!player) return
         audioPlayer.value = player
       }).catch((e) => {
@@ -245,20 +197,24 @@ const onOpenSelectSimulatorClick = () => {
   selectingSimulator.value = true
 }
 
-const onSelectSimulatorClick = (_simulator: simulator._Simulator) => {
-  friend.value = _simulator
-  selectingSimulator.value = false
-
-  messages.value[0] = {
-    message: language.value === '中文' ?
-      `您好，我是${friend.value.simulator}，是你在AGI世界的伙伴。我的模型是${_model.value.name}。你可以和我聊任何你想聊的话题，记得要健康哦！如果你想和其他伙伴沟通，可以点击对话框旁边的按钮切换伙伴哦！现在，开始我们愉快的聊天吧！` :
-      `Hello, I'm ${friend.value.simulator}, your friend in AGI world. I'm driven by llm model ${_model.value.name}. Now you can talk with me about any topic. If you would like to chat with other guys, switch with button besides the input box. Now let's go!`,
+const initializeMessage = () => {
+  messages.value = [{
+    message: language.value === '中文'
+      ? `您好，我是${friend.value.simulator}，是你在AGI世界的伙伴。我的模型是${_model.value.name}。你可以和我聊任何你想聊的话题，记得要健康哦！如果你想和其他伙伴沟通，可以点击对话框旁边的按钮切换伙伴哦！现在，开始我们愉快的聊天吧！`
+      : `Hello, I'm ${friend.value.simulator}, your friend in AGI world. I'm driven by llm model ${_model.value.name}. Now you can talk with me about any topic. If you would like to chat with other guys, switch with button besides the input box. Now let's go!`,
     send: false,
     createdAt: Date.now(),
     displayName: friend.value.simulator,
     hint: true,
     avatar: friend.value.simulator_avatar_url
-  }
+  }]
+}
+
+const onSelectSimulatorClick = (_simulator: simulator._Simulator) => {
+  friend.value = _simulator
+  selectingSimulator.value = false
+
+  initializeMessage()
 }
 
 const onSimulatorSelectorClose = () => {
@@ -341,16 +297,8 @@ onMounted(async () => {
     _model.value = dbBridge._Model.model(dbBridge._Model.chatModelId()) as model._Model
     simulator.Simulator.getSimulators(undefined, () => {
       friend.value = dbBridge._Simulator.randomPeek(undefined)
-      messages.value.push({
-        message: language.value === '中文' ?
-          `您好，我是${friend.value.simulator}，是你在AGI世界的伙伴。我的模型是${_model.value.name}。你可以和我聊任何你想聊的话题，记得要健康哦！如果你想和其他伙伴沟通，可以点击对话框旁边的按钮切换伙伴哦！现在，开始我们愉快的聊天吧！` :
-          `Hello, I'm ${friend.value.simulator}, your friend in AGI world. I'm driven by llm model ${_model.value.name}. Now you can talk with me about any topic. If you would like to chat with other guys, switch with button besides the input box. Now let's go!`,
-        send: false,
-        createdAt: Date.now(),
-        displayName: friend.value.simulator,
-        hint: true,
-        avatar: friend.value.simulator_avatar_url
-      })
+
+      initializeMessage()
     })
   })
 })

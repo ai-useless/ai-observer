@@ -92,6 +92,8 @@ import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
 import { seminarWorker } from 'src/worker'
+import { AudioPlayer } from 'src/player'
+import { typing as _typing } from 'src/typing'
 
 import Outline from './Outline.vue'
 import MessageCard from './MessageCard.vue'
@@ -120,7 +122,9 @@ const guests = computed(() => simulators.value.filter((el) => participators.valu
 const displayMessages = ref([] as Message[])
 const loading = ref(false)
 const messageCount = computed(() => displayMessages.value.length)
-const waitMessages = ref([] as Message[])
+const waitMessages = ref(new Map<string, Message>())
+const lastWaitMessage = ref(undefined as unknown as Message)
+const typingMessageIndex = ref(0)
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.message : undefined)
 const typingMessage = ref(undefined as unknown as Message)
@@ -133,13 +137,6 @@ const outline = ref({
 const activeTopic = ref('')
 const lastTopic = ref(undefined as unknown as string)
 const titles = computed(() => outline.value.titles as string[])
-
-class AudioPlayer {
-  context: Taro.InnerAudioContext
-  playing: boolean
-  duration: number
-  durationTicker: number
-}
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
@@ -186,87 +183,46 @@ const onContentListClick = () => {
   showContentList.value = true
 }
 
-const calculateTypingInterval = (duration: number) => {
-  if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
-    const interval = Math.ceil(duration * 1000 / purify.purifyText(typingMessage.value.message).length)
-    typingInterval.value = interval
-  }
-}
-
 const typing = () => {
-  if (!typingMessage.value && !waitMessages.value.length) return
-
-  // If we have a message in typing, finish it
-  if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
-    while (true) {
-      if (lastDisplayMessage.value.message.length > 0 && audioPlayer.value && !audioPlayer.value.playing) {
-        lastDisplayMessage.value.message = typingMessage.value.message
-        return
-      }
-      let matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
-      if (matches.length === 0) matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/<style>[\s\S]*?<\/style>/) || []
-      const appendLen = matches[0] ? matches[0].length + 1 : 1
-      lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
-      if (matches.length == 0) return
-    }
-  }
-
-  if (lastDisplayMessage.value) {
-    displayMessages.value.push(lastDisplayMessage.value)
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }
-  displayMessages.value.forEach((el) => {
-    el.datetime = timestamp2HumanReadable(el.timestamp)
-  })
-
-  if (!waitMessages.value.length) return
-  // If audio is still playing, do nothing
-  if (audioPlayer.value && audioPlayer.value.playing) return
-
-  typingMessage.value = waitMessages.value[0]
-  waitMessages.value = waitMessages.value.slice(1)
-
-  seminar.Seminar.speak(typingMessage.value.participator.id as number)
-  if (typingMessage.value.subTopic !== activeTopic.value) {
-    displayMessages.value.push({
-      ...typingMessage.value,
-      subTopicTitle: true
-    })
-    activeTopic.value = typingMessage.value.subTopic
-  }
-
-  if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
-    let _subTopic = lastTopic.value
-    if (!_subTopic && waitMessages.value[waitMessages.value.length - 1]) {
-      _subTopic = waitMessages.value[waitMessages.value.length - 1].subTopic
+  }, typing).then((rc) => {
+    if (typingMessage.value?.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
+      requesting.value = true
+      setTimeout(() => {
+        void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value?.subTopic || typingMessage.value.subTopic, enablePlay.value)
+      }, 100)
     }
-    if (!_subTopic && typingMessage.value.subTopic) {
-      _subTopic = typingMessage.value.subTopic
-    }
-    setTimeout(() => {
-      void eSeminar.value.nextGuests(_subTopic, enablePlay.value)
-    }, 100)
-    requesting.value = true
-  }
 
-  if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
-    window.clearInterval(typingTicker.value)
-    playAudio(typingMessage.value.audio).then((player: AudioPlayer) => {
-      if (player && player.duration > 0) {
-        calculateTypingInterval(player.duration)
-        audioPlayer.value = player
-        typingTicker.value = window.setInterval(typing, typingInterval.value)
+    if (!rc) return
+
+    if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
+    if (rc.lastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage
+    }
+    if (rc.typingInterval) {
+      typingInterval.value = rc.typingInterval
+      typingTicker.value = rc.typingTicker as number
+    }
+    if (rc.typingMessage) typingMessage.value = rc.typingMessage
+
+    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+
+    if (typingMessage.value) {
+      seminar.Seminar.speak(typingMessage.value.participator.id as number)
+      if (typingMessage.value?.subTopic !== activeTopic.value) {
+        displayMessages.value.push({
+          ...typingMessage.value,
+          index: typingMessage.value.index - 1,
+          subTopicTitle: true
+        })
+        activeTopic.value = typingMessage.value?.subTopic
       }
-    }).catch((e) => {
-      console.log(`Failed play audio: ${e}`)
-      typingTicker.value = window.setInterval(typing, typingInterval.value)
-    })
-  }
-
-  lastDisplayMessage.value = {
-    ...typingMessage.value,
-    message: ''
-  }
+    }
+  }).catch((e) => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.log(`Failed typing: ${e}`)
+  })
 }
 
 const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
@@ -324,7 +280,7 @@ watch(participators, () => {
   simulators.value = entityBridge.EParticipator.simulators(participators.value)
 })
 
-const onMessage = async (seminarUid: string, subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
+const onMessage = async (seminarUid: string, subTopic: string, participatorId: number, message: string, round: number, audio: string, index: number) => {
   if (seminarUid !== _uid.value) return
 
   seminar.Seminar.stopThink(participatorId)
@@ -335,7 +291,7 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
   requesting.value = false
 
   // Discard topic after conclude: order here is important
-  const messages = [...(typingMessage.value ? [typingMessage.value] : []), ...displayMessages.value, ...waitMessages.value]
+  const messages = [...(typingMessage.value ? [typingMessage.value] : []), ...displayMessages.value, ...Array.from(waitMessages.value.values())]
   if (
     messages.length &&
     messages[messages.length - 1].subTopic !== subTopic &&
@@ -348,7 +304,9 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
   lastRound.value = round
   lastTopic.value = subTopic
 
-  waitMessages.value.push({
+  const key = `${subTopic}-${participatorId}-${round}-${index}`
+
+  waitMessages.value.set(key, {
     round,
     message: purify.purifyThink(message),
     participator,
@@ -358,13 +316,10 @@ const onMessage = async (seminarUid: string, subTopic: string, participatorId: n
     datetime: timestamp,
     audio,
     subTopicTitle: false,
-    subTopic
+    subTopic,
+    index
   })
-
-  waitMessages.value = waitMessages.value.map((el) => {
-    const timestamp = timestamp2HumanReadable(el.timestamp)
-    return { ...el, datetime: timestamp }
-  })
+  lastWaitMessage.value = waitMessages.value.get(key) as Message
 }
 
 const onThinking = (participatorId: number) => {
@@ -383,7 +338,7 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
   const maxTokens = 32768
   let tokens = 0
 
-  waitMessages.value.filter((el) => el.subTopic === lastTopic.value).forEach((el) => {
+  Array.from(waitMessages.value.values()).filter((el) => el.subTopic === lastTopic.value).forEach((el) => {
     const _messages = messages.get(el.subTopic) || []
     const content = el.simulator.simulator + ' 的观点: ' + purify.purifyText(el.message)
     _messages.push({
@@ -415,7 +370,7 @@ const historyMessages = (): Map<string, seminarWorker.HistoryMessage[]> => {
 
 const startSeminar = async () => {
   displayMessages.value = []
-  waitMessages.value = []
+  waitMessages.value = new Map<string, Message>()
   typingMessage.value = undefined as unknown as Message
   lastDisplayMessage.value = undefined as unknown as Message
   lastRound.value = 0

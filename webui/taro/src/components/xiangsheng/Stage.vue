@@ -78,6 +78,8 @@ import { View, ScrollView, Image } from '@tarojs/components'
 import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
 import { purify } from 'src/utils'
 import { Message } from './Message'
+import { AudioPlayer } from 'src/player'
+import { typing as _typing } from 'src/typing'
 
 import MessageCard from './MessageCard.vue'
 import ComplexInput from '../input/ComplexInput.vue'
@@ -110,21 +112,15 @@ const inputHeight = ref(0)
 
 const displayMessages = ref([] as Message[])
 const loading = ref(false)
-const messageCount = computed(() => displayMessages.value.length + waitMessages.value.length + (lastDisplayMessage.value ? 1 : 0))
-const waitMessages = ref([] as Message[])
+const messageCount = computed(() => displayMessages.value.length + waitMessages.value.size + (lastDisplayMessage.value ? 1 : 0))
+const waitMessages = ref(new Map<string, Message>())
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const lastMessageText = computed(() => lastDisplayMessage.value ? lastDisplayMessage.value.message : undefined)
 const typingMessage = ref(undefined as unknown as Message)
 const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
 const typingMessageIndex = ref(0)
 const currentTopic = ref(topic.value)
-
-class AudioPlayer {
-  context: Taro.InnerAudioContext
-  playing: boolean
-  duration: number
-  durationTicker: number
-}
+const generating = ref(false)
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
@@ -192,118 +188,40 @@ const onEditTopicClick = () => {
   _xiangsheng.value.topic = topic.value
 }
 
-const calculateTypingInterval = (duration: number) => {
-  if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
-    const interval = Math.ceil(duration * 1000 / purify.purifyText(typingMessage.value.message).length)
-    typingInterval.value = interval
-  }
-}
-
 const typing = () => {
-  if (!typingMessage.value && !waitMessages.value.length) return
-
-  // If we have a message in typing, finish it
-  if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
-    if (lastDisplayMessage.value.message.length > 0 && audioPlayer.value && !audioPlayer.value.playing) {
-      lastDisplayMessage.value.message = typingMessage.value.message
-      return
-    }
-    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
-    const appendLen = matches[0] ? matches[0].length + 1 : 1
-    lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
-    return
-  }
-
-  if (lastDisplayMessage.value) {
-    lastDisplayMessage.value.typing = false
-    displayMessages.value.push(lastDisplayMessage.value)
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }
-  displayMessages.value.forEach((el) => {
-    el.datetime = timestamp2HumanReadable(el.timestamp)
-  })
+  }, typing).then((rc) => {
+    if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value && !generating.value) {
+      generating.value = true
+      if (playScripts.value) void eXiangsheng.value.startScripts()
+      else void eXiangsheng.value.start()
+    }
 
-  if (!waitMessages.value.length) return
-  // If audio is still playing, do nothing
-  if (audioPlayer.value && audioPlayer.value.playing) return
+    if (!rc) return
 
-  const index = waitMessages.value.findIndex((el) => el.index === typingMessageIndex.value && (!currentTopic.value || el.topic === currentTopic.value || el.first))
-  if (index < 0) return
-  typingMessage.value = waitMessages.value[index]
+    if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
+    if (rc.lastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage
+    }
+    if (rc.typingInterval) {
+      typingInterval.value = rc.typingInterval
+      typingTicker.value = rc.typingTicker as number
+    }
+    if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
-  if (typingMessageIndex.value === 0 && typingMessage.value.first) currentTopic.value = typingMessage.value.topic
-
-  waitMessages.value = [...waitMessages.value.slice(0, index), ...waitMessages.value.slice(index + 1, waitMessages.value.length)]
-
-  if (waitMessages.value.length < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
-    if (playScripts.value) eXiangsheng.value.startScripts()
-    else eXiangsheng.value.start()
-  }
-
-  typingMessageIndex.value += 1
-  if (typingMessage.value.last) typingMessageIndex.value = 0
-  if (typingMessage.value.first) displayMessages.value = []
-
-  if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
-    window.clearInterval(typingTicker.value)
-    playAudio(typingMessage.value.audio).then((player: AudioPlayer) => {
-      if (player && player.duration > 0) {
-        calculateTypingInterval(player.duration)
-        audioPlayer.value = player
-        typingTicker.value = window.setInterval(typing, typingInterval.value)
-      }
-    }).catch((e) => {
-      console.log(`Failed play audio: ${e}`)
-      typingTicker.value = window.setInterval(typing, typingInterval.value)
-    })
-  }
-
-  lastDisplayMessage.value = {
-    ...typingMessage.value,
-    message: '',
-    typing: true
-  }
-}
-
-const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
-  const context = Taro.createInnerAudioContext()
-  context.src = audioUrl
-
-  const player = {
-    context: context,
-    playing: true,
-    duration: context.duration
-  } as AudioPlayer
-
-  return new Promise((resolve, reject) => {
-    context.onError((e) => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-      reject(`Failed play audio: ${JSON.stringify(e)}`)
-    })
-    context.onCanplay(() => {
-      context.play()
-
-      player.durationTicker = window.setInterval(() => {
-        if (context.duration) {
-          window.clearInterval(player.durationTicker)
-          player.durationTicker = -1
-          player.duration = context.duration
-          resolve(player)
-          return
-        }
-      }, 100)
-    })
-    context.onEnded(() => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-    })
+    if (typingMessage.value?.last) {
+      typingMessageIndex.value = 0
+    } else {
+      typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+    }
+    if (typingMessage.value?.first) {
+      currentTopic.value = typingMessage.value.topic
+      displayMessages.value = []
+    }
+  }).catch((e) => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.log(`Failed typing: ${e}`)
   })
 }
 
@@ -324,7 +242,9 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
   const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
-  waitMessages.value.push({
+  generating.value = false
+
+  waitMessages.value.set(`${text}-${index}`, {
     topic,
     message: purify.purifyThink(text),
     participator,
@@ -338,16 +258,11 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
     last,
     typing: false
   })
-
-  waitMessages.value = waitMessages.value.map((el) => {
-    const timestamp = timestamp2HumanReadable(el.timestamp)
-    return { ...el, datetime: timestamp }
-  })
 }
 
 const startXiangsheng = async () => {
   displayMessages.value = []
-  waitMessages.value = []
+  waitMessages.value = new Map<string, Message>()
   typingMessage.value = undefined as unknown as Message
   lastDisplayMessage.value = undefined as unknown as Message
 
