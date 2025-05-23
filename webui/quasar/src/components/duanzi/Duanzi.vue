@@ -66,6 +66,9 @@
               <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick' class='cursor-pointer'>
                 <q-img :src='enablePlay ? volumeUp : volumeOff' style='width: 24px; height: 24px;' />
               </div>
+              <div :style='{ borderRight: "1px solid gray", height: "24px", opacity: enableLaugh ? 1 : 0.4, backgroundColor: "white" }' @click='onLaughClick' class='cursor-pointer'>
+                <q-img :src='sentimentExcited' style='width: 24px; height: 24px;' />
+              </div>
               <div style='height: 24px; opacity: 0.4; background-color: white;' @click='onMoreClick' class='cursor-pointer'>
                 <q-img :src='threeDotsVertical' style='width: 24px; height: 24px;' />
               </div>
@@ -88,7 +91,7 @@ import { typing as _typing, Message as MessageBase } from 'src/typing'
 
 import BottomFixArea from '../fixed/BottomFixArea.vue'
 
-import { gotoBottom, gotoTop, volumeOff, volumeUp, threeDotsVertical } from 'src/assets'
+import { gotoBottom, gotoTop, volumeOff, volumeUp, threeDotsVertical, sentimentExcited } from 'src/assets'
 
 interface Message extends MessageBase {
   isTitle: boolean
@@ -187,6 +190,7 @@ const typingInterval = ref(80)
 const typingTicker = ref(-1)
 const autoScroll = ref(true)
 const enablePlay = ref(true)
+const enableLaugh = ref(true)
 
 const onGotoBottomClick = () => {
   autoScroll.value = true
@@ -200,10 +204,15 @@ const onPlayClick = () => {
   enablePlay.value = !enablePlay.value
 }
 
+const onLaughClick = () => {
+  enableLaugh.value = !enableLaugh.value
+}
+
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-    void AudioPlayer.play('http://106.15.6.50:81/download/mp3/laugh.mp3')
+    if (enableLaugh.value)
+      void AudioPlayer.play('http://106.15.6.50:81/download/mp3/laugh.mp3')
   }, typing).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
 

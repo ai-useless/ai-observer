@@ -16,6 +16,7 @@ import manualScrollGray from './ManualScrollGray.svg'
 import volumeUp from './VolumeUp.svg'
 import volumeOff from './VolumeOff.svg'
 import dominoMask from './DominoMask.svg'
+import sentimentExcited from './SentimentExcited.svg'
 
 export {
   chevronRight,
@@ -35,5 +36,6 @@ export {
   manualScrollGray,
   volumeUp,
   volumeOff,
-  dominoMask
+  dominoMask,
+  sentimentExcited
 }
