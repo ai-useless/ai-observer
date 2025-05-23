@@ -50,11 +50,11 @@ export class SearchRunner {
     dbBridge.SearchResult.create(topic, prompt, modelId, message)
   }
 
-  static speakerVoice = async (simulatorId: number) => {
+  static simulator = async (simulatorId: number) => {
     const simulator = dbBridge._Simulator.simulator(simulatorId)
     if (!simulator) return
 
-    return simulator.audio_id
+    return simulator
   }
 
   static prompt = (
@@ -121,10 +121,20 @@ export class SearchRunner {
       const speechContent = purify.purifyText(
         (textResp.data as Record<string, string>).content
       )
-      const voice = await SearchRunner.speakerVoice(simulatorId)
-      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
+      const simulator = await SearchRunner.simulator(simulatorId)
+
+      let instruct = undefined as unknown as string
+      let voice = undefined as unknown as string
+
+      if (simulator) {
+        instruct = `用${simulator.language}话说`
+        voice = simulator.audio_id
+      }
+
+      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V3_API, {
         text: speechContent,
-        voice
+        voice,
+        instruct
       })
 
       let audioUrl = undefined as unknown as string

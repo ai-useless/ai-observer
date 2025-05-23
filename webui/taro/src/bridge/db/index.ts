@@ -6,3 +6,5 @@ export * from './message'
 export * from './setting'
 export * from './search_result'
 export * from './xiangsheng'
+export * from './language'
+

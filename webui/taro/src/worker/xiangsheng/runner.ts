@@ -286,10 +286,20 @@ export class XiangshengRunner {
     if (!simulator) return
 
     const speechContent = purify.purifyBracket(purify.purifyText(text))
-    const voice = await XiangshengRunner.speakerVoice(participator.simulatorId)
-    const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
+
+    let instruct = undefined as unknown as string
+    let voice = undefined as unknown as string
+
+    if (simulator) {
+      instruct = `用${simulator.language}话说`
+      voice = simulator.audio_id
+    }
+
+
+    const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V3_API, {
       text: speechContent,
-      voice
+      voice,
+      instruct
     })
 
     let audioUrl = undefined as unknown as string

@@ -13,8 +13,11 @@
           <View>
             <Image :src='playCircle' style='width: 16px; height: 16px;' />
           </View>
-          <View style="margin-left: 4px;">
-            <Image :src='threeDotsVertical' style='width: 16px; height: 16px;' />
+          <View style='margin-left: 4px;'>
+
+          </View>
+          <View style='margin-left: 4px; font-size: 14px;' @click='onSelectLanguageClick'>
+            {{ _simulator.language }}
           </View>
         </View>
       </View>
@@ -26,15 +29,30 @@
       </View>
     </View>
   </View>
+  <AtModal :is-opened='selectingLanguage' @close='onLanguageSelectorClose'>
+    <AtModalHeader>选择语言</AtModalHeader>
+    <AtModalContent>
+      <View>
+        <View v-for='(_language, index) in _languages' :key='index' style='border-bottom: 1px solid gray;' @click='onSelectLanguageClick(_language)'>
+          <SimulatorCard :simulator='_simulator' />
+        </View>
+      </View>
+    </AtModalContent>
+    <AtModalAction>
+      <Button @click='onCancelSelectLanguageClick'>取消</Button>
+    </AtModalAction>
+  </AtModal>
 </template>
 
 <script setup lang='ts'>
-import { toRef } from 'vue'
-import { View, Image, Text } from '@tarojs/components'
+import { ref, toRef } from 'vue'
+import { View, Image, Text, Button } from '@tarojs/components'
+import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { simulator } from 'src/localstores'
 import { timestamp } from 'src/utils'
+import { dbBridge } from 'src/bridge'
 
-import { threeDotsVertical, playCircle } from 'src/assets'
+import { playCircle } from 'src/assets'
 
 // TODO: play audio and report scam
 
@@ -43,5 +61,21 @@ interface Props {
 }
 const props = defineProps<Props>()
 const _simulator = toRef(props, 'simulator')
+
+const _languages = dbBridge._Language.languages()
+const selectingLanguage = ref(false)
+
+const onLanguageSelectorClose = () => {
+  selectingLanguage.value = false
+}
+
+const onCancelSelectLanguageClick = () => {
+  selectingLanguage.value = false
+}
+
+const onSelectLanguageClick = (_language: string) => {
+  selectingLanguage.value = false
+  _simulator.value.language = _language
+}
 
 </script>

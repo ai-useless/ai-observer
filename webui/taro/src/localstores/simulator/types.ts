@@ -14,5 +14,6 @@ export interface _Simulator {
   archetype: string
   title: string
   host: boolean
+  language?: string
   mine: boolean
 }

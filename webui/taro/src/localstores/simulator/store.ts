@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { constants } from 'src/constant'
 import axios from 'taro-axios'
 import { _Simulator } from './types'
+import { dbBridge } from 'src/bridge'
 
 export const useSimulatorStore = defineStore('simulator', {
   state: () => ({
@@ -48,7 +49,10 @@ export const useSimulatorStore = defineStore('simulator', {
         const index = this.simulators.findIndex(
           (el) => el.simulator === simulator.simulator
         )
+
         simulator.mine = mine
+        simulator.language = dbBridge._Language.randomPick()
+
         this.simulators.splice(
           index >= 0 ? index : 0,
           index >= 0 ? 1 : 0,

@@ -132,13 +132,13 @@ export class SeminarRunner {
     dbBridge._Message.create(seminarId, participatorId, prompt, content, audio)
   }
 
-  static speakerVoice = async (participatorId: number) => {
+  static simulator = async (participatorId: number) => {
     const participator = dbBridge._Participator.participator(participatorId)
     if (!participator) return
     const simulator = dbBridge._Simulator.simulator(participator.simulatorId)
     if (!simulator) return
 
-    return simulator.audio_id
+    return simulator
   }
 
   static prompt = (
@@ -304,10 +304,21 @@ export class SeminarRunner {
       const speechContent = purify.purifyText(
         (textResp.data as Record<string, string>).content
       )
-      const voice = await SeminarRunner.speakerVoice(participatorId)
-      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
+
+      const simulator = await SeminarRunner.simulator(participator.simulatorId)
+
+      let instruct = undefined as unknown as string
+      let voice = undefined as unknown as string
+
+      if (simulator) {
+        instruct = `用${simulator.language}话说`
+        voice = simulator.audio_id
+      }
+
+      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V3_API, {
         text: speechContent,
-        voice
+        voice,
+        instruct
       })
 
       let audioUrl = undefined as unknown as string
