@@ -6,7 +6,7 @@
       width: "100%",
       background: backgroundColor || "white",
       zIndex: 1000,
-      maxWidth: "min(100%, 600px)",
+      maxWidth: `min(100%, ${maxWidth || 600}px)`,
       borderRadius: (borderRadius || 24) + "px",
       marginBottom: "16px"
     }'
@@ -21,10 +21,12 @@ import { defineProps, toRef } from 'vue'
 interface Props {
   borderRadius?: number
   backgroundColor?: string
+  maxWidth?: number
 }
 const props = defineProps<Props>()
 const borderRadius = toRef(props, 'borderRadius')
 const backgroundColor = toRef(props, 'backgroundColor')
+const maxWidth = toRef(props, 'maxWidth')
 
 </script>
 

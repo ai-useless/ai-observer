@@ -1,5 +1,5 @@
 <template>
-  <BottomFixArea>
+  <BottomFixArea :max-width='maxWidth'>
     <q-input
       v-model='message'
       :placeholder='placeholder'
@@ -12,7 +12,13 @@
       :loading='loading'
     >
       <template #append>
-        <q-btn flat icon='send' @click='onConfirm' />
+        <q-btn
+          dense
+          rounded
+          flat
+          icon='send'
+          @click='onConfirm'
+        />
       </template>
     </q-input>
   </BottomFixArea>
@@ -27,10 +33,12 @@ interface Props {
   placeholder: string
   disabled?: boolean
   loading?: boolean
+  maxWidth?: number
 }
 const props = defineProps<Props>()
 const placeholder = toRef(props, 'placeholder')
 const disabled = toRef(props, 'disabled')
+const maxWidth = toRef(props, 'maxWidth')
 
 const message = defineModel<string>()
 

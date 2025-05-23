@@ -4,7 +4,7 @@
       <div v-if='logining'>
         <WechatLogin />
       </div>
-      <div v-else style='height: 100vh; width: min(100%, 960px);' class='bg-grey-2'>
+      <div v-else style='height: 100vh; width: min(100%, 600px);' class='bg-grey-2'>
         <div class='full-width text-center q-py-sm text-bold text-grey-9'>
           {{ friend?.simulator }} | {{ _model?.name }}
         </div>
@@ -40,6 +40,7 @@
             @enter='onMessageEnter'
             :disabled='sending'
             :loading='sending'
+            :max-width='560'
           />
         </div>
       </div>
