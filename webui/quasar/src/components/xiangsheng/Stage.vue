@@ -187,7 +187,7 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     if (typingMessage.value?.last) typingMessageIndex.value = 0
-    if (typingMessage.value?.first && typingMessageIndex.value === 0) {
+    if (typingMessage.value?.first) {
       currentTopic.value = typingMessage.value.topic
       displayMessages.value = []
     }
