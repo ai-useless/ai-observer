@@ -1,9 +1,9 @@
 <template>
   <div class='full-width'>
-    <q-card class='q-pb-sm border-radius-16px' style='max-width: 90%; width: 400px'>
+    <q-card class='q-pb-sm border-radius-16px' :style='{ maxWidth: "90%", width: `${width}px` }'>
       <q-card-section class='text-grey-9'>
         <div class='text-h6 text-center'>
-          选择模拟器
+          {{ title }}
         </div>
       </q-card-section>
 
@@ -23,7 +23,7 @@
         </q-input>
       </q-card-section>
 
-      <q-card-section dense style='height: 250px;' class='q-pa-none q-pb-md'>
+      <q-card-section dense :style='{ height: `${listHeight}px`, maxHeight: "90%" }' class='q-pa-none q-pb-md'>
         <q-scroll-area class='fit'>
           <q-list>
             <q-item
@@ -36,7 +36,7 @@
               class='q-px-lg'
             >
               <q-item-section>
-                <SimulatorCard :simulator='_simulator' />
+                <SimulatorCard :simulator='_simulator' :simple='simple' :can-set-language='canSetLanguage' />
               </q-item-section>
               <q-item-section side>
                 <q-icon
@@ -49,9 +49,9 @@
         </q-scroll-area>
       </q-card-section>
 
-      <q-separator />
+      <q-separator v-if='showActionBtn' />
 
-      <q-card-actions align='right'>
+      <q-card-actions v-if='showActionBtn' align='right'>
         <q-btn
           label='取消'
           class='full-width border-gradient-bg-white text-grey-9'
@@ -67,15 +67,31 @@
 <script setup lang='ts'>
 import { dbBridge } from 'src/bridge'
 import { simulator } from 'src/localstores'
-import { computed, onMounted, ref, defineModel, defineEmits, toRef, defineProps } from 'vue'
+import { computed, onMounted, ref, defineModel, defineEmits, toRef, defineProps, withDefaults } from 'vue'
 
 import SimulatorCard from '../simulator/SimulatorCard.vue'
 
 interface Props {
-  hideIds: number[]
+  title?: string
+  hideIds?: number[]
+  showActionBtn?: boolean
+  width?: number
+  listHeight?: number
+  simple?: boolean
+  canSetLanguage?: boolean
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  title: '选择模拟器',
+  width: 400,
+  hideIds: () => [] as number[],
+  listHeight: 250
+})
+const title = toRef(props, 'title')
+const width = toRef(props, 'width')
+const showActionBtn = toRef(props, 'showActionBtn')
 const hideIds = toRef(props, 'hideIds')
+const simple = toRef(props, 'simple')
+const canSetLanguage = toRef(props, 'canSetLanguage')
 
 const simulators = ref([] as simulator._Simulator[])
 const selectedSimulator = defineModel<simulator._Simulator>('selected')

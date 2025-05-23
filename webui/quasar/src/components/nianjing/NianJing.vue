@@ -36,10 +36,14 @@
           <div>
             <q-resize-observer @resize='onChatBoxResize' />
             <div v-for='(message, index) in displayMessages' :key='index' :style='{borderTop: index > 0 ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center", marginBottom: "4px"}'>
-              <div style='font-size: 14px; color: gray'>{{ message.message }}</div>
+              <div style='font-size: 14px; color: gray'>
+                {{ message.message }}
+              </div>
             </div>
             <div v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center; border-top: 1px solid lightgray; margin-bottom: 4px;'>
-              <div style='font-size: 14px; color: gray;'>{{ lastDisplayMessage.message }}</div>
+              <div style='font-size: 14px; color: gray;'>
+                {{ lastDisplayMessage.message }}
+              </div>
             </div>
           </div>
         </q-scroll-area>
@@ -54,6 +58,16 @@
           />
         </div>
       </div>
+      <div class='q-ml-lg full-height q-py-lg'>
+        <SimulatorSelector
+          v-model:selected='speaker'
+          @selected='onSimulatorSelected'
+          :width='320'
+          :list-height='600'
+          :simple='true'
+          :can-set-language='true'
+        />
+      </div>
     </div>
   </q-page>
 </template>
@@ -67,6 +81,7 @@ import { typing as _typing, Message as MessageBase } from 'src/typing'
 import { QScrollArea } from 'quasar'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
+import SimulatorSelector from '../selector/SimulatorSelector.vue'
 
 const prompt = ref('般若波罗密心经')
 
@@ -186,6 +201,10 @@ const onChatBoxResize = (size: { height: number }) => {
 
 const onHeadBoxResize = (size: { height: number }) => {
   headHeight.value = size.height
+}
+
+const onSimulatorSelected = (_simulator: simulator._Simulator) => {
+  speaker.value = _simulator
 }
 
 </script>
