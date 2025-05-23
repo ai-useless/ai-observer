@@ -126,7 +126,10 @@ onMounted(() => {
 
   participatorCount.value = Math.floor(Math.random() * 4) + 6
   for (let i = 0; i < participatorCount.value; i++) {
-    participators.value.push(undefined as unknown as dbModel.Participator)
+    participators.value.push({
+      seminarUid: _uid,
+      role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST
+    } as unknown as dbModel.Participator)
   }
 
   simulator.Simulator.getSimulators()
@@ -143,7 +146,10 @@ const randomSelect = async () => {
   seminar.Seminar.setSeminar(_uid)
 
   for (let i = 0; i < participators.value.length; i++) {
-    participators.value[i] = undefined as unknown as dbModel.Participator
+    participators.value[i] = {
+      seminarUid: _uid,
+      role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST
+    } as unknown as dbModel.Participator
   }
   for (let i = 0; i < participators.value.length; i++) {
     while (true) {
