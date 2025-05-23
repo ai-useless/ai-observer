@@ -198,14 +198,14 @@ const onPlayClick = () => {
 }
 
 const typing = () => {
-  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value).then((rc) => {
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value, () => {
+    lastDisplayMessage.value = undefined as unknown as Message
+  }).then((rc) => {
     if (!rc) return
 
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
     if (rc.lastDisplayMessage) {
       lastDisplayMessage.value = rc.lastDisplayMessage
-    } else if (rc.resetLastDisplayMessage) {
-      lastDisplayMessage.value = rc.lastDisplayMessage as unknown as Message
     }
     if (rc.typingInterval) {
       typingInterval.value = rc.typingInterval

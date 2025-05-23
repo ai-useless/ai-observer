@@ -13,7 +13,6 @@ export interface TypingMessage<T extends Message> {
   typingInterval?: number
   audioPlayer?: AudioPlayer
   typingMessageIndex?: number
-  resetLastDisplayMessage: boolean
 }
 
 function calculateTypingInterval<T extends Message>(typingMessage: T, duration: number): number | undefined {
@@ -32,7 +31,8 @@ export async function typing<T extends Message>(
   audioPlayer: AudioPlayer | undefined,
   enablePlay: boolean,
   typingTicker: number,
-  typingInterval: number
+  typingInterval: number,
+  resetLastDisplayMessage: () => void
 ): Promise<TypingMessage<T> | undefined> {
   if (!typingMessage && !waitMessages.size) return Promise.resolve(undefined)
 
@@ -40,31 +40,24 @@ export async function typing<T extends Message>(
   if (typingMessage && lastDisplayMessage && lastDisplayMessage.message.length < typingMessage.message.length) {
     if (lastDisplayMessage.message.length > 0 && audioPlayer && !audioPlayer.playing) {
       lastDisplayMessage.message = typingMessage.message
-      return Promise.resolve({
-        resetLastDisplayMessage: false
-      })
+      return Promise.resolve({})
     }
     const matches = typingMessage.message.slice(lastDisplayMessage.message.length).match(/^<[^>]+>/) || []
     const appendLen = matches[0] ? matches[0].length + 1 : 1
     lastDisplayMessage.message = typingMessage.message.slice(0, lastDisplayMessage.message.length + appendLen)
-    return Promise.resolve({
-      resetLastDisplayMessage: false
-    })
+    return Promise.resolve({})
   }
 
   if (lastDisplayMessage) {
+    resetLastDisplayMessage()
     if (displayMessages.findIndex((el) => el.index === lastDisplayMessage?.index && el.message === lastDisplayMessage.message) < 0) {
       displayMessages.push(lastDisplayMessage)
     }
   }
 
-  if (!waitMessages.size) return Promise.resolve({
-    resetLastDisplayMessage: true
-  })
+  if (!waitMessages.size) return Promise.resolve({})
   // If audio is still playing, do nothing
-  if (audioPlayer && audioPlayer.playing) return Promise.resolve({
-    resetLastDisplayMessage: true
-  })
+  if (audioPlayer && audioPlayer.playing) return Promise.resolve({})
 
   let key = undefined as unknown as string
   for (const [k, v] of waitMessages) {
@@ -73,9 +66,7 @@ export async function typing<T extends Message>(
       break
     }
   }
-  if (!key) return Promise.resolve({
-    resetLastDisplayMessage: true
-  })
+  if (!key) return Promise.resolve({})
 
   typingMessage = waitMessages.get(key) as T
   waitMessages.delete(key)
@@ -109,7 +100,6 @@ export async function typing<T extends Message>(
     lastDisplayMessage,
     audioPlayer,
     typingInterval,
-    typingMessageIndex,
-    resetLastDisplayMessage: true
+    typingMessageIndex
   }
 }
