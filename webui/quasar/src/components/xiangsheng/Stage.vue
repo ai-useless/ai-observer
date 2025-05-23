@@ -216,6 +216,8 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
+  generating.value = false
+
   waitMessages.value.set(`${text}-${index}`, {
     topic,
     message: purify.purifyThink(text),
