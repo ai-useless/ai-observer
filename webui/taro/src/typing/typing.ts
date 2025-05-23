@@ -52,7 +52,7 @@ export async function typing<T extends Message>(
   }
 
   if (lastDisplayMessage) {
-    if (displayMessages.findIndex((el) => el.index === lastDisplayMessage?.index && el.message === lastDisplayMessage.message) < 0) {
+    if (displayMessages.findIndex((el) => lastDisplayMessage && el.index === lastDisplayMessage.index && el.message === lastDisplayMessage.message) < 0) {
       displayMessages.push(lastDisplayMessage)
     }
     resetLastDisplayMessage()
@@ -63,8 +63,9 @@ export async function typing<T extends Message>(
   if (audioPlayer && audioPlayer.playing) return Promise.resolve(undefined)
 
   let key = undefined as unknown as string
-  for (const [k, v] of waitMessages) {
-    if (v.index === typingMessageIndex) {
+  for (const k of Array.from(waitMessages.keys())) {
+    const v = waitMessages.get(k)
+    if (v && v.index === typingMessageIndex) {
       key = k
       break
     }

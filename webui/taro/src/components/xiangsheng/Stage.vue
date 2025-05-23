@@ -210,12 +210,12 @@ const typing = () => {
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
-    if (typingMessage.value?.last) {
+    if (typingMessage.value && typingMessage.value.last) {
       typingMessageIndex.value = 0
     } else {
       typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
     }
-    if (typingMessage.value?.first) {
+    if (typingMessage.value && typingMessage.value.first) {
       currentTopic.value = typingMessage.value.topic
       displayMessages.value = []
     }

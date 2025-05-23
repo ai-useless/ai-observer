@@ -187,10 +187,11 @@ const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing).then((rc) => {
-    if (typingMessage.value?.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
+    if (!typingMessage.value) return
+    if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
       requesting.value = true
       setTimeout(() => {
-        void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value?.subTopic || typingMessage.value.subTopic, enablePlay.value)
+        void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value ? lastWaitMessage.value.subTopic : typingMessage.value.subTopic, enablePlay.value)
       }, 100)
     }
 
@@ -210,13 +211,13 @@ const typing = () => {
 
     if (typingMessage.value) {
       seminar.Seminar.speak(typingMessage.value.participator.id as number)
-      if (typingMessage.value?.subTopic !== activeTopic.value) {
+      if (typingMessage.value.subTopic !== activeTopic.value) {
         displayMessages.value.push({
           ...typingMessage.value,
           index: typingMessage.value.index - 1,
           subTopicTitle: true
         })
-        activeTopic.value = typingMessage.value?.subTopic
+        activeTopic.value = typingMessage.value.subTopic
       }
     }
   }).catch((e) => {
