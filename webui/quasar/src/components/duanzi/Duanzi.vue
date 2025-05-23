@@ -24,27 +24,27 @@
         >
           <div>
             <q-resize-observer @resize='onChatBoxResize' />
-            <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: "16px"}'>
-              <div v-if='message.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
+            <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : ""}'>
+              <div v-if='message.isTitle' style='display: flex; line-height: 32px; padding: 16px;'>
                 <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
                 <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
                   {{ modelName(message.modelId) }}
                 </div>
               </div>
-              <q-img v-if='message.image' mode='widthFix' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
-              <div :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>
+              <q-img v-if='message.image' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
+              <div :style='{fontSize: message.isTitle ? "18px" : "16px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left", padding: "16px"}'>
                 {{ message.message }}
               </div>
             </div>
-            <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: "16px"}'>
-              <div v-if='lastDisplayMessage.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
+            <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : ""}'>
+              <div v-if='lastDisplayMessage.isTitle' style='display: flex; line-height: 32px; padding: 16px;'>
                 <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
                 <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
                   {{ modelName(lastDisplayMessage.modelId) }}
                 </div>
               </div>
-              <q-img v-if='lastDisplayMessage.image' mode='widthFix' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
-              <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>
+              <q-img v-if='lastDisplayMessage.image' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
+              <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "16px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left", padding: "16px"}'>
                 {{ lastDisplayMessage.message }}
               </div>
             </div>
@@ -58,16 +58,16 @@
           <div style='display: flex; justify-content: center; align-items: center; width: 100%; height: 24px;'>
             <div style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
               <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoBottomClick' class='cursor-pointer'>
-                <q-img :src='gotoBottom' mode='widthFix' style='width: 24px; height: 24px;' />
+                <q-img :src='gotoBottom' style='width: 24px; height: 24px;' />
               </div>
               <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onGotoTopClick' class='cursor-pointer'>
-                <q-img :src='gotoTop' mode='widthFix' style='width: 24px; height: 24px;' />
+                <q-img :src='gotoTop' style='width: 24px; height: 24px;' />
               </div>
               <div style='border-right: 1px solid gray; height: 24px; opacity: 0.4; background-color: white;' @click='onPlayClick' class='cursor-pointer'>
-                <q-img :src='enablePlay ? volumeUp : volumeOff' mode='widthFix' style='width: 24px; height: 24px;' />
+                <q-img :src='enablePlay ? volumeUp : volumeOff' style='width: 24px; height: 24px;' />
               </div>
               <div style='height: 24px; opacity: 0.4; background-color: white;' @click='onMoreClick' class='cursor-pointer'>
-                <q-img :src='threeDotsVertical' mode='widthFix' style='width: 24px; height: 24px;' />
+                <q-img :src='threeDotsVertical' style='width: 24px; height: 24px;' />
               </div>
             </div>
           </div>

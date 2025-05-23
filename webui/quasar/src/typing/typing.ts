@@ -48,8 +48,9 @@ export async function typing<T extends Message>(
   }
 
   if (lastDisplayMessage) {
-    displayMessages.push(lastDisplayMessage)
-    lastDisplayMessage = undefined as unknown as T
+    if (displayMessages.findIndex((el) => el.index === lastDisplayMessage?.index && el.message === lastDisplayMessage.message) < 0) {
+      displayMessages.push(lastDisplayMessage)
+    }
   }
 
   if (!waitMessages.size) return Promise.resolve(undefined)
