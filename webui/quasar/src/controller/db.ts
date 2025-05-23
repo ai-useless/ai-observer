@@ -16,7 +16,7 @@ dbSeminar.version(1).stores({
   models:
     '&id, &name, vendor, author, author_logo_url, model_logo_url, host_model, vendor_logo_url, disabled',
   simulators:
-    '&id, &simulator, audio_id, audio_url, simulator_avatar_url, origin_personality, timestamp, title, archetype, mine',
+    '&id, &simulator, audio_id, audio_url, simulator_avatar_url, origin_personality, timestamp, title, archetype, mine, language',
   seminars: '++id, uid, topic',
   messages:
     '++id, seminarId, participatorId, timestamp, prompt, content, audioCid',

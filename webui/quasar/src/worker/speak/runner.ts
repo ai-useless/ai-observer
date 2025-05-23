@@ -47,11 +47,11 @@ export type ErrorResponsePayload = {
 }
 
 export class SpeakRunner {
-  static speakerVoice = async (simulatorId: number) => {
+  static simulator = async (simulatorId: number) => {
     const simulator = await dbBridge._Simulator.simulator(simulatorId)
     if (!simulator) return
 
-    return simulator.audio_id
+    return simulator
   }
 
   static requestSpeak = async (simulatorId: number, text: string) => {
@@ -66,10 +66,11 @@ export class SpeakRunner {
 
     try {
       const speechContent = purify.purifyText(text)
-      const voice = await SpeakRunner.speakerVoice(simulatorId)
-      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V2_API, {
+      const simulator = await SpeakRunner.simulator(simulatorId)
+      const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V3_API, {
         text: speechContent,
-        voice
+        voice: simulator?.audio_id,
+        instruct: simulator?.language ? `用${simulator.language}话说` : ''
       })
 
       let audioUrl = undefined as unknown as string
