@@ -8,7 +8,7 @@ export class AudioPlayer {
     this.context = new Audio(url)
   }
 
-  static play = (url: string): Promise<AudioPlayer | undefined> => {
+  static play = (url: string, loop?: boolean): Promise<AudioPlayer | undefined> => {
     const player = new AudioPlayer(url)
 
     player.context.src = url
@@ -46,6 +46,10 @@ export class AudioPlayer {
         if (player.durationTicker >= 0) {
           window.clearInterval(player.durationTicker)
           player.durationTicker = -1
+        }
+        if (loop) {
+          player.stop()
+          void player.context.play()
         }
       }
     })

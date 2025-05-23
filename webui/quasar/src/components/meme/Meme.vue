@@ -13,7 +13,7 @@
             <q-resize-observer @resize='onChatBoxResize' />
             <div v-for='(image, index) in images' :key='index' :style='{borderBottom: index < images.length - 1 ? "1px solid lightgray" : "", padding: "0 0 16px 0"}'>
               <div style='width: 100%'>
-                <q-img :src='image.image' mode='widthFix' style='width: 100%;' />
+                <q-img :src='image.image' style='width: 100%;' />
               </div>
               <div style='margin-top: 4px; font-size: 16px; padding: 16px;' class='text-black'>
                 {{ image.prompt }}
