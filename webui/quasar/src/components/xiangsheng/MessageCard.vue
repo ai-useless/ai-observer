@@ -13,7 +13,7 @@
       </div>
       <q-img :src='message.simulator.simulator_avatar_url' style='margin-left: 4px; height: 24px; width: 24px; border-radius: 50%;' />
       <div style='width: calc(100% - 24px - 16px - 32px); margin-left: 16px;' class='text-black'>
-        <div style='font-size: 16px;'>
+        <div style='font-size: 16px; line-height: 24px;'>
           {{ message.message }}
         </div>
       </div>
