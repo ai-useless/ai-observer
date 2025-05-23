@@ -57,7 +57,7 @@
       </div>
       <q-scroll-area
         v-else
-        style='height: calc(100% - 80px); width: 100%; padding: 20px 24px 0 24px;'
+        style='height: calc(100% - 64px); width: 100%; padding: 0 24px 0 24px;'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
         :thumb-style='{ width: "2px" }'
@@ -65,7 +65,7 @@
         @mouseleave='autoScroll = true'
         class='q-mt-xs cursor-pointer'
       >
-        <div style='margin-top: 16px;'>
+        <div>
           <q-resize-observer @resize='onChatBoxResize' />
           <div>
             <div v-for='(message, index) in displayMessages' :key='index' style='width: 100%; margin: 8px 0;'>
@@ -165,16 +165,16 @@ const onPlayClick = () => {
 }
 
 const typing = () => {
-  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, () => {
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }).then((rc) => {
+  }, typing).then((rc) => {
     if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value && !generating.value) {
       generating.value = true
       if (playScripts.value) void eXiangsheng.value.startScripts()
       else void eXiangsheng.value.start()
     }
 
-    console.log(rc)
+    console.log(rc, typingMessageIndex.value, waitMessages.value.size, waitMessages.value)
 
     if (!rc) return
 

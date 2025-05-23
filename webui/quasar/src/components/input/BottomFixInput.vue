@@ -1,16 +1,5 @@
 <template>
-  <div
-    style='
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: transparent;
-      z-index: 1000;
-      max-width: min(100%, 600px);
-      border-radius: 16px;
-      margin-bottom: 16px;
-    '
-  >
+  <BottomFixArea>
     <q-input
       v-model='message'
       :placeholder='placeholder'
@@ -24,11 +13,13 @@
         <q-btn flat icon='send' @click='onConfirm' />
       </template>
     </q-input>
-  </div>
+  </BottomFixArea>
 </template>
 
 <script setup lang='ts'>
 import { defineModel, defineEmits, defineProps, toRef } from 'vue'
+
+import BottomFixArea from '../fixed/BottomFixArea.vue'
 
 interface Props {
   placeholder: string

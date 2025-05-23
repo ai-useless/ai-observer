@@ -201,9 +201,9 @@ const onPlayClick = () => {
 }
 
 const typing = () => {
-  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, () => {
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }).then((rc) => {
+  }, typing).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
 
     if (!rc) return
@@ -213,9 +213,7 @@ const typing = () => {
       lastDisplayMessage.value = rc.lastDisplayMessage
     }
     if (rc.typingInterval) {
-      window.clearInterval(typingTicker.value)
       typingInterval.value = rc.typingInterval
-      typingTicker.value = window.setInterval(typing, typingInterval.value)
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 

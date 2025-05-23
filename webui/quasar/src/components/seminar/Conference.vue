@@ -141,9 +141,9 @@ const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
 const typing = () => {
-  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, () => {
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }).then((rc) => {
+  }, typing).then((rc) => {
     if (typingMessage.value?.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
       requesting.value = true
       void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value?.subTopic || typingMessage.value.subTopic)

@@ -15,6 +15,7 @@ export interface TypingMessage<T extends Message> {
   typingInterval?: number
   audioPlayer?: AudioPlayer
   typingMessageIndex?: number
+  typingTicker?: number
 }
 
 function calculateTypingInterval<T extends Message>(typingMessage: T, duration: number): number | undefined {
@@ -32,7 +33,9 @@ export async function typing<T extends Message>(
   typingMessageIndex: number,
   audioPlayer: AudioPlayer | undefined,
   enablePlay: boolean,
-  resetLastDisplayMessage: () => void
+  typingTicker: number,
+  resetLastDisplayMessage: () => void,
+  typingFunc: () => void
 ): Promise<TypingMessage<T> | undefined> {
   if (!typingMessage && !waitMessages.size) return Promise.resolve(undefined)
 
@@ -79,6 +82,8 @@ export async function typing<T extends Message>(
       audioPlayer = await AudioPlayer.play(typingMessage.audio)
       if (audioPlayer && audioPlayer.duration) {
         typingInterval = calculateTypingInterval(typingMessage, audioPlayer.duration) || typingInterval
+        if (typingTicker >= 0) window.clearInterval(typingTicker)
+        typingTicker = window.setInterval(typingFunc, typingInterval)
       }
     } catch (e) {
       audioPlayer = undefined as unknown as AudioPlayer
@@ -102,6 +107,7 @@ export async function typing<T extends Message>(
     lastDisplayMessage,
     audioPlayer,
     typingInterval,
-    typingMessageIndex
+    typingMessageIndex,
+    typingTicker
   }
 }

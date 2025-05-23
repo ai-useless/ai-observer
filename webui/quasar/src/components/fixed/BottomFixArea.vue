@@ -1,21 +1,31 @@
 <template>
   <div
-    style='
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: transparent;
-      z-index: 1000;
-      max-width: min(100%, 600px);
-      border-radius: 16px;
-      margin-bottom: 16px;
-    '
+    :style='{
+      position: "fixed",
+      bottom: 0,
+      width: "100%",
+      background: backgroundColor || "white",
+      zIndex: 1000,
+      maxWidth: "min(100%, 600px)",
+      borderRadius: (borderRadius || 24) + "px",
+      marginBottom: "16px"
+    }'
   >
     <slot />
   </div>
 </template>
 
 <script setup lang='ts'>
+import { defineProps, toRef } from 'vue'
+
+interface Props {
+  borderRadius?: number
+  backgroundColor?: string
+}
+const props = defineProps<Props>()
+const borderRadius = toRef(props, 'borderRadius')
+const backgroundColor = toRef(props, 'backgroundColor')
+
 </script>
 
 <style scoped lang='sass'>
