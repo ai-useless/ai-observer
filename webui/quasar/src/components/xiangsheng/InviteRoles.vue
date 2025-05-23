@@ -176,6 +176,7 @@ const randomSelect = async () => {
       break
     }
   }
+  participators.value = [...participators.value]
 }
 
 const onRandomSelectClick = async () => {

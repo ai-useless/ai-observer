@@ -93,6 +93,8 @@ import { Message } from './Message'
 import { xiangshengWorker } from 'src/worker'
 import { useRouter } from 'vue-router'
 import { QScrollArea } from 'quasar'
+import { AudioPlayer } from 'src/player'
+import { typing as _typing } from 'src/typing'
 
 import MessageCard from './MessageCard.vue'
 import BottomFixInput from '../input/BottomFixInput.vue'
@@ -127,13 +129,6 @@ const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
 const typingMessageIndex = ref(0)
 const currentTopic = ref(topic.value)
 
-interface AudioPlayer {
-  context: HTMLAudioElement
-  playing: boolean
-  duration: number
-  durationTicker: number
-}
-
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
 const typingInterval = ref(80)
@@ -166,125 +161,31 @@ const onPlayClick = () => {
   enablePlay.value = !enablePlay.value
 }
 
-const calculateTypingInterval = (duration: number) => {
-  if (typingMessage.value.audio && typingMessage.value.audio.length && typingMessage.value.message && typingMessage.value.message.length) {
-    const interval = Math.ceil(duration * 1000 / purify.purifyText(typingMessage.value.message).length)
-    typingInterval.value = interval
-  }
-}
-
 const typing = () => {
-  if (!typingMessage.value && !waitMessages.value.size) return
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value).then((rc) => {
+    if (!rc) return
 
-  // If we have a message in typing, finish it
-  if (typingMessage.value && lastDisplayMessage.value && lastDisplayMessage.value.message.length < typingMessage.value.message.length) {
-    if (lastDisplayMessage.value.message.length > 0 && audioPlayer.value && !audioPlayer.value.playing) {
-      lastDisplayMessage.value.message = typingMessage.value.message
-      return
+    if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
+    if (rc.lastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage
+    } else if (rc.resetLastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage as unknown as Message
     }
-    const matches = typingMessage.value.message.slice(lastDisplayMessage.value.message.length).match(/^<[^>]+>/) || []
-    const appendLen = matches[0] ? matches[0].length + 1 : 1
-    lastDisplayMessage.value.message = typingMessage.value.message.slice(0, lastDisplayMessage.value.message.length + appendLen)
-    return
-  }
-
-  if (lastDisplayMessage.value) {
-    lastDisplayMessage.value.typing = false
-    displayMessages.value.push(lastDisplayMessage.value)
-    lastDisplayMessage.value = undefined as unknown as Message
-  }
-  displayMessages.value.forEach((el) => {
-    el.datetime = timestamp2HumanReadable(el.timestamp)
-  })
-
-  if (!waitMessages.value.size) return
-  // If audio is still playing, do nothing
-  if (audioPlayer.value && audioPlayer.value.playing) return
-
-  let key = undefined as unknown as string
-  for (const [k, v] of waitMessages.value.entries()) {
-    if (v.index === typingMessageIndex.value && ((!currentTopic.value || v.topic === currentTopic.value) || v.first)) {
-      key = k
-      break
-    }
-  }
-  if (!key) return
-
-  typingMessage.value = waitMessages.value.get(key) as Message
-
-  if (typingMessageIndex.value === 0 && typingMessage.value.first) currentTopic.value = typingMessage.value.topic
-
-  waitMessages.value.delete(key)
-
-  if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
-    if (playScripts.value) void eXiangsheng.value.startScripts()
-    else void eXiangsheng.value.start()
-  }
-
-  typingMessageIndex.value += 1
-  if (typingMessage.value.last) typingMessageIndex.value = 0
-  if (typingMessage.value.first) displayMessages.value = []
-
-  if (typingMessage.value.audio && typingMessage.value.audio.length && enablePlay.value) {
-    window.clearInterval(typingTicker.value)
-    playAudio(typingMessage.value.audio).then((player: AudioPlayer | undefined) => {
-      if (player && player.duration > 0) {
-        calculateTypingInterval(player.duration)
-        audioPlayer.value = player
-        typingTicker.value = window.setInterval(typing, typingInterval.value)
-      }
-    }).catch((e) => {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      console.log(`Failed play audio: ${e}`)
+    if (rc.typingInterval) {
+      typingInterval.value = rc.typingInterval
       typingTicker.value = window.setInterval(typing, typingInterval.value)
-    })
-  }
-
-  lastDisplayMessage.value = {
-    ...typingMessage.value,
-    message: '',
-    typing: true
-  }
-}
-
-const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
-  const context = new Audio(audioUrl)
-  context.src = audioUrl
-
-  const player = {
-    context: context,
-    playing: true,
-    duration: context.duration
-  } as AudioPlayer
-
-  return new Promise((resolve, reject) => {
-    context.onerror = (e) => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-      reject(`Failed play audio: ${JSON.stringify(e)}`)
     }
-    context.oncanplay = async () => {
-      await context.play()
+    if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
-      player.durationTicker = window.setInterval(() => {
-        if (context.duration) {
-          window.clearInterval(player.durationTicker)
-          player.durationTicker = -1
-          player.duration = context.duration
-          resolve(player)
-        }
-      }, 100)
+    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+
+    if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
+      if (playScripts.value) void eXiangsheng.value.startScripts()
+      else void eXiangsheng.value.start()
     }
-    context.onended = () => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-    }
+  }).catch((e) => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.log(`Failed typing: ${e}`)
   })
 }
 
