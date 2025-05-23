@@ -57,7 +57,7 @@
       </div>
       <q-scroll-area
         v-else
-        style='height: calc(100% - 80px); width: 100%; padding: 0 24px;'
+        style='height: calc(100% - 80px); width: 100%; padding: 20px 24px 0 24px;'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
         :thumb-style='{ width: "2px" }'
@@ -68,10 +68,12 @@
         <div style='margin-top: 16px;'>
           <q-resize-observer @resize='onChatBoxResize' />
           <div>
-            <div v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
+            <div v-for='(message, index) in displayMessages' :key='index' style='width: 100%; margin: 8px 0;'>
               <MessageCard :message='message' />
             </div>
-            <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
+            <div style='margin: 8px 0;'>
+              <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' :key='displayMessages.length + 1' />
+            </div>
           </div>
         </div>
       </q-scroll-area>
@@ -178,6 +180,8 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+
+    console.log(111, waitMessages.value.size, autoScroll.value, playScripts.value, lastDisplayMessage.value)
 
     if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
       if (playScripts.value) void eXiangsheng.value.startScripts()
