@@ -12,6 +12,7 @@ export interface TypingMessage<T extends Message> {
   lastDisplayMessage?: T
   typingInterval?: number
   audioPlayer?: AudioPlayer
+  typingMessageIndex?: number
 }
 
 function calculateTypingInterval<T extends Message>(typingMessage: T, duration: number): number | undefined {
@@ -95,6 +96,7 @@ export async function typing<T extends Message>(
     typingMessage,
     lastDisplayMessage,
     audioPlayer,
-    typingInterval
+    typingInterval,
+    typingMessageIndex
   }
 }

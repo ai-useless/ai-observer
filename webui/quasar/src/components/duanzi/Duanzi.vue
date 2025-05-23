@@ -12,44 +12,45 @@
           </div>
         </div>
       </div>
-      <q-scroll-area
-        v-else
-        style='height: calc(100vh - 4px - 80x); width: 100%;'
-        ref='chatBox'
-        :bar-style='{ width: "2px" }'
-        :thumb-style='{ width: "2px" }'
-        @mouseenter='autoScroll = false'
-        @mouseleave='autoScroll = true'
-        class='q-mt-xs cursor-pointer bg-grey-2'
-      >
-        <div>
-          <q-resize-observer @resize='onChatBoxResize' />
-          <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: "16px"}'>
-            <div v-if='message.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
-              <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
-              <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
-                {{ modelName(message.modelId) }}
+      <div v-else style='height: calc(100vh - 4px - 80px); width: min(100%, 600px);' class='bg-grey-2'>
+        <q-scroll-area
+          style='height: calc(100vh - 4px - 80px); width: min(100%, 600px);'
+          ref='chatBox'
+          :bar-style='{ width: "2px" }'
+          :thumb-style='{ width: "2px" }'
+          @mouseenter='autoScroll = false'
+          @mouseleave='autoScroll = true'
+          class='q-mt-xs cursor-pointer'
+        >
+          <div>
+            <q-resize-observer @resize='onChatBoxResize' />
+            <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: "16px"}'>
+              <div v-if='message.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
+                <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
+                <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
+                  {{ modelName(message.modelId) }}
+                </div>
+              </div>
+              <q-img v-if='message.image' mode='widthFix' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
+              <div :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>
+                {{ message.message }}
               </div>
             </div>
-            <q-img v-if='message.image' mode='widthFix' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
-            <div :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>
-              {{ message.message }}
-            </div>
-          </div>
-          <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: "16px"}'>
-            <div v-if='lastDisplayMessage.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
-              <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
-              <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
-                {{ modelName(lastDisplayMessage.modelId) }}
+            <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: "16px"}'>
+              <div v-if='lastDisplayMessage.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 32px;'>
+                <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
+                <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
+                  {{ modelName(lastDisplayMessage.modelId) }}
+                </div>
+              </div>
+              <q-img v-if='lastDisplayMessage.image' mode='widthFix' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
+              <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>
+                {{ lastDisplayMessage.message }}
               </div>
             </div>
-            <q-img v-if='lastDisplayMessage.image' mode='widthFix' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
-            <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>
-              {{ lastDisplayMessage.message }}
-            </div>
           </div>
-        </div>
-      </q-scroll-area>
+        </q-scroll-area>
+      </div>
     </div>
     <div class='flex justify-center items-center'>
       <BottomFixArea>
@@ -200,8 +201,6 @@ const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value).then((rc) => {
     if (!rc) return
 
-    console.log(typingMessageIndex.value, rc)
-
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
     if (rc.lastDisplayMessage) lastDisplayMessage.value = rc.lastDisplayMessage
     if (rc.typingInterval) {
@@ -210,6 +209,7 @@ const typing = () => {
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
+    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
     lastModelId.value = typingMessage.value.modelId
 
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
