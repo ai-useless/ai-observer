@@ -23,7 +23,7 @@
         </q-input>
       </q-card-section>
 
-      <q-card-section dense style='height: 250px;' class='q-pa-none q-pb-md'>
+      <q-card-section dense style='height: 400px;' class='q-pa-none q-pb-md'>
         <q-scroll-area class='fit'>
           <q-list>
             <q-item

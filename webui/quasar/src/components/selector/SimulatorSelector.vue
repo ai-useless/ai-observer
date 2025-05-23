@@ -84,7 +84,7 @@ const props = withDefaults(defineProps<Props>(), {
   title: '选择模拟器',
   width: 400,
   hideIds: () => [] as number[],
-  listHeight: 250
+  listHeight: 500
 })
 const title = toRef(props, 'title')
 const width = toRef(props, 'width')

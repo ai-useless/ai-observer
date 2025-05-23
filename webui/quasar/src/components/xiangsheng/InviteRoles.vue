@@ -50,7 +50,7 @@
           v-for='(participator, index) of participators'
           :key='index'
           class='col-12 col-md-6'
-          @click='onParticipatorClick(index + 1)'
+          @click='onParticipatorClick(index)'
         >
           <RoleCardVertical
             :participator='participator'
@@ -136,10 +136,15 @@ const ready = computed(() => {
 })
 
 onMounted(() => {
+  const _uid = uuidv4()
+  xiangsheng.Xiangsheng.setXiangsheng(_uid)
   setting.Setting.setCurrentMenu('xiangsheng')
 
   for (let i = 0; i < participatorCount.value; i++) {
-    participators.value.push(undefined as unknown as dbModel.Participator)
+    participators.value.push({
+      seminarUid: _uid,
+      role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST
+    } as unknown as dbModel.Participator)
   }
 
   simulator.Simulator.getSimulators()
@@ -154,11 +159,11 @@ const onStartXiangshengClick = async () => {
 }
 
 const randomSelect = async () => {
-  const _uid = uuidv4()
-  xiangsheng.Xiangsheng.setXiangsheng(_uid)
-
   for (let i = 0; i < participators.value.length; i++) {
-    participators.value[i] = undefined as unknown as dbModel.Participator
+    participators.value[i] = {
+      seminarUid: _uid,
+      role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST
+    } as unknown as dbModel.Participator
   }
   for (let i = 0; i < participators.value.length; i++) {
     while (true) {
@@ -168,7 +173,7 @@ const randomSelect = async () => {
       let _model = await dbBridge._Model.randomPeek(i === 0 ? true : undefined)
       if (!_model) _model = await dbBridge._Model.randomPeek()
       participators.value[i] = {
-        seminarUid: _uid,
+        seminarUid: _uid.value,
         role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
         simulatorId: _simulator.id,
         modelId: _model.id
