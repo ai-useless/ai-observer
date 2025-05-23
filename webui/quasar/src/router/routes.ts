@@ -28,6 +28,10 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/duanzi',
         component: () => import('pages/duanzi/DuanziPage.vue')
+      },
+      {
+        path: '/meme',
+        component: () => import('pages/meme/MemePage.vue')
       }
     ]
   },

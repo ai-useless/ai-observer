@@ -50,8 +50,8 @@
         </q-item-section>
         <q-item-section>有内涵</q-item-section>
       </q-item>
-      <q-item clickable v-ripple>
-        <q-item-section avatar @click='onMenuClick("meme")' :class='[ menu === "meme" ? "selected" : "" ]'>
+      <q-item clickable v-ripple @click='onMenuClick("meme")' :class='[ menu === "meme" ? "selected" : "" ]'>
+        <q-item-section avatar>
           <q-icon name='sentiment_satisfied' />
         </q-item-section>
         <q-item-section>超有梗</q-item-section>
@@ -133,6 +133,7 @@ const onMenuClick = (_menu: string) => {
     case 'observer': void router.push({ path: '/seminar/guests' }); break
     case 'xiangsheng': void router.push({ path: '/xiangsheng/roles' }); break
     case 'duanzi': void router.push({ path: '/duanzi' }); break
+    case 'meme': void router.push({ path: '/meme' }); break
     case 'settings': setting.Setting.setShowSetting(true); break
   }
 }

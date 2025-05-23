@@ -8,6 +8,8 @@
       outlined
       @keyup.enter='onConfirm'
       input-class='q-pl-sm'
+      :disable='disabled'
+      :loading='loading'
     >
       <template #append>
         <q-btn flat icon='send' @click='onConfirm' />
@@ -23,9 +25,12 @@ import BottomFixArea from '../fixed/BottomFixArea.vue'
 
 interface Props {
   placeholder: string
+  disabled?: boolean
+  loading?: boolean
 }
 const props = defineProps<Props>()
 const placeholder = toRef(props, 'placeholder')
+const disabled = toRef(props, 'disabled')
 
 const message = defineModel<string>()
 
