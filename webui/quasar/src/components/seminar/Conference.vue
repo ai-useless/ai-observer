@@ -42,7 +42,7 @@
           class='q-mt-xs bg-grey-2'
         >
           <div style='margin-top: 16px;'>
-            <div v-for='(message, index) in [...displayMessages, lastDisplayMessage]' :key='index' class='bg-grey-2 q-px-lg'>
+            <div v-for='(message, index) in [...displayMessages, ...(lastDisplayMessage ? [lastDisplayMessage] : [])]' :key='index' class='bg-grey-2 q-px-lg'>
               <q-chat-message
                 v-if='!message.subTopicTitle'
                 :key='index'
@@ -142,8 +142,8 @@ const typing = () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }).then((rc) => {
     if (typingMessage.value?.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
-      void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value?.subTopic || typingMessage.value.subTopic)
       requesting.value = true
+      void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value?.subTopic || typingMessage.value.subTopic)
     }
 
     if (!rc) return
@@ -301,9 +301,4 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang='sass'>
-::v-deep .q-markdown
-  pre
-    white-space: pre-wrap
-    word-wrap: break-word
-    background: none
 </style>
