@@ -53,7 +53,7 @@
       </div>
     </div>
     <div class='flex justify-center items-center'>
-      <BottomFixArea>
+      <BottomFixArea background-color='transparent' :max-width='96'>
         <template #default>
           <div style='display: flex; justify-content: center; align-items: center; width: 100%; height: 24px;'>
             <div style='display: flex; align-items: center; border: 1px solid gray; border-radius: 8px; height: 24px; background-color: rgba(160, 160, 160, 0.5);'>
