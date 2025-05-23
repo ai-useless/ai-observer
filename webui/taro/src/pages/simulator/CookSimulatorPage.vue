@@ -9,3 +9,10 @@
 import CookSimulator from 'src/components/simulator/CookSimulator.vue'
 
 </script>
+
+<style lang='scss'>
+
+@import 'taro-ui-vue3/dist/style/components/modal.scss';
+
+</style>
+

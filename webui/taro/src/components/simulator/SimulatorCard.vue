@@ -16,7 +16,7 @@
           <View style='margin-left: 4px;'>
 
           </View>
-          <View style='margin-left: 4px; font-size: 14px;' @click='onSelectLanguageClick'>
+          <View style='margin-left: 4px; font-size: 14px; color: lightblue; line-height: 16px;' @click='onOpenSelectLanguageClick'>
             {{ _simulator.language }}
           </View>
         </View>
@@ -33,8 +33,8 @@
     <AtModalHeader>选择语言</AtModalHeader>
     <AtModalContent>
       <View>
-        <View v-for='(_language, index) in _languages' :key='index' style='border-bottom: 1px solid gray;' @click='onSelectLanguageClick(_language)'>
-          <SimulatorCard :simulator='_simulator' />
+        <View v-for='(_language, index) in _languages' :key='index' style='padding: 8px;' @click='onSelectLanguageClick(_language)'>
+          <View :style='{ color: _language === _simulator.language ? "lightblue" : "gray" }'>{{ _language }}</View>
         </View>
       </View>
     </AtModalContent>
@@ -71,6 +71,10 @@ const onLanguageSelectorClose = () => {
 
 const onCancelSelectLanguageClick = () => {
   selectingLanguage.value = false
+}
+
+const onOpenSelectLanguageClick = () => {
+  selectingLanguage.value = true
 }
 
 const onSelectLanguageClick = (_language: string) => {
