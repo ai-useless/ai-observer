@@ -44,7 +44,19 @@
       </div>
     </div>
     <div style='width: 100%; height: calc(100% - 280px - 4px);' class='bg-grey-2'>
+      <div v-if='!displayMessages.length' class='full-width flex justify-center items-center' style='height: 100%; width: min(100%, 600px);'>
+        <div
+          style='margin-top: 16px; font-size: 20px;'
+          class='text-center text-grey-8 flex justify-center items-center'
+        >
+          <div>
+            <q-spinner-facebook class='text-red-4' size='128px' />
+            <div>演员正在候场，请稍候...</div>
+          </div>
+        </div>
+      </div>
       <q-scroll-area
+        v-else
         style='height: calc(100% - 80px); width: 100%; padding: 0 24px;'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
@@ -53,17 +65,7 @@
         @mouseleave='autoScroll = true'
         class='q-mt-xs cursor-pointer'
       >
-        <div
-          v-if='!displayMessages.length'
-          style='margin-top: 16px; font-size: 20px;'
-          class='text-center text-grey-8 flex justify-center items-center'
-        >
-          <div>
-            <q-spinner-facebook class='text-red-4' size='128px' />
-            <div>演员正在候场，请稍候。</div>
-          </div>
-        </div>
-        <div v-else style='margin-top: 16px;'>
+        <div style='margin-top: 16px;'>
           <q-resize-observer @resize='onChatBoxResize' />
           <div>
             <div v-for='(message, index) in displayMessages' :key='index' style='width: 100%'>
