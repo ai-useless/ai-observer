@@ -180,8 +180,8 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
-
-    console.log(111, waitMessages.value.size, autoScroll.value, playScripts.value, lastDisplayMessage.value)
+    if (typingMessage.value.last) typingMessageIndex.value = 0
+    if (typingMessage.value.first) displayMessages.value = []
 
     if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
       if (playScripts.value) void eXiangsheng.value.startScripts()
