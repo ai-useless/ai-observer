@@ -72,7 +72,7 @@ async def get_models(offset: int = 0, limit: int = 100):
     } for model in models]
 
 @app.post('/api/v1/cook_user')
-async def gook_user(code: str = Body(...), username: str = Body(...), avatar: str = Body(...)):
+async def gook_user(code: str = Body(...), username: str | None = Body(...), avatar: str | None = Body(...)):
     await _cook_user(code, username, avatar)
 
 @app.get('/api/v1/user')
@@ -148,6 +148,16 @@ async def speak_async_v2(
     voice: str = Body(...),
 ):
     audio_uid = await audio_generator.generate_audio_async_v2(text, voice)
+
+    return {'audio_uid': audio_uid}
+
+@app.post('/api/v3/speak_async', response_model=SpeakAsyncResponse)
+async def speak_async_v3(
+    text: str = Body(...),
+    voice: str = Body(...),
+    instruct: str = Body(...),
+):
+    audio_uid = await audio_generator.generate_audio_async_v3(text, voice, instruct)
 
     return {'audio_uid': audio_uid}
 

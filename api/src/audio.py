@@ -45,7 +45,7 @@ class AudioGenerator:
         try:
             logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating audio{RESET} ...')
             start_time = time.time()
-            audio_file_cid = await self.generate_audio_v2(text, voice, audio_uid)
+            audio_file_cid = await self.generate_audio_v2(text, voice, audio_uid, None)
             db.update_audio(audio_uid, audio_file_cid, None)
             logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generate success{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
         except Exception as e:
@@ -57,6 +57,26 @@ class AudioGenerator:
         db.new_audio(audio_uid)
 
         task = asyncio.create_task(self.generate_audio_with_uid_v2(audio_uid, text, voice))
+        task.add_done_callback(lambda t: self.on_generate_audio_done(t, audio_uid))
+
+        return audio_uid
+
+    async def generate_audio_with_uid_v3(self, audio_uid: str, text: str, voice: str, instruct: str):
+        try:
+            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generating audio{RESET} ...')
+            start_time = time.time()
+            audio_file_cid = await self.generate_audio_v2(text, voice, audio_uid, instruct)
+            db.update_audio(audio_uid, audio_file_cid, None)
+            logger.info(f'{BOLD}{audio_uid}{RESET} {GREEN}Generate success{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
+        except Exception as e:
+            db.update_audio(audio_uid, None, repr(e))
+            logger.error(f'{BOLD}{audio_uid}{RESET} {RED}Generate fail{RESET} ... elapsed {BOLD}{time.time() - start_time}{RESET}s')
+
+    async def generate_audio_async_v3(self, text: str, voice: str, instruct: str) -> str:
+        audio_uid = f'{uuid.uuid4()}'
+        db.new_audio(audio_uid)
+
+        task = asyncio.create_task(self.generate_audio_with_uid_v3(audio_uid, text, voice, instruct))
         task.add_done_callback(lambda t: self.on_generate_audio_done(t, audio_uid))
 
         return audio_uid
@@ -84,7 +104,7 @@ class AudioGenerator:
         )
         return file_cid
 
-    async def generate_audio_v2(self, text: str, voice: str, audio_uid: str) -> str:
+    async def generate_audio_v2(self, text: str, voice: str, audio_uid: str, instruct: str | None) -> str:
         simulator = db.get_simulator_with_audio_id(voice)
         if simulator is None:
             raise Exception('Invalid voice')
@@ -95,7 +115,7 @@ class AudioGenerator:
 
         cleaned_text = purify_text(text)
         chunks = chunk_text(cleaned_text)
-        audio_buffers = await self.concurrent_audio_requests_v2(chunks, audio_hash, audio_s3_url, audio_text, audio_uid)
+        audio_buffers = await self.concurrent_audio_requests_v2(chunks, audio_hash, audio_s3_url, audio_text, audio_uid, instruct)
 
         file_cid = self.merge_audio_buffers(
             audio_buffers=[b for b in audio_buffers if b],
@@ -157,11 +177,13 @@ class AudioGenerator:
         voice_audio_url: str,
         voice_audio_text: str,
         audio_uid: str,
+        instruct: str | None,
         min_delay_ms: float = 50,
         max_delay_ms: float = 300
     ) -> bytes:
         # url = 'https://kikakkz-cosy-voice-tts.chutes.ai/v2/speak'
-        url = 'https://kikakkz-cosy-voice-tts-16g.chutes.ai/v2/speak'
+        # url = 'https://kikakkz-cosy-voice-tts-16g.chutes.ai/v2/speak'
+        url = 'https://kikakkz-cosy-voice-tts-16g.chutes.ai/v3/speak'
         headers = {
             'Authorization': f'Bearer {config.api_token}',
             'Content-Type': 'application/json'
@@ -172,6 +194,8 @@ class AudioGenerator:
             'prompt_audio_url': voice_audio_url,
             'prompt_audio_text': voice_audio_text,
         }
+        if instruct is not None:
+            payload['instruct'] = instruct
 
         _uid = uuid.uuid4()
         start_time = time.time()
@@ -211,14 +235,14 @@ class AudioGenerator:
                 sorted_results[task.index] = results[tasks.index(task)]
             return sorted_results
 
-    async def concurrent_audio_requests_v2(self, chunks: list[str], voice_audio_hash: str, voice_audio_url: str, voice_audio_text: str, audio_uid: str) -> list[bytes]:
+    async def concurrent_audio_requests_v2(self, chunks: list[str], voice_audio_hash: str, voice_audio_url: str, voice_audio_text: str, audio_uid: str, instruct: str | None) -> list[bytes]:
         semaphore = asyncio.Semaphore(config.concurrent_audio_requests)
         connector = aiohttp.TCPConnector(enable_cleanup_closed=True)
 
         async with aiohttp.ClientSession(connector=connector, raise_for_status=True) as session:
             tasks = []
             for idx, text in enumerate(chunks):
-                task = asyncio.create_task(self.fetch_audio_v2(text, session, semaphore, idx, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid))
+                task = asyncio.create_task(self.fetch_audio_v2(text, session, semaphore, idx, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid, instruct))
                 task.index = idx
                 tasks.append(task)
 
@@ -235,7 +259,7 @@ class AudioGenerator:
         connector = aiohttp.TCPConnector(enable_cleanup_closed=True)
 
         async with aiohttp.ClientSession(connector=connector, raise_for_status=True) as session:
-            return  await self.fetch_audio_v2(text, session, semaphore, 0, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid)
+            return  await self.fetch_audio_v2(text, session, semaphore, 0, voice_audio_hash, voice_audio_url, voice_audio_text, audio_uid, None)
 
     def merge_audio_buffers(self, audio_buffers: list[bytes], voice: str, text=str) -> str:
         valid_buffers = [b for b in audio_buffers if b]

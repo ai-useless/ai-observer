@@ -26,7 +26,21 @@ async def audio_2_text(audio_b64: str) -> str:
             response.raise_for_status()
             return await response.text()
 
-async def get_openid(code: str):
+async def get_user_info(access_token: str, openid: str):
+    url = f'https://api.weixin.qq.com/sns/userinfo?access_token={access_token}&openid={openid}&lang=zh_CN'
+    timeout = aiohttp.ClientTimeout(connect=10, total=30)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.get(url) as response:
+            response.raise_for_status()
+
+            try:
+                _response = json.loads(await response.text())
+                return _response
+            except Exception as e:
+                logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
+                raise Exception(repr(e))
+
+async def get_authorization_code(code: str):
     url = f'https://api.weixin.qq.com/sns/jscode2session?appid={config.weapp_id}&secret={config.weapp_secret}&js_code={code}&grant_type=authorization_code'
     timeout = aiohttp.ClientTimeout(connect=10, total=30)
     async with aiohttp.ClientSession(timeout=timeout) as session:
@@ -35,10 +49,13 @@ async def get_openid(code: str):
 
             try:
                 _response = json.loads(await response.text())
-                return _response['openid']
+                return _response
             except Exception as e:
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
                 raise Exception(repr(e))
+
+async def get_openid(code: str):
+    return await get_authorization_code(code)['openid']
 
 async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None, simulator_archetype: str | None = None, simulator_title: str | None = None):
     openid = await get_openid(code)
@@ -102,8 +119,14 @@ async def get_user(code: str):
     openid = await get_openid(code)
     return db.get_user(openid)
 
-async def cook_user(code: str, username: str, avatar: str):
-    openid = await get_openid(code)
+async def cook_user(code: str, username: str | None, avatar: str | None):
+    authorization_code = await get_autiorization_code(code)
+    openid = authorization_code['openid']
+
+    if username is None or avatar is None:
+        userinfo = await get_user_info(authorization_code['access_token'], openid)
+        username = userinfo['nickname']
+        avatar = userinfo['headimgurl']
 
     wechat_avatar_b64_bytes = avatar.encode("utf-8")
     wechat_avatar_cid = hashlib.sha256(wechat_avatar_b64_bytes).hexdigest()
