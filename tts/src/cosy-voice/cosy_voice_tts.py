@@ -119,6 +119,14 @@ class V2InputArgs(BaseModel):
     prompt_audio_url: str
     prompt_audio_text: str
 
+class V3InputArgs(BaseModel):
+    text: str
+    speed: float = 1.0
+    prompt_audio_hash: str
+    prompt_audio_url: str
+    prompt_audio_text: str
+    instruct: str = None
+
 @chute.on_startup()
 async def initialize(self):
     import os
@@ -201,3 +209,47 @@ async def speak_v2(self, args: V2InputArgs) -> Response:
         headers={"Content-Disposition": f"attachment; filename={filename}"},
     )
 
+
+@chute.cord(
+    path="/v2/speak",
+    passthrough_path="/v2/speak",
+    public_api_path="/v2/speak",
+    public_api_method="POST",
+    stream=False,
+    output_content_type="audio/wav",
+)
+async def speak_v3(self, args: V3InputArgs) -> Response:
+    from purify_text import purify_text
+    """
+    Generate SSE audio chunks from input text.
+    """
+
+    prompt_audio_b64 = await self.generator.safe_prepare_prompt_audio(
+        prompt_audio_hash=args.prompt_audio_hash,
+        prompt_audio_url=args.prompt_audio_url,
+    )
+
+    text = purify_text(args.text)
+    if args.instruct:
+        audio_bytes = self.generator.generate_speech_instruct(
+            target_text=text,
+            prompt_audio_b64=prompt_audio_b64,
+            instruct_text=args.instruct
+        )
+    else:
+        audio_bytes = self.generator.generate_speech(
+            target_text=text,
+            prompt_audio_b64=prompt_audio_b64,
+            prompt_audio_text=args.prompt_audio_text
+        )
+
+    if audio_bytes:
+        buffer = io.BytesIO(audio_bytes)
+
+    buffer.seek(0)
+    filename = f"{str(uuid.uuid4())}.wav"
+    return Response(
+        content=buffer.getvalue(),
+        media_type="audio/wav",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )

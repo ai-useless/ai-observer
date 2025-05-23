@@ -65,6 +65,22 @@ class CosyVoiceGenerator:
         )
 
         return self._waveform_to_bytes(merged_waveform)
+    
+    def generate_speech_instruct(self, target_text, prompt_audio_b64, instruct_text):
+        prompt_speech = self.base64_to_audio_tensor(prompt_audio_b64)
+
+        results = self.cosyvoice.inference_instruct2(
+            tts_text=target_text,
+            instruct_text=instruct_text,
+            prompt_speech_16k=prompt_speech,
+            stream=False
+        )
+
+        merged_waveform = self._merge_audio_segments(
+            [result['tts_speech'] for result in results]
+        )
+
+        return self._waveform_to_bytes(merged_waveform)
 
     def construct_prompt_audio_cache_filename(self, prompt_audio_hash):
         import os
