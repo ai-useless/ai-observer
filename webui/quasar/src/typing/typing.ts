@@ -13,6 +13,7 @@ export interface TypingMessage<T extends Message> {
   typingInterval?: number
   audioPlayer?: AudioPlayer
   typingMessageIndex?: number
+  resetLastDisplayMessage: boolean
 }
 
 function calculateTypingInterval<T extends Message>(typingMessage: T, duration: number): number | undefined {
@@ -39,12 +40,16 @@ export async function typing<T extends Message>(
   if (typingMessage && lastDisplayMessage && lastDisplayMessage.message.length < typingMessage.message.length) {
     if (lastDisplayMessage.message.length > 0 && audioPlayer && !audioPlayer.playing) {
       lastDisplayMessage.message = typingMessage.message
-      return Promise.resolve(undefined)
+      return Promise.resolve({
+        resetLastDisplayMessage: false
+      })
     }
     const matches = typingMessage.message.slice(lastDisplayMessage.message.length).match(/^<[^>]+>/) || []
     const appendLen = matches[0] ? matches[0].length + 1 : 1
     lastDisplayMessage.message = typingMessage.message.slice(0, lastDisplayMessage.message.length + appendLen)
-    return Promise.resolve(undefined)
+    return Promise.resolve({
+      resetLastDisplayMessage: false
+    })
   }
 
   if (lastDisplayMessage) {
@@ -53,9 +58,13 @@ export async function typing<T extends Message>(
     }
   }
 
-  if (!waitMessages.size) return Promise.resolve(undefined)
+  if (!waitMessages.size) return Promise.resolve({
+    resetLastDisplayMessage: true
+  })
   // If audio is still playing, do nothing
-  if (audioPlayer && audioPlayer.playing) return Promise.resolve(undefined)
+  if (audioPlayer && audioPlayer.playing) return Promise.resolve({
+    resetLastDisplayMessage: true
+  })
 
   let key = undefined as unknown as string
   for (const [k, v] of waitMessages) {
@@ -64,7 +73,9 @@ export async function typing<T extends Message>(
       break
     }
   }
-  if (!key) return Promise.resolve(undefined)
+  if (!key) return Promise.resolve({
+    resetLastDisplayMessage: true
+  })
 
   typingMessage = waitMessages.get(key) as T
   waitMessages.delete(key)
@@ -98,6 +109,7 @@ export async function typing<T extends Message>(
     lastDisplayMessage,
     audioPlayer,
     typingInterval,
-    typingMessageIndex
+    typingMessageIndex,
+    resetLastDisplayMessage: true
   }
 }

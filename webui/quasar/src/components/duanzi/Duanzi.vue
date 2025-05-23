@@ -202,7 +202,11 @@ const typing = () => {
     if (!rc) return
 
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
-    if (rc.lastDisplayMessage) lastDisplayMessage.value = rc.lastDisplayMessage
+    if (rc.lastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage
+    } else if (rc.resetLastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage as unknown as Message
+    }
     if (rc.typingInterval) {
       typingInterval.value = rc.typingInterval
       typingTicker.value = window.setInterval(typing, typingInterval.value)
