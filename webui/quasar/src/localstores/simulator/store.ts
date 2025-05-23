@@ -49,7 +49,10 @@ export const useSimulatorStore = defineStore('simulator', {
         const index = this.simulators.findIndex(
           (el) => el.simulator === simulator.simulator
         )
+
         simulator.mine = mine
+        simulator.language = dbBridge._Language.randomPick()
+
         this.simulators.splice(
           index >= 0 ? index : 0,
           index >= 0 ? 1 : 0,

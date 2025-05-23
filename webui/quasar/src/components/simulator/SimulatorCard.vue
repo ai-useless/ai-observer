@@ -11,30 +11,45 @@
         <div class='text-grey-6 single-line-nowrap q-mr-xs' style='font-size: 12px; max-width: 120px;'>
           {{ _simulator.title }}
         </div>
-        <div
-          class='text-blue-4 q-mr-xs'
+      </div>
+      <div class='row'>
+        <q-btn
+          flat
+          dense
+          class='text-blue-4 q-mr-xs q-py-none q-px-none'
           style='font-size: 12px;'
+          @click.stop='onPlayClick'
         >
           试听
-        </div>
-        <div
-          v-if='canSetLanguage'
-          class='text-blue-4'
+        </q-btn>
+        <q-btn
+          flat
+          dense
+          :class='[ canSetLanguage ? "text-blue-4" : "text-grey-6", "q-py-none q-px-none" ]'
           style='font-size: 12px;'
+          @click.stop='onSelectLanguageClick'
         >
-          方言
-        </div>
+          {{ _simulator.language }}
+        </q-btn>
       </div>
       <div v-if='!simple' class='q-mt-xs text-grey-6' style='font-size: 12px;'>
         {{ _simulator.origin_personality }}
       </div>
     </q-item-label>
   </div>
+  <q-dialog v-model='selectingLanguage'>
+    <div>
+      <LanguageSelector v-model:selected='selectedLanguage' @cancel='onCancelSelectLanguage' @selected='onLanguageSelected' />
+    </div>
+  </q-dialog>
 </template>
 
 <script setup lang='ts'>
 import { simulator } from 'src/localstores'
-import { defineProps, toRef } from 'vue'
+import { AudioPlayer } from 'src/player'
+import { defineProps, ref, toRef } from 'vue'
+
+import LanguageSelector from '../selector/LanguageSelector.vue'
 
 interface Props {
   simulator: simulator._Simulator
@@ -45,5 +60,25 @@ const props = defineProps<Props>()
 const _simulator = toRef(props, 'simulator')
 const canSetLanguage = toRef(props, 'canSetLanguage')
 const simple = toRef(props, 'simple')
+
+const selectingLanguage = ref(false)
+const selectedLanguage = ref(_simulator.value.language)
+
+const onPlayClick = async () => {
+  await AudioPlayer.play(_simulator.value.audio_url)
+}
+
+const onCancelSelectLanguage = () => {
+  selectingLanguage.value = false
+}
+
+const onLanguageSelected = (_language: string) => {
+  selectingLanguage.value = false
+  _simulator.value.language = _language
+}
+
+const onSelectLanguageClick = () => {
+  selectingLanguage.value = true
+}
 
 </script>
