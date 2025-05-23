@@ -32,7 +32,7 @@
                 </div>
               </div>
               <q-img v-if='message.image' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
-              <div :style='{fontSize: message.isTitle ? "18px" : "16px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left", padding: "16px"}'>
+              <div :style='{fontSize: message.isTitle ? "18px" : "16px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left", padding: "16px", lineHeight: "24px"}'>
                 {{ message.message }}
               </div>
             </div>
@@ -44,7 +44,7 @@
                 </div>
               </div>
               <q-img v-if='lastDisplayMessage.image' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
-              <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "16px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left", padding: "16px"}'>
+              <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "16px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left", padding: "16px", lineHeight: "24px"}'>
                 {{ lastDisplayMessage.message }}
               </div>
             </div>

@@ -51,6 +51,7 @@
                 :stamp='message.datetime'
                 :text='[message.message]'
                 text-color='grey-9'
+                style='line-height: 24px;'
               >
                 <template #name>
                   <div style='padding-bottom: 4px; line-height: 24px;' class='row'>

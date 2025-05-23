@@ -130,6 +130,7 @@ const typingMessage = ref(undefined as unknown as Message)
 const eXiangsheng = ref(undefined as unknown as entityBridge.EXiangsheng)
 const typingMessageIndex = ref(0)
 const currentTopic = ref(topic.value)
+const generating = ref(false)
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
@@ -167,6 +168,12 @@ const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }).then((rc) => {
+    if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value && !generating.value) {
+      generating.value = true
+      if (playScripts.value) void eXiangsheng.value.startScripts()
+      else void eXiangsheng.value.start()
+    }
+
     if (!rc) return
 
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
@@ -179,17 +186,13 @@ const typing = () => {
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
-    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
     if (typingMessage.value?.last) typingMessageIndex.value = 0
     if (typingMessage.value?.first && typingMessageIndex.value === 0) {
       currentTopic.value = typingMessage.value.topic
       displayMessages.value = []
     }
 
-    if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
-      if (playScripts.value) void eXiangsheng.value.startScripts()
-      else void eXiangsheng.value.start()
-    }
+    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)
