@@ -24,3 +24,11 @@ export const useNotificationStore = defineStore('notification', {
 export * from './helper'
 export * from './const'
 export * from './types'
+
+const notify = useNotificationStore()
+
+export class Notify {
+  static pushNotification = (notification: Notification) => (notify.pushNotification(notification))
+
+  static popNotification = () => notify.popNotification()
+}

@@ -134,6 +134,8 @@ const onMenuClick = (_menu: string) => {
     case 'xiangsheng': void router.push({ path: '/xiangsheng/roles' }); break
     case 'duanzi': void router.push({ path: '/duanzi' }); break
     case 'meme': void router.push({ path: '/meme' }); break
+    case 'chat': void router.push({ path: '/chat' }); break
+    case 'english': void router.push({ path: '/english' }); break
     case 'settings': setting.Setting.setShowSetting(true); break
   }
 }

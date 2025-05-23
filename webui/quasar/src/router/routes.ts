@@ -32,6 +32,14 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/meme',
         component: () => import('pages/meme/MemePage.vue')
+      },
+      {
+        path: '/chat',
+        component: () => import('pages/chat/ChatPage.vue')
+      },
+      {
+        path: '/english',
+        component: () => import('pages/english/EnglishPage.vue')
       }
     ]
   },

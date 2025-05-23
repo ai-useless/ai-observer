@@ -36,6 +36,10 @@ export class _Model {
     return topicModel ? topicModel.id : 0
   }
 
+  static chatModelId = async () => {
+    return await _Model.topicModelId()
+  }
+
   static _topicModel = () => {
     return _Model.topicModel
   }
