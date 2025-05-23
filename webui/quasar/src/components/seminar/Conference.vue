@@ -156,9 +156,7 @@ const typing = () => {
       lastDisplayMessage.value = rc.lastDisplayMessage
     }
     if (rc.typingInterval) {
-      window.clearInterval(typingTicker.value)
       typingInterval.value = rc.typingInterval
-      typingTicker.value = window.setInterval(typing, typingInterval.value)
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
