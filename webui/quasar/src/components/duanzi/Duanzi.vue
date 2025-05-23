@@ -12,7 +12,7 @@
           </div>
         </div>
       </div>
-      <div v-else style='height: calc(100vh - 4px - 80px); width: min(100%, 600px);' class='bg-grey-2'>
+      <div v-else style='height: calc(100vh - 4px); width: min(100%, 600px);' class='bg-grey-2'>
         <q-scroll-area
           style='height: calc(100vh - 4px - 80px); width: min(100%, 600px);'
           ref='chatBox'
