@@ -184,6 +184,7 @@ const typing = () => {
     }
     if (rc.typingInterval) {
       typingInterval.value = rc.typingInterval
+      typingTicker.value = rc.typingTicker as number
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
