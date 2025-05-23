@@ -124,6 +124,8 @@ const onChatBoxResize = (size: { height: number }) => {
 }
 
 const generate = async () => {
+  if (generating.value) return
+
   generating.value = true
 
   for (const model of models.value) {
