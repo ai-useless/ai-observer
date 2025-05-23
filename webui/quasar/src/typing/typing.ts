@@ -32,8 +32,6 @@ export async function typing<T extends Message>(
   typingMessageIndex: number,
   audioPlayer: AudioPlayer | undefined,
   enablePlay: boolean,
-  typingTicker: number,
-  typingInterval: number,
   resetLastDisplayMessage: () => void
 ): Promise<TypingMessage<T> | undefined> {
   if (!typingMessage && !waitMessages.size) return Promise.resolve(undefined)
@@ -74,19 +72,16 @@ export async function typing<T extends Message>(
   waitMessages.delete(key)
   typingMessageIndex += 1
 
+  let typingInterval = undefined as unknown as number
+
   if (typingMessage.audio && typingMessage.audio.length && enablePlay) {
     try {
       audioPlayer = await AudioPlayer.play(typingMessage.audio)
       if (audioPlayer && audioPlayer.duration) {
         typingInterval = calculateTypingInterval(typingMessage, audioPlayer.duration) || typingInterval
-        console.log('Clean', typingTicker, typingInterval)
-        window.clearInterval(typingTicker)
-      } else {
-        typingInterval = undefined as unknown as number
       }
     } catch (e) {
       audioPlayer = undefined as unknown as AudioPlayer
-      typingInterval = undefined as unknown as number
 
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       console.log(`Failed play: ${e}`)

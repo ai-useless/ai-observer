@@ -165,7 +165,7 @@ const onPlayClick = () => {
 }
 
 const typing = () => {
-  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value, () => {
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }).then((rc) => {
     if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value && !generating.value) {
@@ -183,6 +183,7 @@ const typing = () => {
       lastDisplayMessage.value = rc.lastDisplayMessage
     }
     if (rc.typingInterval) {
+      window.clearInterval(typingTicker.value)
       typingInterval.value = rc.typingInterval
       typingTicker.value = window.setInterval(typing, typingInterval.value)
     }

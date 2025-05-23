@@ -14,6 +14,7 @@ export const purifyText = (html: string): string => {
     .replace(/^\[\d\].*$/gm, '')
     .replace('html', '')
     .replace('markdown', '')
+    .replace('plain', '')
     .replace('txt', '')
     .replace('text', '')
     .replace(/ /g, '')
@@ -44,6 +45,7 @@ export const purifyThink = (html: string): string => {
     .replace('text', '')
     .replace('markdown', '')
     .replace('plaintext', '')
+    .replace('plain', '')
     .replace(/`/g, '')
     .replace(/#/g, '')
     .replace(/\*/g, '')
@@ -58,5 +60,5 @@ export const purifyThink = (html: string): string => {
 }
 
 export const purifyBracket = (html: string): string => {
-  return html.replace(/[\(（].*?[\)）]/g, '')
+  return html.replace(/[(（].*?[)）]/g, '')
 }

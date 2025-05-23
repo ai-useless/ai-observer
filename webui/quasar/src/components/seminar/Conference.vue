@@ -141,7 +141,7 @@ const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
 const typing = () => {
-  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, typingInterval.value, () => {
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }).then((rc) => {
     if (typingMessage.value?.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
@@ -156,8 +156,8 @@ const typing = () => {
       lastDisplayMessage.value = rc.lastDisplayMessage
     }
     if (rc.typingInterval) {
+      window.clearInterval(typingTicker.value)
       typingInterval.value = rc.typingInterval
-      console.log(typingTicker.value, typingInterval.value, '111')
       typingTicker.value = window.setInterval(typing, typingInterval.value)
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
