@@ -174,8 +174,6 @@ const typing = () => {
       else void eXiangsheng.value.start()
     }
 
-    console.log(rc, typingMessageIndex.value, waitMessages.value.size, waitMessages.value)
-
     if (!rc) return
 
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
@@ -188,13 +186,15 @@ const typing = () => {
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
-    if (typingMessage.value?.last) typingMessageIndex.value = 0
+    if (typingMessage.value?.last) {
+      typingMessageIndex.value = 0
+    } else {
+      typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+    }
     if (typingMessage.value?.first) {
       currentTopic.value = typingMessage.value.topic
       displayMessages.value = []
     }
-
-    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)
