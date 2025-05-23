@@ -42,7 +42,7 @@
           class='q-mt-xs bg-grey-2'
         >
           <div style='margin-top: 16px;'>
-            <div v-for='(message, index) in displayMessages' :key='index' class='bg-grey-2 q-px-lg'>
+            <div v-for='(message, index) in [...displayMessages, lastDisplayMessage]' :key='index' class='bg-grey-2 q-px-lg'>
               <q-chat-message
                 v-if='!message.subTopicTitle'
                 :key='index'
@@ -51,7 +51,7 @@
                 :stamp='message.datetime'
                 :text='[message.message]'
                 text-color='grey-9'
-                style='line-height: 24px;'
+                style='line-height: 24px; font-size: 18px;'
               >
                 <template #name>
                   <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
@@ -68,7 +68,7 @@
                 </template>
                 <div v-html='message.message' style='line-height: 1.5em;' />
               </q-chat-message>
-              <div v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 64px 0'>
+              <div v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 32px 0'>
                 {{ message.subTopic }}
               </div>
             </div>
@@ -77,7 +77,7 @@
         </q-scroll-area>
       </div>
     </div>
-    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 40px;' :active-topic='activeTopic || ""' />
+    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 40px; max-width: 120px;' :active-topic='activeTopic || ""' />
   </div>
 </template>
 
@@ -133,16 +133,15 @@ const outline = ref(undefined as unknown as Record<string, unknown>)
 const activeTopic = ref('')
 const lastTopic = ref(undefined as unknown as string)
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
-const enablePlay = ref(false)
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
 const typing = () => {
-  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value, () => {
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, typingInterval.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }).then((rc) => {
-    if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
+    if (typingMessage.value?.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
       void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value?.subTopic || typingMessage.value.subTopic)
       requesting.value = true
     }
