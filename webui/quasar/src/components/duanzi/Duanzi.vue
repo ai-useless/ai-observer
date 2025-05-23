@@ -140,7 +140,8 @@ const generate = async () => {
         isTitle,
         audio: audio || '',
         index,
-        image: images.value.get(index)
+        image: images.value.get(index),
+        timestamp: Date.now()
       })
 
       images.value.delete(index)
@@ -203,6 +204,8 @@ const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }).then((rc) => {
+    if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
+
     if (!rc) return
 
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
@@ -218,8 +221,6 @@ const typing = () => {
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
 
     if (typingMessage.value) lastModelId.value = typingMessage.value.modelId
-
-    if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)

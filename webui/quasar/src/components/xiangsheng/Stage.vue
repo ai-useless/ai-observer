@@ -181,7 +181,10 @@ const typing = () => {
 
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
     if (typingMessage.value?.last) typingMessageIndex.value = 0
-    if (typingMessage.value?.first) displayMessages.value = []
+    if (typingMessage.value?.first && typingMessageIndex.value === 0) {
+      currentTopic.value = typingMessage.value.topic
+      displayMessages.value = []
+    }
 
     if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value) {
       if (playScripts.value) void eXiangsheng.value.startScripts()

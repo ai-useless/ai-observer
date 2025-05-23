@@ -88,6 +88,8 @@ import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { QScrollArea } from 'quasar'
 import { purify } from 'src/utils'
+import { AudioPlayer } from 'src/player'
+import { typing as _typing, Message as MessageBase } from 'src/typing'
 
 import SimulatorCard from './SimulatorCard.vue'
 import Outline from './Outline.vue'
@@ -107,112 +109,71 @@ const topic = computed(() => _seminar.value?.topic)
 const host = computed(() => simulators.value.find((el) => el.participatorId === participators.value.find((el) => el.role === dbModel.Role.HOST)?.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
-interface Message {
+interface Message extends MessageBase {
   round: number
-  message: string
   participator: dbModel.Participator
   simulator: simulator._Simulator
   model: model._Model
-  datetime: string
-  timestamp: number
-  audio: string
   subTopicTitle: boolean
   subTopic: string
 }
 
 const displayMessages = ref([] as Message[])
-const waitMessages = ref([] as Message[])
+const lastDisplayMessage = ref(undefined as unknown as Message)
+const waitMessages = ref(new Map<string, Message>())
+const lastWaitMessage = ref(undefined as unknown as Message)
+const incomingMessageIndex = ref(0)
 const typingMessage = ref(undefined as unknown as Message)
-const typingIndex = ref(0)
+const typingMessageIndex = ref(0)
 const lastRound = ref(0)
 const requesting = ref(false)
 const eSeminar = ref(undefined as unknown as entityBridge.ESeminar)
 const outline = ref(undefined as unknown as Record<string, unknown>)
 const activeTopic = ref('')
 const lastTopic = ref(undefined as unknown as string)
-const audioPlayer = ref(undefined as unknown as HTMLAudioElement)
+const audioPlayer = ref(undefined as unknown as AudioPlayer)
+const enablePlay = ref(false)
 
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
-const calculateTypingInterval = (duration: number) => {
-  if (typingMessage.value.audio?.length) {
-    const interval = Math.ceil(duration * 1000 / purify.purifyText(typingMessage.value.message || '').length)
-    typingInterval.value = interval
-  }
-}
-
 const typing = () => {
-  if (!typingMessage.value && !waitMessages.value.length) return
-
-  // If we have a message in typing, finish it
-  if (typingMessage.value && typingIndex.value < typingMessage.value.message.length) {
-    if (typingIndex.value > 0 && audioPlayer.value && audioPlayer.value.ended) {
-      displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message
-      typingIndex.value = typingMessage.value.message.length
-      return
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, typingInterval.value, () => {
+    lastDisplayMessage.value = undefined as unknown as Message
+  }).then((rc) => {
+    if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
+      void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value?.subTopic || typingMessage.value.subTopic)
+      requesting.value = true
     }
-    const matches = typingMessage.value.message.slice(typingIndex.value).match(/^<[^>]+>/) || []
-    const appendLen = matches[0]?.length || 1
-    displayMessages.value[displayMessages.value.length - 1].message = typingMessage.value.message.slice(0, typingIndex.value + appendLen)
-    typingIndex.value += appendLen
-    return
-  }
 
-  if (!waitMessages.value.length) return
-  // If audio is still playing, do nothing
-  if (audioPlayer.value && !audioPlayer.value.ended) return
+    if (!rc) return
 
-  typingMessage.value = waitMessages.value[0]
-  typingIndex.value = 0
-  waitMessages.value = waitMessages.value.slice(1)
-
-  seminar.Seminar.speak(typingMessage.value.participator.id as number)
-  if (typingMessage.value?.subTopic !== activeTopic.value) {
-    displayMessages.value.push({
-      ...typingMessage.value,
-      subTopicTitle: true
-    })
-    activeTopic.value = typingMessage.value?.subTopic
-  }
-
-  if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
-    void eSeminar.value.nextGuests(lastTopic.value || waitMessages.value[0]?.subTopic || typingMessage.value.subTopic)
-    requesting.value = true
-  }
-
-  if (typingMessage.value.audio?.length) {
-    window.clearInterval(typingTicker.value)
-    playAudio(typingMessage.value.audio).then((_audioPlayer) => {
-      audioPlayer.value = _audioPlayer
-      if (_audioPlayer.duration > 0) calculateTypingInterval(_audioPlayer.duration)
+    if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
+    if (rc.lastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage
+    }
+    if (rc.typingInterval) {
+      typingInterval.value = rc.typingInterval
       typingTicker.value = window.setInterval(typing, typingInterval.value)
-    }).catch((e) => {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      console.log(`Failed play audio: ${e}`)
-      typingTicker.value = window.setInterval(typing, typingInterval.value)
-    })
-  } else {
-    window.clearInterval(typingTicker.value)
-    typingInterval.value = 40
-    typingTicker.value = window.setInterval(typing, typingInterval.value)
-  }
+    }
+    if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
-  displayMessages.value.forEach((el) => {
-    el.datetime = timestamp2HumanReadable(el.timestamp)
+    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+
+    if (typingMessage.value) {
+      seminar.Seminar.speak(typingMessage.value.participator.id as number)
+      if (typingMessage.value?.subTopic !== activeTopic.value) {
+        displayMessages.value.push({
+          ...typingMessage.value,
+          subTopicTitle: true
+        })
+        activeTopic.value = typingMessage.value?.subTopic
+      }
+    }
+  }).catch((e) => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.log(`Failed typing: ${e}`)
   })
-
-  displayMessages.value.push({
-    ...typingMessage.value,
-    message: ''
-  })
-}
-
-const playAudio = async (audioUrl: string) => {
-  const audioPlayer = new Audio(audioUrl)
-  audioPlayer.loop = false
-  await audioPlayer.play()
-  return audioPlayer
 }
 
 watch(_uid, async () => {
@@ -249,7 +210,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   requesting.value = false
 
   // Discard topic after conclude: order here is important
-  const messages = [...(typingMessage.value ? [typingMessage.value] : []), ...displayMessages.value, ...waitMessages.value]
+  const messages = [...(typingMessage.value ? [typingMessage.value] : []), ...displayMessages.value, ...waitMessages.value.values()]
   if (
     messages.length &&
     messages[messages.length - 1]?.subTopic !== subTopic &&
@@ -262,7 +223,9 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   lastRound.value = round
   lastTopic.value = subTopic
 
-  waitMessages.value.push({
+  const index = incomingMessageIndex.value++
+
+  waitMessages.value.set(`${subTopic}-${index}`, {
     round,
     message: strip(purify.purifyThink(message)),
     participator,
@@ -272,12 +235,8 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
     datetime: timestamp,
     audio,
     subTopicTitle: false,
-    subTopic
-  })
-
-  waitMessages.value = waitMessages.value.map((el) => {
-    const timestamp = timestamp2HumanReadable(el.timestamp)
-    return { ...el, datetime: timestamp }
+    subTopic,
+    index
   })
 }
 

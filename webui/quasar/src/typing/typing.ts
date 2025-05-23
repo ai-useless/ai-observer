@@ -1,10 +1,12 @@
 import { AudioPlayer } from 'src/player'
-import { purify } from 'src/utils'
+import { purify, timestamp } from 'src/utils'
 
 export interface Message {
   message: string
   audio: string
   index: number
+  timestamp: number
+  datetime?: string
 }
 
 export interface TypingMessage<T extends Message> {
@@ -40,12 +42,12 @@ export async function typing<T extends Message>(
   if (typingMessage && lastDisplayMessage && lastDisplayMessage.message.length < typingMessage.message.length) {
     if (lastDisplayMessage.message.length > 0 && audioPlayer && !audioPlayer.playing) {
       lastDisplayMessage.message = typingMessage.message
-      return Promise.resolve({})
+      return Promise.resolve(undefined)
     }
     const matches = typingMessage.message.slice(lastDisplayMessage.message.length).match(/^<[^>]+>/) || []
     const appendLen = matches[0] ? matches[0].length + 1 : 1
     lastDisplayMessage.message = typingMessage.message.slice(0, lastDisplayMessage.message.length + appendLen)
-    return Promise.resolve({})
+    return Promise.resolve(undefined)
   }
 
   if (lastDisplayMessage) {
@@ -55,9 +57,9 @@ export async function typing<T extends Message>(
     }
   }
 
-  if (!waitMessages.size) return Promise.resolve({})
+  if (!waitMessages.size) return Promise.resolve(undefined)
   // If audio is still playing, do nothing
-  if (audioPlayer && audioPlayer.playing) return Promise.resolve({})
+  if (audioPlayer && audioPlayer.playing) return Promise.resolve(undefined)
 
   let key = undefined as unknown as string
   for (const [k, v] of waitMessages) {
@@ -66,7 +68,7 @@ export async function typing<T extends Message>(
       break
     }
   }
-  if (!key) return Promise.resolve({})
+  if (!key) return Promise.resolve(undefined)
 
   typingMessage = waitMessages.get(key) as T
   waitMessages.delete(key)
@@ -89,6 +91,10 @@ export async function typing<T extends Message>(
       console.log(`Failed play: ${e}`)
     }
   }
+
+  displayMessages.forEach((el) => {
+    el.datetime = timestamp.timestamp2HumanReadable(el.timestamp)
+  })
 
   lastDisplayMessage = {
     ...typingMessage,
