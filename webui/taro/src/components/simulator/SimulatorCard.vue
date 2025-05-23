@@ -73,7 +73,8 @@ const onCancelSelectLanguageClick = () => {
   selectingLanguage.value = false
 }
 
-const onOpenSelectLanguageClick = () => {
+const onOpenSelectLanguageClick = (e: { stopPropagation: () => void }) => {
+  e.stopPropagation()
   selectingLanguage.value = true
 }
 
