@@ -19,56 +19,62 @@
           </div>
         </div>
       </div>
-      <q-scroll-area
-        :style='{ height: chatBoxHeight + "px" }'
-        ref='chatBox'
-        :bar-style='{ width: "2px" }'
-        :thumb-style='{ width: "2px" }'
-        @mouseenter='autoScroll = false'
-        @mouseleave='autoScroll = true'
-        class='q-mt-xs bg-grey-2'
-      >
-        <div
-          v-if='!displayMessages.length'
-          style='margin-top: 16px; font-size: 20px'
-          class='text-center text-grey-8'
-        >
-          <q-spinner-facebook class='text-red-4' size='128px' />
-          <div>主持人正在准备台本，请大家耐心等待。</div>
-        </div>
-        <div v-else style='margin-top: 16px;'>
-          <div v-for='(message, index) in displayMessages' :key='index' class='bg-grey-2 q-px-lg'>
-            <q-chat-message
-              v-if='!message.subTopicTitle'
-              :key='index'
-              :name='message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name'
-              :avatar='message.simulator.simulator_avatar_url'
-              :stamp='message.datetime'
-              :text='[message.message]'
-              text-color='grey-9'
-            >
-              <template #name>
-                <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
-                  <div>
-                    {{ message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name }}
-                  </div>
-                  <q-img :src='message.model.author_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <q-img :src='message.model.vendor_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <q-img :src='message.model.model_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
-                  <div class='single-line-nowrap' style='max-width: 280px;'>
-                    | {{ message.simulator.origin_personality }}
-                  </div>
-                </div>
-              </template>
-              <div v-html='message.message' style='line-height: 1.5em;' />
-            </q-chat-message>
-            <div v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 64px 0'>
-              {{ message.subTopic }}
+      <div style='width: 100%; height: calc(100% - 220px - 4px);' class='bg-grey-2'>
+        <div v-if='!displayMessages.length' class='full-width flex justify-center items-center' style='height: 100%; width: min(100%, 600px);'>
+          <div
+            style='margin-top: 16px; font-size: 20px;'
+            class='text-center text-grey-8 flex justify-center items-center'
+          >
+            <div>
+              <q-spinner-facebook class='text-red-4' size='128px' />
+              <div>主持人正在准备台本，请稍候...</div>
             </div>
           </div>
-          <q-resize-observer @resize='onChatBoxResize' />
         </div>
-      </q-scroll-area>
+        <q-scroll-area
+          v-else
+          :style='{ height: chatBoxHeight + "px" }'
+          ref='chatBox'
+          :bar-style='{ width: "2px" }'
+          :thumb-style='{ width: "2px" }'
+          @mouseenter='autoScroll = false'
+          @mouseleave='autoScroll = true'
+          class='q-mt-xs bg-grey-2'
+        >
+          <div style='margin-top: 16px;'>
+            <div v-for='(message, index) in displayMessages' :key='index' class='bg-grey-2 q-px-lg'>
+              <q-chat-message
+                v-if='!message.subTopicTitle'
+                :key='index'
+                :name='message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name'
+                :avatar='message.simulator.simulator_avatar_url'
+                :stamp='message.datetime'
+                :text='[message.message]'
+                text-color='grey-9'
+              >
+                <template #name>
+                  <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
+                    <div>
+                      {{ message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name }}
+                    </div>
+                    <q-img :src='message.model.author_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
+                    <q-img :src='message.model.vendor_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
+                    <q-img :src='message.model.model_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
+                    <div class='single-line-nowrap' style='max-width: 280px;'>
+                      | {{ message.simulator.origin_personality }}
+                    </div>
+                  </div>
+                </template>
+                <div v-html='message.message' style='line-height: 1.5em;' />
+              </q-chat-message>
+              <div v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 64px 0'>
+                {{ message.subTopic }}
+              </div>
+            </div>
+            <q-resize-observer @resize='onChatBoxResize' />
+          </div>
+        </q-scroll-area>
+      </div>
     </div>
     <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 40px;' :active-topic='activeTopic || ""' />
   </div>
