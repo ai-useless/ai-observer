@@ -8,7 +8,8 @@ type MessageFunc = (
   participatorId: number,
   message: string,
   round: number,
-  audio: string
+  audio: string,
+  index: number
 ) => void | Promise<void>
 type ThinkingFunc = (participatorId: number) => void
 type OutlineFunc = (json: Record<string, unknown>) => void
@@ -32,6 +33,8 @@ export class ESeminar {
   #round = 0
   #canNext = false
   #lastRoundIsHost = false
+
+  #nextMessageIndex = 0
 
   constructor(
     seminar: dbModel.Seminar,
@@ -60,7 +63,7 @@ export class ESeminar {
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
 
-    const { intent, subTopic, participatorId, payload, round, subRound } =
+    const { intent, subTopic, participatorId, payload, round, subRound, index } =
       message
 
     // Outline round
@@ -113,7 +116,8 @@ export class ESeminar {
       participatorId,
       payload.text,
       round,
-      payload.audio
+      payload.audio,
+      index
     )
   }
 
@@ -164,6 +168,7 @@ export class ESeminar {
         intent: seminarWorker.Intent.OUTLINE,
         round: this.#round,
         subRound: this.#subRound,
+        index: this.#nextMessageIndex++,
         prompts: {
           archetype: await dbBridge._Simulator.archetypeWithId(
             host.simulator?.id as number
@@ -194,6 +199,7 @@ export class ESeminar {
         intent: seminarWorker.Intent.START_TOPIC,
         round: this.#round,
         subRound: this.#subRound,
+        index: this.#nextMessageIndex++,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
@@ -240,6 +246,7 @@ export class ESeminar {
             : seminarWorker.Intent.START_SUBTOPIC,
         round: this.#round,
         subRound: this.#subRound,
+        index: this.#nextMessageIndex++,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
@@ -272,6 +279,7 @@ export class ESeminar {
         intent: seminarWorker.Intent.CONCLUDE_SUBTOPIC,
         round: this.#round,
         subRound: this.#subRound,
+        index: this.#nextMessageIndex++,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
@@ -305,6 +313,7 @@ export class ESeminar {
         intent: seminarWorker.Intent.CONCLUDE,
         round: this.#round,
         subRound: this.#subRound,
+        index: this.#nextMessageIndex++,
         prompts: {
           topicMaterial: this.#topicMaterial,
           generateAudio: true,
@@ -366,6 +375,7 @@ export class ESeminar {
           intent: seminarWorker.Intent.HOST_CHALLENGE,
           round: this.#round,
           subRound: this.#subRound,
+          index: this.#nextMessageIndex++,
           prompts: {
             topicMaterial: this.#topicMaterial,
             generateAudio: true,
@@ -398,6 +408,7 @@ export class ESeminar {
           intent: seminarWorker.Intent.DISCUSS,
           round: this.#round,
           subRound: this.#subRound,
+          index: this.#nextMessageIndex++,
           prompts: {
             hostMessage: topic,
             generateAudio: true,

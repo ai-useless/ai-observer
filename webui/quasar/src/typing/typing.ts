@@ -51,10 +51,10 @@ export async function typing<T extends Message>(
   }
 
   if (lastDisplayMessage) {
-    resetLastDisplayMessage()
     if (displayMessages.findIndex((el) => el.index === lastDisplayMessage?.index && el.message === lastDisplayMessage.message) < 0) {
       displayMessages.push(lastDisplayMessage)
     }
+    resetLastDisplayMessage()
   }
 
   if (!waitMessages.size) return Promise.resolve(undefined)
@@ -79,6 +79,7 @@ export async function typing<T extends Message>(
       audioPlayer = await AudioPlayer.play(typingMessage.audio)
       if (audioPlayer && audioPlayer.duration) {
         typingInterval = calculateTypingInterval(typingMessage, audioPlayer.duration) || typingInterval
+        console.log('Clean', typingTicker, typingInterval)
         window.clearInterval(typingTicker)
       } else {
         typingInterval = undefined as unknown as number

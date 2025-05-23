@@ -174,6 +174,8 @@ const typing = () => {
       else void eXiangsheng.value.start()
     }
 
+    console.log(rc)
+
     if (!rc) return
 
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer

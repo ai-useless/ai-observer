@@ -51,7 +51,7 @@
                 :stamp='message.datetime'
                 :text='[message.message]'
                 text-color='grey-9'
-                style='line-height: 24px; font-size: 18px;'
+                style='line-height: 24px; font-size: 16px;'
               >
                 <template #name>
                   <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
@@ -66,7 +66,11 @@
                     </div>
                   </div>
                 </template>
-                <div v-html='message.message' style='line-height: 1.5em;' />
+                <div>
+                  <div v-for='(_message, _index) in message.message.split("\n")' :key='_index' style='line-height: 1.5em; padding: 4px 0;'>
+                    <div v-html='_message' />
+                  </div>
+                </div>
               </q-chat-message>
               <div v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 32px 0'>
                 {{ message.subTopic }}
@@ -123,7 +127,6 @@ const displayMessages = ref([] as Message[])
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const waitMessages = ref(new Map<string, Message>())
 const lastWaitMessage = ref(undefined as unknown as Message)
-const incomingMessageIndex = ref(0)
 const typingMessage = ref(undefined as unknown as Message)
 const typingMessageIndex = ref(0)
 const lastRound = ref(0)
@@ -154,6 +157,7 @@ const typing = () => {
     }
     if (rc.typingInterval) {
       typingInterval.value = rc.typingInterval
+      console.log(typingTicker.value, typingInterval.value, '111')
       typingTicker.value = window.setInterval(typing, typingInterval.value)
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
@@ -165,6 +169,7 @@ const typing = () => {
       if (typingMessage.value?.subTopic !== activeTopic.value) {
         displayMessages.value.push({
           ...typingMessage.value,
+          index: typingMessage.value.index - 1,
           subTopicTitle: true
         })
         activeTopic.value = typingMessage.value?.subTopic
@@ -201,7 +206,7 @@ const strip = (html: string): string => {
     .trim()
 }
 
-const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string) => {
+const onMessage = async (subTopic: string, participatorId: number, message: string, round: number, audio: string, index: number) => {
   seminar.Seminar.stopThink(participatorId)
 
   const participator = await dbBridge._Participator.participator(participatorId) as dbModel.Participator
@@ -223,9 +228,7 @@ const onMessage = async (subTopic: string, participatorId: number, message: stri
   lastRound.value = round
   lastTopic.value = subTopic
 
-  const index = incomingMessageIndex.value++
-
-  waitMessages.value.set(`${subTopic}-${index}`, {
+  waitMessages.value.set(`${subTopic}-${participatorId}-${round}-${index}`, {
     round,
     message: strip(purify.purifyThink(message)),
     participator,

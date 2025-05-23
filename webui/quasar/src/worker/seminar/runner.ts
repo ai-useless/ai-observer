@@ -81,6 +81,7 @@ export interface ChatRequestPayload {
   intent: Intent
   round: number
   subRound: number
+  index: number
   prompts: Prompts
 }
 
@@ -91,6 +92,7 @@ export interface ChatResponsePayload {
   intent: Intent
   round: number
   subRound: number
+  index: number
   payload: {
     json: Record<string, unknown> | undefined
     text: string
@@ -384,7 +386,8 @@ export class SeminarRunner {
       prompts,
       subTopic,
       round,
-      subRound
+      subRound,
+      index
     } = payload
 
     const seminar = await dbBridge._Seminar.seminar(undefined, seminarId)
@@ -430,6 +433,7 @@ export class SeminarRunner {
         participatorId,
         round,
         subRound,
+        index,
         payload: {
           ...response,
           json
