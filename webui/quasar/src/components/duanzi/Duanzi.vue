@@ -203,6 +203,7 @@ const onPlayClick = () => {
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
+    void AudioPlayer.play('http://106.15.6.50:81/download/mp3/laugh.mp3')
   }, typing).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
 
