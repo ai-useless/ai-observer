@@ -102,6 +102,8 @@ watch(prompt, async () => {
 
 const onPromptEnter = async (_prompt: string) => {
   await searchDo(_prompt)
+
+  prompt.value = ''
 }
 
 onMounted(() => {
