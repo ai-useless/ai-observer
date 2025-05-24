@@ -52,6 +52,14 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/post',
         component: () => import('pages/post/PostPage.vue')
+      },
+      {
+        path: '/wechat/callback',
+        component: () => import('pages/wechat/LoginCallbackPage.vue')
+      },
+      {
+        path: '/wechat/login',
+        component: () => import('pages/wechat/WechatLoginPage.vue')
       }
     ]
   },

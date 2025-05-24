@@ -78,7 +78,7 @@ module.exports = configure(function (ctx) {
       proxy: {},
 
       https: false,
-      // port: 8080,
+      port: 80,
       open: false, // opens browser window automatically
       historyApiFallback: true
     },

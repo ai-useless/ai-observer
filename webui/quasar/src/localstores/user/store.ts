@@ -27,8 +27,6 @@ export const useUserStore = defineStore('user', {
         })
     },
     cookUser(code: string, done?: (error: boolean) => void) {
-      if (!this.username || !this.avatar) return
-
       const url = `${constants.COOK_USER}`
       axios
         .post(url, {
