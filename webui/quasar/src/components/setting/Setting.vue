@@ -33,13 +33,13 @@
             <CookSimulator />
           </q-tab-panel>
           <q-tab-panel name='mySimulators'>
-            TBD
+            <MySimulators />
           </q-tab-panel>
           <q-tab-panel name='allSimulators'>
-            TBD
+            <AllSimulators />
           </q-tab-panel>
           <q-tab-panel name='models'>
-            TBD
+            <Models />
           </q-tab-panel>
         </q-tab-panels>
       </div>
@@ -55,6 +55,9 @@ import SettingSideBar from '../sidebar/SettingSideBar.vue'
 import Settings from './Settings.vue'
 import User from './User.vue'
 import CookSimulator from '../simulator/CookSimulator.vue'
+import MySimulators from '../simulator/MySimulators.vue'
+import AllSimulators from '../simulator/AllSimulators.vue'
+import Models from '../model/Models.vue'
 
 const settingMenu = computed(() => setting.Setting.currentSettingMenu())
 

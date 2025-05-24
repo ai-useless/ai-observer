@@ -1,18 +1,16 @@
 <template>
-  <div class='row'>
+  <div class='row q-pb-md'>
     <q-avatar size='56px'>
       <q-img :src='_simulator.simulator_avatar_url' />
     </q-avatar>
     <q-item-label class='q-ml-md' style='width: calc(100% - 56px - 16px);'>
-      <div class='row'>
+      <div class='row flex items-center'>
         <div class='text-bold text-grey-9 q-pr-xs'>
           {{ _simulator.simulator }}
         </div>
         <div class='text-grey-6 single-line-nowrap q-mr-xs' style='font-size: 12px; max-width: 120px;'>
           {{ _simulator.title }}
         </div>
-      </div>
-      <div class='row'>
         <q-btn
           flat
           dense

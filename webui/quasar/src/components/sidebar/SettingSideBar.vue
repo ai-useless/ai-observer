@@ -15,13 +15,13 @@
         <q-item-section>个人中心</q-item-section>
       </q-item>
       <q-separator />
-      <q-item clickable v-ripple @click='onMenuClick("createSimulator")' :class='[ settingMenu === "createSimulator" ? "selected" : "" ]'>
+      <q-item clickable v-ripple @click='onMenuClick("createSimulator")' :class='[ settingMenu === "createSimulator" ? "selected" : "", logined ? "" : "text-grey-6" ]'>
         <q-item-section avatar>
           <q-icon name='add' />
         </q-item-section>
         <q-item-section>创建模拟器</q-item-section>
       </q-item>
-      <q-item clickable v-ripple @click='onMenuClick("mySimulators")' :class='[ settingMenu === "mySimulators" ? "selected" : "" ]'>
+      <q-item clickable v-ripple @click='onMenuClick("mySimulators")' :class='[ settingMenu === "mySimulators" ? "selected" : "", logined ? "" : "text-grey-6" ]'>
         <q-item-section avatar>
           <q-icon name='account_circle' />
         </q-item-section>
@@ -46,11 +46,20 @@
 
 <script setup lang='ts'>
 import { computed, onMounted } from 'vue'
-import { setting } from 'src/localstores'
+import { setting, user } from 'src/localstores'
+
+const logined = computed(() => user.User.logined())
 
 const settingMenu = computed(() => setting.Setting.currentSettingMenu().length ? setting.Setting.currentSettingMenu() : 'settings')
 
 const onMenuClick = (_menu: string) => {
+  if (!logined.value) {
+    switch (_menu) {
+      case 'createSimulator':
+      case 'mySimulators':
+        return
+    }
+  }
   setting.Setting.setCurrentSettingMenu(_menu)
 }
 

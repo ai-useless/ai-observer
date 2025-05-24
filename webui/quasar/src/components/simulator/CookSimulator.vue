@@ -102,7 +102,7 @@
         v-model='simulatorAvatar'
         accept='image/*'
         style='display: none'
-        @change='onImageChange'
+        @update:model-value='onImageChange'
         clearable
       />
       <q-file
@@ -110,7 +110,7 @@
         v-model='simulatorAudioPath'
         accept='audio/*'
         style='display: none'
-        @change='onAudioChange'
+        @update:model-value='onAudioChange'
         clearable
       />
     </q-scroll-area>
@@ -118,9 +118,9 @@
 </template>
 
 <script setup lang='ts'>
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { QFile } from 'quasar'
-import { simulator, user } from 'src/localstores'
+import { setting, simulator, user } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
 
 import { addCircle, mic, folder, warnCircle, playCircle, stopCircle } from 'src/assets'
@@ -153,12 +153,6 @@ const onChooseAvatar = () => {
   avatarSelector.value?.$el.querySelector('input[type=file]')?.click()
 }
 
-watch(simulatorAvatar, () => {
-  if (simulatorAvatarUrl.value) {
-    URL.revokeObjectURL(simulatorAvatarUrl.value)
-  }
-})
-
 const onChooseAudioFileClick = () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
   audioSelector.value?.$el.querySelector('input[type=file]')?.click()
@@ -166,27 +160,20 @@ const onChooseAudioFileClick = () => {
 
 const onImageChange = (files: File | File[] | null) => {
   if (!files) {
-    simulatorAvatarUrl.value = null
     return
   }
   const selectedFile = Array.isArray(files) ? files[0] : files
 
   if (selectedFile && selectedFile.type.startsWith('image/')) {
+    if (simulatorAvatarUrl.value) {
+      URL.revokeObjectURL(simulatorAvatarUrl.value)
+    }
     simulatorAvatarUrl.value = URL.createObjectURL(selectedFile)
-  } else {
-    simulatorAvatarUrl.value = null
   }
 }
 
-watch(simulatorAudioPath, () => {
-  if (simulatorAudioUrl.value) {
-    URL.revokeObjectURL(simulatorAudioUrl.value)
-  }
-})
-
 const onAudioChange = (files: File | File[] | null) => {
   if (!files) {
-    simulatorAudioUrl.value = null
     return
   }
   const selectedFile = Array.isArray(files) ? files[0] : files
@@ -196,8 +183,6 @@ const onAudioChange = (files: File | File[] | null) => {
       URL.revokeObjectURL(simulatorAudioUrl.value)
     }
     simulatorAudioUrl.value = URL.createObjectURL(selectedFile)
-  } else {
-    simulatorAudioUrl.value = null
   }
 }
 
@@ -271,14 +256,15 @@ const onCreateSimulatorClick = async () => {
   simulator.Simulator.createSimulator({
     username: username.value,
     avatar: avatar.value,
-    audio_b64: simulatorAudioB64,
+    audio_b64: simulatorAudioB64.split(',')[1],
     simulator: simulatorId.value,
-    simulator_avatar: simulatorAvatarB64,
+    simulator_avatar: simulatorAvatarB64.split(',')[1],
     personality: simulatorPersonality.value,
     simulator_archetype: simulatorArchetype.value,
     simulator_title: simulatorTitle.value
   }, () => {
     creating.value = false
+    setting.Setting.setCurrentSettingMenu('mySimulators')
   })
 }
 

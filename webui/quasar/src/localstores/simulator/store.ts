@@ -37,7 +37,7 @@ export const useSimulatorStore = defineStore('simulator', {
       mine?: boolean
     ) {
       const token = mine ? Cookies.get('X-Token') : undefined
-      const url = `${constants.GET_USER}${code?.length || token?.length ? '?' : ''}${code?.length ? 'code=' + code : ''}${code?.length && token?.length ? '&' : ''}${token?.length ? 'token=' + token : ''}`
+      const url = `${constants.GET_SIMULATORS_API}${code?.length || token?.length ? '?' : ''}${code?.length ? 'code=' + code : ''}${code?.length && token?.length ? '&' : ''}${token?.length ? 'token=' + token : ''}`
       axios
         .get(url)
         .then(async (resp: AxiosResponse<_Simulator[]>) => {

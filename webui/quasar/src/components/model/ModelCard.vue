@@ -1,5 +1,5 @@
 <template>
-  <div class='row'>
+  <div class='row q-mb-md'>
     <q-avatar size='56px'>
       <q-img :src='_model.model_logo_url' />
     </q-avatar>

@@ -120,8 +120,8 @@
 </template>
 
 <script setup lang='ts'>
-import { computed, defineModel } from 'vue'
-import { setting } from 'src/localstores'
+import { computed, defineModel, onMounted } from 'vue'
+import { setting, user } from 'src/localstores'
 import { useRouter } from 'vue-router'
 
 import Setting from '../setting/Setting.vue'
@@ -156,6 +156,10 @@ const showSetting = computed({
   set: (v: boolean) => {
     setting.Setting.setShowSetting(v)
   }
+})
+
+onMounted(() => {
+  user.User.getUser()
 })
 
 </script>
