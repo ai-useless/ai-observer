@@ -200,10 +200,13 @@ async def chat_non_stream(
     logger.info(f'{BOLD}{model} - {chat_uid}{RESET} {BOLD}Requesting{RESET} ...')
 
     timeout = aiohttp.ClientTimeout(connect=10, total=59)
-    async with aiohttp.ClientSession(timeout=timeout, raise_for_status=True) as session:
-        async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
-            chat_response = ModelChatResponse(await response.json())
-            choice = chat_response.choices[0]
-            if choice.message is None or choice.message.content is None:
-                return ''
-            return chat_response.choices[0].message.content
+    try:
+        async with aiohttp.ClientSession(timeout=timeout, raise_for_status=True) as session:
+            async with session.post(url, json=payload, timeout=timeout, headers=headers) as response:
+                chat_response = ModelChatResponse(await response.json())
+                choice = chat_response.choices[0]
+                if choice.message is None or choice.message.content is None:
+                    return ''
+                return chat_response.choices[0].message.content
+    except:
+        logger.info(f'{BOLD}Payload: {payload}')
