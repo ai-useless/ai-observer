@@ -44,6 +44,10 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/nianjing',
         component: () => import('pages/nianjing/NianjingPage.vue')
+      },
+      {
+        path: '/search',
+        component: () => import('pages/search/SearchPage.vue')
       }
     ]
   },

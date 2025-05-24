@@ -1,0 +1,112 @@
+<template>
+  <q-page>
+    <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
+      <div style='height: 100vh; width: min(100%, 960px);' class='bg-grey-2'>
+        <q-scroll-area
+          :style='{ height: `calc(100% - 84px)`, width: "100%", padding: "8px 16px;" }'
+          ref='chatBox'
+          :bar-style='{ width: "2px" }'
+          :thumb-style='{ width: "2px" }'
+          class='cursor-pointer'
+        >
+          <div v-for='(result, index) in searchResults' :key='index' :style='{borderBottom : index < searchResults.length - 1 ? "1px solid gray" : "", padding: "16px 0"}'>
+            <div style='display: flex;'>
+              <Image :src='modelLogo(result.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
+              <div style='font-weight: 600;'>
+                {{ modelName(result.modelId) }}
+              </div>
+            </div>
+            <div user-select :nodes='result.message' style='margin-left: 8px; font-size: 12px;' />
+          </div>
+        </q-scroll-area>
+        <div class='flex justify-center items-center'>
+          <BottomFixInput
+            v-model='prompt'
+            placeholder='随便问点儿啥~'
+            @enter='onPromptEnter'
+            :disabled='searching'
+            :loading='searching'
+            :max-width='720'
+          />
+        </div>
+      </div>
+    </div>
+  </q-page>
+</template>
+
+<script setup lang='ts'>
+import { dbBridge, entityBridge } from 'src/bridge'
+import { model, search, simulator } from 'src/localstores'
+import { purify } from 'src/utils'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
+
+import BottomFixInput from '../input/BottomFixInput.vue'
+
+const models = computed(() => model.Model.models())
+const searchResults = ref([] as search.SearchResult[])
+const searchResultCount = computed(() => searchResults.value.length)
+const searchResultAudios = ref([] as string[])
+const topic = computed(() => search.Search.topic())
+const prompt = ref(topic.value)
+
+const scrollTop = ref(999999)
+const searching = ref(false)
+
+const audioInput = ref(false)
+
+watch(searchResultCount, async () => {
+  await nextTick()
+  scrollTop.value += 1
+})
+
+const modelLogo = (modelId: number) => {
+  const model = models.value.find((el) => el.id === modelId)
+  return model ? model.model_logo_url : ''
+}
+
+const modelName = (modelId: number) => {
+  const model = models.value.find((el) => el.id === modelId)
+  return model ? model.name : ''
+}
+
+const searchDo = async (_prompt: string) => {
+  searching.value = true
+
+  for (let i = 0; i < models.value.length; i++) {
+    const simulator = await dbBridge._Simulator.randomPeek()
+    const _model = models.value[i]
+
+    entityBridge.Search.search(_prompt, searchResults.value.map((el) => el.message), _model.id, simulator.id, prompt.value, false).then((payload) => {
+      searchResults.value.push({
+        topic: payload.topic,
+        prompt: payload.prompt,
+        modelId: payload.modelId,
+        message: purify.purifyThink(payload.text)
+      })
+      searchResultAudios.value.push(payload.audio)
+      searching.value = false
+    }).catch((e) => {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      console.log(`Failed search: ${e}`)
+    })
+  }
+}
+
+watch(prompt, async () => {
+  if (!audioInput.value || !prompt.value || !prompt.value.length) return
+
+  await searchDo(prompt.value)
+})
+
+const onPromptEnter = async (_prompt: string) => {
+  await searchDo(_prompt)
+}
+
+onMounted(() => {
+  model.Model.getModels(() => {
+    simulator.Simulator.getSimulators(undefined, () => {
+      if (prompt.value?.length) void searchDo(prompt.value)
+    })
+  })
+})
+</script>

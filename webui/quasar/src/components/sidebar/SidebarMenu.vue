@@ -37,6 +37,12 @@
         </q-item-section>
         <q-item-section>看世界</q-item-section>
       </q-item>
+      <q-item clickable v-ripple @click='onMenuClick("search")' :class='[ menu === "search" ? "selected" : "" ]'>
+        <q-item-section avatar>
+          <q-icon name='search' />
+        </q-item-section>
+        <q-item-section>问一问</q-item-section>
+      </q-item>
       <q-separator />
       <q-item clickable v-ripple @click='onMenuClick("xiangsheng")' :class='[ menu === "xiangsheng" ? "selected" : "" ]'>
         <q-item-section avatar>
@@ -137,6 +143,7 @@ const onMenuClick = (_menu: string) => {
     case 'chat': void router.push({ path: '/chat' }); break
     case 'english': void router.push({ path: '/english' }); break
     case 'nianjing': void router.push({ path: '/nianjing' }); break
+    case 'search': void router.push({ path: '/search' }); break
     case 'settings': setting.Setting.setShowSetting(true); break
   }
 }

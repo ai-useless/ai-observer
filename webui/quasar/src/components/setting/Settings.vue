@@ -2,7 +2,7 @@
   <div>
     <q-item dense clickable class='row cursor-pointer flex items-center' @click='onAudioClick'>
       <div class='text-grey-8'>
-        启用音频
+        生成音频
       </div>
       <q-space />
       <div style='border: 1px solid grey; width: 18px; height: 18px; border-radius: 4px;'>
