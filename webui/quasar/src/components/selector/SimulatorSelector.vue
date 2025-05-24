@@ -1,6 +1,6 @@
 <template>
   <div class='full-width'>
-    <q-card class='q-pb-sm border-radius-16px' :style='{ maxWidth: "90%", width: `${width}px` }'>
+    <q-card class='q-pb-sm border-radius-16px' :style='{ width: `${width}px` }'>
       <q-card-section class='text-grey-9'>
         <div class='text-center' :style='{height: `${titleHeight}px`, fontSize: `${titleFontSize}px`}'>
           {{ title }}

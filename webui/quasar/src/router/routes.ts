@@ -48,6 +48,10 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/search',
         component: () => import('pages/search/SearchPage.vue')
+      },
+      {
+        path: '/post',
+        component: () => import('pages/post/PostPage.vue')
       }
     ]
   },

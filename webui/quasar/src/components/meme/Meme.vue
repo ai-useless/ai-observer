@@ -44,7 +44,7 @@
 <script setup lang='ts'>
 import { onMounted, ref, watch } from 'vue'
 import { entityBridge } from 'src/bridge'
-import { model } from 'src/localstores'
+import { model, setting } from 'src/localstores'
 import { QScrollArea } from 'quasar'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
@@ -102,6 +102,8 @@ const onPromptEnter = (_topic: string) => {
 }
 
 onMounted(() => {
+  setting.Setting.setCurrentMenu('meme')
+
   model.Model.getModels(() => {
     generate(prompt.value)
   })

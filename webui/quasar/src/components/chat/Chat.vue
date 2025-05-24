@@ -82,7 +82,7 @@
 
 <script setup lang='ts'>
 import { computed, onMounted, ref, toRef, watch, defineProps } from 'vue'
-import { model, simulator, user } from 'src/localstores'
+import { model, setting, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { AudioPlayer } from 'src/player'
 
@@ -239,6 +239,8 @@ const initializeChat = async () => {
 }
 
 onMounted(() => {
+  setting.Setting.setCurrentMenu(language.value === '中文' ? 'chat' : 'english')
+
   if (!userAvatar.value || !userAvatar.value.length || !username.value || !username.value.length) {
     // logining.value = true
   }

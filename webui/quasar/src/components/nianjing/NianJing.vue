@@ -58,15 +58,13 @@
           />
         </div>
       </div>
-      <div class='q-ml-lg full-height q-py-lg'>
-        <SimulatorSelector
-          v-model:selected='speaker'
-          @selected='onSimulatorSelected'
-          :width='320'
-          :list-height='600'
-          :simple='true'
-          :can-set-language='true'
-        />
+      <div class='q-ml-lg full-height q-pt-lg'>
+        <RightFixArea :max-width='300'>
+          <SimulatorList
+            v-model:selected='speaker'
+            @selected='onSimulatorSelected'
+          />
+        </RightFixArea>
       </div>
     </div>
   </q-page>
@@ -75,13 +73,14 @@
 <script setup lang='ts'>
 import { onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
-import { model, simulator } from 'src/localstores'
+import { model, setting, simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
 import { QScrollArea } from 'quasar'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
-import SimulatorSelector from '../selector/SimulatorSelector.vue'
+import SimulatorList from '../list/SimulatorList.vue'
+import RightFixArea from '../fixed/RightFixArea.vue'
 
 const prompt = ref('般若波罗密心经')
 const inputPrompt = ref(prompt.value)
@@ -160,6 +159,8 @@ const initializeNianjing = async () => {
 }
 
 onMounted(async () => {
+  setting.Setting.setCurrentMenu('nianjing')
+
   model.Model.getModels(() => {
     simulator.Simulator.getSimulators(undefined, () => {
       void initializeNianjing()
