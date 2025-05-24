@@ -56,7 +56,7 @@
               {{ _prompt }}
             </div>
             <div style='display: flex; flex-direction: row-reverse; align-items: center;' class='q-px-md q-pb-md'>
-              <div>
+              <div v-if='false'>
                 <q-btn
                   flat
                   dense
@@ -274,16 +274,21 @@
     </q-card>
   </q-dialog>
   <q-dialog v-model='previewingImage' maximized>
-    <q-card style='width: min(100%, 1280px); max-height: min(calc(100% - 64px), 1280px);'>
+    <q-card
+      tabindex='0'
+      style='width: min(100%, 1280px); max-height: min(calc(100% - 64px), 1280px); outline:none;'
+      ref='previewPanel'
+      @keydown.left='onPrevPreviewImage'
+      @keydown.right='onNextPreviewImage'
+    >
       <q-carousel
         v-model='previewImageIndex'
         animated
         swipeable
         control-color='white'
-        navigation
-        navigation-position='bottom'
-        class='full-height'
-        handle-arrow-keys
+        class='full-height cursor-pointer'
+        thumbnails
+        transition-duration='500'
       >
         <q-carousel-slide
           v-for='(_image, index) in previewImages'
@@ -371,6 +376,7 @@ const chatBox = ref<QScrollArea>()
 const canvas1x1 = ref<HTMLCanvasElement>()
 const canvas4x3 = ref<HTMLCanvasElement>()
 const canvas16x9 = ref<HTMLCanvasElement>()
+const previewPanel = ref<QCard>()
 
 const imageWidth = (count: number) => {
   if (count === 1) return '100%'
@@ -454,6 +460,7 @@ const generate = (_prompt: string, style: string) => {
     _images.successes += 1
     cacheImageUrl(_prompt, _image)
   }, () => {
+    imageGenerating.value = false
     _images.responds += 1
     _images.errors += 1
     images.value.set(_prompt, _images)
@@ -542,6 +549,15 @@ watch(configuring, async () => {
   await nextTick()
 
   const el = menuPanel.value?.$el as HTMLElement
+  el?.focus()
+})
+
+watch(previewingImage, async () => {
+  if (!previewingImage.value) return
+
+  await nextTick()
+
+  const el = previewPanel.value?.$el as HTMLElement
   el?.focus()
 })
 
@@ -636,13 +652,16 @@ const sharePoster = async (title: string): Promise<string | undefined> => {
 
   const canvas = _images.ratio === '1:1' ? canvas1x1.value : _images.ratio === '4:3' ? canvas4x3.value : canvas16x9.value
   const canvasCtx = canvas?.getContext('2d')
-  if (!canvasCtx) return Promise.reject('Invalid context')
+  if (!canvasCtx || !canvas) return Promise.reject('Invalid context')
 
   if (_images.total === 1) return Promise.resolve(_images.images[0].imageUrl)
 
   const _imagesPerRow = imagesPerRow(_images.total)
   const _imageWidth = posterImageWidth(_images.total)
   const _imageHeight = posterImageHeight(_images.total, _images.ratio)
+
+  canvas.width = _imagesPerRow * _imageWidth
+  canvas.height = Math.ceil(_images.images.length / _imagesPerRow) * _imageHeight
 
   for (let i = 0; i < _images.images.length; i++) {
     const img = await loadImage(_images.images[i].imageUrl)
@@ -658,12 +677,22 @@ const onPreviewImageClick = (image: string, _images: string[]) => {
   previewImages.value = _images
 }
 
+const onPrevPreviewImage = () => {
+  previewImageIndex.value -= 1
+  if (previewImageIndex.value < 0) previewImageIndex.value = 0
+}
+
+const onNextPreviewImage = () => {
+  previewImageIndex.value += 1
+  if (previewImageIndex.value >= previewImages.value.length) previewImageIndex.value = previewImages.value.length - 1
+}
+
 const onContentBoxResize = (size: { width: number }) => {
   contentWidth.value = size.width
 }
 
 const onChatBoxResize = (size: { height: number }) => {
-  chatBox.value?.setScrollPosition('vertical', size.height, 300)
+  chatBox.value?.setScrollPosition('vertical', size.height, 3000)
 }
 
 </script>
