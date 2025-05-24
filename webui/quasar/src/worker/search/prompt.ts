@@ -29,7 +29,7 @@ const Requirements = new Map<PromptType, RequirementFunc>([
   [
     PromptType.HTML_STYLE,
     (() =>
-      ') 一级标题字体14px加粗，二级标题12px加粗，正文12px常规字体，行高1.5em；') as RequirementFunc
+      ') 一级标题字体18px加粗，二级标题16px加粗，正文16px常规字体，行高1.5em；') as RequirementFunc
   ],
   [PromptType.SEGMENT, (() => ') 根据语义合理分段；') as RequirementFunc],
   [

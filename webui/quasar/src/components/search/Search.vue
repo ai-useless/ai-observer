@@ -3,20 +3,22 @@
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
       <div style='height: 100vh; width: min(100%, 960px);' class='bg-grey-2'>
         <q-scroll-area
-          :style='{ height: `calc(100% - 84px)`, width: "100%", padding: "8px 16px;" }'
+          style='height: calc(100% - 80px); width: 100%; padding: 0 24px;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
           class='cursor-pointer'
         >
-          <div v-for='(result, index) in searchResults' :key='index' :style='{borderBottom : index < searchResults.length - 1 ? "1px solid gray" : "", padding: "16px 0"}'>
-            <div style='display: flex;'>
-              <Image :src='modelLogo(result.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
-              <div style='font-weight: 600;'>
+          <div v-for='(result, index) in searchResults' :key='index' :style='{padding: "16px 0"}'>
+            <div style='display: flex; line-height: 36px;' class='q-py-md'>
+              <q-avatar size='36px'>
+                <q-img :src='modelLogo(result.modelId)' style='height: 36px; width: 36px; border-radius: 50%;' />
+              </q-avatar>
+              <div style='font-weight: 600; font-size: 18px;' class='text-grey-6 q-ml-sm'>
                 {{ modelName(result.modelId) }}
               </div>
             </div>
-            <div user-select :nodes='result.message' style='margin-left: 8px; font-size: 12px;' />
+            <div v-html='result.message' />
           </div>
         </q-scroll-area>
         <div class='flex justify-center items-center'>
@@ -81,7 +83,7 @@ const searchDo = async (_prompt: string) => {
         topic: payload.topic,
         prompt: payload.prompt,
         modelId: payload.modelId,
-        message: purify.purifyThink(payload.text)
+        message: purify.purifyHtmlThink(payload.text)
       })
       searchResultAudios.value.push(payload.audio)
       searching.value = false

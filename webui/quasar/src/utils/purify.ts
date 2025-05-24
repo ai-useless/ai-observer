@@ -59,6 +59,24 @@ export const purifyThink = (html: string): string => {
     .trim()
 }
 
+export const purifyHtmlThink = (html: string): string => {
+  html = html.slice(
+    html.indexOf('</think>') < 0 ? 0 : html.indexOf('</think>') + 8
+  )
+  const $ = cheerio.load(html)
+  $('think').remove()
+  return $.html()
+    .replace('txt', '')
+    .replace('text', '')
+    .replace('markdown', '')
+    .replace('plaintext', '')
+    .replace('plain', '')
+    .replace(/`/g, '')
+    .replace(/#/g, '')
+    .replace(/\*/g, '')
+    .trim()
+}
+
 export const purifyBracket = (html: string): string => {
   return html.replace(/[(（].*?[)）]/g, '')
 }
