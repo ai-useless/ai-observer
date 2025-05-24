@@ -294,8 +294,11 @@
           v-for='(_image, index) in previewImages'
           :key='index'
           :name='index'
+          class='q-pa-none'
           :img-src='_image'
-        />
+        >
+          <q-img :src='_image' class='full-width full-height' />
+        </q-carousel-slide>
       </q-carousel>
     </q-card>
   </q-dialog>
