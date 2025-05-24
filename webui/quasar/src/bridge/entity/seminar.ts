@@ -63,8 +63,15 @@ export class ESeminar {
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.#seminar.id) return
 
-    const { intent, subTopic, participatorId, payload, round, subRound, index } =
-      message
+    const {
+      intent,
+      subTopic,
+      participatorId,
+      payload,
+      round,
+      subRound,
+      index
+    } = message
 
     // Outline round
     if (intent === seminarWorker.Intent.OUTLINE) {

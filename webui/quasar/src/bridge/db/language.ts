@@ -18,6 +18,8 @@ export class _Language {
   }
 
   static randomPick = () => {
-    return _Language.#languages[Math.floor(Math.random() * _Language.#languages.length)]
+    return _Language.#languages[
+      Math.floor(Math.random() * _Language.#languages.length)
+    ]
   }
 }

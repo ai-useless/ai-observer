@@ -273,9 +273,12 @@ export class XiangshengRunner {
   }
 
   static requestSpeak = async (participatorId: number, text: string) => {
-    const participator = await dbBridge._Participator.participator(participatorId)
+    const participator =
+      await dbBridge._Participator.participator(participatorId)
     if (!participator) return
-    const simulator = await dbBridge._Simulator.simulator(participator.simulatorId)
+    const simulator = await dbBridge._Simulator.simulator(
+      participator.simulatorId
+    )
     if (!simulator) return
 
     const speechContent = purify.purifyBracket(purify.purifyText(text))

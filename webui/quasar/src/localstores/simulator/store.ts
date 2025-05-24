@@ -80,10 +80,14 @@ export class Simulator {
   static setAvatar = (v: number) => (simulator.mySimulatorsCount = v)
 
   static countSimulators = (code?: string) => simulator.countSimulators(code)
-  static getSimulators = (code?: string, done?: (error: boolean, rows?: _Simulator[]) => void) => simulator.getSimulators(code, done)
+  static getSimulators = (
+    code?: string,
+    done?: (error: boolean, rows?: _Simulator[]) => void
+  ) => simulator.getSimulators(code, done)
 
   static mySimulators = () => simulator.simulators.filter((el) => el.mine)
   static allSimulators = () => simulator.simulators
 
-  static simulator = (id: number) => simulator.simulators.find((el) => el.id === id)
+  static simulator = (id: number) =>
+    simulator.simulators.find((el) => el.id === id)
 }

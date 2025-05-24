@@ -1,15 +1,16 @@
 <template>
   <q-page>
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
-      <div style='height: 100vh; width: min(100%, 600px);' class='bg-grey-2'>
+      <div style='height: 100vh; width: min(100%, 960px);' class='bg-grey-2'>
+        <q-resize-observer @resize='onContentBoxResize' />
         <q-scroll-area
-          style='height: calc(100% - 56px - 32px - 16px - 16px); width: 100%; padding: 8px 16px;'
+          style='height: calc(100% - 64px); width: 100%;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
           class='cursor-pointer'
         >
-          <div v-for='([_prompt, _images], index) in images' :key='index' :style='{borderBottom: "1px solid lightgray", padding: "8px 0", width: "100%"}'>
+          <div v-for='([_prompt, _images], index) in images' :key='index' style='width: 100%;'>
             <div :style='{width: "100%", height: containerHeight(_images.total, _images.ratio)}'>
               <div v-if='_images.images.length' style='width: 100%; display: flex;'>
                 <div
@@ -20,76 +21,82 @@
                 >
                   <q-img
                     :src='image.imageUrl'
-                    mode='widthFix'
                     :style='{width: "100%", height: imageHeight(_images.total, _images.ratio)}'
                   />
                 </div>
               </div>
               <div v-if='_images.images.length > imagesPerRow(_images.total)' style='width: 100%; display: flex;'>
                 <div
-                  v-for='(image, index) in _images.images.slice(imagesPerRow(_images.total), imagesPerRow(_images.total) * 2)'
-                  :key='index'
+                  v-for='(image, _index) in _images.images.slice(imagesPerRow(_images.total), imagesPerRow(_images.total) * 2)'
+                  :key='_index'
                   @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
                   :style='{width: imageWidth(_images.total), height: imageHeight(_images.total, _images.ratio)}'
                 >
                   <q-img
                     :src='image.imageUrl'
-                    mode='widthFix'
                     :style='{width: "100%", height: imageHeight(_images.total, _images.ratio)}'
                   />
                 </div>
               </div>
               <div v-if='_images.images.length > imagesPerRow(_images.total) * 2' style='width: 100%; display: flex;'>
                 <div
-                  v-for='(image, index) in _images.images.slice(imagesPerRow(_images.total) * 2)'
-                  :key='index'
+                  v-for='(image, _index) in _images.images.slice(imagesPerRow(_images.total) * 2)'
+                  :key='_index'
                   @click='onPreviewImageClick(image.imageUrl, [..._images.images.map((el) => el.imageUrl), ...(_images.posterPath ? [_images.posterPath] : [])])'
                   :style='{width: imageWidth(_images.total), height: imageHeight(_images.total, _images.ratio)}'
                 >
                   <q-img
                     :src='image.imageUrl'
-                    mode='widthFix'
                     :style='{width: "100%", height: imageHeight(_images.total, _images.ratio)}'
                   />
                 </div>
               </div>
             </div>
-            <div style='margin-top: 8px; font-size: 12px; color: gray;'>
+            <div style='font-size: 16px;' class='text-black q-px-md q-py-lg'>
               {{ _prompt }}
             </div>
-            <div style='display: flex; margin-top: 4px; flex-direction: row-reverse;'>
+            <div style='display: flex; flex-direction: row-reverse; align-items: center;' class='q-px-md q-pb-md'>
               <div>
                 <q-btn
+                  flat
+                  dense
                   plain
-                  style='width: 24px; height: 24px;'
+                  rounded
                   :disabled='_images.successes < _images.total'
                 >
-                  <q-icon name='share' style='width: 16px; height: 16px;' />
+                  <q-icon color='grey-9' name='share' size='18px' />
                 </q-btn>
               </div>
-              <div>
+              <div v-if='_images.responds < _images.total' style='width: 128px'>
                 <q-btn
-                  v-if='_images.responds < _images.total'
-                  plain
-                  style='margin-left: 4px; font-size: 12px; color: gray; height: 24px; margin-right: 4px;'
+                  flat
+                  dense
                   :loading='true'
+                  color='grey-6'
+                  class='full-width q-ml-xs'
                 >
-                  {{ _images.total - _images.responds }}张美图生成中...
+                  <template #loading>
+                    <div class='row full-width flex justify-center items-center'>
+                      <q-spinner-ball size='20px' class='q-mr-xs' />
+                      {{ _images.total - _images.responds }}张美图生成中...
+                    </div>
+                  </template>
                 </q-btn>
               </div>
               <div v-if='_images.errors > 0' style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
-                <q-icon name='fail' style='width: 16px; height: 16px;' />
+                <q-icon name='fail' color='red' style='width: 16px; height: 16px;' />
                 <div style='font-size: 12px; color: gray; margin-left: 4px;'>
                   {{ _images.errors }}失败
                 </div>
               </div>
               <div v-if='_images.successes > 0' style='display: flex; margin-right: 4px; height: 26px; justify-content: center; align-items: center;'>
-                <q-icon name='check' style='width: 16px; height: 16px;' />
+                <q-icon name='check' color='green-6' size='18px' />
                 <div style='font-size: 12px; color: gray; margin-left: 4px;'>
                   {{ _images.successes }}成功
                 </div>
               </div>
             </div>
+            <q-resize-observer @resize='onChatBoxResize' />
           </div>
         </q-scroll-area>
         <div class='flex justify-center items-center'>
@@ -97,7 +104,7 @@
             v-model='inputPrompt'
             placeholder='随手写下你此刻的心情~'
             @enter='onPromptEnter'
-            :max-width='560'
+            :max-width='720'
           />
         </div>
         <Canvas canvasId='canvas-1-1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
@@ -107,103 +114,162 @@
     </div>
   </q-page>
   <q-dialog v-model='configuring' @close='onConfigureClose'>
-    <AtModalHeader>创作设置</AtModalHeader>
-    <AtModalContent>
-      <div>
-        <div style='display: flex; line-height: 18px;'>
-          <div style='width: 60%; display: flex;'>
-            <div style='font-size: 14px; color: gray;'>图片数</div>
-            <div style='font-size: 12px; color: gray;'>(最多9张)</div>
-          </div>
-          <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
-            <Input :value='imageNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onImageNumberInput' />
-          </div>
-        </div>
-        <div style='display: flex; line-height: 18px; margin-top: 4px;'>
-          <div style='width: 60%; display: flex;'>
-            <div style='font-size: 14px; color: gray;'>宽高比</div>
-          </div>
-          <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
-            <div :style='{fontSize: "12px", backgroundColor: imageRatio === "1:1" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("1:1")'>1:1</div>
-            <div :style='{fontSize: "12px", backgroundColor: imageRatio === "4:3" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("4:3")'>4:3</div>
-            <div :style='{fontSize: "12px", backgroundColor: imageRatio === "16:9" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("16:9")'>16:9</div>
-          </div>
-        </div>
-        <div style='display: flex; line-height: 18px; margin-top: 4px;'>
-          <div style='width: 60%; display: flex;'>
-            <div style='font-size: 14px; color: gray;'>清晰度</div>
-          </div>
-          <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
-            <div :style='{fontSize: "12px", backgroundColor: imageResolution === "标清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("标清")'>标清</div>
-            <div :style='{fontSize: "12px", backgroundColor: imageResolution === "高清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("高清")'>高清</div>
-          </div>
-        </div>
-        <div style='display: flex; line-height: 18px; margin-top: 4px;'>
-          <div style='width: 30%; display: flex;'>
-            <div style='font-size: 14px; color: gray;'>图片风格</div>
-          </div>
-          <div style='width: 70%;'>
-            <div style='display: flex; flex-wrap: wrap;'>
-              <div v-for='(style, index) in styles' :key='index' @click='onStyleClick(style)'>
-                <div style='font-size: 12px; color: blue; margin-left: 4px;'>{{ style }}</div>
+    <q-card @keydown.enter='onMenuEnter' tabindex='0' ref='menuPanel' style='outline:none;'>
+      <q-card-section class='text-bold'>
+        创作设置
+      </q-card-section>
+      <q-separator />
+      <q-card-section>
+        <div>
+          <div style='display: flex; line-height: 18px;'>
+            <div style='width: 60%; display: flex;'>
+              <div style='font-size: 14px; color: gray;'>
+                图片数
+              </div>
+              <div style='font-size: 12px; color: gray;'>
+                (最多9张)
               </div>
             </div>
-            <div style='margin-top: 8px; display: flex; flex-direction: row;'>
-              <Input :value='imageStyle' placeholder='你喜欢的图片风格' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onImageStyleInput' />
-              <div style='font-size: 12px; color: blue; margin-left: 4px; width: 36px;' @click='onStyleClick(imageStyle)'>确定</div>
+            <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
+              <input v-model='imageNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;'>
             </div>
-            <div style='margin-top: 4px;' />
-            <div style='display: flex; flex-wrap: wrap;'>
-              <div v-for='(style, index) in imageStyles' :key='index' style='margin-left: 4px; border-radius: 4px; border: 1px solid lightblue; margin-top: 4px;' @click='onSelectedStyleClick(style)'>
-                <div style='font-size: 12px; color: gray; padding: 0 4px;'>{{ style }}</div>
-                <div style='font-size: 10px; color: gray; margin-right: 4px;'>| 删除</div>
+          </div>
+          <div style='display: flex; line-height: 18px; margin-top: 4px;'>
+            <div style='width: 60%; display: flex;'>
+              <div style='font-size: 14px; color: gray;'>
+                宽高比
+              </div>
+            </div>
+            <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
+              <div :style='{fontSize: "12px", backgroundColor: imageRatio === "1:1" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("1:1")'>1:1</div>
+              <div :style='{fontSize: "12px", backgroundColor: imageRatio === "4:3" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("4:3")'>4:3</div>
+              <div :style='{fontSize: "12px", backgroundColor: imageRatio === "16:9" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("16:9")'>16:9</div>
+            </div>
+          </div>
+          <div style='display: flex; line-height: 18px; margin-top: 4px;'>
+            <div style='width: 60%; display: flex;'>
+              <div style='font-size: 14px; color: gray;'>
+                清晰度
+              </div>
+            </div>
+            <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
+              <div :style='{fontSize: "12px", backgroundColor: imageResolution === "标清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("标清")'>标清</div>
+              <div :style='{fontSize: "12px", backgroundColor: imageResolution === "高清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("高清")'>高清</div>
+            </div>
+          </div>
+          <div style='display: flex; line-height: 18px; margin-top: 4px;'>
+            <div style='width: 30%; display: flex;'>
+              <div style='font-size: 14px; color: gray;'>
+                图片风格
+              </div>
+            </div>
+            <div style='width: 70%;'>
+              <div style='display: flex; flex-wrap: wrap;'>
+                <div v-for='(style, index) in styles' :key='index' @click='onStyleClick(style)'>
+                  <div style='font-size: 12px; color: blue; margin-right: 4px;'>
+                    {{ style }}
+                  </div>
+                </div>
+              </div>
+              <div style='margin-top: 8px; display: flex; flex-direction: row;' class='full-width'>
+                <input
+                  v-model='imageStyle'
+                  placeholder='你喜欢的图片风格'
+                  style='border: 1px solid lightgray; border-radius: 4px;'
+                  @keydown.enter='onStyleClick(imageStyle)'
+                  class='full-width'
+                >
+              </div>
+              <div style='margin-top: 4px;' />
+              <div style='display: flex; flex-wrap: wrap;'>
+                <div
+                  v-for='(style, index) in imageStyles'
+                  :key='index' style='margin-right: 4px; border-radius: 4px; border: 1px solid lightblue; margin-top: 4px;'
+                  @click='onSelectedStyleClick(style)'
+                  class='row'
+                >
+                  <div style='font-size: 12px; color: gray; padding: 0 4px;'>
+                    {{ style }}
+                  </div>
+                  <div style='font-size: 10px; color: gray; margin-right: 4px;'>
+                    | 删除
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div style='display: flex; line-height: 18px; margin-top: 4px;'>
-          <div style='width: 30%; display: flex;'>
-            <div style='font-size: 14px; color: gray;'>
-              文案要求
-            </div>
-          </div>
-          <div style='width: 70%;'>
-            <div>
-              <div v-for='(_prompt, index) in presetStyles' :key='index' @click='onPromptStyleClick(_prompt)'>
-                <div style='font-size: 12px; color: blue; margin-left: 4px;'>{{ _prompt }}</div>
+          <div style='display: flex; line-height: 18px; margin-top: 4px;'>
+            <div style='width: 30%; display: flex;'>
+              <div style='font-size: 14px; color: gray;'>
+                文案要求
               </div>
             </div>
-            <div style='margin-top: 8px; display: flex; flex-direction: row;'>
-              <Input :value='promptStyle' placeholder='你喜欢的文案要求' style='border: 1px solid lightgray; margin-left: 4px; border-radius: 4px; padding: 0 4px;' @input='onPromptStyleInput' />
+            <div style='width: 70%;'>
+              <div>
+                <div v-for='(_prompt, index) in presetStyles' :key='index' @click='onPromptStyleClick(_prompt)'>
+                  <div style='font-size: 12px; color: blue; margin-right: 4px;'>
+                    {{ _prompt }}
+                  </div>
+                </div>
+              </div>
+              <div style='margin-top: 8px; display: flex; flex-direction: row;'>
+                <input
+                  v-model='promptStyle'
+                  placeholder='你喜欢的文案要求'
+                  style='border: 1px solid lightgray; border-radius: 4px;'
+                  @keydown.enter='onPromptStyleClick(promptStyle)'
+                  class='full-width'
+                >
+              </div>
+            </div>
+          </div>
+          <div style='display: flex; line-height: 18px; margin-top: 8px;'>
+            <div style='width: 60%; display: flex;'>
+              <div style='font-size: 14px; color: gray;'>
+                文案字数
+              </div>
+              <div style='font-size: 12px; color: gray;'>
+                (20~200字)
+              </div>
+            </div>
+            <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
+              <input v-model='letterNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;'>
             </div>
           </div>
         </div>
-        <div style='display: flex; line-height: 18px; margin-top: 8px;'>
-          <div style='width: 60%; display: flex;'>
-            <div style='font-size: 14px; color: gray;'>文案字数</div>
-            <div style='font-size: 12px; color: gray;'>(20~200字)</div>
-          </div>
-          <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
-            <Input :value='letterNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;' @input='onLetterNumberInput' />
-          </div>
+      </q-card-section>
+      <q-card-actions class='q-pb-md'>
+        <div class='full-width'>
+          <q-btn
+            flat
+            rounded
+            @click='onConfirmConfigureClick'
+            style='width: 100%'
+            class='bg-gradient-blue text-white'
+            :tabindex='0'
+          >
+            确定
+          </q-btn>
+          <q-btn
+            flat
+            rounded
+            @click='onCancelConfigureClick'
+            style='width: 100%'
+            class='border-gradient-bg-white q-mt-sm'
+          >
+            取消
+          </q-btn>
         </div>
-      </div>
-    </AtModalContent>
-    <AtModalAction>
-      <q-btn @click='onConfirmConfigureClick'>
-        确定
-      </q-btn>
-      <q-btn @click='onCancelConfigureClick'>
-        取消
-      </q-btn>
-    </AtModalAction>
+      </q-card-actions>
+    </q-card>
   </q-dialog>
 </template>
 
 <script setup lang='ts'>
-import { onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { model, setting } from 'src/localstores'
+import { QCard, QScrollArea } from 'quasar'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
 
@@ -212,6 +278,7 @@ const audioError = ref('')
 
 const generating = ref(false)
 const imageGenerating = ref(false)
+const contentWidth = ref(0)
 
 const configuring = ref(false)
 const imageNumber = ref(1)
@@ -220,8 +287,6 @@ const letterNumber = ref(20)
 const letterNumberStr = ref(letterNumber.value.toString())
 const imageRatio = ref('4:3')
 const imageResolution = ref('高清')
-
-const cachePrompts = ref([] as string[])
 
 const styles = [
   '漫画',
@@ -255,7 +320,6 @@ const timelinePosterPath = ref(undefined as unknown as string)
 
 interface ImageData {
   imageUrl: string
-  imagePath: string
 }
 interface PromptImage {
   imagePrompt: string
@@ -269,6 +333,9 @@ interface PromptImage {
 }
 const images = ref(new Map<string, PromptImage>())
 
+const menuPanel = ref<QCard>()
+const chatBox = ref<QScrollArea>()
+
 const imageWidth = (count: number) => {
   if (count === 1) return '100%'
   else if (count === 2 || count === 4) return '50%'
@@ -276,7 +343,7 @@ const imageWidth = (count: number) => {
 }
 
 const imageHeightNumber = (count: number) => {
-  const baseHeight = 300
+  const baseHeight = contentWidth.value
 
   if (count === 1) return baseHeight
   else if (count === 2 || count === 4) return Math.floor(baseHeight / 2)
@@ -327,20 +394,20 @@ const prepareShareData = (_prompt: string) => {
 }
 
 const lruPromptCache = (_prompt: string) => {
-  cachePrompts.value.push(_prompt)
-
-  if (cachePrompts.value.length < 20) {
-    prepareShareData(_prompt)
-    return
-  }
-
-  cachePrompts.value = cachePrompts.value.slice(1)
   prepareShareData(_prompt)
 }
 
 const cacheImageUrl = (_prompt: string, _image: string) => {
-  console.log(_image)
-  lruPromptCache(_prompt)
+  const _images = images.value.get(_prompt) as PromptImage
+
+  _images.images.push({
+    imageUrl: _image
+  })
+  images.value.set(_prompt, _images)
+
+  if (_images.images.length >= imageNumber.value) {
+    lruPromptCache(_prompt)
+  }
 }
 
 const generate = (_prompt: string, style: string) => {
@@ -427,6 +494,15 @@ watch(audioError, () => {
   audioError.value = ''
 })
 
+watch(configuring, async () => {
+  if (!configuring.value) return
+
+  await nextTick()
+
+  const el = menuPanel.value?.$el as HTMLElement
+  el?.focus()
+})
+
 const onPromptEnter = (_prompt: string) => {
   prompt.value = _prompt
 
@@ -437,6 +513,11 @@ const onPromptEnter = (_prompt: string) => {
 const onConfirmConfigureClick = async () => {
   configuring.value = false
   await refineText(prompt.value)
+}
+
+const onMenuEnter = async () => {
+  console.log('Menu enter', prompt.value)
+  await onConfirmConfigureClick()
 }
 
 const onCancelConfigureClick = () => {
@@ -471,30 +552,8 @@ const onImageResolutionChange = (value: string) => {
   imageResolution.value = value
 }
 
-const onImageStyleInput = (e: { detail: { value: string } }) => {
-  imageStyle.value = e.detail.value
-}
-
-const onImageNumberInput = (e: { detail: { value: any } }) => {
-  const str = e.detail.value as string
-  imageNumberStr.value = str
-  imageNumber.value = Number(e.detail.value)
-  imageNumber.value = imageNumber.value > 9 || imageNumber.value <= 0 ? 9 : imageNumber.value
-}
-
-const onLetterNumberInput = (e: { detail: { value: any } }) => {
-  const str = e.detail.value as string
-  letterNumberStr.value = str
-  letterNumber.value = Number(e.detail.value)
-  letterNumber.value = letterNumber.value > 200 ? 200 : letterNumber.value < 20 ? 20 : letterNumber.value
-}
-
 const onPromptStyleClick = (_prompt: string) => {
   promptStyle.value = _prompt
-}
-
-const onPromptStyleInput = (e: { detail: { value: string } }) => {
-  promptStyle.value = e.detail.value
 }
 
 /*
@@ -529,6 +588,14 @@ const sharePoster = async (title: string) => {
 
 const onPreviewImageClick = (image: string, _images: string[]) => {
   console.log(image, _images)
+}
+
+const onContentBoxResize = (size: { width: number }) => {
+  contentWidth.value = size.width
+}
+
+const onChatBoxResize = (size: { height: number }) => {
+  chatBox.value?.setScrollPosition('vertical', size.height, 300)
 }
 
 </script>

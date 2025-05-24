@@ -144,6 +144,7 @@ const onMenuClick = (_menu: string) => {
     case 'english': void router.push({ path: '/english' }); break
     case 'nianjing': void router.push({ path: '/nianjing' }); break
     case 'search': void router.push({ path: '/search' }); break
+    case 'post': void router.push({ path: '/post' }); break
     case 'settings': setting.Setting.setShowSetting(true); break
   }
 }

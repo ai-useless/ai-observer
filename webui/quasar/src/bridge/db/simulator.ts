@@ -17,7 +17,7 @@ export class _Simulator {
   }
 
   static allSimulators = async () => {
-    return (await dbSeminar.simulators.toArray())
+    return await dbSeminar.simulators.toArray()
   }
 
   static randomPeek = async (host?: boolean) => {

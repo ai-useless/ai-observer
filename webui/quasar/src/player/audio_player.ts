@@ -9,7 +9,10 @@ export class AudioPlayer {
     this.context.src = url
   }
 
-  static play = (url: string, loop?: boolean): Promise<AudioPlayer | undefined> => {
+  static play = (
+    url: string,
+    loop?: boolean
+  ): Promise<AudioPlayer | undefined> => {
     const player = new AudioPlayer(url)
 
     player.context.src = url

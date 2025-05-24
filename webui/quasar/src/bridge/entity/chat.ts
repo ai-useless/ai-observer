@@ -31,17 +31,19 @@ export class EChat {
         speakWorker.SpeakRunner.handleSpeakRequest({
           simulatorId,
           text: payload.text
-        }).then((payload1) => {
-          if (!payload1 || !payload1.audio || !payload1.audio.length) {
-            onMessage(payload.text, undefined, undefined)
-            return
-          }
-          onMessage(payload.text, payload1.audio, undefined)
-        }).catch((e) => {
-          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-          console.log(`Failed speak: ${e}`)
-          onMessage(payload.text, undefined, undefined)
         })
+          .then((payload1) => {
+            if (!payload1 || !payload1.audio || !payload1.audio.length) {
+              onMessage(payload.text, undefined, undefined)
+              return
+            }
+            onMessage(payload.text, payload1.audio, undefined)
+          })
+          .catch((e) => {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            console.log(`Failed speak: ${e}`)
+            onMessage(payload.text, undefined, undefined)
+          })
       })
       .catch((e) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

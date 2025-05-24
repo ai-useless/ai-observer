@@ -28,7 +28,8 @@ export * from './types'
 const notify = useNotificationStore()
 
 export class Notify {
-  static pushNotification = (notification: Notification) => (notify.pushNotification(notification))
+  static pushNotification = (notification: Notification) =>
+    notify.pushNotification(notification)
 
   static popNotification = () => notify.popNotification()
 }

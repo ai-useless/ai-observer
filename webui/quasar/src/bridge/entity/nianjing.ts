@@ -21,9 +21,31 @@ export class ENianJing {
     speakWorker.SpeakRunner.handleSpeakRequest({
       simulatorId,
       text
-    }).then((payload1) => {
-      if (!payload1 || !payload1.audio || !payload1.audio.length) {
+    })
+      .then((payload1) => {
+        if (!payload1 || !payload1.audio || !payload1.audio.length) {
+          ENianJing.speak(simulatorId, texts, index + steps, steps, onMessage)
+          onMessage(
+            text,
+            index,
+            index === 0,
+            index === texts.length - 1,
+            undefined
+          )
+          return
+        }
         ENianJing.speak(simulatorId, texts, index + steps, steps, onMessage)
+        onMessage(
+          text,
+          index,
+          index === 0,
+          index === texts.length - 1,
+          payload1.audio
+        )
+      })
+      .catch((e) => {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        console.log(`Failed speak: ${e}`)
         onMessage(
           text,
           index,
@@ -31,27 +53,7 @@ export class ENianJing {
           index === texts.length - 1,
           undefined
         )
-        return
-      }
-      ENianJing.speak(simulatorId, texts, index + steps, steps, onMessage)
-      onMessage(
-        text,
-        index,
-        index === 0,
-        index === texts.length - 1,
-        payload1.audio
-      )
-    }).catch((e) => {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      console.log(`Failed speak: ${e}`)
-      onMessage(
-        text,
-        index,
-        index === 0,
-        index === texts.length - 1,
-        undefined
-      )
-    })
+      })
   }
 
   static request = (

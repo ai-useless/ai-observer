@@ -47,14 +47,10 @@ export class EXiangsheng {
 
     const text = texts[index].replace('#', '').replace('*', '').replace(' ', '')
 
-    const host = await dbBridge._Participator.host(
+    const host = (await dbBridge._Participator.host(
       this.xiangsheng.uid
-    ) as dbModel.Participator
-    const guest = (
-      await dbBridge._Participator.guests(
-        this.xiangsheng.uid
-      )
-    )[0]
+    )) as dbModel.Participator
+    const guest = (await dbBridge._Participator.guests(this.xiangsheng.uid))[0]
 
     const hostSimulator = await EParticipator.simulator(host)
     const guestSimulator = await EParticipator.simulator(guest)
@@ -81,7 +77,14 @@ export class EXiangsheng {
           index === 0,
           index === texts.length - 1
         )
-        void this.speak(topic, subTopic, subTopicIndex, texts, index + steps, steps)
+        void this.speak(
+          topic,
+          subTopic,
+          subTopicIndex,
+          texts,
+          index + steps,
+          steps
+        )
       })
       .catch((e) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -115,7 +118,7 @@ export class EXiangsheng {
     const topic = texts.find((el) =>
       el.replace(' ', '').replace('#', '').replace('*', '').startsWith('标题')
     )
-    const subTopic = topic ? (topic.replace(/标题[:：]*\s*/, '')) : ''
+    const subTopic = topic ? topic.replace(/标题[:：]*\s*/, '') : ''
 
     this.subTopics.push(subTopic)
     this.subTopicIndex += 1
@@ -126,9 +129,9 @@ export class EXiangsheng {
   }
 
   generateTopics = async () => {
-    const host = await dbBridge._Participator.host(
+    const host = (await dbBridge._Participator.host(
       this.xiangsheng.uid
-    ) as dbModel.Participator
+    )) as dbModel.Participator
 
     xiangshengWorker.XiangshengRunner.handleTopicsRequest({
       topic: this.xiangsheng.topic,
@@ -166,14 +169,10 @@ export class EXiangsheng {
   start = async () => {
     if (this.generating) return
 
-    const host = await dbBridge._Participator.host(
+    const host = (await dbBridge._Participator.host(
       this.xiangsheng.uid
-    ) as dbModel.Participator
-    const guest = (
-      await dbBridge._Participator.guests(
-        this.xiangsheng.uid
-      )
-    )[0]
+    )) as dbModel.Participator
+    const guest = (await dbBridge._Participator.guests(this.xiangsheng.uid))[0]
 
     if (this.subTopics.length - this.subTopicIndex <= 1) {
       await this.generateTopics()
