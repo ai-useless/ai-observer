@@ -77,8 +77,22 @@ async def get_authorization_code(code: str, app_id: str, secret: str):
 async def get_openid(code: str):
     return await jscode_2_session(code, config.weapp_mini_id, config.weapp_mini_secret)['openid']
 
-async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None, simulator_archetype: str | None = None, simulator_title: str | None = None):
-    openid = await get_openid(code)
+async def get_openid_with_code_or_token(code: str | None, jwt_token: str | None):
+    if code is None and jwt_token is None:
+        raise Exception('Invalid input')
+
+    if code is not None:
+        return await get_openid(code)
+    elif jwt_token is not None:
+        try:
+            payload = jwt.decode(jwt=jwt_token, key=config.jwt_secret, algorithms=['HS256'])
+            return payload['openid']
+            # TODO: validate expire time
+        except Exception as e:
+            raise Exception(repr(e))
+
+async def cook_simulator(code: str | None, jwt_token: str | None, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None, simulator_archetype: str | None = None, simulator_title: str | None = None):
+    openid = await get_openid_with_code_or_token(code, jwt_token)
 
     try:
         text = await audio_2_text(audio_b64)
@@ -96,8 +110,9 @@ async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, 
 
     audio_s3_url = uploader.upload('materials', audio_bytes, f'{file_name}')
 
+    # Convert simulator audio
     try:
-        await generator.audio_request_one(text, file_cid, audio_s3_url, simulator['text'])
+        await generator.audio_request_one(text, file_cid, audio_s3_url, text)
     except Exception as e:
         raise Exception(repr(e))
 
@@ -130,25 +145,20 @@ async def count_simulators(code: str | None):
     openid = (await get_openid(code)) if code is not None else None
     return db.count_simulators(openid)
 
-async def get_simulators(code: str | None, offset: int, limit: int):
-    openid = (await get_openid(code)) if code is not None else None
+async def get_simulators(code: str | None, jwt_token: str | None, offset: int, limit: int):
+    openid = await get_openid_with_code_or_token(code, jwt_token) if code is not None or jwt_token is not None else None
+
     limit = 100 if limit == 0 or limit > 100 else limit
     return db.get_simulators(openid, offset, limit)
 
 async def get_user(code: str | None, jwt_token: str | None):
-    if code is not None:
-        openid = await get_openid(code)
+    openid = await get_openid_with_code_or_token(code, jwt_token)
+
+    if jwt_token is None:
         payload = {
             'openid': openid,
         }
         jwt_token = jwt.encode(payload=payload, key=config.jwt_secret, algorithm='HS256')
-    elif jwt_token is not None:
-        try:
-            payload = jwt.decode(jwt=jwt_token, key=config.jwt_secret, algorithms=['HS256'])
-            openid = payload['openid']
-            # TODO: validate expire time
-        except Exception as e:
-            raise Exception(repr(e))
 
     userinfo = db.get_user(openid)
     return {

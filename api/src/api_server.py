@@ -83,7 +83,8 @@ async def get_user(code: str | None = None, token: str | None = None):
 
 @app.post('/api/v1/cook_simulator', response_model=CookSimulatorResponse)
 async def cook_simulator(
-    code: str = Body(...),
+    code: str | None = Body(default=None),
+    token: str | None = Body(default=None),
     username: str = Body(...),
     avatar: str = Body(...),
     audio_b64: str = Body(...),
@@ -94,7 +95,7 @@ async def cook_simulator(
     simulator_title: str = Body(...),
 ):
     try:
-        audio_name = await _cook_simulator(code, username, avatar, audio_b64, simulator, simulator_avatar, personality, simulator_archetype, simulator_title)
+        audio_name = await _cook_simulator(code, token, username, avatar, audio_b64, simulator, simulator_avatar, personality, simulator_archetype, simulator_title)
         return {'audio_url': f'{config.file_server}/materials/{audio_name}'}
     except Exception as e:
         raise e
@@ -104,8 +105,8 @@ async def count_simulators(code: Optional[str] = None):
     return await _count_simulators(code)
 
 @app.get('/api/v1/simulators')
-async def get_simulators(code: Optional[str] = None, offset: int = 0, limit: int = 100):
-    simulators = await _get_simulators(code, offset, limit)
+async def get_simulators(code: Optional[str] = None, token: Optional[str] = None, offset: int = 0, limit: int = 100):
+    simulators = await _get_simulators(code, token, offset, limit)
     return [{
         **simulator,
         'audio_url': f'{config.file_server}/materials/{simulator["audio_file_cid"]}.wav',
