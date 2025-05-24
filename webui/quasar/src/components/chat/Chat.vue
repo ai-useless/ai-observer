@@ -11,7 +11,7 @@
           </div>
           <q-separator />
           <q-scroll-area
-            style='height: calc(100% - 80px); width: 100%; padding: 8px 16px;'
+            style='height: calc(100% - 56px - 32px - 16px - 16px); width: 100%; padding: 8px 16px;'
             ref='chatBox'
             :bar-style='{ width: "2px" }'
             :thumb-style='{ width: "2px" }'
@@ -29,8 +29,27 @@
                   <div :style='{backgroundColor: _message.hint ? "rgba(160, 160, 160, 0.2)" : _message.send ? "#07c160" : "white", color: _message.hint ? "black" : _message.send ? "white" : "black", borderRadius: _message.send ? "16px 16px 0 16px" : "16px 16px 16px 0", padding: "8px", border: "1px solid rgba(200, 200, 200, 0.3)"}'>
                     <div>{{ _message.message }}</div>
                   </div>
-                  <div style='margin-top: 4px; font-size: 12px; color: gray;'>{{ _message.displayTime }}</div>
+                  <div style='margin-top: 4px; font-size: 12px; color: gray;'>
+                    {{ _message.displayTime }}
+                  </div>
                 </div>
+              </div>
+              <div class='full-width flex justify-center items-center'>
+                <q-btn
+                  flat
+                  dense
+                  v-if='friendThinking'
+                  :loading='true'
+                  color='grey-6'
+                  class='full-width'
+                >
+                  <template #loading>
+                    <div class='row full-width flex justify-center items-center'>
+                      <q-spinner-dots size='20px' class='q-mr-sm' />
+                      对方正在思考...
+                    </div>
+                  </template>
+                </q-btn>
               </div>
             </div>
           </q-scroll-area>
@@ -39,8 +58,6 @@
               v-model='message'
               placeholder='随便聊点儿啥~'
               @enter='onMessageEnter'
-              :disabled='sending'
-              :loading='sending'
               :max-width='560'
             />
           </div>
@@ -100,10 +117,9 @@ const userAvatar = computed(() => user.User.avatarUrl())
 const username = computed(() => user.User.username())
 
 const audioInput = ref(false)
-const friendThinking = ref(false)
 
+const friendThinking = ref(false)
 const logining = ref(false)
-const sending = ref(false)
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
