@@ -107,9 +107,9 @@
             :max-width='720'
           />
         </div>
-        <canvas ref='canvas-1-1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
-        <canvas ref='canvas-4-3' style='width: 900px; height: 675px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
-        <canvas ref='canvas-16-9' style='width: 900px; height: 507px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+        <canvas ref='canvas1x1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+        <canvas ref='canvas4x3' style='width: 900px; height: 675px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+        <canvas ref='canvas16x9' style='width: 900px; height: 507px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
       </div>
     </div>
   </q-page>
@@ -283,6 +283,7 @@
         navigation
         navigation-position='bottom'
         class='full-height'
+        handle-arrow-keys
       >
         <q-carousel-slide
           v-for='(_image, index) in previewImages'
@@ -417,14 +418,14 @@ const prepareShareData = (_prompt: string) => {
   const _images = images.value.get(_prompt) as PromptImage
 
   sharePoster(_prompt).then((posterPath) => {
-    _images.posterPath = posterPath as string
+    _images.posterPath = posterPath
     timelinePrompt.value = _prompt
     timelinePosterPath.value = posterPath as string
     imageGenerating.value = false
   }).catch((e) => {
     imageGenerating.value = false
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.log(`Failed generate poster: ${e}`)
+    console.log(`Failed generate poster: ${JSON.stringify(e)}`)
   })
 }
 
@@ -648,7 +649,7 @@ const sharePoster = async (title: string): Promise<string | undefined> => {
     canvasCtx.drawImage(img, _imageWidth * (i % _imagesPerRow), _imageHeight * Math.floor(i / _imagesPerRow), _imageWidth, _imageHeight)
   }
 
-  return canvas?.toDataURL('image/png')
+  return Promise.resolve(canvas?.toDataURL('image/png'))
 }
 
 const onPreviewImageClick = (image: string, _images: string[]) => {
