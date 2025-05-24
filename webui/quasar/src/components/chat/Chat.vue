@@ -63,18 +63,13 @@
           </div>
         </div>
       </div>
-      <div class='q-ml-lg full-height q-py-lg'>
-        <SimulatorSelector
-          v-model:selected='friend'
-          @selected='onSimulatorSelected'
-          title='模拟器列表'
-          :title-height='14'
-          :title-font-size='14'
-          :width='320'
-          :list-height='600'
-          :simple='true'
-          :can-set-language='true'
-        />
+      <div class='q-ml-lg full-height q-pt-lg'>
+        <RightFixArea :max-width='300'>
+          <SimulatorList
+            v-model:selected='friend'
+            @selected='onSimulatorSelected'
+          />
+        </RightFixArea>
       </div>
     </div>
   </q-page>
@@ -87,8 +82,9 @@ import { dbBridge, entityBridge } from 'src/bridge'
 import { AudioPlayer } from 'src/player'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
+import RightFixArea from '../fixed/RightFixArea.vue'
 import WechatLogin from '../login/WechatLogin.vue'
-import SimulatorSelector from '../selector/SimulatorSelector.vue'
+import SimulatorList from '../list/SimulatorList.vue'
 
 interface Props {
   language: string
