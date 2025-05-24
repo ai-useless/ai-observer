@@ -72,7 +72,7 @@ async def get_models(offset: int = 0, limit: int = 100):
     } for model in models]
 
 @app.post('/api/v1/cook_user')
-async def gook_user(code: str = Body(...), username: str | None = Body(...), avatar: str | None = Body(...)):
+async def cook_user(code: str = Body(...), username: str | None = Body(default=None), avatar: str | None = Body(default=None)):
     await _cook_user(code, username, avatar)
 
 @app.get('/api/v1/user')

@@ -2,6 +2,7 @@ import aiohttp
 import hashlib
 import base64
 import json
+import requests
 
 from audio import generator
 from config import config
@@ -40,8 +41,8 @@ async def get_user_info(access_token: str, openid: str):
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
                 raise Exception(repr(e))
 
-async def get_authorization_code(code: str):
-    url = f'https://api.weixin.qq.com/sns/jscode2session?appid={config.weapp_id}&secret={config.weapp_secret}&js_code={code}&grant_type=authorization_code'
+async def jscode_2_session(code: str, app_id: str, secret: str):
+    url = f'https://api.weixin.qq.com/sns/jscode2session?appid={app_id}&secret={secret}&js_code={code}&grant_type=authorization_code'
     timeout = aiohttp.ClientTimeout(connect=10, total=30)
     async with aiohttp.ClientSession(timeout=timeout) as session:
         async with session.get(url) as response:
@@ -49,13 +50,31 @@ async def get_authorization_code(code: str):
 
             try:
                 _response = json.loads(await response.text())
+                if 'errcode' in _response:
+                    raise Exception(_response['errmsg'])
+                return _response
+            except Exception as e:
+                logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
+                raise Exception(repr(e))
+
+async def get_authorization_code(code: str, app_id: str, secret: str):
+    url = f'https://api.weixin.qq.com/sns/oauth2/access_token?appid={app_id}&secret={secret}&code={code}&grant_type=authorization_code'
+    timeout = aiohttp.ClientTimeout(connect=10, total=30)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.get(url) as response:
+            response.raise_for_status()
+
+            try:
+                _response = json.loads(await response.text())
+                if 'errcode' in _response:
+                    raise Exception(_response['errmsg'])
                 return _response
             except Exception as e:
                 logger.error(f'{BOLD}WeChat request{RESET} {RED}{e}{RESET} ... {await response.read()}')
                 raise Exception(repr(e))
 
 async def get_openid(code: str):
-    return await get_authorization_code(code)['openid']
+    return await jscode_2_session(code, config.weapp_mini_id, config.weapp_mini_secret)['openid']
 
 async def cook_simulator(code: str, username: str, avatar: str, audio_b64: str, simulator: str, simulator_avatar: str, personality: str | None = None, simulator_archetype: str | None = None, simulator_title: str | None = None):
     openid = await get_openid(code)
@@ -120,15 +139,30 @@ async def get_user(code: str):
     return db.get_user(openid)
 
 async def cook_user(code: str, username: str | None, avatar: str | None):
-    authorization_code = await get_autiorization_code(code)
-    openid = authorization_code['openid']
+    app_id = config.weapp_mini_id if username is not None else config.weapp_web_id
+    secret = config.weapp_mini_secret if username is not None else config.weapp_web_secret
 
     if username is None or avatar is None:
+        # From website
+        authorization_code = await get_authorization_code(code, app_id, secret)
+        openid = authorization_code['openid']
+
+        # TODO: check user exists
+
         userinfo = await get_user_info(authorization_code['access_token'], openid)
         username = userinfo['nickname']
-        avatar = userinfo['headimgurl']
+        avatar_url = userinfo['headimgurl']
 
-    wechat_avatar_b64_bytes = avatar.encode("utf-8")
+        resp = requests.get(avatar_url)
+
+        # We're not b64 but we pretend to be
+        wechat_avatar_b64_bytes = resp.content
+    else:
+        # From mini program
+        authorization_code = await jscode_2_session(code, app_id, secret)
+        openid = authorization_code['openid']
+        wechat_avatar_b64_bytes = avatar.encode("utf-8")
+
     wechat_avatar_cid = hashlib.sha256(wechat_avatar_b64_bytes).hexdigest()
     wechat_avatar_bytes = base64.b64decode(wechat_avatar_b64_bytes)
     wechat_avatar_path = f'{config.data_dir}/avatars/wechat/{wechat_avatar_cid}'
