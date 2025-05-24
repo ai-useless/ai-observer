@@ -11,7 +11,8 @@ export class AudioPlayer {
 
   static play = (
     url: string,
-    loop?: boolean
+    loop?: boolean,
+    onEnded?: () => void
   ): Promise<AudioPlayer | undefined> => {
     const player = new AudioPlayer(url)
 
@@ -46,6 +47,7 @@ export class AudioPlayer {
         }, 100)
       }
       player.context.onended = () => {
+        onEnded?.()
         player.playing = false
         if (player.durationTicker >= 0) {
           window.clearInterval(player.durationTicker)
@@ -60,7 +62,7 @@ export class AudioPlayer {
   }
 
   stop = () => {
-    this.context.pause()
     this.context.currentTime = 0
+    this.context.pause()
   }
 }

@@ -21,11 +21,15 @@
       </div>
       <div style='margin-top: 16px; font-weight: 600; font-size: 14px;'>声音（可以用方言录制哦）</div>
       <div style='width: 100%; height: 80px; border-radius: 16px; border: 1px dashed gray; display: flex; justify-content: center; align-items: center; margin-top: 4px;' class='cursor-pointer'>
-        <div v-if='simulatorAudio.length' @click='onPlayAudioClick'>
+        <div v-if='simulatorAudioUrl?.length' @click='onPlayAudioClick'>
           <q-img :src='playing ? stopCircle : playCircle' style='width: 48px; height: 48px;' />
         </div>
-        <div v-else @click='onRecordAudioClick'>
+        <div v-else-if='!recording' @click='onRecordAudioClick'>
           <q-img :src='mic' style='width: 48px; height: 48px;' />
+        </div>
+        <div v-else @click='onStopRecordClick' class='row flex items-center'>
+          <div v-for='(wave, index) in waves' :key='index' :style='{ borderRight: "2px solid gray", height: `${wave}px`, marginRight: "1px" }' />
+          <q-img :src='stopCircle' style='width: 48px; height: 48px;' class='q-ml-sm' />
         </div>
         <div v-if='simulatorAudio.length' @click='onRecordAudioClick'>
           <q-img :src='mic' style='width: 16px; height: 16px; margin-top: 32px;' />
@@ -117,6 +121,7 @@
 import { computed, ref, watch } from 'vue'
 import { QFile } from 'quasar'
 import { simulator, user } from 'src/localstores'
+import { AudioPlayer } from 'src/player'
 
 import { addCircle, mic, folder, warnCircle, playCircle, stopCircle } from 'src/assets'
 
@@ -141,7 +146,8 @@ const recording = ref(false)
 const audioBlob = ref<Blob | null>(null)
 const mediaRecorder = ref<MediaRecorder | null>(null)
 const audioChunks = ref<BlobPart[]>([])
-const audioElement = ref<HTMLAudioElement | null>(null)
+const waves = ref(new Array(100))
+const waveTicker = ref(-1)
 
 const onChooseAvatar = () => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
@@ -196,6 +202,12 @@ const onAudioChange = (files: File | File[] | null) => {
   }
 }
 
+const updateWaves = () => {
+  for (let i = 0; i < waves.value.length; i++) {
+    waves.value[i] = Math.floor(Math.random() * 50)
+  }
+}
+
 const onRecordAudioClick = async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
@@ -210,20 +222,41 @@ const onRecordAudioClick = async () => {
     mediaRecorder.value.onstop = () => {
       audioBlob.value = new Blob(audioChunks.value, { type: 'audio/wav' })
       audioChunks.value = []
-      if (audioElement.value) {
-        audioElement.value.src = URL.createObjectURL(audioBlob.value)
+      if (simulatorAudioUrl.value) {
+        URL.revokeObjectURL(simulatorAudioUrl.value)
       }
+      simulatorAudioUrl.value = URL.createObjectURL(audioBlob.value)
     }
 
     mediaRecorder.value.start()
     recording.value = true
+    waveTicker.value = window.setInterval(updateWaves, 100)
   } catch (e) {
     console.log('Failed record: ', e)
   }
 }
 
-const onPlayAudioClick = () => {
+const onStopRecordClick = () => {
+  mediaRecorder.value?.stop()
+  recording.value = false
+  window.clearInterval(waveTicker.value)
+}
+
+const audioPlayer = ref<AudioPlayer | null>(null)
+
+const onPlayAudioClick = async () => {
   playing.value = !playing.value
+
+  if (!playing.value && audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = null
+  }
+
+  if (!playing.value || !simulatorAudioUrl.value) return
+
+  audioPlayer.value = await AudioPlayer.play(simulatorAudioUrl.value, false, () => {
+    playing.value = false
+  }) as AudioPlayer
 }
 
 const onCreateSimulatorClick = () => {
