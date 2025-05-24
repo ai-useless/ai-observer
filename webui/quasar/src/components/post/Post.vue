@@ -516,7 +516,6 @@ const onConfirmConfigureClick = async () => {
 }
 
 const onMenuEnter = async () => {
-  console.log('Menu enter', prompt.value)
   await onConfirmConfigureClick()
 }
 
