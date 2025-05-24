@@ -3,6 +3,7 @@ import { constants } from 'src/constant'
 import axios, { AxiosResponse } from 'axios'
 import { _Simulator } from './types'
 import { dbBridge } from 'src/bridge'
+import { Cookies } from 'quasar'
 
 export const useSimulatorStore = defineStore('simulator', {
   state: () => ({
@@ -13,9 +14,11 @@ export const useSimulatorStore = defineStore('simulator', {
   actions: {
     countSimulators(
       code?: string,
-      done?: (error: boolean, count?: number) => void
+      done?: (error: boolean, count?: number) => void,
+      mine?: boolean
     ) {
-      const url = `${constants.COUNT_SIMULATORS_API}${code ? '?code=' + code : ''}`
+      const token = mine ? Cookies.get('X-Token') : undefined
+      const url = `${constants.COUNT_SIMULATORS_API}${code?.length || token?.length ? '?' : ''}${code?.length ? 'code=' + code : ''}${code?.length && token?.length ? '&' : ''}${token?.length ? 'token=' + token : ''}`
       axios
         .get(url)
         .then((resp: AxiosResponse<number>) => {
@@ -30,14 +33,16 @@ export const useSimulatorStore = defineStore('simulator', {
     },
     getSimulators(
       code?: string,
-      done?: (error: boolean, rows?: _Simulator[]) => void
+      done?: (error: boolean, rows?: _Simulator[]) => void,
+      mine?: boolean
     ) {
-      const url = `${constants.GET_SIMULATORS_API}${code ? '?code=' + code : ''}`
+      const token = mine ? Cookies.get('X-Token') : undefined
+      const url = `${constants.GET_USER}${code?.length || token?.length ? '?' : ''}${code?.length ? 'code=' + code : ''}${code?.length && token?.length ? '&' : ''}${token?.length ? 'token=' + token : ''}`
       axios
         .get(url)
         .then(async (resp: AxiosResponse<_Simulator[]>) => {
           if (done) done(false, resp.data)
-          await this.appendSimulators(resp.data, code !== undefined)
+          await this.appendSimulators(resp.data, !!mine)
         })
         .catch((e) => {
           console.log(`Failed get simulators: ${JSON.stringify(e)}`)
@@ -64,6 +69,19 @@ export const useSimulatorStore = defineStore('simulator', {
           return { ...el }
         })
       )
+    },
+    createSimulator(simulator: Record<string, unknown>, done?: (error: boolean) => void) {
+      const token = Cookies.get('X-Token')
+
+      axios.post(constants.COOK_SIMULATOR_API, {
+        ...simulator,
+        token
+      }).then(() => {
+        this.getSimulators()
+        done?.(false)
+      }).catch(() => {
+        done?.(true)
+      })
     }
   },
   getters: {}
@@ -79,15 +97,18 @@ export class Simulator {
   static mySimulatorsCount = () => simulator.mySimulatorsCount
   static setAvatar = (v: number) => (simulator.mySimulatorsCount = v)
 
-  static countSimulators = (code?: string) => simulator.countSimulators(code)
+  static countSimulators = (code?: string, mine?: boolean) => simulator.countSimulators(code, undefined, mine)
   static getSimulators = (
     code?: string,
-    done?: (error: boolean, rows?: _Simulator[]) => void
-  ) => simulator.getSimulators(code, done)
+    done?: (error: boolean, rows?: _Simulator[]) => void,
+    mine?: boolean
+  ) => simulator.getSimulators(code, done, mine)
 
   static mySimulators = () => simulator.simulators.filter((el) => el.mine)
   static allSimulators = () => simulator.simulators
 
   static simulator = (id: number) =>
     simulator.simulators.find((el) => el.id === id)
+
+  static createSimulator = (_simulator: Record<string, unknown>, done?: (error: boolean) => void) => (simulator.createSimulator(_simulator, done))
 }
