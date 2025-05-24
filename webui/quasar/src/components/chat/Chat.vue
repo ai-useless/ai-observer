@@ -67,6 +67,9 @@
         <SimulatorSelector
           v-model:selected='friend'
           @selected='onSimulatorSelected'
+          title='模拟器列表'
+          :title-height='14'
+          :title-font-size='14'
           :width='320'
           :list-height='600'
           :simple='true'

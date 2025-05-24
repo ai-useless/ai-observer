@@ -2,7 +2,7 @@
   <div class='full-width'>
     <q-card class='q-pb-sm border-radius-16px' :style='{ maxWidth: "90%", width: `${width}px` }'>
       <q-card-section class='text-grey-9'>
-        <div class='text-h6 text-center'>
+        <div class='text-center' :style='{height: `${titleHeight}px`, fontSize: `${titleFontSize}px`}'>
           {{ title }}
         </div>
       </q-card-section>
@@ -73,6 +73,8 @@ import SimulatorCard from '../simulator/SimulatorCard.vue'
 
 interface Props {
   title?: string
+  titleHeight?: number
+  titleFontSize?: number
   hideIds?: number[]
   showActionBtn?: boolean
   width?: number
@@ -84,7 +86,9 @@ const props = withDefaults(defineProps<Props>(), {
   title: '选择模拟器',
   width: 400,
   hideIds: () => [] as number[],
-  listHeight: 500
+  listHeight: 500,
+  titleHeight: 24,
+  titleFontSize: 16
 })
 const title = toRef(props, 'title')
 const width = toRef(props, 'width')
@@ -92,6 +96,8 @@ const showActionBtn = toRef(props, 'showActionBtn')
 const hideIds = toRef(props, 'hideIds')
 const simple = toRef(props, 'simple')
 const canSetLanguage = toRef(props, 'canSetLanguage')
+const titleHeight = toRef(props, 'titleHeight')
+const titleFontSize = toRef(props, 'titleFontSize')
 
 const simulators = ref([] as simulator._Simulator[])
 const selectedSimulator = defineModel<simulator._Simulator>('selected')
