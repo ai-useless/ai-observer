@@ -695,7 +695,7 @@ const onContentBoxResize = (size: { width: number }) => {
 }
 
 const onChatBoxResize = (size: { height: number }) => {
-  chatBox.value?.setScrollPosition('vertical', size.height, 3000)
+  chatBox.value?.setScrollPosition('vertical', size.height + 9999999, 500)
 }
 
 </script>
