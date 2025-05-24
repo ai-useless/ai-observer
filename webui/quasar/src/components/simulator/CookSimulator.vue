@@ -31,7 +31,7 @@
           <div v-for='(wave, index) in waves' :key='index' :style='{ borderRight: "2px solid gray", height: `${wave}px`, marginRight: "1px" }' />
           <q-img :src='stopCircle' style='width: 48px; height: 48px;' class='q-ml-sm' />
         </div>
-        <div v-if='simulatorAudio.length' @click='onRecordAudioClick'>
+        <div v-if='simulatorAudioUrl?.length' @click='onRecordAudioClick'>
           <q-img :src='mic' style='width: 16px; height: 16px; margin-top: 32px;' />
         </div>
       </div>
@@ -132,7 +132,6 @@ const simulatorId = ref('')
 const avatarSelector = ref<QFile>()
 const simulatorAvatar = ref<File | null>(null)
 const simulatorAvatarUrl = ref<string | null>(null)
-const simulatorAudio = ref('')
 const audioSelector = ref<QFile>()
 const simulatorAudioPath = ref<File | null>(null)
 const simulatorAudioUrl = ref<string | null>(null)
@@ -259,20 +258,45 @@ const onPlayAudioClick = async () => {
   }) as AudioPlayer
 }
 
-const onCreateSimulatorClick = () => {
+const onCreateSimulatorClick = async () => {
   creating.value = true
+
+  if (!simulatorAudioUrl.value || !simulatorAvatarUrl.value) {
+    return
+  }
+
+  const simulatorAvatarB64 = await readAsBase64(simulatorAvatarUrl.value)
+  const simulatorAudioB64 = await readAsBase64(simulatorAudioUrl.value)
 
   simulator.Simulator.createSimulator({
     username: username.value,
     avatar: avatar.value,
-    audio_b64: simulatorAudio.value,
+    audio_b64: simulatorAudioB64,
     simulator: simulatorId.value,
-    simulator_avatar: simulatorAvatar.value,
+    simulator_avatar: simulatorAvatarB64,
     personality: simulatorPersonality.value,
     simulator_archetype: simulatorArchetype.value,
     simulator_title: simulatorTitle.value
   }, () => {
     creating.value = false
+  })
+}
+
+const readAsBase64 = async (url: string): Promise<string> => {
+  const response = await fetch(url)
+  const blob = await response.blob()
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result)
+      } else {
+        reject(new Error('Invalid content'))
+      }
+    }
+    reader.onerror = (e) => reject(e)
+    reader.readAsDataURL(blob)
   })
 }
 
