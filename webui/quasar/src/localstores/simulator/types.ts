@@ -1,7 +1,6 @@
 /* eslint-disable camelcase */
 export interface _Simulator {
   id: number
-  wechat_openid: string
   wechat_username: string
   wechat_avatar_url: string
   audio_id: string

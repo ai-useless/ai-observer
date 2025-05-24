@@ -10,6 +10,10 @@ export class _Simulator {
     }
   }
 
+  static create = async (simulator: dbModel.Simulator) => {
+    await dbSeminar.simulators.add(simulator)
+  }
+
   static simulators = async (ids: number[]) => {
     return (await dbSeminar.simulators.toArray()).filter((el) =>
       ids.includes(el.id)

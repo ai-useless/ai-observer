@@ -113,7 +113,9 @@
     </q-list>
   </div>
   <q-dialog v-model='showSetting'>
-    <Setting />
+    <div style='max-width: 800px; max-height: 80vh;'>
+      <Setting />
+    </div>
   </q-dialog>
 </template>
 
