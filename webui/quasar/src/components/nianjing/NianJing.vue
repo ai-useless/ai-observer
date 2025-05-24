@@ -49,7 +49,7 @@
         </q-scroll-area>
         <div class='flex justify-center items-center'>
           <BottomFixInput
-            v-model='prompt'
+            v-model='inputPrompt'
             placeholder='听一段经文，让心静下来~'
             @enter='onPromptEnter'
             :disabled='generating'
@@ -84,6 +84,7 @@ import BottomFixInput from '../input/BottomFixInput.vue'
 import SimulatorSelector from '../selector/SimulatorSelector.vue'
 
 const prompt = ref('般若波罗密心经')
+const inputPrompt = ref(prompt.value)
 
 const audioInput = ref(false)
 const audioError = ref('')
@@ -121,6 +122,8 @@ const generate = (_prompt: string) => {
 
   entityBridge.ENianJing.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
     generating.value = false
+    inputPrompt.value = ''
+
     waitMessages.value.set(`${message}-${index}`, {
       message,
       audio: audio as string,
@@ -132,11 +135,10 @@ const generate = (_prompt: string) => {
   })
 }
 
-watch(prompt, () => {
+watch(inputPrompt, () => {
   if (!audioInput.value || !prompt.value || !prompt.value.length) return
 
   generate(prompt.value)
-  prompt.value = ''
 })
 
 watch(audioError, () => {
@@ -147,12 +149,14 @@ watch(audioError, () => {
 
 const onPromptEnter = (_prompt: string) => {
   generate(_prompt)
-  prompt.value = ''
+  prompt.value = _prompt
 }
 
 const initializeNianjing = async () => {
   _model.value = await dbBridge._Model.model(await dbBridge._Model.topicModelId()) as model._Model
   speaker.value = await dbBridge._Simulator.randomPeek()
+
+  generate(prompt.value)
 }
 
 onMounted(async () => {
@@ -165,8 +169,6 @@ onMounted(async () => {
   typingTicker.value = window.setInterval(typing, typingInterval.value)
 
   bgPlayer.value = await AudioPlayer.play('http://106.15.6.50:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
-
-  generate(prompt.value)
 })
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
