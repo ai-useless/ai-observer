@@ -239,7 +239,11 @@ onMounted(() => {
   setting.Setting.setCurrentMenu(language.value === '中文' ? 'chat' : 'english')
 
   if (!userAvatar.value || !userAvatar.value.length || !username.value || !username.value.length) {
-    logining.value = true
+    user.User.getUser(undefined, (error: boolean) => {
+      if (error) {
+        logining.value = true
+      }
+    })
   }
 
   model.Model.getModels(() => {
