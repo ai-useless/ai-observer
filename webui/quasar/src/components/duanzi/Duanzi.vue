@@ -189,8 +189,8 @@ const audioPlayer = ref(undefined as unknown as AudioPlayer)
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
 const autoScroll = ref(true)
-const enablePlay = ref(true)
-const enableLaugh = ref(true)
+const enablePlay = ref(false)
+const enableLaugh = ref(false)
 
 const onGotoBottomClick = () => {
   autoScroll.value = true
@@ -210,9 +210,9 @@ const onLaughClick = () => {
 
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
-    lastDisplayMessage.value = undefined as unknown as Message
-    if (enableLaugh.value)
+    if (enableLaugh.value && lastDisplayMessage.value?.isTitle === false)
       void AudioPlayer.play('http://106.15.6.50:81/download/mp3/laugh.mp3')
+    lastDisplayMessage.value = undefined as unknown as Message
   }, typing).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
 
