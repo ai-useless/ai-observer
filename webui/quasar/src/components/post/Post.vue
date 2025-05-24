@@ -107,9 +107,9 @@
             :max-width='720'
           />
         </div>
-        <Canvas canvasId='canvas-1-1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
-        <Canvas canvasId='canvas-4-3' style='width: 900px; height: 675px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
-        <Canvas canvasId='canvas-16-9' style='width: 900px; height: 507px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+        <canvas ref='canvas-1-1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+        <canvas ref='canvas-4-3' style='width: 900px; height: 675px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
+        <canvas ref='canvas-16-9' style='width: 900px; height: 507px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
       </div>
     </div>
   </q-page>
@@ -131,7 +131,7 @@
               </div>
             </div>
             <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
-              <input v-model='imageNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;'>
+              <input v-model='imageNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;'>
             </div>
           </div>
           <div style='display: flex; line-height: 18px; margin-top: 4px;'>
@@ -141,9 +141,15 @@
               </div>
             </div>
             <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
-              <div :style='{fontSize: "12px", backgroundColor: imageRatio === "1:1" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("1:1")'>1:1</div>
-              <div :style='{fontSize: "12px", backgroundColor: imageRatio === "4:3" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("4:3")'>4:3</div>
-              <div :style='{fontSize: "12px", backgroundColor: imageRatio === "16:9" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("16:9")'>16:9</div>
+              <div class='cursor-pointer' :style='{fontSize: "12px", backgroundColor: imageRatio === "1:1" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("1:1")'>
+                1:1
+              </div>
+              <div class='cursor-pointer' :style='{fontSize: "12px", backgroundColor: imageRatio === "4:3" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("4:3")'>
+                4:3
+              </div>
+              <div class='cursor-pointer' :style='{fontSize: "12px", backgroundColor: imageRatio === "16:9" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageRatioChange("16:9")'>
+                16:9
+              </div>
             </div>
           </div>
           <div style='display: flex; line-height: 18px; margin-top: 4px;'>
@@ -153,8 +159,12 @@
               </div>
             </div>
             <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
-              <div :style='{fontSize: "12px", backgroundColor: imageResolution === "标清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("标清")'>标清</div>
-              <div :style='{fontSize: "12px", backgroundColor: imageResolution === "高清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("高清")'>高清</div>
+              <div class='cursor-pointer' :style='{fontSize: "12px", backgroundColor: imageResolution === "标清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("标清")'>
+                标清
+              </div>
+              <div class='cursor-pointer' :style='{fontSize: "12px", backgroundColor: imageResolution === "高清" ? "lightblue" : "white", marginLeft: "4px", borderRadius: "4px", border: "1px solid lightblue", padding: "0 4px"}' @click='onImageResolutionChange("高清")'>
+                高清
+              </div>
             </div>
           </div>
           <div style='display: flex; line-height: 18px; margin-top: 4px;'>
@@ -166,7 +176,7 @@
             <div style='width: 70%;'>
               <div style='display: flex; flex-wrap: wrap;'>
                 <div v-for='(style, index) in styles' :key='index' @click='onStyleClick(style)'>
-                  <div style='font-size: 12px; color: blue; margin-right: 4px;'>
+                  <div style='font-size: 12px; color: blue; margin-right: 4px;' class='cursor-pointer'>
                     {{ style }}
                   </div>
                 </div>
@@ -207,7 +217,7 @@
             <div style='width: 70%;'>
               <div>
                 <div v-for='(_prompt, index) in presetStyles' :key='index' @click='onPromptStyleClick(_prompt)'>
-                  <div style='font-size: 12px; color: blue; margin-right: 4px;'>
+                  <div style='font-size: 12px; color: blue; margin-right: 4px;' class='cursor-pointer'>
                     {{ _prompt }}
                   </div>
                 </div>
@@ -233,7 +243,7 @@
               </div>
             </div>
             <div style='width: 40%; display: flex; flex-direction: row-reverse;'>
-              <input v-model='letterNumberStr' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;'>
+              <input v-model='letterNumber' type='number' style='text-align: right; border: 1px solid lightgray; padding: 0 4px; border-radius: 4px;'>
             </div>
           </div>
         </div>
@@ -263,6 +273,26 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <q-dialog v-model='previewingImage' maximized>
+    <q-card style='width: min(100%, 1280px); max-height: min(calc(100% - 64px), 1280px);'>
+      <q-carousel
+        v-model='previewImageIndex'
+        animated
+        swipeable
+        control-color='white'
+        navigation
+        navigation-position='bottom'
+        class='full-height'
+      >
+        <q-carousel-slide
+          v-for='(_image, index) in previewImages'
+          :key='index'
+          :name='index'
+          :img-src='_image'
+        />
+      </q-carousel>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang='ts'>
@@ -280,11 +310,13 @@ const generating = ref(false)
 const imageGenerating = ref(false)
 const contentWidth = ref(0)
 
+const previewingImage = ref(false)
+const previewImageIndex = ref(0)
+const previewImages = ref([] as string[])
+
 const configuring = ref(false)
 const imageNumber = ref(1)
-const imageNumberStr = ref(imageNumber.value.toString())
 const letterNumber = ref(20)
-const letterNumberStr = ref(letterNumber.value.toString())
 const imageRatio = ref('4:3')
 const imageResolution = ref('高清')
 
@@ -335,6 +367,9 @@ const images = ref(new Map<string, PromptImage>())
 
 const menuPanel = ref<QCard>()
 const chatBox = ref<QScrollArea>()
+const canvas1x1 = ref<HTMLCanvasElement>()
+const canvas4x3 = ref<HTMLCanvasElement>()
+const canvas16x9 = ref<HTMLCanvasElement>()
 
 const imageWidth = (count: number) => {
   if (count === 1) return '100%'
@@ -453,6 +488,12 @@ const refineText = async (_prompt: string) => {
   generating.value = true
   imageGenerating.value = true
 
+  if (imageNumber.value > 9) imageNumber.value = 9
+  if (imageNumber.value <= 0) imageNumber.value = 1
+
+  if (letterNumber.value > 200) imageNumber.value = 200
+  if (letterNumber.value < 20) imageNumber.value = 20
+
   entityBridge.EChat.refineText(_prompt, promptStyle.value, letterNumber.value, await dbBridge._Model.topicModelId()).then((__prompt) => {
     if (!__prompt) {
       return
@@ -555,9 +596,16 @@ const onPromptStyleClick = (_prompt: string) => {
   promptStyle.value = _prompt
 }
 
-/*
+onMounted(() => {
+  setting.Setting.setCurrentMenu('post')
+
+  model.Model.getModels(() => {
+    void refineText(prompt.value)
+  })
+})
+
 const posterImageWidth = (count: number) => {
-  let baseWidth = 900
+  const baseWidth = 900
   if (count === 1) return baseWidth
   else if (count === 2 || count === 4) return Math.floor(baseWidth / 2)
   else return Math.floor(baseWidth / 3)
@@ -570,23 +618,43 @@ const posterImageHeight = (count: number, ratio: string) => {
   else if (ratio === '4:3') return Math.floor(width * 0.75)
   else return Math.floor(width * 9 / 16)
 }
-*/
 
-onMounted(() => {
-  setting.Setting.setCurrentMenu('post')
-
-  model.Model.getModels(() => {
-    void refineText(prompt.value)
+const loadImage = async (image: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(img)
+    img.onerror = (e) => reject(e)
+    img.src = image
   })
-})
+}
 
-const sharePoster = async (title: string) => {
-  console.log(title)
-  return Promise.reject('Not implemented')
+const sharePoster = async (title: string): Promise<string | undefined> => {
+  const _images = images.value.get(title) || {} as PromptImage
+  if (!_images || !_images.images || !_images.images.length) return undefined
+
+  const canvas = _images.ratio === '1:1' ? canvas1x1.value : _images.ratio === '4:3' ? canvas4x3.value : canvas16x9.value
+  const canvasCtx = canvas?.getContext('2d')
+  if (!canvasCtx) return Promise.reject('Invalid context')
+
+  if (_images.total === 1) return Promise.resolve(_images.images[0].imageUrl)
+
+  const _imagesPerRow = imagesPerRow(_images.total)
+  const _imageWidth = posterImageWidth(_images.total)
+  const _imageHeight = posterImageHeight(_images.total, _images.ratio)
+
+  for (let i = 0; i < _images.images.length; i++) {
+    const img = await loadImage(_images.images[i].imageUrl)
+    canvasCtx.drawImage(img, _imageWidth * (i % _imagesPerRow), _imageHeight * Math.floor(i / _imagesPerRow), _imageWidth, _imageHeight)
+  }
+
+  return canvas?.toDataURL('image/png')
 }
 
 const onPreviewImageClick = (image: string, _images: string[]) => {
-  console.log(image, _images)
+  previewingImage.value = true
+  previewImageIndex.value = _images.indexOf(image)
+  previewImages.value = _images
 }
 
 const onContentBoxResize = (size: { width: number }) => {
