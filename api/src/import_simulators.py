@@ -15,8 +15,9 @@ def fetch_avatar_then_save(avatar_url: str, target: str):
     resp = requests.get(avatar_url)
 
     avatar_bytes = resp.content
+    avatar_b64_bytes = base64.b64encode(avatar_bytes)
 
-    avatar_cid = hashlib.sha256(avatar_bytes).hexdigest()
+    avatar_cid = hashlib.sha256(avatar_b64_bytes).hexdigest()
     avatar_path = f'{config.data_dir}/avatars/{target}/{avatar_cid}'
     print(f'    Writting {BOLD}{avatar_path}{RESET}')
     with open(avatar_path, 'wb') as f:

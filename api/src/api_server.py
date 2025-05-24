@@ -73,11 +73,12 @@ async def get_models(offset: int = 0, limit: int = 100):
 
 @app.post('/api/v1/cook_user')
 async def cook_user(code: str = Body(...), username: str | None = Body(default=None), avatar: str | None = Body(default=None)):
-    await _cook_user(code, username, avatar)
+    user = await _cook_user(code, username, avatar)
+    return { **user, 'wechat_avatar_url': f'{config.file_server}/avatars/wechat/{user["wechat_avatar"]}' } if user is not None else None
 
 @app.get('/api/v1/user')
-async def get_user(code: str):
-    user = await _get_user(code)
+async def get_user(code: str | None = None, token: str | None = None):
+    user = await _get_user(code, token)
     return { **user, 'wechat_avatar_url': f'{config.file_server}/avatars/wechat/{user["wechat_avatar"]}' } if user is not None else None
 
 @app.post('/api/v1/cook_simulator', response_model=CookSimulatorResponse)

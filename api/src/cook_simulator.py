@@ -3,6 +3,7 @@ import hashlib
 import base64
 import json
 import requests
+import jwt
 
 from audio import generator
 from config import config
@@ -134,9 +135,27 @@ async def get_simulators(code: str | None, offset: int, limit: int):
     limit = 100 if limit == 0 or limit > 100 else limit
     return db.get_simulators(openid, offset, limit)
 
-async def get_user(code: str):
-    openid = await get_openid(code)
-    return db.get_user(openid)
+async def get_user(code: str | None, jwt_token: str | None):
+    if code is not None:
+        openid = await get_openid(code)
+        payload = {
+            'openid': openid,
+        }
+        jwt_token = jwt.encode(payload=payload, key=config.jwt_secret, algorithm='HS256')
+    elif jwt_token is not None:
+        try:
+            payload = jwt.decode(jwt=jwt_token, key=config.jwt_secret, algorithms=['HS256'])
+            openid = payload['openid']
+            # TODO: validate expire time
+        except Exception as e:
+            raise Exception(repr(e))
+
+    userinfo = db.get_user(openid)
+    return {
+        'token': jwt_token,
+        'wechat_username': userinfo['wechat_username'],
+        'wechat_avatar': userinfo['wechat_avatar'],
+    }
 
 async def cook_user(code: str, username: str | None, avatar: str | None):
     app_id = config.weapp_mini_id if username is not None else config.weapp_web_id
@@ -154,15 +173,18 @@ async def cook_user(code: str, username: str | None, avatar: str | None):
         avatar_url = userinfo['headimgurl']
 
         resp = requests.get(avatar_url)
+        resp.raise_for_status()
 
-        # We're not b64 but we pretend to be
-        wechat_avatar_b64_bytes = resp.content
+        avatar_bytes = resp.content
+        avatar = base64.b64encode(avatar_bytes).decode('utf-8')
     else:
         # From mini program
         authorization_code = await jscode_2_session(code, app_id, secret)
         openid = authorization_code['openid']
-        wechat_avatar_b64_bytes = avatar.encode("utf-8")
 
+        # TODO: check user exists
+
+    wechat_avatar_b64_bytes = avatar.encode("utf-8")
     wechat_avatar_cid = hashlib.sha256(wechat_avatar_b64_bytes).hexdigest()
     wechat_avatar_bytes = base64.b64decode(wechat_avatar_b64_bytes)
     wechat_avatar_path = f'{config.data_dir}/avatars/wechat/{wechat_avatar_cid}'
@@ -170,3 +192,15 @@ async def cook_user(code: str, username: str | None, avatar: str | None):
         f.write(wechat_avatar_bytes)
 
     db.new_user(openid, username, wechat_avatar_cid)
+
+    payload = {
+        'openid': openid,
+    }
+    jwt_token = jwt.encode(payload=payload, key=config.jwt_secret, algorithm='HS256')
+    userinfo = db.get_user(openid)
+
+    return {
+        'token': jwt_token,
+        'wechat_username': userinfo['wechat_username'],
+        'wechat_avatar': userinfo['wechat_avatar'],
+    }
