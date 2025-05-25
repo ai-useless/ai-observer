@@ -1,92 +1,94 @@
 <template>
-  <div style='max-width: 800px; width: 800px; height: calc(100vh - 80px); overflow: scroll;' class='hide-scrollbar'>
-    <q-card class='bg-gradient-blue no-border-radius'>
-      <q-card-section>
-        <div class='flex justify-center items-center' style='height: 160px;'>
-          <div class='text-center'>
-            <div class='text-white text-bold' style='font-size: 28px;'>
-              {{ topic }}
+  <div style='max-width: 800px; width: 800px; height: 100vh;'>
+    <div style='height: calc(100% - 72px); overflow: scroll;' class='full-width hide-scrollbar'>
+      <q-card class='bg-gradient-blue no-border-radius'>
+        <q-card-section>
+          <div class='flex justify-center items-center' style='height: 160px;'>
+            <div class='text-center'>
+              <div class='text-white text-bold' style='font-size: 28px;'>
+                {{ topic }}
+              </div>
+              <div class='text-white' style='font-size: 16px;'>
+                选择您喜欢的AGI模拟器表演相声~
+                <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
+                  <q-tooltip style='font-size: 14px;'>
+                    您知道吗：这里的相声都是AGI实时生成的，您可以定制相声的风格并选择喜欢的模拟器为您表演。
+                  </q-tooltip>
+                </q-icon>
+              </div>
+              <q-btn
+                class='action-btn text-grey-9 q-mt-lg border-gradient-bg-white full-width border-radius-16px'
+                flat
+                dense
+                @click='onStartXiangshengClick'
+                :disabled='!ready'
+              >
+                开始表演
+              </q-btn>
             </div>
-            <div class='text-white' style='font-size: 16px;'>
-              选择您喜欢的AGI模拟器表演相声~
-              <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
-                <q-tooltip style='font-size: 14px;'>
-                  您知道吗：这里的相声都是AGI实时生成的，您可以定制相声的风格并选择喜欢的模拟器为您表演。
-                </q-tooltip>
-              </q-icon>
-            </div>
-            <q-btn
-              class='action-btn text-grey-9 q-mt-lg border-gradient-bg-white full-width border-radius-16px'
-              flat
-              dense
-              @click='onStartXiangshengClick'
-              :disabled='!ready'
-            >
-              开始表演
-            </q-btn>
+          </div>
+        </q-card-section>
+      </q-card>
+      <div class='q-mb-lg'>
+        <div class='flex items-center'>
+          <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
+          <h4 class='q-ml-md text-grey-9'>
+            演员
+          </h4>
+          <q-space />
+          <q-btn
+            class='text-blue-6'
+            rounded
+            flat
+            dense
+            @click='onRandomSelectClick'
+          >
+            随机安排
+          </q-btn>
+        </div>
+        <div class='row q-col-gutter-md'>
+          <div
+            v-for='(participator, index) of participators'
+            :key='index'
+            class='col-12 col-md-6'
+            @click='onParticipatorClick(index)'
+          >
+            <RoleCardVertical
+              :participator='participator'
+              :role='index === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST'
+            />
           </div>
         </div>
-      </q-card-section>
-    </q-card>
-    <div class='q-mb-lg'>
-      <div class='flex items-center'>
-        <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
-        <h4 class='q-ml-md text-grey-9'>
-          演员
-        </h4>
-        <q-space />
-        <q-btn
-          class='text-blue-6'
-          rounded
-          flat
-          dense
-          @click='onRandomSelectClick'
-        >
-          随机安排
-        </q-btn>
       </div>
-      <div class='row q-col-gutter-md'>
-        <div
-          v-for='(participator, index) of participators'
-          :key='index'
-          class='col-12 col-md-6'
-          @click='onParticipatorClick(index)'
-        >
-          <RoleCardVertical
-            :participator='participator'
-            :role='index === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST'
+      <div style='margin-top: 48px; width: 100%;'>
+        <div style='border-bottom: 1px solid gray;' class='row items-center'>
+          <div style='color: gray;'>
+            您可能对这些感兴趣
+          </div>
+          <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
+            <q-tooltip style='font-size: 14px;'>
+              您知道吗：这些相声主题都是AGI实时生成的。
+            </q-tooltip>
+          </q-icon>
+          <q-space />
+          <q-btn
+            label='换一批'
+            color='blue'
+            flat
+            dense
+            @click='onChangeTopicsClick'
+            :loading='generating'
           />
         </div>
-      </div>
-    </div>
-    <div style='margin-top: 48px; width: 100%;'>
-      <div style='border-bottom: 1px solid gray;' class='row items-center'>
-        <div style='color: gray;'>
-          您可能对这些感兴趣
+        <div style='margin-top: 8px;' />
+        <div
+          v-for='_topic in topics'
+          :key='_topic'
+          style='color: blue; font-size: 16px;' class='text-left cursor-pointer'
+          @click='onTopicClick(_topic)'
+        >
+          {{ _topic }}
         </div>
-        <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
-          <q-tooltip style='font-size: 14px;'>
-            您知道吗：这些相声主题都是AGI实时生成的。
-          </q-tooltip>
-        </q-icon>
-        <q-space />
-        <q-btn
-          label='换一批'
-          color='blue'
-          flat
-          dense
-          @click='onChangeTopicsClick'
-          :loading='generating'
-        />
-      </div>
-      <div style='margin-top: 8px;' />
-      <div
-        v-for='_topic in topics'
-        :key='_topic'
-        style='color: blue; font-size: 16px;' class='text-left cursor-pointer'
-        @click='onTopicClick(_topic)'
-      >
-        {{ _topic }}
       </div>
     </div>
     <div class='flex justify-center items-center'>
