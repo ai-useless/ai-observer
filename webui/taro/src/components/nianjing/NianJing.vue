@@ -3,7 +3,7 @@
     <View :style='{ height: scriptHeight + "px", width: "100vw" }'>
       <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; margin: 8px 16px; color: gray; text-align: center; height: 32px;'>{{ prompt }}</View>
       <Image
-        src='http://106.15.6.50:81/download/images/qiaomuyu.gif'
+        src='http://8.133.205.39:81/download/images/qiaomuyu.gif'
         mode='widthFix'
         style='width: 100vw; height: 400px;'
       />
@@ -194,14 +194,14 @@ onMounted(async () => {
 
   typingTicker.value = window.setInterval(typing, typingInterval.value)
 
-  bgPlayer.value = await playAudio('http://106.15.6.50:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
+  bgPlayer.value = await playAudio('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
 
   generate()
 })
 
 useDidShow(async () => {
   typingTicker.value = window.setInterval(typing, typingInterval.value)
-  bgPlayer.value = await playAudio('http://106.15.6.50:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
+  bgPlayer.value = await playAudio('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
   generate()
 })
 

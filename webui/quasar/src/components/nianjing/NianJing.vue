@@ -14,7 +14,7 @@
             {{ prompt }}
           </div>
           <q-img
-            src='http://106.15.6.50:81/download/images/qiaomuyu.gif'
+            src='http://8.133.205.39:81/download/images/qiaomuyu.gif'
             style='width: 100%;'
           />
           <q-resize-observer @resize='onHeadBoxResize' />
@@ -169,7 +169,7 @@ onMounted(async () => {
 
   typingTicker.value = window.setInterval(typing, typingInterval.value)
 
-  bgPlayer.value = await AudioPlayer.play('http://106.15.6.50:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
+  bgPlayer.value = await AudioPlayer.play('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
 })
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
