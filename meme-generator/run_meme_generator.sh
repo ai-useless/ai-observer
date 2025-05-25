@@ -1,5 +1,12 @@
 #!/bin/bash
 
+####
+## /etc/docker/daemon.json
+## {
+##   "registry-mirrors": ["https://docker.m.daocloud.io"]
+## }
+####
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 OUTPUT_DIR=$SCRIPT_DIR/.meme.output
 
