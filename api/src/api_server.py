@@ -115,7 +115,7 @@ async def get_simulators(code: Optional[str] = None, token: Optional[str] = None
     } for simulator in simulators]
 
 @app.post('/api/v1/review_simulator')
-async def review_simulator(simulator: str = Body(...), code: str = Body(default=None), token: str=Body(default=None), state: str):
+async def review_simulator(simulator: str = Body(...), code: str = Body(default=None), token: str=Body(default=None), state: str = Body(...)):
     return await _review_simulator(simulator_id, code, token, state)
 
 @app.post('/api/v1/report_simulator')

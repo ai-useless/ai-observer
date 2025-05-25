@@ -213,7 +213,7 @@ class Db:
             f'''
                 INSERT INTO {self.table_simulators}
                 (wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host, reports, disabled)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 wechat_avatar=alias.wechat_avatar
             ''',
