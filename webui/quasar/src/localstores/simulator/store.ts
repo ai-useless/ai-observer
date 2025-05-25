@@ -107,7 +107,8 @@ export class Simulator {
   ) => simulator.getSimulators(code, done, mine)
 
   static mySimulators = () => simulator.simulators.filter((el) => el.mine)
-  static allSimulators = () => simulator.simulators
+  static allSimulators = () => simulator.simulators.filter((el) => el.state === 'APPROVED')
+  static reviewingSimulators = () => simulator.simulators.filter((el) => el.state !== 'APPROVED')
 
   static simulator = (id: number) =>
     simulator.simulators.find((el) => el.id === id)

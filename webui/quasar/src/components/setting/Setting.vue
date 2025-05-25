@@ -46,6 +46,9 @@
               <q-tab-panel name='allSimulators'>
                 <AllSimulators />
               </q-tab-panel>
+              <q-tab-panel name='reviewSimulators'>
+                <ReviewSimulators />
+              </q-tab-panel>
               <q-tab-panel name='models'>
                 <Models />
               </q-tab-panel>
@@ -68,6 +71,7 @@ import CookSimulator from '../simulator/CookSimulator.vue'
 import MySimulators from '../simulator/MySimulators.vue'
 import AllSimulators from '../simulator/AllSimulators.vue'
 import Models from '../model/Models.vue'
+import ReviewSimulators from '../simulator/ReviewSimulators.vue'
 
 const settingMenu = computed(() => setting.Setting.currentSettingMenu())
 

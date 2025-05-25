@@ -8,7 +8,8 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     username: undefined as unknown as string,
     avatar: undefined as unknown as string,
-    avatarUrl: undefined as unknown as string
+    avatarUrl: undefined as unknown as string,
+    as_reviewer: false
   }),
   actions: {
     getUser(code?: string, done?: (error: boolean) => void) {
@@ -25,6 +26,7 @@ export const useUserStore = defineStore('user', {
 
           this.username = resp.data.wechat_username
           this.avatarUrl = resp.data.wechat_avatar_url
+          this.as_reviewer = resp.data.as_reviewer
 
           Cookies.set('X-Token', resp.data.token, { path: '/', expires: 2 })
 
@@ -84,4 +86,6 @@ export class User {
   static logined = () => user.username && (user.avatar || user.avatarUrl)
   static cookUser = (code: string, done?: (error: boolean) => void) =>
     user.cookUser(code, done)
+
+  static asReviewer = () => user.as_reviewer
 }

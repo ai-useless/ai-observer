@@ -5,4 +5,6 @@ export interface UserInfo {
   wechat_username: string
   // eslint-disable-next-line camelcase
   wechat_avatar_url: string
+  // eslint-disable-next-line camelcase
+  as_reviewer: boolean
 }

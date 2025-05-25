@@ -33,6 +33,12 @@
         </q-item-section>
         <q-item-section>全部模拟器</q-item-section>
       </q-item>
+      <q-item v-if='asReviewer' clickable v-ripple @click='onMenuClick("reviewSimulators")' :class='[ settingMenu === "reviewSimulators" ? "selected" : "" ]'>
+        <q-item-section avatar>
+          <q-icon name='hotel_class' />
+        </q-item-section>
+        <q-item-section>审核模拟器</q-item-section>
+      </q-item>
       <q-separator />
       <q-item clickable v-ripple @click='onMenuClick("models")' :class='[ settingMenu === "models" ? "selected" : "" ]'>
         <q-item-section avatar>
@@ -49,6 +55,7 @@ import { computed, onMounted } from 'vue'
 import { setting, user } from 'src/localstores'
 
 const logined = computed(() => user.User.logined())
+const asReviewer = computed(() => user.User.asReviewer())
 
 const settingMenu = computed(() => setting.Setting.currentSettingMenu().length ? setting.Setting.currentSettingMenu() : 'settings')
 
