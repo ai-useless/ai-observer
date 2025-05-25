@@ -66,10 +66,17 @@
           </View>
         </View>
       </View>
-      <View v-if='!topics.length' class='title' style='height: 200px; display: flex; justify-content: center; align-items: center; width: calc(100% - 32px);'>
+      <View v-if='!topics.length' class='title' style='height: 120px; display: flex; justify-content: center; align-items: center; width: calc(100% - 32px);'>
         AGI正在为您生成相声主题...
       </View>
     </View>
+    <Button
+      @click='onGotoOtherClick'
+      size='mini'
+      :style='{ width: "calc(100% - 32px)", marginTop: "16px", borderRadius: "8px", color: "blue" }'
+    >
+      去其他栏目看看
+    </Button>
   </View>
   <AtModal :is-opened='selectingSimulator' @close='onSimulatorSelectorClose'>
     <AtModalHeader>选择{{ selectingSimulatorIndex === 0 ? '逗哏' : '捧哏' }}模拟器</AtModalHeader>
@@ -145,6 +152,9 @@ const generateTopics = () => {
     }
     historyTopics.value.push(...topics.value)
     topics.value = _topics.topics
+    if (!topic.value || !topic.value.length) {
+      xiangsheng.Xiangsheng.setTopic(topics.value[0])
+    }
   }).catch((e) => {
     console.log(`Failed change topics: ${e}`)
     generating.value = false
@@ -195,6 +205,10 @@ const onStartShowClick = () => {
   startXiangsheng(xiangshengWorker.Intent.GENERATE)
 }
 
+const onGotoOtherClick = () => {
+  Taro.switchTab({ url: '/pages/index/IndexPage' })
+}
+
 const randomSelect = () => {
   for (let i = 0; i < guests.value.length; i++) {
     guests.value[i] = undefined as unknown as simulator._Simulator
@@ -223,7 +237,7 @@ const onRandomGuestClick = () => {
 
 onMounted(() => {
   Taro.setNavigationBarTitle({
-    title: 'AGI相声'
+    title: 'AGI相声社'
   })
 
   for (let i = 0; i < 2; i++) {

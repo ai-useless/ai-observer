@@ -299,17 +299,13 @@ watch(_uid, () => {
 
 onMounted(async () => {
   Taro.setNavigationBarTitle({
-    title: 'AGI相声社'
+    title: topic.value || 'AGI相声社'
   })
 
   if (Taro.getWindowInfo()) {
     stageHeight.value = Taro.getWindowInfo().windowWidth
     chatBoxHeight.value = Taro.getWindowInfo().windowHeight - stageHeight.value - 32 - 16
   }
-
-  Taro.setNavigationBarTitle({
-    title: topic.value
-  })
 })
 
 useDidShow(() => {
