@@ -1,5 +1,0 @@
-pyproject.toml
-src/observer_chat.egg-info/PKG-INFO
-src/observer_chat.egg-info/SOURCES.txt
-src/observer_chat.egg-info/dependency_links.txt
-src/observer_chat.egg-info/top_level.txt

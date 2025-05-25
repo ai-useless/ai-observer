@@ -6,3 +6,4 @@ node_modules
 .quasar
 project.private.config.json
 .data
+observer_chat.egg-info
