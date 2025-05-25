@@ -208,5 +208,5 @@ async def chat_non_stream(
                 if choice.message is None or choice.message.content is None:
                     return ''
                 return chat_response.choices[0].message.content
-    except:
-        logger.info(f'{BOLD}Payload: {payload}')
+    except Exception as e:
+        logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{repr(e)}{RESET}')

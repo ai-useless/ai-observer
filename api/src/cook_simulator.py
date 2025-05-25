@@ -75,7 +75,7 @@ async def get_authorization_code(code: str, app_id: str, secret: str):
                 raise Exception(repr(e))
 
 async def get_openid(code: str):
-    return await jscode_2_session(code, config.weapp_mini_id, config.weapp_mini_secret)['openid']
+    return (await jscode_2_session(code, config.weapp_mini_id, config.weapp_mini_secret))['openid']
 
 async def get_openid_with_code_or_token(code: str | None, jwt_token: str | None):
     if code is None and jwt_token is None:
@@ -157,7 +157,7 @@ async def get_simulators(code: str | None, jwt_token: str | None, offset: int, l
     limit = 100 if limit == 0 or limit > 100 else limit
     return db.get_simulators(openid, offset, limit)
 
-async def openid_2_token(openid: str, userinfo: dict | None):
+def openid_2_token(openid: str, userinfo: dict | None):
     userinfo = db.get_user(openid) if userinfo is None else userinfo
 
     payload = {
@@ -174,6 +174,7 @@ async def get_user(code: str | None, jwt_token: str | None):
     if jwt_token is None:
         jwt_token = openid_2_token(openid, userinfo)
 
+    print(4)
     return {
         'token': jwt_token,
         'wechat_username': userinfo['wechat_username'],
