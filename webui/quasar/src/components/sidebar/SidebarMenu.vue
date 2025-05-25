@@ -211,6 +211,6 @@ onMounted(() => {
 
 <style scoped lang='sass'>
 .selected
-  border-right: 4px solid $blue-2
+  border-right: 4px solid $blue-4
   color: $blue-6
 </style>
