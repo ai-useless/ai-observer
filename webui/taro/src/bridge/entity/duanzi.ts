@@ -77,7 +77,8 @@ export class Duanzi {
 
     speakWorker.SpeakRunner.handleSpeakRequest({
       text,
-      simulatorId
+      simulatorId,
+      noInstruct: false
     })
       .then((payload) => {
         if (!payload) {

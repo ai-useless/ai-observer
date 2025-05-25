@@ -129,7 +129,7 @@ const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
 const sendToFriend = (_message: string) => {
   friendThinking.value = true
-  entityBridge.EChat.chat(friend.value.id, friend.value.simulator, friend.value.origin_personality, username.value, [...messages.value.map((el) => `${el.send ? friend.value.simulator : username.value}: ${el.message}`), _message], _model.value.id, language.value || '中文', (_message?: string, audio?: string, error?: string) => {
+  entityBridge.EChat.chat(friend.value.id, friend.value.simulator, friend.value.origin_personality, username.value, [...messages.value.map((el) => `${el.send ? friend.value.simulator : username.value}: ${el.message}`), _message], _model.value.id, language.value || '中文', language.value !== '中文', (_message?: string, audio?: string, error?: string) => {
     friendThinking.value = false
     if (error && error.length) {
       messages.value.push({

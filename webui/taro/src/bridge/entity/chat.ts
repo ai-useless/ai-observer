@@ -9,6 +9,7 @@ export class EChat {
     messages: string[],
     modelId: number,
     language: string,
+    noInstruct: boolean,
     onMessage: (message?: string, audio?: string, error?: string) => void
   ) => {
     chatWorker.ChatRunner.handleGenerateRequest({
@@ -30,7 +31,8 @@ export class EChat {
         }
         speakWorker.SpeakRunner.handleSpeakRequest({
           simulatorId,
-          text: payload.text
+          text: payload.text,
+          noInstruct
         }).then((payload1) => {
           if (!payload1 || !payload1.audio || !payload1.audio.length) {
             onMessage(payload.text, undefined, undefined)
