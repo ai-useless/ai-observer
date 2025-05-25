@@ -88,7 +88,7 @@
 import { dbBridge, entityBridge } from 'src/bridge'
 import { xiangsheng, model, simulator, setting } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { purify } from 'src/utils'
 import { Message } from './Message'
@@ -289,6 +289,12 @@ watch(_uid, async () => {
 onMounted(async () => {
   await startXiangsheng()
   setting.Setting.setCurrentMenu('xiangsheng')
+})
+
+onBeforeUnmount(() => {
+  if (typingTicker.value >= 0) {
+    window.clearInterval(typingTicker.value)
+  }
 })
 
 </script>
