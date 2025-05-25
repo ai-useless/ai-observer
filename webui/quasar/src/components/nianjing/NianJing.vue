@@ -54,7 +54,6 @@
             @enter='onPromptEnter'
             :disabled='generating'
             :loading='generating'
-            :max-width='560'
           />
         </div>
       </div>

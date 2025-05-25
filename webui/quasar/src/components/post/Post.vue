@@ -104,7 +104,6 @@
             v-model='inputPrompt'
             placeholder='随手写下你此刻的心情~'
             @enter='onPromptEnter'
-            :max-width='720'
           />
         </div>
         <canvas ref='canvas1x1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
