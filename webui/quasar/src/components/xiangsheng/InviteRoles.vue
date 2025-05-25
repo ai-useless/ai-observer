@@ -145,6 +145,7 @@ onMounted(() => {
   for (let i = 0; i < participatorCount.value; i++) {
     participators.value.push({
       seminarUid: _uid,
+      modelId: await dbBridge._Model.topicModelId(),
       role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST
     } as unknown as dbModel.Participator)
   }
@@ -164,6 +165,7 @@ const randomSelect = async () => {
   for (let i = 0; i < participators.value.length; i++) {
     participators.value[i] = {
       seminarUid: _uid,
+      modelId: await dbBridge._Model.topicModelId(),
       role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST
     } as unknown as dbModel.Participator
   }
