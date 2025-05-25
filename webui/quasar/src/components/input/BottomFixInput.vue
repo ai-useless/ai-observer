@@ -10,7 +10,6 @@
       input-class='q-pl-sm'
       :disable='disabled'
       :loading='loading'
-      class='bg-white'
     >
       <template #append>
         <q-btn
