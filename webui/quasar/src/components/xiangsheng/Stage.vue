@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: 100%; width: 800px; min-width: 800px; height: 100vh; overflow: scroll;' class='hide-scrollbar'>
+  <div style='max-width: 100%; width: 800px; height: 100vh; overflow: scroll;' class='hide-scrollbar'>
     <div style='height: 280px'>
       <q-img :src='backgroundImage' style='width: 100%; height: 280px;' fit='cover' />
       <div style='margin-top: -138px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.8; padding: 8px 32px; text-align: center;'>

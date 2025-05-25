@@ -17,7 +17,7 @@
         />
       </div>
       <q-separator />
-      <q-layout view='hHh Lpr lFf' container style='width: 640px; max-width: 100%; height: 400px'>
+      <q-layout view='hHh Lpr lFf' container style='width: 800px; max-width: 100%; height: 600px'>
         <q-drawer
           class='bg-grey-2'
           show-if-above
@@ -30,7 +30,7 @@
         <q-separator vertical />
         <q-page-container>
           <q-page style='height: 1px;'>
-            <q-tab-panels v-model='settingMenu' animated style='max-width: 100%; width: 480px;' class='full-height'>
+            <q-tab-panels v-model='settingMenu' animated style='max-width: 100%; width: 640px;' class='full-height'>
               <q-tab-panel name='settings' class='full-width'>
                 <Settings />
               </q-tab-panel>

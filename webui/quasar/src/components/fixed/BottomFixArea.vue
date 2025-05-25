@@ -16,14 +16,18 @@
 </template>
 
 <script setup lang='ts'>
-import { defineProps, toRef } from 'vue'
+import { defineProps, toRef, withDefaults } from 'vue'
 
 interface Props {
   borderRadius?: number
   backgroundColor?: string
   maxWidth?: number
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  borderRadius: 16,
+  backgroundColor: 'transparent',
+  maxWidth: 600
+})
 const borderRadius = toRef(props, 'borderRadius')
 const backgroundColor = toRef(props, 'backgroundColor')
 const maxWidth = toRef(props, 'maxWidth')
