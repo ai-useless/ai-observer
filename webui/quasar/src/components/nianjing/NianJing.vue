@@ -27,7 +27,7 @@
         </div>
         <q-scroll-area
           v-else
-          :style='{ height: `calc(100% - ${headHeight}px - 84px)`, width: "100%", padding: "8px 16px;" }'
+          :style='{ height: `calc(100% - ${headHeight}px - 68px)`, width: "100%", padding: "8px 16px;" }'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'

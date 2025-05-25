@@ -7,7 +7,7 @@
         </div>
         <q-separator />
         <q-scroll-area
-          style='height: calc(100% - 56px - 32px - 16px - 16px); width: 100%; padding: 8px 16px;'
+          style='height: calc(100% - 56px - 32px - 8px); width: 100%; padding: 8px 16px;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'

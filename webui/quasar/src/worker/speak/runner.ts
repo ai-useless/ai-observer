@@ -71,11 +71,9 @@ export class SpeakRunner {
 
       const payload = {
         text: speechContent,
-        voice: simulator?.audio_id
+        voice: simulator?.audio_id,
+        instruct: noInstruct ? '' : simulator?.language ? `用${simulator.language}说` : '用普通话说'
       } as Record<string, string>
-      if (!noInstruct) {
-        payload.instruct = simulator?.language ? `用${simulator.language}说` : '用普通话说'
-      }
 
       const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V3_API, payload)
 
