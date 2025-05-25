@@ -39,7 +39,7 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   maxWidth: 'calc(100% - 8px)',
-  width: '600px'
+  width: '592px'
 })
 const placeholder = toRef(props, 'placeholder')
 const disabled = toRef(props, 'disabled')
