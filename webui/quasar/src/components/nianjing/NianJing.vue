@@ -11,7 +11,18 @@
             <span style='font-size: 12px' class='text-grey-6 q-mx-xs'>
               念诵
             </span>
-            {{ prompt }}
+            <span>
+              {{ prompt }}
+            </span>
+            <q-btn
+              flat
+              dense
+              color='light-blue'
+              class='q-ml-xs'
+              @click='selectingSpeaker = !selectingSpeaker'
+            >
+              换人
+            </q-btn>
           </div>
           <q-img
             src='http://8.133.205.39:81/download/images/qiaomuyu.gif'
@@ -57,8 +68,8 @@
           />
         </div>
       </div>
-      <div class='q-ml-lg full-height q-pt-lg'>
-        <RightFixArea :max-width='300'>
+      <div v-if='selectingSpeaker' class='full-height q-pt-lg'>
+        <RightFixArea :max-width='300' :margin-top='48'>
           <SimulatorList
             v-model:selected='speaker'
             @selected='onSimulatorSelected'
@@ -104,6 +115,7 @@ const typingTicker = ref(-1)
 const typingInterval = ref(40)
 
 const generating = ref(false)
+const selectingSpeaker = ref(false)
 
 const speaker = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
@@ -206,6 +218,7 @@ const onHeadBoxResize = (size: { height: number }) => {
 }
 
 const onSimulatorSelected = (_simulator: simulator._Simulator) => {
+  selectingSpeaker.value = false
   speaker.value = _simulator
 }
 

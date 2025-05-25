@@ -2,8 +2,17 @@
   <q-page>
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
       <div style='height: 100vh; width: 600px; max-width: 100%;' class='bg-grey-2'>
-        <div class='full-width text-center q-py-sm text-bold text-grey-9'>
-          {{ friend?.simulator }} | {{ _model?.name }}
+        <div class='full-width q-py-sm text-bold text-grey-9 flex justify-center items-center'>
+          <div>{{ friend?.simulator }} | {{ _model?.name }}</div>
+          <q-btn
+            flat
+            dense
+            color='light-blue'
+            class='q-ml-xs'
+            @click='selectingFriend = !selectingFriend'
+          >
+            换人
+          </q-btn>
         </div>
         <q-separator />
         <q-scroll-area
@@ -57,8 +66,8 @@
           />
         </div>
       </div>
-      <div class='q-ml-lg full-height q-pt-lg'>
-        <RightFixArea :max-width='300'>
+      <div v-if='selectingFriend' class='full-height q-pt-lg'>
+        <RightFixArea :max-width='300' :margin-top='48'>
           <SimulatorList
             v-model:selected='friend'
             @selected='onSimulatorSelected'
@@ -117,6 +126,7 @@ const audioInput = ref(false)
 
 const friendThinking = ref(false)
 const logining = ref(false)
+const selectingFriend = ref(false)
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
@@ -253,6 +263,7 @@ onMounted(() => {
 })
 
 const onSimulatorSelected = (_simulator: simulator._Simulator) => {
+  selectingFriend.value = false
   friend.value = _simulator
   initializeMessage()
 }
