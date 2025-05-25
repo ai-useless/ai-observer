@@ -14,7 +14,7 @@
               <q-avatar size='36px'>
                 <q-img :src='modelLogo(result.modelId)' style='height: 36px; width: 36px; border-radius: 50%;' />
               </q-avatar>
-              <div style='font-weight: 600; font-size: 18px;' class='text-grey-6 q-ml-sm'>
+              <div style='font-weight: 600; font-size: 18px; line-height: 1.2em;' class='text-grey-6 q-ml-sm'>
                 {{ modelName(result.modelId) }}
               </div>
             </div>
