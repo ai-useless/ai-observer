@@ -1,6 +1,6 @@
 <template>
   <q-page class='flex justify-center items-center'>
-    <div style='padding-bottom: 64px;'>
+    <div>
       <ScratchFrame />
     </div>
   </q-page>
