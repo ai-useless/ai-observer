@@ -1,25 +1,26 @@
 <template>
   <div class='column flex no-wrap fit'>
     <q-list>
-      <q-item style='height: 64px;'>
-        <q-item-section v-if='!collapsed' avatar>
-          <div class='row' @click='onMenuClick("home")'>
+      <q-item style='height: 64px;' class='bg-gradient-blue text-white' clickable @click='onLogoClick'>
+        <q-item-section avatar>
+          <div class='row'>
             <q-avatar>
               <q-img :src='meipuAgiLogo' />
             </q-avatar>
-            <q-item-label class='text-subtitle1 text-bold text-grey-9 flex items-center q-ml-sm'>
+            <q-item-label v-if='!collapsed' class='text-subtitle1 text-bold flex items-center q-ml-sm'>
               <span>没谱儿AGI</span>
             </q-item-label>
           </div>
         </q-item-section>
         <q-space v-if='!collapsed' />
-        <q-item-section side class='q-pr-none'>
+        <q-item-section v-if='!collapsed' side class='q-pr-none'>
           <q-btn
             flat
             rounded
             dense
             :icon='collapsed ? "menu_open" : "menu"'
-            @click='collapsed = !collapsed'
+            @click.stop='collapsed = !collapsed'
+            color='white'
           />
         </q-item-section>
       </q-item>
@@ -98,17 +99,41 @@
         </q-item-section>
         <q-item-section>帮助</q-item-section>
       </q-item>
-      <q-item clickable v-ripple @click='onMenuClick("settings")'>
+      <q-item clickable v-ripple @click='onSettingClick("settings")'>
         <q-item-section avatar>
           <q-icon name='settings' />
         </q-item-section>
         <q-item-section>设置</q-item-section>
       </q-item>
-      <q-item clickable v-ripple>
+      <q-item
+        v-if='logined'
+        clickable
+        v-ripple
+        @click='onSettingClick("person")'
+        style='border-radius: 16px; margin: 4px;'
+        class='border-gradient-bg-white'
+      >
         <q-item-section avatar>
-          <q-icon name='logout' />
+          <q-avatar :size='collapsed ? "24px" : "48px"'>
+            <q-img :src='avatarUrl' />
+          </q-avatar>
         </q-item-section>
-        <q-item-section>退出登录</q-item-section>
+        <q-item-section class='text-bold'>
+          {{ username }}
+        </q-item-section>
+      </q-item>
+      <q-item
+        v-else
+        clickable
+        v-ripple
+        @click='onLoginClick'
+        style='border-radius: 16px; margin: 4px;'
+        class='bg-gradient-blue text-white'
+      >
+        <q-item-section avatar>
+          <q-icon name='login' />
+        </q-item-section>
+        <q-item-section>登录</q-item-section>
       </q-item>
     </q-list>
   </div>
@@ -133,6 +158,10 @@ const menu = computed(() => setting.Setting.currentMenu().length ? setting.Setti
 
 const router = useRouter()
 
+const username = computed(() => user.User.username())
+const avatarUrl = computed(() => user.User.avatarUrl())
+const logined = computed(() => user.User.logined())
+
 const onMenuClick = (_menu: string) => {
   setting.Setting.setCurrentMenu(_menu)
 
@@ -147,8 +176,24 @@ const onMenuClick = (_menu: string) => {
     case 'nianjing': void router.push({ path: '/nianjing' }); break
     case 'search': void router.push({ path: '/search' }); break
     case 'post': void router.push({ path: '/post' }); break
-    case 'settings': setting.Setting.setShowSetting(true); break
   }
+}
+
+const onLogoClick = () => {
+  if (collapsed.value) {
+    collapsed.value = false
+  } else {
+    onMenuClick('home')
+  }
+}
+
+const onLoginClick = () => {
+  void router.push({ path: '/wechat/login' })
+}
+
+const onSettingClick = (_menu: string) => {
+  setting.Setting.setCurrentSettingMenu(_menu)
+  setting.Setting.setShowSetting(true)
 }
 
 const showSetting = computed({
