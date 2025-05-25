@@ -96,6 +96,8 @@ class Db:
                     timestamp INT UNSIGNED,
                     state VARCHAR(16),
                     host TINYINT,
+                    reports INT UNSIGNED,
+                    disabled TINYINT,
                     PRIMARY KEY (id)
                 )
             ''')
@@ -110,6 +112,7 @@ class Db:
                     wechat_openid VARCHAR(32),
                     wechat_username VARCHAR(128),
                     wechat_avatar VARCHAR(1024),
+                    as_reviewer TINYINT,
                     timestamp INT UNSIGNED,
                     PRIMARY KEY (wechat_openid)
                 )
@@ -209,8 +212,8 @@ class Db:
         cursor.execute(
             f'''
                 INSERT INTO {self.table_simulators}
-                (wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
+                (wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host, reports, disabled)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 wechat_avatar=alias.wechat_avatar
             ''',
@@ -229,7 +232,9 @@ class Db:
              'CREATED',
              archetype,
              title,
-             host)
+             host,
+             0,
+             0)
         )
         self.connection.commit()
         cursor.close()
@@ -246,15 +251,33 @@ class Db:
         self.connection.commit()
         cursor.close()
 
-    def approve_simulator(self, simulator):
-        self.update_simulator(simulator, 'APPROVED')
+    def report_simulator(self, simulator):
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f'''
+                UPDATE {self.table_simulators}
+                SET reports=reports+1
+                WHERE simulator="{simulator}"
+            '''
+        )
+        self.connection.commit()
+        cursor.close()
 
-    def reject_simulator(self, simulator):
-        self.update_simulator(simulator, 'REJECTED')
+    def disable_simulator(self, simulator):
+        cursor = self.connection.cursor()
+        cursor.execute(
+            f'''
+                UPDATE {self.table_simulators}
+                SET disable=1
+                WHERE simulator="{simulator}"
+            '''
+        )
+        self.connection.commit()
+        cursor.close()
 
     def count_simulators(self, wechat_openid: str | None):
-        query = f'SELECT COUNT(*) FROM {self.table_simulators}'
-        query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
+        query = f'SELECT COUNT(*) FROM {self.table_simulators} WHERE disabled=0'
+        query += f' AND wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
 
         cursor = self.connection.cursor()
         cursor.execute(query)
@@ -264,8 +287,8 @@ class Db:
         return count
 
     def get_simulators(self, wechat_openid: str | None, offset: int, limit: int):
-        query = f'SELECT * FROM {self.table_simulators}'
-        query += f' WHERE wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
+        query = f'SELECT * FROM {self.table_simulators} WHERE disabled=0'
+        query += f' AND wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
         query += ' ORDER BY timestamp DESC'
         query += f' LIMIT {limit} OFFSET {offset}'
 
@@ -284,6 +307,20 @@ class Db:
             f'''
                 SELECT * FROM {self.table_simulators}
                 WHERE audio_id="{audio_id}"
+            '''
+        )
+        result = cursor_dict.fetchone()
+        cursor_dict.close()
+
+        return result
+
+    def get_simulator_with_simulator(self, simulator):
+        cursor_dict = self.connection.cursor(dictionary=True)
+
+        cursor_dict.execute(
+            f'''
+                SELECT * FROM {self.table_simulators}
+                WHERE simulator="{simulator}"
             '''
         )
         result = cursor_dict.fetchone()
@@ -325,7 +362,7 @@ class Db:
         cursor.execute(
             f'''
                 INSERT INTO {self.table_users}
-                VALUES (%s, %s, %s, %s) as alias
+                VALUES (%s, %s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 wechat_username=alias.wechat_username,
                 wechat_avatar=alias.wechat_avatar
@@ -333,6 +370,7 @@ class Db:
             (wechat_openid,
              wechat_username,
              wechat_avatar,
+             1 if wechat_openid in [] else 0,
              int(time.time()))
         )
         self.connection.commit()

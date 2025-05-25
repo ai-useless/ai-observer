@@ -141,30 +141,44 @@ async def cook_simulator(code: str | None, jwt_token: str | None, username: str,
 
     return simulator
 
-async def count_simulators(code: str | None):
-    openid = (await get_openid(code)) if code is not None else None
+async def count_simulators(code: str | None, jwt_token: str | None):
+    try:
+        openid = await get_openid_with_code_or_token(code, jwt_token) if code is not None or jwt_token is not None else None
+    except:
+        pass
     return db.count_simulators(openid)
 
 async def get_simulators(code: str | None, jwt_token: str | None, offset: int, limit: int):
-    openid = await get_openid_with_code_or_token(code, jwt_token) if code is not None or jwt_token is not None else None
+    try:
+        openid = await get_openid_with_code_or_token(code, jwt_token) if code is not None or jwt_token is not None else None
+    except:
+        pass
 
     limit = 100 if limit == 0 or limit > 100 else limit
     return db.get_simulators(openid, offset, limit)
 
+async def openid_2_token(openid: str, userinfo: dict | None):
+    userinfo = db.get_user(openid) if userinfo is None else userinfo
+
+    payload = {
+        'openid': openid,
+        'as_reviewer': True if 'as_reviewer' in userinfo and userinfo['as_reviewer'] == 1 else False,
+    }
+    return jwt.encode(payload=payload, key=config.jwt_secret, algorithm='HS256')
+
 async def get_user(code: str | None, jwt_token: str | None):
     openid = await get_openid_with_code_or_token(code, jwt_token)
 
-    if jwt_token is None:
-        payload = {
-            'openid': openid,
-        }
-        jwt_token = jwt.encode(payload=payload, key=config.jwt_secret, algorithm='HS256')
-
     userinfo = db.get_user(openid)
+
+    if jwt_token is None:
+        jwt_token = openid_2_token(openid, userinfo)
+
     return {
         'token': jwt_token,
         'wechat_username': userinfo['wechat_username'],
         'wechat_avatar': userinfo['wechat_avatar'],
+        'as_reviewer': True if 'as_reviewer' in userinfo and userinfo['as_reviewer'] == 1 else False,
     }
 
 async def cook_user(code: str, username: str | None, avatar: str | None):
@@ -203,14 +217,44 @@ async def cook_user(code: str, username: str | None, avatar: str | None):
 
     db.new_user(openid, username, wechat_avatar_cid)
 
-    payload = {
-        'openid': openid,
-    }
-    jwt_token = jwt.encode(payload=payload, key=config.jwt_secret, algorithm='HS256')
     userinfo = db.get_user(openid)
+    jwt_token = openid_2_token(openid, userinfo)
 
     return {
         'token': jwt_token,
         'wechat_username': userinfo['wechat_username'],
         'wechat_avatar': userinfo['wechat_avatar'],
+        'as_reviewer': True if 'as_reviewer' in userinfo and userinfo['as_reviewer'] == 1 else False,
     }
+
+async def review_simulator(simulator: str, code: str | None, jwt_token: str | None, state: str):
+    openid = await get_openid_with_code_or_token(code, jwt_token)
+
+    if state != 'REJECT' and state != 'APPROVED':
+        raise Exception('Invalid state')
+
+    simulator = db.get_simulator_with_simulator(simulator)
+    if simulator is None:
+        raise Exception('Invalid simulator')
+    if simulator['state'] != 'CREATED':
+        raise Exception('Permission denied')
+
+    userinfo = db.get_user(openid)
+    if 'as_reviewer' not in userinfo or userinfo['as_reviewer'] != 1:
+        raise Exception('Permission denied')
+
+    db.update_simulator(simulator, state)
+
+async def report_simulator(simulator: str, code: str | None, jwt_token: str | None):
+    openid = await get_openid_with_code_or_token(code, jwt_token)
+
+    simulator = db.get_simulator_with_simulator(simulator)
+    if simulator is None:
+        raise Exception('Invalid simulator')
+
+    userinfo = db.get_user(openid)
+    if userinfo is None:
+        raise Exception('Permission denied')
+
+    db.report_simulator(simulator)
+
