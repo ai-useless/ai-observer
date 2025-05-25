@@ -111,13 +111,14 @@
         </q-item-section>
         <q-item-section>设置</q-item-section>
       </q-item>
+      <q-separator />
       <q-item
         v-if='logined'
         clickable
         v-ripple
         @click='onSettingClick("person")'
-        style='border-radius: 16px; margin: 4px;'
-        class='border-gradient-bg-white'
+        style='border-radius: 16px; margin: 8px;'
+        class='bg-gradient-blue text-white'
       >
         <q-item-section avatar>
           <q-avatar :size='collapsed ? "24px" : "48px"'>
@@ -133,7 +134,7 @@
         clickable
         v-ripple
         @click='onLoginClick'
-        style='border-radius: 16px; margin: 4px;'
+        style='border-radius: 16px; margin: 8px;'
         class='bg-gradient-blue text-white'
       >
         <q-item-section avatar>
