@@ -207,7 +207,7 @@ class Db:
             time.sleep(3600)
 
 
-    def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, personality, archetype, title, host):
+    def new_simulator(self, wechat_openid, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, personality, archetype, title, host, imported):
         cursor = self.connection.cursor()
         cursor.execute(
             f'''
@@ -229,7 +229,7 @@ class Db:
              simulator_avatar_cid,
              personality,
              int(time.time()),
-             'CREATED',
+             'CREATED' if imported is False else 'APPROVED',
              archetype,
              title,
              host,

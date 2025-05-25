@@ -98,7 +98,8 @@ async def main():
             simulator['personality'],
             simulator['archetype'],
             simulator['title'],
-            True if simulator['host'] is True else False)
+            True if simulator['host'] is True else False,
+            True)
 
 if __name__ == '__main__':
     asyncio.run(main())
