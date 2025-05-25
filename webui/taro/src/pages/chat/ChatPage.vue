@@ -13,5 +13,6 @@ import Chat from 'src/components/chat/Chat.vue'
 <style lang='scss'>
 
 @import 'taro-ui-vue3/dist/style/components/modal.scss';
+@import 'taro-ui-vue3/dist/style/index.scss';
 
 </style>

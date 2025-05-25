@@ -57,8 +57,8 @@
     <AtModalHeader>选择模拟器</AtModalHeader>
     <AtModalContent>
       <View>
-        <View v-for='(_simulator, index) in simulators' :key='index' style='border-bottom: 1px solid gray;' @click='onSelectSimulatorClick(_simulator)'>
-          <SimulatorCard :simulator='_simulator' />
+        <View v-for='(_simulator, index) in simulators' :key='index' style='border-bottom: 1px solid lightgray;' @click='onSelectSimulatorClick(_simulator)'>
+          <SimulatorCard :simulator='_simulator' :show-language='language !== "英语"' simple />
         </View>
       </View>
     </AtModalContent>
