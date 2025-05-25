@@ -187,6 +187,7 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     if (typingMessage.value?.last) {
+      void AudioPlayer.play('http://106.15.6.50:81/download/mp3/laugh.mp3')
       typingMessageIndex.value = 0
     } else {
       typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
