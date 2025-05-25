@@ -20,7 +20,8 @@ export class ENianJing {
 
     speakWorker.SpeakRunner.handleSpeakRequest({
       simulatorId,
-      text
+      text,
+      noInstruct: false
     })
       .then((payload1) => {
         if (!payload1 || !payload1.audio || !payload1.audio.length) {

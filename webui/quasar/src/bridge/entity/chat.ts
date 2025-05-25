@@ -30,7 +30,8 @@ export class EChat {
         }
         speakWorker.SpeakRunner.handleSpeakRequest({
           simulatorId,
-          text: payload.text
+          text: payload.text,
+          noInstruct: language === '英语'
         })
           .then((payload1) => {
             if (!payload1 || !payload1.audio || !payload1.audio.length) {
