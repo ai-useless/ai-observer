@@ -191,12 +191,6 @@ onMounted(async () => {
       speaker.value = dbBridge._Simulator.randomPeek()
     })
   })
-
-  typingTicker.value = window.setInterval(typing, typingInterval.value)
-
-  bgPlayer.value = await playAudio('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
-
-  generate()
 })
 
 useDidShow(async () => {
@@ -205,24 +199,13 @@ useDidShow(async () => {
   generate()
 })
 
-onBeforeUnmount(() => {
-  if (typingTicker.value >= 0) {
-    window.clearInterval(typingTicker.value)
-    typingTicker.value = -1
-  }
-  if (bgPlayer.value && bgPlayer.value.context) {
-    bgPlayer.value.context.stop()
-    bgPlayer.value = undefined as unknown as AudioPlayer
-  }
-})
-
 useDidHide(() => {
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1
   }
   if (bgPlayer.value && bgPlayer.value.context) {
-    bgPlayer.value.context.stop()
+    bgPlayer.value.stop()
     bgPlayer.value = undefined as unknown as AudioPlayer
   }
 })
