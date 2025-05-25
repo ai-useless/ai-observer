@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang='ts'>
-import { defineModel, defineEmits, defineProps, toRef } from 'vue'
+import { defineModel, defineEmits, defineProps, toRef, withDefaults } from 'vue'
 
 import BottomFixArea from '../fixed/BottomFixArea.vue'
 
@@ -36,7 +36,10 @@ interface Props {
   maxWidth?: string
   width?: string
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  maxWidth: 'calc(100% - 8px)',
+  width: '600px'
+})
 const placeholder = toRef(props, 'placeholder')
 const disabled = toRef(props, 'disabled')
 const maxWidth = toRef(props, 'maxWidth')

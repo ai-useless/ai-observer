@@ -3,7 +3,7 @@
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
       <div style='height: 100vh; width: 960px; max-width: 100%;' class='bg-grey-2'>
         <q-scroll-area
-          style='height: calc(100% - 80px); width: 100%; padding: 0 24px;'
+          style='height: calc(100% - 64px); width: 100%; padding: 0 24px;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
@@ -29,7 +29,6 @@
             :disabled='searching'
             :loading='searching'
             width='720px'
-            max-width='100%'
           />
         </div>
       </div>

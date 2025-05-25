@@ -8,7 +8,7 @@
       maxWidth: "100%",
       width: `${maxWidth}px`,
       borderRadius: (borderRadius || 24) + "px",
-      marginRight: "16px"
+      marginRight: "4px"
     }'
   >
     <slot />
