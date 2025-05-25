@@ -155,7 +155,7 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: '没谱儿AGI',
+        name: '没谱儿AGI: 可以玩的AGI',
         short_name: '没谱儿AGI',
         description: '可以玩的AGI',
         display: 'standalone',

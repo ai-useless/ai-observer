@@ -2,7 +2,7 @@
   "name": "ai-observer",
   "version": "0.0.1",
   "description": "可以玩的AGI",
-  "productName": "没谱儿AGI",
+  "productName": "没谱儿AGI：可以玩的AGI",
   "author": "没谱儿AGI <useless@useless.ai>",
   "private": true,
   "scripts": {

@@ -14,7 +14,7 @@
       </div>
       <div v-else style='height: calc(100vh - 4px); width: 600px; max-width: 100%;' class='bg-grey-2'>
         <q-scroll-area
-          style='height: calc(100vh - 4px - 40px); width: 600px; max-width: 100%;'
+          style='height: calc(100vh - 4px - 28px); width: 600px; max-width: 100%;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
