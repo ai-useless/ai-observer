@@ -66,6 +66,7 @@ export const purifyHtmlThink = (html: string): string => {
   const $ = cheerio.load(html)
   $('think').remove()
   return $.html()
+    .replace('`html', '')
     .replace('txt', '')
     .replace('text', '')
     .replace('markdown', '')
