@@ -38,12 +38,11 @@ export const purifyThink = (html: string): string => {
   const $ = cheerio.load(html)
   $('think').remove()
   return $.text()
-    .replace('html', '')
     .replace('txt', '')
     .replace('text', '')
     .replace('plaintext', '')
-    .replace(/\`/g, '')
-    .replace(/\#/g, '')
+    .replace(/`/g, '')
+    .replace(/#/g, '')
     .replace(/\*/g, '')
     .replace(/<!DOCTYPE html[^>]*>/gi, '')
     .replace(/<html[^>]*>/gi, '')
@@ -52,6 +51,34 @@ export const purifyThink = (html: string): string => {
     .replace(/<\/body>/gi, '')
     .replace(/<head[^>]*>/gi, '')
     .replace(/<\/head>/gi, '')
+    .replace(/html/g, '')
+    .trim()
+}
+
+export const purifyHtmlThink = (html: string): string => {
+  html = html.slice(
+    html.indexOf('</think>') < 0 ? 0 : html.indexOf('</think>') + 8
+  )
+  const $ = cheerio.load(html)
+  $('think').remove()
+
+  console.log($.html(), $.html().replace('html', ''))
+
+  return $.html()
+    .replace('txt', '')
+    .replace('text', '')
+    .replace('plaintext', '')
+    .replace(/`/g, '')
+    .replace(/#/g, '')
+    .replace(/\*/g, '')
+    .replace(/<!DOCTYPE html[^>]*>/gi, '')
+    .replace(/<html[^>]*>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<body[^>]*>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .replace(/<head[^>]*>/gi, '')
+    .replace(/<\/head>/gi, '')
+    .replace(/html/g, '')
     .trim()
 }
 

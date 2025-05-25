@@ -40,7 +40,6 @@ export const purifyThink = (html: string): string => {
   const $ = cheerio.load(html)
   $('think').remove()
   return $.text()
-    .replace('html', '')
     .replace('txt', '')
     .replace('text', '')
     .replace('markdown', '')
@@ -56,6 +55,7 @@ export const purifyThink = (html: string): string => {
     .replace(/<\/body>/gi, '')
     .replace(/<head[^>]*>/gi, '')
     .replace(/<\/head>/gi, '')
+    .replace(/html/g, '')
     .trim()
 }
 

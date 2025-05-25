@@ -98,7 +98,7 @@ const searchDo = () => {
         topic: payload.topic,
         prompt: payload.prompt,
         modelId: payload.modelId,
-        message: purify.purifyThink(payload.text)
+        message: purify.purifyHtmlThink(payload.text)
       })
       searchResultAudios.value.push(payload.audio)
       searching.value = false
