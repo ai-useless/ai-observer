@@ -3,7 +3,7 @@
     :style='{
       position: "fixed",
       bottom: 0,
-      background: backgroundColor || "white",
+      background: backgroundColor,
       zIndex: 1000,
       maxWidth: `${maxWidth}`,
       width: `${width}`,

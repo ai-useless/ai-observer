@@ -1,6 +1,6 @@
 <template>
   <div style='max-width: 800px; width: 800px; height: 100vh;'>
-    <div style='height: calc(100% - 72px); overflow: scroll;' class='full-width hide-scrollbar'>
+    <div style='height: calc(100% - 64px); overflow: scroll;' class='full-width hide-scrollbar'>
       <q-card class='bg-gradient-blue no-border-radius'>
         <q-card-section>
           <div class='flex justify-center items-center' style='height: 160px;'>
@@ -138,6 +138,7 @@ const ready = computed(() => {
 })
 
 const initializeParticipators = async () => {
+  participators.value = []
   for (let i = 0; i < participatorCount.value; i++) {
     participators.value.push({
       seminarUid: _uid,

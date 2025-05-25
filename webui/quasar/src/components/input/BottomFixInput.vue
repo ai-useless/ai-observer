@@ -1,5 +1,5 @@
 <template>
-  <BottomFixArea :max-width='maxWidth' :width='width' background-color='white'>
+  <BottomFixArea :max-width='maxWidth' :width='width'>
     <q-input
       v-model='message'
       :placeholder='placeholder'
@@ -10,6 +10,7 @@
       input-class='q-pl-sm'
       :disable='disabled'
       :loading='loading'
+      class='bg-white'
     >
       <template #append>
         <q-btn
