@@ -1,5 +1,5 @@
 <template>
-  <BottomFixArea :max-width='maxWidth' :width='width'>
+  <BottomFixArea :max-width='maxWidth' :width='width' background-color='white'>
     <q-input
       v-model='message'
       :placeholder='placeholder'
