@@ -10,6 +10,7 @@
       input-class='q-pl-sm'
       :disable='disabled'
       :loading='loading'
+      class='no-transparent-input'
     >
       <template #append>
         <q-btn
