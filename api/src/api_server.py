@@ -17,7 +17,7 @@ from image import generator as image_generator
 from include import *
 from chat import chat_non_stream as _chat, ChatMessage
 from config import config
-from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators, get_user as _get_user, cook_user as _cook_user, audio_2_text
+from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators, get_user as _get_user, cook_user as _cook_user, audio_2_text, review_simulator as _review_simulator, report_simulator as _report_simulator
 from db import db
 
 app = FastAPI()
@@ -101,8 +101,8 @@ async def cook_simulator(
         raise e
 
 @app.get('/api/v1/count_simulators')
-async def count_simulators(code: Optional[str] = None):
-    return await _count_simulators(code)
+async def count_simulators(code: Optional[str] = None, token: Optional[str] = None):
+    return await _count_simulators(code, token)
 
 @app.get('/api/v1/simulators')
 async def get_simulators(code: Optional[str] = None, token: Optional[str] = None, offset: int = 0, limit: int = 100):
@@ -113,6 +113,14 @@ async def get_simulators(code: Optional[str] = None, token: Optional[str] = None
         'simulator_avatar_url': f'{config.file_server}/avatars/simulator/{simulator["simulator_avatar_cid"]}',
         'wechat_avatar_url': f'{config.file_server}/avatars/wechat/{simulator["wechat_avatar"]}'
     } for simulator in simulators]
+
+@app.post('/api/v1/review_simulator')
+async def review_simulator(simulator: str = Body(...), code: str = Body(default=None), token: str=Body(default=None), state: str):
+    return await _review_simulator(simulator_id, code, token, state)
+
+@app.post('/api/v1/report_simulator')
+async def report_simulator(simulator: str = Body(...), code: str = Body(default=None), token: str=Body(default=None)):
+    return await _report_simulator(simulator_id, code, token)
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
