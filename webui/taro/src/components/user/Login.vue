@@ -62,6 +62,7 @@ const onLoginClick = () => {
   logining.value = true
 
   Taro.login().then((code) => {
+    logining.value = false
     simulator.Simulator.countSimulators(code.code)
   }).catch(() => {
     Taro.showToast({

@@ -3,11 +3,11 @@ import { constants } from 'src/constant'
 import axios from 'taro-axios'
 import { _Simulator } from './types'
 import { dbBridge } from 'src/bridge'
+import { user } from '..'
 
 export const useSimulatorStore = defineStore('simulator', {
   state: () => ({
     allSimulatorsCount: 0,
-    mySimulatorsCount: 0,
     simulators: [] as _Simulator[]
   }),
   actions: {
@@ -19,7 +19,7 @@ export const useSimulatorStore = defineStore('simulator', {
       axios
         .get(url)
         .then((resp) => {
-          if (code) this.mySimulatorsCount = resp.data
+          if (code) user.User.setMySimulator(resp.data)
           else this.allSimulatorsCount = resp.data
           if (done) done(false, resp.data)
         })
@@ -70,8 +70,6 @@ export class Simulator {
   static allSimulatorsCount = () => simulator.allSimulatorsCount
   static setAllSimulatorsCount = (v: number) =>
     (simulator.allSimulatorsCount = v)
-  static mySimulatorsCount = () => simulator.mySimulatorsCount
-  static setAvatar = (v: number) => (simulator.mySimulatorsCount = v)
 
   static countSimulators = (code?: string) => simulator.countSimulators(code)
   static getSimulators = (

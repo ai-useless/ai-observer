@@ -85,4 +85,5 @@ export class User {
     user.cookUser(code, done)
 
   static mySimulators = () => user.mySimulators
+  static setMySimulator = (v: number) => (user.mySimulators = v)
 }
