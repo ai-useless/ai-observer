@@ -7,7 +7,7 @@
       class='q-mt-xs cursor-pointer full-height full-width'
     >
       <div v-for='(_simulator, index) in allSimulators' :key='index'>
-        <SimulatorCard :simulator='_simulator' />
+        <SimulatorCard :simulator='_simulator' show-actions show-language enable-action-report />
       </div>
     </q-scroll-area>
   </div>

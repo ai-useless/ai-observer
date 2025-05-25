@@ -33,7 +33,13 @@
         </q-item-section>
         <q-item-section>全部模拟器</q-item-section>
       </q-item>
-      <q-item v-if='asReviewer' clickable v-ripple @click='onMenuClick("reviewSimulators")' :class='[ settingMenu === "reviewSimulators" ? "selected" : "" ]'>
+      <q-item
+        v-if='asReviewer'
+        clickable
+        v-ripple
+        @click='onMenuClick("reviewSimulators")'
+        :class='[ settingMenu === "reviewSimulators" ? "selected" : "" ]'
+      >
         <q-item-section avatar>
           <q-icon name='hotel_class' />
         </q-item-section>

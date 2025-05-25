@@ -84,6 +84,31 @@ export const useSimulatorStore = defineStore('simulator', {
       }).catch(() => {
         done?.(true)
       })
+    },
+    reviewSimulator(simulator: _Simulator, state: string, done?: (error: boolean) => void) {
+      const token = Cookies.get('X-Token')
+      axios.post(constants.REVIEW_SIMULATOR_API, {
+        simulator: simulator.simulator,
+        token,
+        state
+      }).then(() => {
+        this.getSimulators()
+        done?.(false)
+      }).catch(() => {
+        done?.(true)
+      })
+    },
+    reportSimulator(simulator: _Simulator, done?: (error: boolean) => void) {
+      const token = Cookies.get('X-Token')
+      axios.post(constants.REVIEW_SIMULATOR_API, {
+        simulator: simulator.simulator,
+        token
+      }).then(() => {
+        this.getSimulators()
+        done?.(false)
+      }).catch(() => {
+        done?.(true)
+      })
     }
   },
   getters: {}
@@ -114,4 +139,6 @@ export class Simulator {
     simulator.simulators.find((el) => el.id === id)
 
   static createSimulator = (_simulator: Record<string, unknown>, done?: (error: boolean) => void) => (simulator.createSimulator(_simulator, done))
+  static reportSimulator = (_simulator: _Simulator, done?: (error: boolean) => void) => (simulator.reportSimulator(_simulator, done))
+  static reviewSimulator = (_simulator: _Simulator, state: string, done?: (error: boolean) => void) => (simulator.reviewSimulator(_simulator, state, done))
 }

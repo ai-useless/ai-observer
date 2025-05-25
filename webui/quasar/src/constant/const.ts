@@ -12,6 +12,10 @@ export const GENERATE_IMAGE_ASYNC_API =
 export const QUERY_IMAGE_API = 'http://106.15.6.50:8091/api/v1/images'
 export const COOK_SIMULATOR_API =
   'http://106.15.6.50:8091/api/v1/cook_simulator'
+export const REVIEW_SIMULATOR_API =
+  'http://106.15.6.50:8091/api/v1/review_simulator'
+export const REPORT_SIMULATOR_API =
+  'http://106.15.6.50:8091/api/v1/report_simulator'
 export const COUNT_SIMULATORS_API =
   'http://106.15.6.50:8091/api/v1/count_simulators'
 export const GET_SIMULATORS_API = 'http://106.15.6.50:8091/api/v1/simulators'

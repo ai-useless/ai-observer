@@ -31,6 +31,9 @@
           {{ _simulator.language }}
         </q-btn>
         <q-space />
+        <div v-if='_simulator.reports > 0' class='text-grey-6' style='font-size: 12px;'>
+          {{ _simulator.reports || 0 }}次举报
+        </div>
         <q-btn
           v-if='showActions'
           flat
@@ -39,6 +42,7 @@
           icon='more_vert'
           color='grey-5'
           class='q-mr-sm'
+          size='12px'
         >
           <q-menu self='top right' anchor='bottom end'>
             <q-list>
@@ -46,9 +50,17 @@
                 v-if='enableActionReview'
                 dense
                 clickable v-close-popup
-                @click='onReviewClick'
+                @click='onReviewClick("APPROVED")'
               >
-                <q-item-section>审核</q-item-section>
+                <q-item-section>通过</q-item-section>
+              </q-item>
+              <q-item
+                v-if='enableActionReview'
+                dense
+                clickable v-close-popup
+                @click='onReviewClick("REJECTED")'
+              >
+                <q-item-section>拒绝</q-item-section>
               </q-item>
               <q-item
                 v-if='enableActionReport'
@@ -122,12 +134,12 @@ const onSelectLanguageClick = () => {
   selectingLanguage.value = true
 }
 
-const onReviewClick = () => {
-  // TODO
+const onReviewClick = (state: string) => {
+  simulator.Simulator.reviewSimulator(_simulator.value, state)
 }
 
 const onReportClick = () => {
-  // TODO
+  simulator.Simulator.reportSimulator(_simulator.value)
 }
 
 </script>
