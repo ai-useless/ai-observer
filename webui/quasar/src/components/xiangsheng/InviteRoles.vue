@@ -137,7 +137,7 @@ const ready = computed(() => {
   return topic.value?.length && participators.value.findIndex((el) => el.simulatorId === undefined || el.modelId === undefined) < 0
 })
 
-onMounted(() => {
+onMounted(async () => {
   const _uid = uuidv4()
   xiangsheng.Xiangsheng.setXiangsheng(_uid)
   setting.Setting.setCurrentMenu('xiangsheng')
