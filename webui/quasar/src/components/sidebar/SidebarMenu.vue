@@ -116,7 +116,7 @@
         clickable
         v-ripple
         @click='onSettingClick("person")'
-        style='border-radius: 16px; margin: 8px;'
+        style='border-radius: 16px; margin: 4px;'
         class='bg-gradient-blue text-white'
       >
         <q-item-section avatar>
@@ -133,7 +133,7 @@
         clickable
         v-ripple
         @click='onLoginClick'
-        style='border-radius: 16px; margin: 8px;'
+        style='border-radius: 16px; margin: 4px;'
         class='bg-gradient-blue text-white'
       >
         <q-item-section avatar>
