@@ -7,7 +7,7 @@
       :title-height='16'
       :title-font-size='16'
       :width='300'
-      :list-height='600'
+      :list-height='440'
       :simple='true'
       :can-set-language='true'
     />
