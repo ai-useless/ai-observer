@@ -1,7 +1,7 @@
 <template>
   <div class='column flex no-wrap fit'>
     <q-list>
-      <q-item style='height: 64px;' class='bg-gradient-blue text-white' clickable @click='onLogoClick'>
+      <q-item style='height: 64px;' class='bg-white text-grey-8' clickable @click='onLogoClick'>
         <q-item-section avatar>
           <div class='row'>
             <q-avatar>
@@ -20,7 +20,6 @@
             dense
             :icon='collapsed ? "menu_open" : "menu"'
             @click.stop='collapsed = !collapsed'
-            color='white'
           />
         </q-item-section>
       </q-item>
