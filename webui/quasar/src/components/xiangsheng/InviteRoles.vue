@@ -137,11 +137,7 @@ const ready = computed(() => {
   return topic.value?.length && participators.value.findIndex((el) => el.simulatorId === undefined || el.modelId === undefined) < 0
 })
 
-onMounted(async () => {
-  const _uid = uuidv4()
-  xiangsheng.Xiangsheng.setXiangsheng(_uid)
-  setting.Setting.setCurrentMenu('xiangsheng')
-
+const initializeParticipators = async () => {
   for (let i = 0; i < participatorCount.value; i++) {
     participators.value.push({
       seminarUid: _uid,
@@ -149,10 +145,17 @@ onMounted(async () => {
       role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST
     } as unknown as dbModel.Participator)
   }
+}
+
+onMounted(() => {
+  const _uid = uuidv4()
+  xiangsheng.Xiangsheng.setXiangsheng(_uid)
+  setting.Setting.setCurrentMenu('xiangsheng')
 
   simulator.Simulator.getSimulators()
   model.Model.getModels(() => {
     onChangeTopicsClick()
+    void initializeParticipators()
   })
 })
 
@@ -162,13 +165,8 @@ const onStartXiangshengClick = async () => {
 }
 
 const randomSelect = async () => {
-  for (let i = 0; i < participators.value.length; i++) {
-    participators.value[i] = {
-      seminarUid: _uid,
-      modelId: await dbBridge._Model.topicModelId(),
-      role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST
-    } as unknown as dbModel.Participator
-  }
+  await initializeParticipators()
+
   for (let i = 0; i < participators.value.length; i++) {
     while (true) {
       let _simulator = await dbBridge._Simulator.randomPeek(i === 0 ? true : undefined)
