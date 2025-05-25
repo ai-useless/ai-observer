@@ -10,7 +10,7 @@
           class='cursor-pointer'
         >
           <div v-for='(result, index) in searchResults' :key='index' :style='{padding: "16px 0"}'>
-            <div style='display: flex; line-height: 36px;' class='q-py-md'>
+            <div style='display: flex; line-height: 36px; align-items: center;' class='q-py-md'>
               <q-avatar size='36px'>
                 <q-img :src='modelLogo(result.modelId)' style='height: 36px; width: 36px; border-radius: 50%;' />
               </q-avatar>
