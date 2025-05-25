@@ -18,7 +18,7 @@
                 {{ modelName(result.modelId) }}
               </div>
             </div>
-            <div v-html='result.message' />
+            <div v-html='result.message' class='full-width' style='margin: 0 !important;' />
           </div>
         </q-scroll-area>
         <div class='flex justify-center items-center'>

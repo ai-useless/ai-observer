@@ -75,6 +75,14 @@ export const purifyHtmlThink = (html: string): string => {
     .replace(/`/g, '')
     .replace(/#/g, '')
     .replace(/\*/g, '')
+    .replace(/<!DOCTYPE html[^>]*>/gi, '')
+    .replace(/<html[^>]*>/gi, '')
+    .replace(/<\/html>/gi, '')
+    .replace(/<body[^>]*>/gi, '')
+    .replace(/<\/body>/gi, '')
+    .replace(/<head[^>]*>/gi, '')
+    .replace(/<\/head>/gi, '')
+    .replace(/html/g, '')
     .trim()
 }
 
