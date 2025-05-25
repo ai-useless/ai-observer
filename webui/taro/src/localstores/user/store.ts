@@ -8,7 +8,8 @@ export const useUserStore = defineStore('user', {
     username: undefined as unknown as string,
     avatar: undefined as unknown as string,
     avatarUrl: undefined as unknown as string,
-    displayAvatar: undefined as unknown as string
+    displayAvatar: undefined as unknown as string,
+    mySimulators: 0
   }),
   actions: {
     getUser(code: string, done?: (error: boolean) => void) {
@@ -17,8 +18,10 @@ export const useUserStore = defineStore('user', {
         .get(url)
         .then((resp) => {
           if (!resp.data) return
+
           this.username = resp.data.wechat_username
           this.avatarUrl = resp.data.wechat_avatar_url
+          this.mySimulators = resp.data.my_simulators
 
           this.getAvatar(done)
         })
@@ -80,4 +83,6 @@ export class User {
   static logined = () => user.username && (user.avatar || user.avatarUrl)
   static cookUser = (code: string, done?: (error: boolean) => void) =>
     user.cookUser(code, done)
+
+  static mySimulators = () => user.mySimulators
 }

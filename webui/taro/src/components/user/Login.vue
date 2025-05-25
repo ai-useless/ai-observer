@@ -5,7 +5,7 @@
       <View style='margin-top: 16px;'>
         <View style='display: flex; align-items: center;'>
           <View v-if='username' style='font-weight: 600; color: gray;'>{{ username }}</View>
-          <Input v-else type='nickname' placeholder='获取微信昵称' :value='wechatName' @input='onNicknameInput' style='height: 26px; width: 90px;' />
+          <Input v-else type='nickname' placeholder='获取微信昵称' :value='wechatName' @input='onNicknameInput' style='height: 26px; width: 100px;' />
           <Button v-if='!_avatar' open-type='chooseAvatar' @chooseAvatar='onChooseAvatar' size='mini' plain style='font-size: 12px; color: gray; margin-left: 8px; width: 48px;' class='plain-btn'>获取头像</Button>
         </View>
         <View v-if='!username || !_avatar' style='font-size: 12px; color: blue;'>获取头像和昵称后自动登录</View>
@@ -36,7 +36,7 @@ const modal = toRef(props, 'modal')
 const username = computed(() => user.User.username())
 const avatarUrl = computed(() => user.User.avatarUrl())
 const avatar = computed(() => user.User.avatar())
-const mySimulatorsCount = computed(() => simulator.Simulator.mySimulatorsCount())
+const mySimulatorsCount = computed(() => user.User.mySimulators())
 
 const wechatName = ref('')
 const wechatAvatar = ref('')
@@ -69,23 +69,6 @@ const onLoginClick = () => {
       icon: 'error',
       duration: 1000
     })
-  })
-
-  Taro.getUserProfile({
-    desc: '用于完善用户信息',
-    success: (res) => {
-      logining.value = false
-      user.User.setAvatar(res.userInfo.avatarUrl)
-      user.User.setUsername(res.userInfo.nickName)
-    },
-    fail: () => {
-      logining.value = false
-      Taro.showToast({
-        title: '更新用户信息失败！',
-        icon: 'error',
-        duration: 1000
-      })
-    }
   })
 }
 
