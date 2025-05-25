@@ -6,7 +6,7 @@
     <View style='margin-left: 8px; width: 100%;'>
       <View style='display: flex; align-items: center; width: 100%; flex-wrap: wrap;'>
         <View style='font-size: 16px; color: black; font-weight: 600;'>{{ _simulator.simulator }}</View>
-        <View style='margin-left: 4px; display: flex; height: 100%; padding-top: 2px;'>
+        <View style='margin-left: 4px; display: flex; height: 100%; padding-top: 2px;' @click='onPlayClick'>
           <Image :src='playCircle' style='width: 16px; height: 16px;' />
         </View>
         <View v-if='showLanguage' style='margin-left: 4px; font-size: 12px; color: lightblue; line-height: 16px;' @click='onOpenSelectLanguageClick'>
@@ -58,6 +58,7 @@ import { AtModal, AtModalHeader, AtModalContent, AtModalAction, AtActionSheet, A
 import { simulator } from 'src/localstores'
 import { timestamp } from 'src/utils'
 import { dbBridge } from 'src/bridge'
+import { AudioPlayer } from 'src/player'
 
 import { playCircle, threeDotsVertical } from 'src/assets'
 
@@ -87,6 +88,8 @@ const _languages = dbBridge._Language.languages()
 const selectingLanguage = ref(false)
 const showPopupMenu = ref(false)
 
+const playing = ref(false)
+
 const onLanguageSelectorClose = () => {
   selectingLanguage.value = false
 }
@@ -104,6 +107,14 @@ const onOpenSelectLanguageClick = (e: { stopPropagation: () => void }) => {
 const onActionClick = (e: { stopPropagation: () => void }) => {
   e.stopPropagation()
   showPopupMenu.value = true
+}
+
+const onPlayClick = (e: { stopPropagation: () => void }) => {
+  e.stopPropagation()
+  playing.value = true
+  void AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
+    playing.value = false
+  })
 }
 
 const onSelectLanguageClick = (_language: string) => {
