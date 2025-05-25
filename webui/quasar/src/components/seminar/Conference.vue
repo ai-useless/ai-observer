@@ -1,6 +1,6 @@
 <template>
   <div class='row'>
-    <div style='width: 960px; max-height: 100%;'>
+    <div style='width: 960px; max-width: 100%; max-height: 100%;'>
       <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg' style='height: 220px'>
         <div class='full-width' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}

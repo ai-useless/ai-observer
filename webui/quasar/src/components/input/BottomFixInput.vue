@@ -1,5 +1,5 @@
 <template>
-  <BottomFixArea :max-width='maxWidth'>
+  <BottomFixArea :max-width='maxWidth' :width='width'>
     <q-input
       v-model='message'
       :placeholder='placeholder'
@@ -33,7 +33,8 @@ interface Props {
   placeholder: string
   disabled?: boolean
   loading?: boolean
-  maxWidth?: number
+  maxWidth?: string
+  width?: string
 }
 const props = defineProps<Props>()
 const placeholder = toRef(props, 'placeholder')

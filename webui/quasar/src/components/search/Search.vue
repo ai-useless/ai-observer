@@ -28,7 +28,8 @@
             @enter='onPromptEnter'
             :disabled='searching'
             :loading='searching'
-            :max-width='720'
+            width='720px'
+            max-width='100%'
           />
         </div>
       </div>
