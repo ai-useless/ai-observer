@@ -211,7 +211,7 @@ const onLaughClick = () => {
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     if (enableLaugh.value && lastDisplayMessage.value?.isTitle === false)
-      void AudioPlayer.play('http://106.15.6.50:81/download/mp3/laugh.mp3')
+      void AudioPlayer.play('http://8.133.205.39:81/download/mp3/laugh.mp3')
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()

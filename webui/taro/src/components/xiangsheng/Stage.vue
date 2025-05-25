@@ -89,7 +89,7 @@ import { xiangshengWorker } from 'src/worker'
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
-const backgroundImage = ref('http://106.15.6.50:81/download/images/xiangshengwutai.png')
+const backgroundImage = ref('http://8.133.205.39:81/download/images/xiangshengwutai.png')
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 

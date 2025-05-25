@@ -105,7 +105,7 @@ import { gotoBottom, gotoTop, volumeOff, volumeUp, dominoMask } from 'src/assets
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
-const backgroundImage = ref('http://106.15.6.50:81/download/images/xiangshengwutai.png')
+const backgroundImage = ref('http://8.133.205.39:81/download/images/xiangshengwutai.png')
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
@@ -187,7 +187,7 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     if (typingMessage.value?.last) {
-      void AudioPlayer.play('http://106.15.6.50:81/download/mp3/laugh.mp3')
+      void AudioPlayer.play('http://8.133.205.39:81/download/mp3/laugh.mp3')
       typingMessageIndex.value = 0
     } else {
       typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
