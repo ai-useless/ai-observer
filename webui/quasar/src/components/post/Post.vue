@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
-      <div style='height: 100vh; width: min(100%, 960px);' class='bg-grey-2'>
+      <div style='height: 100vh; width: 960px; max-width: 100%;' class='bg-grey-2'>
         <q-resize-observer @resize='onContentBoxResize' />
         <q-scroll-area
           style='height: calc(100% - 64px); width: 100%;'
@@ -276,7 +276,7 @@
   <q-dialog v-model='previewingImage' maximized>
     <q-card
       tabindex='0'
-      style='width: min(100%, 1280px); max-height: min(calc(100% - 64px), 1280px); outline:none;'
+      style='width: 1280px; max-width: 100%; max-height: calc(100% - 64px); height: 1280px; outline:none;'
       ref='previewPanel'
       @keydown.left='onPrevPreviewImage'
       @keydown.right='onNextPreviewImage'

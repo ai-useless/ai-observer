@@ -17,39 +17,49 @@
         />
       </div>
       <q-separator />
-      <div class='row full-width'>
-        <div style='width: 160px; height: 400px;' class='bg-grey-2'>
+      <q-layout view='hHh Lpr lFf' container style='width: 640px; max-width: 100%; height: 400px'>
+        <q-drawer
+          class='bg-grey-2'
+          show-if-above
+          v-model='collapsed'
+          :breakpoint='400'
+          :width='160'
+        >
           <SettingSideBar />
-        </div>
+        </q-drawer>
         <q-separator vertical />
-        <q-tab-panels v-model='settingMenu' animated style='max-width: calc(100% - 196px); min-width: 440px;'>
-          <q-tab-panel name='settings' class='full-width'>
-            <Settings />
-          </q-tab-panel>
-          <q-tab-panel name='person'>
-            <User />
-          </q-tab-panel>
-          <q-tab-panel name='createSimulator'>
-            <CookSimulator />
-          </q-tab-panel>
-          <q-tab-panel name='mySimulators'>
-            <MySimulators />
-          </q-tab-panel>
-          <q-tab-panel name='allSimulators'>
-            <AllSimulators />
-          </q-tab-panel>
-          <q-tab-panel name='models'>
-            <Models />
-          </q-tab-panel>
-        </q-tab-panels>
-      </div>
+        <q-page-container>
+          <q-page style='height: 1px;'>
+            <q-tab-panels v-model='settingMenu' animated style='max-width: 100%; width: 480px;' class='full-height'>
+              <q-tab-panel name='settings' class='full-width'>
+                <Settings />
+              </q-tab-panel>
+              <q-tab-panel name='person'>
+                <User />
+              </q-tab-panel>
+              <q-tab-panel name='createSimulator'>
+                <CookSimulator />
+              </q-tab-panel>
+              <q-tab-panel name='mySimulators'>
+                <MySimulators />
+              </q-tab-panel>
+              <q-tab-panel name='allSimulators'>
+                <AllSimulators />
+              </q-tab-panel>
+              <q-tab-panel name='models'>
+                <Models />
+              </q-tab-panel>
+            </q-tab-panels>
+          </q-page>
+        </q-page-container>
+      </q-layout>
     </q-card>
   </div>
 </template>
 
 <script setup lang='ts'>
 import { setting } from 'src/localstores'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 import SettingSideBar from '../sidebar/SettingSideBar.vue'
 import Settings from './Settings.vue'
@@ -60,6 +70,8 @@ import AllSimulators from '../simulator/AllSimulators.vue'
 import Models from '../model/Models.vue'
 
 const settingMenu = computed(() => setting.Setting.currentSettingMenu())
+
+const collapsed = ref(true)
 
 const onCloseClick = () => {
   setting.Setting.setShowSetting(false)

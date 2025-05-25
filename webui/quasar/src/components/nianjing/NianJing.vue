@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
-      <div style='height: 100vh; width: min(100%, 600px);' class='bg-grey-2'>
+      <div style='height: 100vh; width: 600px; max-width: 100%;' class='bg-grey-2'>
         <div>
           <div style='font-size: 18px; font-weight: 600; margin: 8px 16px; text-align: center; height: 32px; line-height: 32px;'>
             <q-avatar size='32px'>

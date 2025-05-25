@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
-      <div style='height: 100vh; width: min(100%, 960px);' class='bg-grey-2'>
+      <div style='height: 100vh; width: 960px; max-width: 100%;' class='bg-grey-2'>
         <q-scroll-area
           style='height: calc(100% - 80px); width: 100%; padding: 0 24px;'
           ref='chatBox'

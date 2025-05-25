@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
-      <div style='height: 100vh; width: min(100%, 600px);' class='bg-grey-2'>
+      <div style='height: 100vh; width: 600px; max-width: 100%;' class='bg-grey-2'>
         <div class='full-width text-center q-py-sm text-bold text-grey-9'>
           {{ friend?.simulator }} | {{ _model?.name }}
         </div>

@@ -20,7 +20,7 @@
         </div>
       </div>
       <div style='width: 100%; height: calc(100% - 220px - 4px);' class='bg-grey-2'>
-        <div v-if='!displayMessages.length && !lastDisplayMessage' class='full-width flex justify-center items-center' style='height: 100%; width: min(100%, 600px);'>
+        <div v-if='!displayMessages.length && !lastDisplayMessage' class='full-width flex justify-center items-center' style='height: 100%; width: 600px; max-width: 100%;'>
           <div
             style='margin-top: 16px; font-size: 20px;'
             class='text-center text-grey-8 flex justify-center items-center'

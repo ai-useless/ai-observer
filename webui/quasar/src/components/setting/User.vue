@@ -32,16 +32,18 @@
         </q-avatar>
       </div>
     </q-item>
-    <q-btn
-      flat
-      dense
-      rounded
-      icon='logout'
-      class='full-width border-gradient-bg-white q-mt-md text-grey-8'
-      @click='onLogoutClick'
-    >
-      退出登录
-    </q-btn>
+    <div class='q-mx-md q-mt-md'>
+      <q-btn
+        flat
+        dense
+        rounded
+        icon='logout'
+        class='full-width border-gradient-bg-white text-grey-8'
+        @click='onLogoutClick'
+      >
+        退出登录
+      </q-btn>
+    </div>
   </div>
 </template>
 

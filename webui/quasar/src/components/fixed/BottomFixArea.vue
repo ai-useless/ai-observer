@@ -3,10 +3,10 @@
     :style='{
       position: "fixed",
       bottom: 0,
-      width: "100%",
       background: backgroundColor || "white",
       zIndex: 1000,
-      maxWidth: `min(100%, ${maxWidth || 600}px)`,
+      maxWidth: "100%",
+      width: `${maxWidth}px`,
       borderRadius: (borderRadius || 24) + "px",
       marginBottom: "16px"
     }'

@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: min(800px, 100%); min-width: 800px; height: 100vh; overflow: scroll;' class='hide-scrollbar'>
+  <div style='max-width: 100%; width: 800px; min-width: 800px; height: 100vh; overflow: scroll;' class='hide-scrollbar'>
     <div style='height: 280px'>
       <q-img :src='backgroundImage' style='width: 100%; height: 280px;' fit='cover' />
       <div style='margin-top: -138px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.8; padding: 8px 32px; text-align: center;'>
@@ -44,7 +44,7 @@
       </div>
     </div>
     <div style='width: 100%; height: calc(100% - 280px - 4px);' class='bg-grey-2'>
-      <div v-if='!displayMessages.length' class='full-width flex justify-center items-center' style='height: 100%; width: min(100%, 600px);'>
+      <div v-if='!displayMessages.length' class='full-width flex justify-center items-center' style='height: 100%; width: 600px; max-width: 100%;'>
         <div
           style='margin-top: 16px; font-size: 20px;'
           class='text-center text-grey-8 flex justify-center items-center'

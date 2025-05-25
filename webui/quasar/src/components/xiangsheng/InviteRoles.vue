@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: min(800px, 100%); min-width: 800px; height: calc(100vh - 80px); overflow: scroll;' class='hide-scrollbar'>
+  <div style='max-width: 800px; width: 800px; height: calc(100vh - 80px); overflow: scroll;' class='hide-scrollbar'>
     <q-card class='bg-gradient-blue no-border-radius'>
       <q-card-section>
         <div class='flex justify-center items-center' style='height: 160px;'>

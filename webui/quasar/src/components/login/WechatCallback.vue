@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <q-dialog v-model='processing' persistent>
-      <q-card style='width: min(100%, 320px); height: 400px' class='column'>
+      <q-card style='width: 320px; max-width: 100%; height: 400px' class='column'>
         <q-card-section>微信扫码登录</q-card-section>
         <q-separator />
         <q-card-section class='q-mt-auto q-pa-none' style='flex-grow: 1; overflow: auto;'>
