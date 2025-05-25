@@ -1,5 +1,8 @@
 <template>
   <div class='full-height full-width'>
+    <div v-if='!allSimulators.length' class='text-center text-grey-8'>
+      AGI模拟器都开小差了~ 问问管理员咋回事吧！
+    </div>
     <q-scroll-area
       ref='chatBox'
       :bar-style='{ width: "2px" }'
