@@ -174,12 +174,15 @@ async def get_user(code: str | None, jwt_token: str | None):
     if jwt_token is None:
         jwt_token = openid_2_token(openid, userinfo)
 
+    my_simulators = db.count_simulators(openid)
+
     print(4)
     return {
         'token': jwt_token,
         'wechat_username': userinfo['wechat_username'],
         'wechat_avatar': userinfo['wechat_avatar'],
         'as_reviewer': True if 'as_reviewer' in userinfo and userinfo['as_reviewer'] == 1 else False,
+        'my_simulators': my_simulators,
     }
 
 async def cook_user(code: str, username: str | None, avatar: str | None):
