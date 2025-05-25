@@ -139,7 +139,7 @@ async def cook_simulator(code: str | None, jwt_token: str | None, username: str,
 
     # TODO: automatically review audio by another AI
 
-    return simulator
+    return file_cid
 
 async def count_simulators(code: str | None, jwt_token: str | None):
     try:
