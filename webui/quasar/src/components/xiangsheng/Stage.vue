@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: 100%; width: 800px; height: 100vh; overflow: scroll;' class='hide-scrollbar'>
+  <div :style='{ maxWidth: "100%", width: "800px", height: `${contentHeight}px`, overflow: "scroll" }' class='hide-scrollbar'>
     <div style='height: 280px'>
       <q-img :src='backgroundImage' style='width: 100%; height: 280px;' fit='cover' />
       <div style='margin-top: -138px; background-color: rgba(128, 128, 128, 0.8); opacity: 0.8; padding: 8px 32px; text-align: center;'>
@@ -57,13 +57,13 @@
       </div>
       <q-scroll-area
         v-else
-        style='height: calc(100% - 64px); width: 100%; padding: 0 24px 0 24px;'
+        style='height: calc(100% - 64px); width: 100%;'
         ref='chatBox'
         :bar-style='{ width: "2px" }'
         :thumb-style='{ width: "2px" }'
         @mouseenter='autoScroll = false'
         @mouseleave='autoScroll = true'
-        class='q-mt-xs cursor-pointer'
+        class='q-mt-xs cursor-pointer q-px-sm'
       >
         <div>
           <q-resize-observer @resize='onChatBoxResize' />
@@ -108,6 +108,8 @@ import MessageCard from './MessageCard.vue'
 import BottomFixInput from '../input/BottomFixInput.vue'
 
 import { gotoBottom, gotoTop, volumeOff, volumeUp, dominoMask } from 'src/assets'
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)

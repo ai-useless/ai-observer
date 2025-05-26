@@ -1,8 +1,8 @@
 <template>
   <q-page>
-    <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
+    <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
       <q-resize-observer @resize='onWindowResize' />
-      <div style='height: 100vh; width: 600px; max-width: 100%;' class='bg-grey-2'>
+      <div style='height: 100%; width: 600px; max-width: 100%;' class='bg-grey-2'>
         <div class='full-width q-py-sm text-bold text-grey-9 flex justify-center items-center'>
           <div>{{ friend?.simulator }} | {{ _model?.name }}</div>
           <q-btn
@@ -115,6 +115,8 @@ interface Message {
   hint: boolean
   audio?: string
 }
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const message = ref('')
 const audioError = ref('')

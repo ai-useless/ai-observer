@@ -5,7 +5,8 @@ export const useSettingStore = defineStore('setting', {
     tabIndex: -1,
     currentMenu: '',
     showSetting: false,
-    currentSettingMenu: ''
+    currentSettingMenu: '',
+    contentHeight: 0
   }),
   actions: {},
   getters: {}
@@ -29,4 +30,8 @@ export class Setting {
   static currentSettingMenu = () => setting.currentSettingMenu
 
   static setCurrentSettingMenu = (v: string) => (setting.currentSettingMenu = v)
+
+  static contentHeight = () => setting.contentHeight
+
+  static setContentHeight = (v: number) => (setting.contentHeight = v)
 }

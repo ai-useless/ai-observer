@@ -1,8 +1,8 @@
 <template>
   <q-page>
-    <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
+    <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
       <q-resize-observer @resize='onWindowResize' />
-      <div style='height: 100vh; width: 600px; max-width: 100%;' class='bg-grey-2'>
+      <div style='height: 100%; width: 600px; max-width: 100%;' class='bg-grey-2'>
         <div>
           <div style='font-size: 18px; font-weight: 600; margin: 8px 16px; text-align: center; height: 32px; line-height: 32px;'>
             <q-avatar size='32px'>
@@ -94,6 +94,8 @@ import { Platform, QScrollArea } from 'quasar'
 import BottomFixInput from '../input/BottomFixInput.vue'
 import RightBottomSimulatorList from '../list/RightBottomSimulatorList.vue'
 import SimulatorList from '../list/SimulatorList.vue'
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const prompt = ref('般若波罗密心经')
 const inputPrompt = ref(prompt.value)

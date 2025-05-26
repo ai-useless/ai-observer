@@ -1,5 +1,5 @@
 <template>
-  <q-page class='flex justify-center'>
+  <q-page class='flex justify-center full-height'>
     <Stage />
   </q-page>
 </template>

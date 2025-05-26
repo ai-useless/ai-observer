@@ -151,7 +151,7 @@
 </template>
 
 <script setup lang='ts'>
-import { computed, defineModel, onMounted } from 'vue'
+import { computed, defineModel, onBeforeUnmount, onMounted } from 'vue'
 import { setting, user } from 'src/localstores'
 import { useRouter } from 'vue-router'
 
@@ -209,8 +209,17 @@ const showSetting = computed({
   }
 })
 
+const updateWindowHeight = () => {
+  setting.Setting.setContentHeight(window.innerHeight)
+}
+
 onMounted(() => {
+  window.addEventListener('resize', updateWindowHeight)
   user.User.getUser()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', updateWindowHeight)
 })
 
 </script>

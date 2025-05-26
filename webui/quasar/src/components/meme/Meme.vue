@@ -1,7 +1,7 @@
 <template>
   <q-page>
-    <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
-      <div style='height: 100vh; width: 960px; max-width: 100%;' class='bg-grey-2'>
+    <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
+      <div style='height: 100%; width: 960px; max-width: 100%;' class='bg-grey-2'>
         <q-scroll-area
           style='height: calc(100% - 64px); width: 100%;'
           ref='chatBox'
@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang='ts'>
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { entityBridge } from 'src/bridge'
 import { model, setting } from 'src/localstores'
 import { QScrollArea } from 'quasar'
@@ -50,6 +50,8 @@ import { QScrollArea } from 'quasar'
 import BottomFixInput from '../input/BottomFixInput.vue'
 
 const prompt = ref('一只极度震惊的猫咪，漫画风格，表情夸张，带有“当你发现代码全错了”的文字，上下标题格式')
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const audioInput = ref(false)
 const audioError = ref('')

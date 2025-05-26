@@ -1,6 +1,6 @@
 <template>
   <div class='row full-width flex justify-center'>
-    <div style='width: 100%; max-width: 960px; max-height: 100%;'>
+    <div :style='{width: "100%", maxWidth: "960px", height: `${contentHeight}px`}'>
       <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg' style='height: 220px'>
         <div class='full-width' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}
@@ -105,6 +105,8 @@ import { useRouter } from 'vue-router'
 import SimulatorCard from './SimulatorCard.vue'
 import Outline from './Outline.vue'
 import { seminarWorker } from 'src/worker'
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const $q = useQuasar()
 

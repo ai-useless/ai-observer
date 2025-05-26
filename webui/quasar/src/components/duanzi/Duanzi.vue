@@ -1,7 +1,7 @@
 <template>
   <q-page>
-    <div style='height: 100%; width: 100%;' class='flex justify-center items-center'>
-      <div v-if='!displayMessages.length && !lastDisplayMessage' class='flex justify-center items-center bg-grey-2' style='height: calc(100vh - 4px); width: 600px; max-width: 100%;'>
+    <div :style='{height: `${contentHeight}px`, width: "100%"}' class='flex justify-center items-center'>
+      <div v-if='!displayMessages.length && !lastDisplayMessage' class='flex justify-center items-center bg-grey-2' style='height: calc(100% - 4px); width: 600px; max-width: 100%;'>
         <div
           style='margin-top: 16px; font-size: 20px;'
           class='text-center text-grey-8 flex justify-center items-center'
@@ -12,9 +12,9 @@
           </div>
         </div>
       </div>
-      <div v-else style='height: calc(100vh - 4px); width: 600px; max-width: 100%;' class='bg-grey-2'>
+      <div v-else style='height: calc(100% - 4px); width: 600px; max-width: 100%;' class='bg-grey-2'>
         <q-scroll-area
-          style='height: calc(100vh - 4px - 28px); width: 600px; max-width: 100%;'
+          style='height: calc(100% - 4px - 28px); width: 600px; max-width: 100%;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
@@ -100,6 +100,8 @@ interface Message extends MessageBase {
 }
 
 const models = computed(() => model.Model.models())
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const displayMessages = ref([] as Message[])
 const waitMessages = ref(new Map<string, Message>())

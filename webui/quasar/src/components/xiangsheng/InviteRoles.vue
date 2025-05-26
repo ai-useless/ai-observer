@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: 800px; width: 100%; height: 100vh;'>
+  <div :style='{ maxWidth: "100%", width: "800px", height: `${contentHeight}px` }'>
     <div style='height: calc(100% - 64px); overflow: scroll;' class='full-width hide-scrollbar'>
       <q-card class='bg-gradient-blue no-border-radius'>
         <q-card-section>
@@ -122,6 +122,8 @@ import { xiangshengWorker } from 'src/worker'
 import RoleCardVertical from './RoleCardVertical.vue'
 import SimulatorSelector from '../selector/SimulatorSelector.vue'
 import BottomFixInput from '../input/BottomFixInput.vue'
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const participatorCount = ref(2)
 const participators = ref([] as dbModel.Participator[])

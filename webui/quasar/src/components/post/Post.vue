@@ -1,7 +1,7 @@
 <template>
   <q-page>
-    <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
-      <div style='height: 100vh; width: 960px; max-width: 100%;' class='bg-grey-2'>
+    <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
+      <div style='height: 100%; width: 960px; max-width: 100%;' class='bg-grey-2'>
         <q-resize-observer @resize='onContentBoxResize' />
         <q-scroll-area
           style='height: calc(100% - 64px); width: 100%;'
@@ -304,12 +304,14 @@
 </template>
 
 <script setup lang='ts'>
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { model, setting } from 'src/localstores'
 import { QCard, QScrollArea } from 'quasar'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const audioInput = ref(false)
 const audioError = ref('')

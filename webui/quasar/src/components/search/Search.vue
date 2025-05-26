@@ -1,7 +1,7 @@
 <template>
   <q-page>
-    <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
-      <div style='height: 100vh; width: 960px; max-width: 100%;' class='bg-grey-2'>
+    <div :style='{ width: "100%", height: `${contentHeight}px` }' class='flex justify-center items-center'>
+      <div style='height: 100%; width: 960px; max-width: 100%;' class='bg-grey-2'>
         <q-scroll-area
           style='height: calc(100% - 64px); width: 100%; padding: 0 24px;'
           ref='chatBox'
@@ -39,11 +39,13 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { model, search, simulator } from 'src/localstores'
+import { model, search, setting, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
 import { computed, onMounted, ref, watch, nextTick } from 'vue'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
+
+const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const models = computed(() => model.Model.models())
 const searchResults = ref([] as search.SearchResult[])
