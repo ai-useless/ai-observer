@@ -34,7 +34,7 @@
         <div v-if='generating' class='flex justify-center items-center' style='height: 128px; width: 100%'>
           <div class='text-center'>
             <q-spinner-facebook class='text-red-4' size='64px' />
-            <div>师傅正在准备，请稍后...</div>
+            <div>师傅正在准备，请稍候...</div>
           </div>
         </div>
         <q-scroll-area
