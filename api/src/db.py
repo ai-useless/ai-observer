@@ -287,7 +287,7 @@ class Db:
         return count
 
     def get_simulators(self, wechat_openid: str | None, offset: int, limit: int):
-        query = f'SELECT wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host, reports, disabled FROM {self.table_simulators} WHERE disabled=0'
+        query = f'SELECT id, wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host, reports, disabled FROM {self.table_simulators} WHERE disabled=0'
         query += f' AND wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
         query += ' ORDER BY timestamp DESC'
         query += f' LIMIT {limit} OFFSET {offset}'
