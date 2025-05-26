@@ -4,7 +4,10 @@
       <q-resize-observer @resize='onWindowResize' />
       <div style='height: 100%; width: 600px; max-width: 100%;' class='bg-grey-2'>
         <div class='full-width q-py-sm text-bold text-grey-9 flex justify-center items-center'>
-          <div>{{ friend?.simulator }} | {{ _model?.name }}</div>
+          <q-avatar size='36px'>
+            <q-img :src='friend?.simulator_avatar_url' />
+          </q-avatar>
+          <div class='q-ml-sm'>{{ friend?.simulator }} | {{ _model?.name }}</div>
           <q-btn
             v-if='showSelectingFriend'
             flat
@@ -24,23 +27,12 @@
           :thumb-style='{ width: "2px" }'
           class='cursor-pointer'
         >
-          <div style='font-size: 14px;'>
-            <div v-for='(_message, index) in messages' :key='index' :style='{display: "flex", padding: "4px 0", flexDirection: _message.send ? "row-reverse" : "row"}'>
-              <div v-if='!_message.send'>
-                <q-img :src='_message.avatar' style='width: 48px; height: 48px; border-radius: 50%;' />
-              </div>
-              <div v-else style='margin-left: 8px;'>
-                <q-img :src='_message.avatar' style='width: 48px; height: 48px; border-radius: 50%;' />
-              </div>
-              <div style='margin-left: 16px;'>
-                <div :style='{backgroundColor: _message.hint ? "rgba(160, 160, 160, 0.2)" : _message.send ? "#07c160" : "white", color: _message.hint ? "black" : _message.send ? "white" : "black", borderRadius: _message.send ? "16px 16px 0 16px" : "16px 16px 16px 0", padding: "8px", border: "1px solid rgba(200, 200, 200, 0.3)"}'>
-                  <div>{{ _message.message }}</div>
-                </div>
-                <div style='margin-top: 4px; font-size: 12px; color: gray;'>
-                  {{ _message.displayTime }}
-                </div>
-              </div>
+          <div style='font-size: 16px;'>
+            <q-resize-observer @resize='onChatBoxResize' />
+            <div v-for='(_message, index) in displayMessages' :key='index'>
+              <MessageCard :message='_message' />
             </div>
+            <MessageCard v-if='lastDisplayMessage' :message='lastDisplayMessage' />
             <div class='full-width flex justify-center items-center'>
               <q-btn
                 flat
@@ -91,12 +83,14 @@ import { model, setting, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { AudioPlayer } from 'src/player'
 import { useRouter } from 'vue-router'
-import { Platform } from 'quasar'
+import { Platform, QScrollArea } from 'quasar'
+import { typing as _typing, Message as MessageBase } from 'src/typing'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
 import RightBottomSimulatorList from '../list/RightBottomSimulatorList.vue'
 import WechatLogin from '../login/WechatLogin.vue'
 import SimulatorList from '../list/SimulatorList.vue'
+import MessageCard from './MessageCard.vue'
 
 interface Props {
   language: string
@@ -105,24 +99,26 @@ interface Props {
 const props = defineProps<Props>()
 const language = toRef(props, 'language')
 
-interface Message {
-  message: string
+interface Message extends MessageBase {
   send: boolean
-  createdAt: number
-  displayTime?: string
   displayName: string
   avatar: string
   hint: boolean
-  audio?: string
 }
 
 const contentHeight = computed(() => setting.Setting.contentHeight())
 
+const chatBox = ref<QScrollArea>()
+
 const message = ref('')
 const audioError = ref('')
 
-const messages = ref([] as Message[])
-
+const displayMessages = ref([] as Message[])
+const nextRequestIndex = ref(0)
+const waitMessages = ref(new Map<string, Message>())
+const lastDisplayMessage = ref(undefined as unknown as Message)
+const typingMessage = ref(undefined as unknown as Message)
+const typingMessageIndex = ref(0)
 const friend = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
 
@@ -138,87 +134,92 @@ const windowWidth = ref(0)
 const showSelectingFriend = computed(() => Platform.is.mobile || windowWidth.value < 1280)
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
+const typingInterval = ref(80)
+const typingTicker = ref(-1)
 
 const router = useRouter()
 
-const sendToFriend = (_message: string) => {
+const sendToFriend = (_message: string, requestIndex: number) => {
   friendThinking.value = true
-  entityBridge.EChat.chat(friend.value.id, friend.value.simulator, friend.value.origin_personality, username.value, [...messages.value.map((el) => `${el.send ? friend.value.simulator : username.value}: ${el.message}`), _message], _model.value.id, language.value || '中文', (_message?: string, audio?: string, error?: string) => {
+
+  const messages = [...displayMessages.value, ...(typingMessage.value ? [typingMessage.value] : []), ...Array.from(waitMessages.value.values())]
+
+  entityBridge.EChat.chat(friend.value.id, friend.value.simulator, friend.value.origin_personality, username.value, [...messages.map((el) => `${el.send ? friend.value.simulator : username.value}: ${el.message}`), _message], _model.value.id, language.value || '中文', (_message?: string, audio?: string, error?: string) => {
     friendThinking.value = false
     if (error && error.length) {
-      messages.value.push({
+      waitMessages.value.set(`${error}-${requestIndex}`, {
         message: error,
         send: false,
-        createdAt: Date.now(),
+        timestamp: Date.now(),
         displayName: friend.value.simulator,
         hint: true,
-        avatar: friend.value.simulator_avatar_url
+        avatar: friend.value.simulator_avatar_url,
+        index: requestIndex,
+        audio: undefined as unknown as string
       })
       return
     }
-    messages.value.push({
+    waitMessages.value.set(`${_message}-${requestIndex}`, {
       message: _message as string,
       send: false,
-      createdAt: Date.now(),
+      timestamp: Date.now(),
       displayName: friend.value.simulator,
       hint: false,
       avatar: friend.value.simulator_avatar_url,
-      audio
+      index: requestIndex,
+      audio: audio as unknown as string
     })
-    if (audio) {
-      AudioPlayer.play(audio).then((player) => {
-        if (!player) return
-        audioPlayer.value = player
-      }).catch((e) => {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        console.log(`Failed play audio: ${e}`)
-      })
-    }
   })
 }
 
 watch(message, () => {
   if (!audioInput.value || !message.value || !message.value.length) return
 
-  messages.value.push({
+  displayMessages.value.push({
     message: message.value,
     send: true,
-    createdAt: Date.now(),
+    timestamp: Date.now(),
     displayName: username.value,
     hint: false,
-    avatar: userAvatar.value
+    avatar: userAvatar.value,
+    index: -1,
+    audio: undefined as unknown as string
   })
 
-  sendToFriend(message.value)
+  sendToFriend(message.value, nextRequestIndex.value++)
   message.value = ''
 })
 
 watch(audioError, () => {
   if (!audioInput.value || !audioError.value || !audioError.value.length) return
 
-  messages.value.push({
+  displayMessages.value.push({
     message: audioError.value,
     send: true,
-    createdAt: Date.now(),
+    timestamp: Date.now(),
     displayName: username.value,
     hint: true,
-    avatar: userAvatar.value
+    avatar: userAvatar.value,
+    index: -1,
+    audio: undefined as unknown as string
   })
 
   audioError.value = ''
 })
 
 const onMessageEnter = (_message: string) => {
-  messages.value.push({
+  displayMessages.value.push({
     message: _message,
     send: true,
-    createdAt: Date.now(),
+    timestamp: Date.now(),
     displayName: username.value,
     hint: false,
-    avatar: userAvatar.value
+    avatar: userAvatar.value,
+    index: -1,
+    audio: undefined as unknown as string
   })
 
-  sendToFriend(message.value)
+  sendToFriend(message.value, nextRequestIndex.value++)
   message.value = ''
 }
 
@@ -235,16 +236,41 @@ watch(username, () => {
 })
 
 const initializeMessage = () => {
-  messages.value = [{
+  displayMessages.value = [{
     message: language.value === '中文'
       ? `您好，我是${friend.value.simulator}，是你在AGI世界的伙伴。我的模型是${_model.value.name}。你可以和我聊任何你想聊的话题，记得要健康哦！如果你想和其他伙伴沟通，可以点击对话框旁边的按钮切换伙伴哦！现在，开始我们愉快的聊天吧！`
       : `Hello, I'm ${friend.value.simulator}, your friend in AGI world. I'm driven by llm model ${_model.value.name}. Now you can talk with me about any topic. If you would like to chat with other guys, switch with button besides the input box. Now let's go!`,
     send: false,
-    createdAt: Date.now(),
+    timestamp: Date.now(),
     displayName: friend.value.simulator,
     hint: true,
-    avatar: friend.value.simulator_avatar_url
+    avatar: friend.value.simulator_avatar_url,
+    index: -1,
+    audio: undefined as unknown as string
   }]
+}
+
+const typing = () => {
+  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
+    lastDisplayMessage.value = undefined as unknown as Message
+  }, typing).then((rc) => {
+    if (!rc) return
+
+    if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
+    if (rc.lastDisplayMessage) {
+      lastDisplayMessage.value = rc.lastDisplayMessage
+    }
+    if (rc.typingInterval) {
+      typingInterval.value = rc.typingInterval
+      typingTicker.value = rc.typingTicker as number
+    }
+    if (rc.typingMessage) typingMessage.value = rc.typingMessage
+
+    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+  }).catch((e) => {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    console.log(`Failed typing: ${e}`)
+  })
 }
 
 const initializeChat = async () => {
@@ -269,6 +295,8 @@ onMounted(() => {
       void initializeChat()
     })
   })
+
+  typingTicker.value = window.setInterval(typing, 100)
 })
 
 const onSimulatorSelected = (_simulator: simulator._Simulator) => {
@@ -284,6 +312,10 @@ const onCancelLogin = () => {
 
 const onWindowResize = (size: { width: number }) => {
   windowWidth.value = size.width
+}
+
+const onChatBoxResize = (size: { height: number }) => {
+  chatBox.value?.setScrollPosition('vertical', size.height, 300)
 }
 
 </script>
