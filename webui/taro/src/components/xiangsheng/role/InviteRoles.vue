@@ -169,20 +169,20 @@ const onChangeTopicsClick = () => {
 const onTopicClick = (_topic: string) => {
   xiangsheng.Xiangsheng.setTopic(_topic)
   if (!host.value || !guest.value) return
-  startXiangsheng(xiangshengWorker.Intent.GENERATE)
+  startXiangsheng(_topic, xiangshengWorker.Intent.GENERATE)
 }
 
 const onScriptsClick = () => {
   xiangsheng.Xiangsheng.setTopic('经典相声原剧本')
   if (!host.value || !guest.value) return
-  startXiangsheng(xiangshengWorker.Intent.CLASSIC_SCRIPTS)
+  startXiangsheng(topic.value, xiangshengWorker.Intent.CLASSIC_SCRIPTS)
 }
 
 const onTopicInput = (e: { detail: { value: string } }) => {
   xiangsheng.Xiangsheng.setTopic(e.detail.value)
 }
 
-const startXiangsheng = (intent: xiangshengWorker.Intent) => {
+const startXiangsheng = (_topic: string, intent: xiangshengWorker.Intent) => {
   const _uid = uuid.newUuid()
   const participators = [host.value, guest.value].map((el, index) => {
     return {
@@ -194,14 +194,14 @@ const startXiangsheng = (intent: xiangshengWorker.Intent) => {
   }) as dbModel.Participator[]
 
   // TODO: check if it's a valid topic
-  dbBridge._Xiangsheng.create(_uid, topic.value, participators, intent)
+  dbBridge._Xiangsheng.create(_uid, _topic, participators, intent)
   xiangsheng.Xiangsheng.setXiangsheng(_uid)
   setting.Setting.setTabIndex(2)
   Taro.switchTab({ url: '/pages/xiangsheng/XiangshengPage' })
 }
 
 const onStartShowClick = () => {
-  startXiangsheng(xiangshengWorker.Intent.GENERATE)
+  startXiangsheng(topic.value, xiangshengWorker.Intent.GENERATE)
 }
 
 const onGotoOtherClick = () => {
