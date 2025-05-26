@@ -1,13 +1,13 @@
 <template>
   <div class='full-width'>
-    <q-card class='q-pb-sm border-radius-16px' :style='{ width: `${width}px`, maxWidth: "100%" }'>
-      <q-card-section class='text-grey-9'>
+    <q-card :flat='!showTitle' class='q-pb-sm border-radius-16px' :style='{ width: `${width}px`, maxWidth: "100%" }'>
+      <q-card-section v-if='showTitle' class='text-grey-9'>
         <div class='text-center' :style='{height: `${titleHeight}px`, fontSize: `${titleFontSize}px`}'>
           {{ title }}
         </div>
       </q-card-section>
 
-      <q-separator />
+      <q-separator v-if='showTitle' />
 
       <q-card-section>
         <q-input
@@ -81,6 +81,7 @@ interface Props {
   listHeight?: number
   simple?: boolean
   canSetLanguage?: boolean
+  showTitle?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   title: '选择模拟器',
@@ -88,7 +89,8 @@ const props = withDefaults(defineProps<Props>(), {
   hideIds: () => [] as number[],
   listHeight: 500,
   titleHeight: 24,
-  titleFontSize: 16
+  titleFontSize: 16,
+  showTitle: true
 })
 const title = toRef(props, 'title')
 const width = toRef(props, 'width')
@@ -98,6 +100,7 @@ const simple = toRef(props, 'simple')
 const canSetLanguage = toRef(props, 'canSetLanguage')
 const titleHeight = toRef(props, 'titleHeight')
 const titleFontSize = toRef(props, 'titleFontSize')
+const showTitle = toRef(props, 'showTitle')
 
 const simulators = ref([] as simulator._Simulator[])
 const selectedSimulator = defineModel<simulator._Simulator>('selected')

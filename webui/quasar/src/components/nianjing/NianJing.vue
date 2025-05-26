@@ -1,6 +1,7 @@
 <template>
   <q-page>
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
+      <q-resize-observer @resize='onWindowResize' />
       <div style='height: 100vh; width: 600px; max-width: 100%;' class='bg-grey-2'>
         <div>
           <div style='font-size: 18px; font-weight: 600; margin: 8px 16px; text-align: center; height: 32px; line-height: 32px;'>
@@ -69,29 +70,30 @@
           />
         </div>
       </div>
-      <div v-if='selectingSpeaker' class='full-height q-pt-lg'>
-        <RightFixArea :max-width='300' :margin-top='48'>
-          <SimulatorList
-            v-model:selected='speaker'
-            @selected='onSimulatorSelected'
-          />
-        </RightFixArea>
+      <div v-if='!showSelectingSpeaker' class='full-height q-pt-lg'>
+        <RightBottomSimulatorList @selected='onSimulatorSelected' />
       </div>
     </div>
+    <q-dialog v-if='showSelectingSpeaker' v-model='selectingSpeaker'>
+      <SimulatorList
+        v-model:selected='speaker'
+        @selected='onSimulatorSelected'
+      />
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup lang='ts'>
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { model, setting, simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
-import { QScrollArea } from 'quasar'
+import { Platform, QScrollArea } from 'quasar'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
+import RightBottomSimulatorList from '../list/RightBottomSimulatorList.vue'
 import SimulatorList from '../list/SimulatorList.vue'
-import RightFixArea from '../fixed/RightFixArea.vue'
 
 const prompt = ref('般若波罗密心经')
 const inputPrompt = ref(prompt.value)
@@ -117,6 +119,8 @@ const typingInterval = ref(40)
 
 const generating = ref(false)
 const selectingSpeaker = ref(false)
+const windowWidth = ref(0)
+const showSelectingSpeaker = computed(() => !Platform.is.mobile && windowWidth.value < 1280)
 
 const speaker = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
@@ -223,16 +227,11 @@ const onSimulatorSelected = (_simulator: simulator._Simulator) => {
   speaker.value = _simulator
 }
 
+const onWindowResize = (size: { width: number }) => {
+  windowWidth.value = size.width
+}
+
 </script>
 
 <style lang='sass'>
-.plain-btn
-  border: none !important
-  background-color: transparent
-  box-shadow: none !important
-  padding: 0 !important
-
-.plain-btn::after
-  border: none !important
-  content: none !important
 </style>

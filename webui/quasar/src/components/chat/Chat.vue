@@ -1,10 +1,12 @@
 <template>
   <q-page>
     <div style='width: 100%; height: 100vh;' class='flex justify-center items-center'>
+      <q-resize-observer @resize='onWindowResize' />
       <div style='height: 100vh; width: 600px; max-width: 100%;' class='bg-grey-2'>
         <div class='full-width q-py-sm text-bold text-grey-9 flex justify-center items-center'>
           <div>{{ friend?.simulator }} | {{ _model?.name }}</div>
           <q-btn
+            v-if='showSelectingFriend'
             flat
             dense
             color='light-blue'
@@ -67,17 +69,18 @@
           />
         </div>
       </div>
-      <div v-if='selectingFriend' class='full-height q-pt-lg'>
-        <RightFixArea :max-width='300' :margin-top='48'>
-          <SimulatorList
-            v-model:selected='friend'
-            @selected='onSimulatorSelected'
-          />
-        </RightFixArea>
+      <div v-if='!showSelectingFriend' class='full-height q-pt-lg'>
+        <RightBottomSimulatorList @selected='onSimulatorSelected' />
       </div>
     </div>
     <q-dialog v-model='logining' persistent>
       <WechatLogin @cancel='onCancelLogin' />
+    </q-dialog>
+    <q-dialog v-if='showSelectingFriend' v-model='selectingFriend'>
+      <SimulatorList
+        v-model:selected='friend'
+        @selected='onSimulatorSelected'
+      />
     </q-dialog>
   </q-page>
 </template>
@@ -88,9 +91,10 @@ import { model, setting, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { AudioPlayer } from 'src/player'
 import { useRouter } from 'vue-router'
+import { Platform } from 'quasar'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
-import RightFixArea from '../fixed/RightFixArea.vue'
+import RightBottomSimulatorList from '../list/RightBottomSimulatorList.vue'
 import WechatLogin from '../login/WechatLogin.vue'
 import SimulatorList from '../list/SimulatorList.vue'
 
@@ -128,6 +132,8 @@ const audioInput = ref(false)
 const friendThinking = ref(false)
 const logining = ref(false)
 const selectingFriend = ref(false)
+const windowWidth = ref(0)
+const showSelectingFriend = computed(() => !Platform.is.mobile && windowWidth.value < 1280)
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
@@ -274,16 +280,11 @@ const onCancelLogin = () => {
   void router.push({ path: '/' })
 }
 
+const onWindowResize = (size: { width: number }) => {
+  windowWidth.value = size.width
+}
+
 </script>
 
 <style lang='sass'>
-.plain-btn
-  border: none !important
-  background-color: transparent
-  box-shadow: none !important
-  padding: 0 !important
-
-.plain-btn::after
-  border: none !important
-  content: none !important
 </style>
