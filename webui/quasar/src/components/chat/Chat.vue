@@ -133,7 +133,7 @@ const friendThinking = ref(false)
 const logining = ref(false)
 const selectingFriend = ref(false)
 const windowWidth = ref(0)
-const showSelectingFriend = computed(() => !Platform.is.mobile && windowWidth.value < 1280)
+const showSelectingFriend = computed(() => Platform.is.mobile && windowWidth.value < 1280)
 
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 

@@ -120,7 +120,7 @@ const typingInterval = ref(40)
 const generating = ref(false)
 const selectingSpeaker = ref(false)
 const windowWidth = ref(0)
-const showSelectingSpeaker = computed(() => !Platform.is.mobile && windowWidth.value < 1280)
+const showSelectingSpeaker = computed(() => Platform.is.mobile && windowWidth.value < 1280)
 
 const speaker = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
