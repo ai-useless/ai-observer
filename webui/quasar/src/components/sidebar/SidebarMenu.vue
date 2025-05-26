@@ -92,7 +92,7 @@
     <div class='q-mt-auto' />
 
     <q-list separator>
-      <q-item clickable v-ripple @click='onSettingClick("createSimulator")'>
+      <q-item v-if='logined' clickable v-ripple @click='onSettingClick("createSimulator")'>
         <q-item-section avatar>
           <q-icon name='add' />
         </q-item-section>
