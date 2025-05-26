@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang='ts'>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { model, setting, simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
@@ -122,7 +122,7 @@ const typingInterval = ref(40)
 const generating = ref(false)
 const selectingSpeaker = ref(false)
 const windowWidth = ref(0)
-const showSelectingSpeaker = computed(() => Platform.is.mobile && windowWidth.value < 1280)
+const showSelectingSpeaker = computed(() => Platform.is.mobile || windowWidth.value < 1280)
 
 const speaker = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
@@ -140,7 +140,6 @@ const generate = (_prompt: string) => {
   audioPlayer.value = undefined as unknown as AudioPlayer
 
   entityBridge.ENianJing.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
-    generating.value = false
     inputPrompt.value = ''
 
     waitMessages.value.set(`${message}-${index}`, {
@@ -192,6 +191,21 @@ onMounted(async () => {
   bgPlayer.value = await AudioPlayer.play('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
 })
 
+onBeforeUnmount(() => {
+  if (typingTicker.value >= 0) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
+  if (bgPlayer.value) {
+    bgPlayer.value.stop()
+    bgPlayer.value = undefined as unknown as AudioPlayer
+  }
+})
+
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 const bgPlayer = ref(undefined as unknown as AudioPlayer)
 
@@ -221,6 +235,9 @@ const typing = () => {
       }
       displayMessages.value = []
       typingMessageIndex.value = 0
+    }
+    if (typingMessage.value && typingMessage.value.first) {
+      generating.value = false
     }
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
