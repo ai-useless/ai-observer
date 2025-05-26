@@ -35,6 +35,9 @@
         <div v-if='_simulator.reports > 0' class='text-grey-6' style='font-size: 12px;'>
           {{ _simulator.reports || 0 }}次举报
         </div>
+        <div v-if='_simulator.state !== "CREATED"' class='text-grey-6' style='font-size: 12px;'>
+          {{ _simulator.state === 'APPROVED' ? '已通过' : '已拒绝' }}
+        </div>
         <q-btn
           v-if='showActions'
           flat
@@ -48,7 +51,7 @@
           <q-menu self='top right' anchor='bottom end'>
             <q-list>
               <q-item
-                v-if='enableActionReview'
+                v-if='enableActionReview && _simulator.state === "CREATED"'
                 dense
                 clickable v-close-popup
                 @click='onReviewClick("APPROVED")'
@@ -56,7 +59,7 @@
                 <q-item-section>通过</q-item-section>
               </q-item>
               <q-item
-                v-if='enableActionReview'
+                v-if='enableActionReview && _simulator.state === "CREATED"'
                 dense
                 clickable v-close-popup
                 @click='onReviewClick("REJECTED")'
