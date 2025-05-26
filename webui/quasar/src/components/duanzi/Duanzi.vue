@@ -14,7 +14,7 @@
       </div>
       <div v-else style='height: calc(100% - 4px); width: 600px; max-width: 100%;' class='bg-grey-2'>
         <q-scroll-area
-          style='height: calc(100% - 4px - 28px); width: 600px; max-width: 100%;'
+          style='height: calc(100% - 4px - 28px); width: 600px; max-width: 100%; overflow-x: hidden;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
@@ -27,7 +27,7 @@
             <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : ""}'>
               <div v-if='message.isTitle' style='display: flex; line-height: 32px; padding: 16px;'>
                 <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
-                <div style='font-weight: 400; font-size: 18px; line-height: 32px;' class='text-grey-6 q-ml-sm flex'>
+                <div style='font-weight: 400; font-size: 18px; line-height: 1.2em;' class='text-grey-6 q-ml-sm flex items-center'>
                   {{ modelName(message.modelId) }}
                 </div>
               </div>
