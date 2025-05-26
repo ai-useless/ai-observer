@@ -215,8 +215,7 @@ const randomSelect = () => {
 
   for (let i = 0; i < guests.value.length; i++) {
     while (true) {
-      let _simulator = dbBridge._Simulator.randomPeek(i === 0 ? true : undefined)
-      if (!_simulator) _simulator = dbBridge._Simulator.randomPeek()
+      let _simulator = dbBridge._Simulator.randomPeek()
       if (guests.value.findIndex((el) => el && el.simulator === _simulator.simulator) >= 0) continue
       guests.value[i] = _simulator
       break
