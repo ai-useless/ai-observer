@@ -9,6 +9,7 @@
       transition-show='slide-in-left'
       transition-hide='slide-out-left'
       class='bg-grey-2'
+      swipe-area='50'
     >
       <SidebarMenu v-model:collapsed='collapsed' />
     </q-drawer>
