@@ -189,13 +189,11 @@ const randomSelect = async () => {
       let _simulator = await dbBridge._Simulator.randomPeek(i === 0 ? true : undefined)
       if (!_simulator) _simulator = await dbBridge._Simulator.randomPeek()
       if (participators.value.findIndex((el) => el && el.simulatorId === _simulator.id) >= 0) continue
-      let _model = await dbBridge._Model.randomPeek(i === 0 ? true : undefined)
-      if (!_model) _model = await dbBridge._Model.randomPeek()
       participators.value[i] = {
         seminarUid: _uid.value,
         role: i === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
         simulatorId: _simulator.id,
-        modelId: _model.id
+        modelId: await dbBridge._Model.topicModelId()
       } as dbModel.Participator
       break
     }
