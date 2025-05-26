@@ -365,7 +365,8 @@ class Db:
                 VALUES (%s, %s, %s, %s, %s) as alias
                 ON DUPLICATE KEY UPDATE
                 wechat_username=alias.wechat_username,
-                wechat_avatar=alias.wechat_avatar
+                wechat_avatar=alias.wechat_avatar,
+                as_reviewer=alias.as_reviewer
             ''',
             (wechat_openid,
              wechat_username,
