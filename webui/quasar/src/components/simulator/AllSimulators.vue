@@ -10,19 +10,21 @@
       class='q-mt-xs cursor-pointer full-height full-width'
     >
       <div v-for='(_simulator, index) in allSimulators' :key='index'>
-        <SimulatorCard :simulator='_simulator' show-actions show-language enable-action-report />
+        <SimulatorCard :simulator='_simulator' show-actions show-language enable-action-report v-model:playing='playing' />
       </div>
     </q-scroll-area>
   </div>
 </template>
 
 <script setup lang='ts'>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { simulator } from 'src/localstores'
 
 import SimulatorCard from './SimulatorCard.vue'
 
 const allSimulators = computed(() => simulator.Simulator.allSimulators())
+
+const playing = ref(false)
 
 onMounted(() => {
   simulator.Simulator.getSimulators()

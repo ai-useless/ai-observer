@@ -36,7 +36,7 @@
               class='q-px-lg'
             >
               <q-item-section>
-                <SimulatorCard :simulator='_simulator' :simple='simple' :can-set-language='canSetLanguage' />
+                <SimulatorCard :simulator='_simulator' :simple='simple' :can-set-language='canSetLanguage' v-model:playing='playing' />
               </q-item-section>
               <q-item-section side>
                 <q-icon
@@ -118,6 +118,8 @@ const filteredSimulators = computed(() => {
     simulator.origin_personality.toLowerCase().includes(simulatorSearch.value.toLowerCase())
   )
 })
+
+const playing = ref(false)
 
 const emit = defineEmits<{(ev: 'selected', simulator: simulator._Simulator): void,
   (ev: 'cancel'): void

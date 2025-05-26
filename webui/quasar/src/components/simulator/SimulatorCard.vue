@@ -17,6 +17,7 @@
           class='text-blue-4 q-mr-xs q-py-none q-px-none'
           style='font-size: 12px;'
           @click.stop='onPlayClick'
+          :disabled='playing'
         >
           试听
         </q-btn>
@@ -117,8 +118,13 @@ const enableActionReview = toRef(props, 'enableActionReview')
 const selectingLanguage = ref(false)
 const selectedLanguage = ref(_simulator.value.language)
 
+const playing = defineModel<boolean>('playing')
+
 const onPlayClick = async () => {
-  await AudioPlayer.play(_simulator.value.audio_url)
+  playing.value = true
+  await AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
+    playing.value = false
+  })
 }
 
 const onCancelSelectLanguage = () => {
