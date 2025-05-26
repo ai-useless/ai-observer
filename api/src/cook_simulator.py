@@ -252,8 +252,8 @@ async def review_simulator(simulator: str, code: str | None, jwt_token: str | No
 async def report_simulator(simulator: str, code: str | None, jwt_token: str | None):
     openid = await get_openid_with_code_or_token(code, jwt_token)
 
-    simulator = db.get_simulator_with_simulator(simulator)
-    if simulator is None:
+    _simulator = db.get_simulator_with_simulator(simulator)
+    if _simulator is None:
         raise Exception('Invalid simulator')
 
     userinfo = db.get_user(openid)
