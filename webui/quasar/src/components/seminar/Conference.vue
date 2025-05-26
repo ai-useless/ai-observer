@@ -1,12 +1,12 @@
 <template>
-  <div class='row full-width'>
+  <div class='row full-width flex justify-center'>
     <div style='width: 100%; max-width: 960px; max-height: 100%;'>
       <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg' style='height: 220px'>
         <div class='full-width' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}
         </div>
         <q-scroll-area style='height: 128px;' class='full-width'>
-          <div class='row q-pa-sm no-wrap' style='transition: 500ms;'>
+          <div class='row q-pa-sm no-wrap flex justify-center' style='transition: 500ms;'>
             <simulator-card v-if='host?.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
             <div class='flex items-end no-wrap' style='margin-left: 24px;'>
               <simulator-card
@@ -86,7 +86,7 @@
         </q-scroll-area>
       </div>
     </div>
-    <Outline v-if='outline' :json='outline' style='margin-left: 16px; margin-top: 40px; max-width: 120px;' :active-topic='activeTopic || ""' />
+    <Outline v-if='outline && $q.screen.width > 1440' :json='outline' style='margin-left: 16px; margin-top: 40px; max-width: 120px;' :active-topic='activeTopic || ""' />
   </div>
 </template>
 
@@ -96,15 +96,17 @@ import { model, seminar, setting, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
-import { QScrollArea } from 'quasar'
+import { QScrollArea, useQuasar } from 'quasar'
 import { purify } from 'src/utils'
 import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
+import { useRouter } from 'vue-router'
 
 import SimulatorCard from './SimulatorCard.vue'
 import Outline from './Outline.vue'
 import { seminarWorker } from 'src/worker'
-import { useRouter } from 'vue-router'
+
+const $q = useQuasar()
 
 const _uid = computed(() => seminar.Seminar.seminar())
 const _seminar = ref(undefined as unknown as dbModel.Seminar)
