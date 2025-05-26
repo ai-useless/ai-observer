@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: 800px; width: 800px; height: 100vh;'>
+  <div style='max-width: 800px; width: 100%; height: 100vh;'>
     <div style='height: calc(100% - 64px); overflow: scroll;' class='full-width hide-scrollbar'>
       <q-card class='bg-gradient-blue no-border-radius'>
         <q-card-section>
@@ -29,70 +29,78 @@
           </div>
         </q-card-section>
       </q-card>
-      <div class='q-mb-lg'>
-        <div class='flex items-center'>
-          <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
-          <h4 class='q-ml-md text-grey-9'>
-            演员
-          </h4>
-          <q-space />
-          <q-btn
-            class='text-blue-6'
-            rounded
-            flat
-            dense
-            @click='onRandomSelectClick'
-          >
-            随机安排
-          </q-btn>
+      <div class='q-px-sm'>
+        <div class='q-mb-lg'>
+          <div class='flex items-center'>
+            <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
+            <h4 class='q-ml-md text-grey-9'>
+              演员
+            </h4>
+            <q-space />
+            <q-btn
+              class='text-blue-6'
+              rounded
+              flat
+              dense
+              @click='onRandomSelectClick'
+            >
+              随机安排
+            </q-btn>
+          </div>
+          <div class='row q-col-gutter-md'>
+            <div
+              v-for='(participator, index) of participators'
+              :key='index'
+              class='col-12 col-md-6'
+              @click='onParticipatorClick(index)'
+            >
+              <RoleCardVertical
+                :participator='participator'
+                :role='index === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST'
+              />
+            </div>
+          </div>
         </div>
-        <div class='row q-col-gutter-md'>
-          <div
-            v-for='(participator, index) of participators'
-            :key='index'
-            class='col-12 col-md-6'
-            @click='onParticipatorClick(index)'
-          >
-            <RoleCardVertical
-              :participator='participator'
-              :role='index === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST'
+        <div style='margin-top: 48px; width: 100%;'>
+          <div style='border-bottom: 1px solid gray;' class='row items-center'>
+            <div style='color: gray;'>
+              您可能对这些感兴趣
+            </div>
+            <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
+              <q-tooltip style='font-size: 14px;'>
+                您知道吗：这些相声主题都是AGI实时生成的。
+              </q-tooltip>
+            </q-icon>
+            <q-space />
+            <q-btn
+              label='换一批'
+              color='blue'
+              flat
+              dense
+              @click='onChangeTopicsClick'
+              :loading='generating'
             />
           </div>
-        </div>
-      </div>
-      <div style='margin-top: 48px; width: 100%;'>
-        <div style='border-bottom: 1px solid gray;' class='row items-center'>
-          <div style='color: gray;'>
-            您可能对这些感兴趣
+          <div style='margin-top: 8px;' />
+          <div
+            v-for='_topic in topics'
+            :key='_topic'
+            style='color: blue; font-size: 16px;' class='text-left cursor-pointer'
+            @click='onTopicClick(_topic)'
+          >
+            {{ _topic }}
           </div>
-          <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
-            <q-tooltip style='font-size: 14px;'>
-              您知道吗：这些相声主题都是AGI实时生成的。
-            </q-tooltip>
-          </q-icon>
-          <q-space />
-          <q-btn
-            label='换一批'
-            color='blue'
-            flat
-            dense
-            @click='onChangeTopicsClick'
-            :loading='generating'
-          />
-        </div>
-        <div style='margin-top: 8px;' />
-        <div
-          v-for='_topic in topics'
-          :key='_topic'
-          style='color: blue; font-size: 16px;' class='text-left cursor-pointer'
-          @click='onTopicClick(_topic)'
-        >
-          {{ _topic }}
         </div>
       </div>
     </div>
     <div class='flex justify-center items-center'>
-      <BottomFixInput v-model='inputTopic' placeholder='请输入新的相声主题~' @enter='onTopicEnter' />
+      <BottomFixInput
+        v-model='inputTopic'
+        placeholder='请输入新的相声主题~'
+        @enter='onTopicEnter'
+        width='720px'
+        max-width='calc(100% - 8px)'
+      />
     </div>
   </div>
   <q-dialog v-model='selectingSimulator'>

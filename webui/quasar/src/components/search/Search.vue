@@ -29,6 +29,7 @@
             :disabled='searching'
             :loading='searching'
             width='720px'
+            max-width='calc(100% - 8px)'
           />
         </div>
       </div>

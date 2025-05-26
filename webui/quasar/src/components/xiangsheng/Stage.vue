@@ -79,7 +79,13 @@
       </q-scroll-area>
     </div>
     <div class='flex justify-center items-center'>
-      <BottomFixInput v-model='inputTopic' placeholder='请输入新的相声主题~' @enter='onTopicEnter' />
+      <BottomFixInput
+        v-model='inputTopic'
+        placeholder='请输入新的相声主题（下一段生效）~'
+        @enter='onTopicEnter'
+        width='720px'
+        max-width='calc(100% - 8px)'
+      />
     </div>
   </div>
 </template>
