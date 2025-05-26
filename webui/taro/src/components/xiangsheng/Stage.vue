@@ -280,7 +280,9 @@ const startXiangsheng = async () => {
   _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng
   playScripts.value = _xiangsheng.value.intent === xiangshengWorker.Intent.CLASSIC_SCRIPTS
 
-  eXiangsheng.value = new entityBridge.EXiangsheng(_xiangsheng.value, onMessage)
+  eXiangsheng.value = new entityBridge.EXiangsheng(_xiangsheng.value, onMessage, () => {
+    generating.value = false
+  })
   loading.value = true
 
   if (playScripts.value) eXiangsheng.value.startScripts()

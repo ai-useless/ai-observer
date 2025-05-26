@@ -12,6 +12,7 @@ type MessageFunc = (
   first: boolean,
   last: boolean
 ) => void | Promise<void>
+type TopicsGeneratedFunc = () => void
 
 export class EXiangsheng {
   private xiangsheng = undefined as unknown as dbModel.Xiangsheng
@@ -20,10 +21,12 @@ export class EXiangsheng {
   private generating = false
 
   private onMessage = undefined as unknown as MessageFunc
+  private onTopicsGenerated = undefined as unknown as TopicsGeneratedFunc
 
-  constructor(xiangsheng: dbModel.Xiangsheng, onMessage: MessageFunc) {
+  constructor(xiangsheng: dbModel.Xiangsheng, onMessage: MessageFunc, onTopicsGenerated: TopicsGeneratedFunc) {
     this.xiangsheng = xiangsheng
     this.onMessage = onMessage
+    this.onTopicsGenerated = onTopicsGenerated
   }
 
   participators = () => {
@@ -99,6 +102,7 @@ export class EXiangsheng {
 
   onTopicsResponse = (message: xiangshengWorker.TopicsResponsePayload) => {
     this.subTopics.push(...message.topics)
+    this.onTopicsGenerated()
     if (
       this.subTopicIndex < 0 ||
       this.subTopics.length - 1 <= this.subTopicIndex
