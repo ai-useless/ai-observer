@@ -25,7 +25,7 @@ export const GET_MODELS_API = 'http://8.133.205.39:8091/api/v1/models'
 export const SPEECH_TO_TEXT_API =
   'http://8.133.205.39:8091/api/v1/speech_to_text'
 
-export const UPLOAD_MEME_IMAGE = 'http://8.133.205.39/image/upload'
-export const MEME_OP_BASE = 'http://8.133.205.39/memes'
-export const GET_MEME_KEYS = 'http://8.133.205.39/meme/keys'
-export const GET_MEME_INFOS = 'http://8.133.205.39/meme/infos'
+export const UPLOAD_MEME_IMAGE = 'http://8.133.205.39:2233/image/upload'
+export const MEME_OP_BASE = 'http://8.133.205.39:2233/memes'
+export const GET_MEME_KEYS = 'http://8.133.205.39:2233/meme/keys'
+export const GET_MEME_INFOS = 'http://8.133.205.39:2233/meme/infos'

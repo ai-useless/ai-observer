@@ -63,6 +63,7 @@
             v-model='message'
             placeholder='随便聊点儿啥~'
             @enter='onMessageEnter'
+            style='width: 540px; max-width: calc(100% - 8px);'
           />
         </div>
       </div>

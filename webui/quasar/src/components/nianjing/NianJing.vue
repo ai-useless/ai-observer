@@ -63,6 +63,7 @@
             v-model='inputPrompt'
             placeholder='听一段经文，让心静下来~'
             @enter='onPromptEnter'
+            style='width: 540px; max-width: calc(100% - 8px);'
             :disabled='generating'
             :loading='generating'
           />

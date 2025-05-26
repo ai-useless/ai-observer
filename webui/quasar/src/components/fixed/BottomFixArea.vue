@@ -8,7 +8,7 @@
       maxWidth: `${maxWidth}`,
       width: `${width}`,
       borderRadius: (borderRadius || 24) + "px",
-      marginBottom: "4px"
+      margin: "4px"
     }'
   >
     <slot />
@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang='ts'>
+import { Platform } from 'quasar'
 import { defineProps, toRef, withDefaults } from 'vue'
 
 interface Props {
@@ -27,8 +28,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   borderRadius: 16,
   backgroundColor: 'transparent',
-  maxWidth: '600px',
-  width: '100%'
+  width: '600px',
+  maxWidth: Platform.is.mobile ? '100%' : '90%'
 })
 const borderRadius = toRef(props, 'borderRadius')
 const backgroundColor = toRef(props, 'backgroundColor')
