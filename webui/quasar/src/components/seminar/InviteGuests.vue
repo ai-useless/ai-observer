@@ -1,5 +1,5 @@
 <template>
-  <div style='max-width: 960px;'>
+  <div style='max-width: 960px; width: 100%;' class='full-width'>
     <q-card class='bg-gradient-blue no-border-radius'>
       <q-card-section>
         <div class='flex justify-center items-center' style='height: 240px;'>
@@ -23,57 +23,65 @@
         </div>
       </q-card-section>
     </q-card>
-    <div>
-      <div class='row items-center'>
-        <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
-        <h4 class='q-ml-md text-grey-9'>
-          主持人
-        </h4>
-        <q-space />
-        <q-btn
-          class='text-blue-6'
-          rounded
-          flat
-          dense
-          @click='onChangeTopicClick'
-        >
-          换个话题
-        </q-btn>
-        <q-btn
-          class='text-blue-6'
-          rounded
-          flat
-          dense
-          @click='onRandomSelectClick'
-        >
-          随机安排
-        </q-btn>
-      </div>
-      <div @click='onParticipatorClick(0)'>
-        <GuestCardHorizontal
-          :participator='host'
-          :role='dbModel.Role.HOST'
-        />
-      </div>
-    </div>
-    <div class='q-mb-lg'>
-      <div class='flex items-center'>
-        <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
-        <h4 class='q-ml-md text-grey-9'>
-          嘉宾
-        </h4>
-      </div>
-      <div class='row q-col-gutter-md'>
-        <div
-          v-for='(guest, index) of guests'
-          :key='index'
-          class='col-12 col-sm-6 col-md-4'
-          @click='onParticipatorClick(index + 1)'
-        >
+    <div class='q-px-sm'>
+      <div>
+        <div class='row items-center'>
+          <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
+          <h4 class='q-ml-md text-grey-9'>
+            主持人
+          </h4>
+          <q-space />
+          <q-btn
+            class='text-blue-6'
+            rounded
+            flat
+            dense
+            @click='onChangeTopicClick'
+          >
+            换个话题
+          </q-btn>
+          <q-btn
+            class='text-blue-6'
+            rounded
+            flat
+            dense
+            @click='onRandomSelectClick'
+          >
+            随机安排
+          </q-btn>
+        </div>
+        <div v-if='$q.screen.xs' @click='onParticipatorClick(0)'>
           <GuestCardVertical
-            :participator='guest'
-            :role='dbModel.Role.GUEST'
+            :participator='host'
+            :role='dbModel.Role.HOST'
           />
+        </div>
+        <div v-else @click='onParticipatorClick(0)'>
+          <GuestCardHorizontal
+            :participator='host'
+            :role='dbModel.Role.HOST'
+          />
+        </div>
+      </div>
+      <div class='q-mb-lg'>
+        <div class='flex items-center'>
+          <div class='bg-gradient-blue' style='height: 4px; width: 48px;' />
+          <h4 class='q-ml-md text-grey-9'>
+            嘉宾
+          </h4>
+        </div>
+        <div class='row q-col-gutter-md'>
+          <div
+            v-for='(guest, index) of guests'
+            :key='index'
+            class='col-12 col-sm-6 col-md-4'
+            @click='onParticipatorClick(index + 1)'
+          >
+            <GuestCardVertical
+              :participator='guest'
+              :role='dbModel.Role.GUEST'
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -92,10 +100,13 @@ import { dbModel } from 'src/model'
 import { useRouter } from 'vue-router'
 import { dbBridge } from 'src/bridge'
 import { v4 as uuidv4 } from 'uuid'
+import { useQuasar } from 'quasar'
 
 import GuestCardVertical from './GuestCardVertical.vue'
 import GuestCardHorizontal from './GuestCardHorizontal.vue'
 import SimulatorSelector from '../selector/SimulatorSelector.vue'
+
+const $q = useQuasar()
 
 const participatorCount = ref(7)
 const participators = ref([] as dbModel.Participator[])

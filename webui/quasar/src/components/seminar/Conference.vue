@@ -1,23 +1,25 @@
 <template>
-  <div class='row'>
-    <div style='width: 960px; max-width: 100%; max-height: 100%;'>
+  <div class='row full-width'>
+    <div style='width: 100%; max-width: 960px; max-height: 100%;'>
       <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg' style='height: 220px'>
         <div class='full-width' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}
         </div>
-        <div class='row' style='transition: 500ms;'>
-          <simulator-card v-if='host?.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
-          <div class='flex justify-end items-end' style='margin-left: 24px;'>
-            <simulator-card
-              :style='{marginLeft: index === 0 ? "0" : "16px"}'
-              v-for='(guest, index) in guests.filter((el) => el.simulator)'
-              :simulator='guest.simulator'
-              :small='true'
-              :key='index'
-              :is-host='false'
-            />
+        <q-scroll-area style='height: 128px;' class='full-width'>
+          <div class='row q-pa-sm no-wrap' style='transition: 500ms;'>
+            <simulator-card v-if='host?.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
+            <div class='flex items-end no-wrap' style='margin-left: 24px;'>
+              <simulator-card
+                :style='{marginLeft: index === 0 ? "0" : "16px"}'
+                v-for='(guest, index) in guests.filter((el) => el.simulator)'
+                :simulator='guest.simulator'
+                :small='true'
+                :key='index'
+                :is-host='false'
+              />
+            </div>
           </div>
-        </div>
+        </q-scroll-area>
       </div>
       <div style='width: 100%; height: calc(100% - 220px - 4px);' class='bg-grey-2'>
         <div v-if='!displayMessages.length && !lastDisplayMessage' class='full-width flex justify-center items-center' style='height: 100%; width: 600px; max-width: 100%;'>
@@ -42,7 +44,7 @@
           class='q-mt-xs bg-grey-2'
         >
           <div style='margin-top: 16px;'>
-            <div v-for='(message, index) in [...displayMessages, ...(lastDisplayMessage ? [lastDisplayMessage] : [])]' :key='index' class='bg-grey-2 q-px-lg'>
+            <div v-for='(message, index) in [...displayMessages, ...(lastDisplayMessage ? [lastDisplayMessage] : [])]' :key='index' class='bg-grey-2 q-px-md'>
               <q-chat-message
                 v-if='!message.subTopicTitle'
                 :key='index'
@@ -52,23 +54,25 @@
                 :text='[message.message]'
                 text-color='grey-9'
                 bg-color='grey-2'
-                style='line-height: 24px; font-size: 16px;'
+                style='line-height: 24px; font-size: 16px; max-width: 100%;'
               >
                 <template #name>
-                  <div style='padding-bottom: 4px; line-height: 24px;' class='row'>
+                  <div style='padding-bottom: 4px; line-height: 1em;'>
                     <div>
                       {{ message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name }}
                     </div>
-                    <q-img :src='message.model.author_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
+                  </div>
+                  <div class='row'>
+                    <q-img :src='message.model.author_logo_url' width='24px' fit='contain' />
                     <q-img :src='message.model.vendor_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
                     <q-img :src='message.model.model_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
-                    <div class='single-line-nowrap' style='max-width: 280px;'>
-                      | {{ message.simulator.origin_personality }}
-                    </div>
+                  </div>
+                  <div style='width: 100%; line-height: 1.2em;' class='q-mt-xs'>
+                    {{ message.simulator.origin_personality }}
                   </div>
                 </template>
                 <div>
-                  <div v-for='(_message, _index) in message.message.split("\n")' :key='_index' style='line-height: 1.5em; padding: 4px 0;'>
+                  <div v-for='(_message, _index) in message.message.split("\n")' :key='_index' style='line-height: 1.5em; padding: 4px 0; max-width: 100%;'>
                     <div v-html='_message' />
                   </div>
                 </div>

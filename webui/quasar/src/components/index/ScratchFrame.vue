@@ -1,5 +1,5 @@
 <template>
-  <div class='text-center'>
+  <div class='text-center full-width q-px-sm'>
     <div class='row full-width text-center justify-center items-center'>
       <q-avatar>
         <q-img :src='meipuAgiLogo' />
