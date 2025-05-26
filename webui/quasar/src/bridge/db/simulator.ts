@@ -26,7 +26,7 @@ export class _Simulator {
 
   static randomPeek = async (host?: boolean) => {
     const simulators = (await _Simulator.allSimulators()).filter(
-      (el) => host === undefined || el.host === host
+      (el) => host === undefined || !!el.host === host
     )
     const index = Math.floor(Math.random() * simulators.length)
     return simulators[index]
