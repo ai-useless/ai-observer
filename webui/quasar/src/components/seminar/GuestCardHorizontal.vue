@@ -14,72 +14,74 @@
       </div>
     </q-card-section>
 
-    <q-card-section class='text-grey-9'>
-      <div v-if='_simulator' class='full-height'>
-        <div class='full-width'>
-          <span class='text-bold text-gradient-red' style='font-size: 20px;'>{{ _simulator?.simulator }}</span>
-          <span class='q-ml-sm' style='font-size: 12px;'>{{ _simulator?.title }}</span>
-        </div>
-        <div style='margin-top: 40px;'>
-          <div>{{ _simulator?.origin_personality }}</div>
-          <div v-if='_model' class='q-mt-xs row'>
-            <div class='border-gradient-bg-white border-radius-round' style='width: 26px;'>
-              <q-avatar v-if='_model' size='24px'>
-                <q-img :src='_model.model_logo_url' />
-              </q-avatar>
+    <div style='width: calc(100% - 220px); height: 220px;'>
+      <q-card-section class='text-grey-9 flex items-center' style='height: calc(100% - 40px)'>
+        <div v-if='_simulator' class='full-height'>
+          <div class='full-width'>
+            <span class='text-bold text-gradient-red' style='font-size: 20px;'>{{ _simulator?.simulator }}</span>
+            <span class='q-ml-sm' style='font-size: 12px;'>{{ _simulator?.title }}</span>
+          </div>
+          <div style='margin-top: 40px;'>
+            <div>{{ _simulator?.origin_personality }}</div>
+            <div v-if='_model' class='q-mt-xs row'>
+              <div class='border-gradient-bg-white border-radius-round' style='width: 26px;'>
+                <q-avatar v-if='_model' size='24px'>
+                  <q-img :src='_model.model_logo_url' />
+                </q-avatar>
+              </div>
+              <div class='border-gradient-bg-white border-radius-round q-ml-xs' style='width: 26px;'>
+                <q-avatar v-if='_model' size='24px'>
+                  <q-img :src='_model.author_logo_url' />
+                </q-avatar>
+              </div>
+              <div class='border-gradient-bg-white border-radius-round q-ml-xs' style='width: 26px;'>
+                <q-avatar v-if='_model' size='24px'>
+                  <q-img :src='_model.vendor_logo_url' />
+                </q-avatar>
+              </div>
             </div>
-            <div class='border-gradient-bg-white border-radius-round q-ml-xs' style='width: 26px;'>
-              <q-avatar v-if='_model' size='24px'>
-                <q-img :src='_model.author_logo_url' />
-              </q-avatar>
-            </div>
-            <div class='border-gradient-bg-white border-radius-round q-ml-xs' style='width: 26px;'>
-              <q-avatar v-if='_model' size='24px'>
-                <q-img :src='_model.vendor_logo_url' />
-              </q-avatar>
+            <div v-if='_model' class='flex items-center text-grey-6 q-mt-xs'>
+              使用
+              <q-badge class='bg-gradient-blue q-mx-xs'>
+                {{ _model.vendor }}
+              </q-badge>
+              提供的
+              <q-badge class='bg-gradient-blue q-mx-xs'>
+                {{ _model.name }}
+              </q-badge>模型
             </div>
           </div>
-          <div v-if='_model' class='flex items-center text-grey-6 q-mt-xs'>
-            使用
-            <q-badge class='bg-gradient-blue q-mx-xs'>
-              {{ _model.vendor }}
-            </q-badge>
-            提供的
-            <q-badge class='bg-gradient-blue q-mx-xs'>
-              {{ _model.name }}
-            </q-badge>模型
-          </div>
         </div>
-      </div>
-      <div v-else class='full-height flex justify-center items-center'>
-        <span>点我设置AGI模拟器和模型为主持人~</span>
-        <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
-          <q-tooltip style='font-size: 14px;'>
-            您知道吗：模拟器设置主持人的人格和声音，模型设置主持人的生成内容的LLM模型。
-          </q-tooltip>
-        </q-icon>
-      </div>
-    </q-card-section>
+        <div v-else class='full-height flex justify-center items-center'>
+          <span>点我设置AGI模拟器和模型为主持人~</span>
+          <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
+            <q-tooltip style='font-size: 14px;'>
+              您知道吗：模拟器设置主持人的人格和声音，模型设置主持人的生成内容的LLM模型。
+            </q-tooltip>
+          </q-icon>
+        </div>
+      </q-card-section>
 
-    <q-space />
-
-    <q-card-actions align='right' class='flex justify-end items-end'>
-      <q-btn
-        flat
-        dense
-        label='听听声音'
-        class='border-gradient-bg-white border-radius-16px text-grey-9'
-        style='font-size: 12px;'
-      />
-      <q-btn
-        flat
-        dense
-        label='选择模型'
-        class='bg-gradient-blue border-radius-16px text-white'
-        style='font-size: 12px;'
-        @click.stop='onSelectModelClick'
-      />
-    </q-card-actions>
+      <q-card-actions align='right' class='flex justify-end items-end'>
+        <q-btn
+          flat
+          dense
+          label='听听声音'
+          class='border-gradient-bg-white border-radius-16px text-grey-9'
+          style='font-size: 12px;'
+          @click.stop='onPlayClick'
+          :disabled='playing || !_simulator'
+        />
+        <q-btn
+          flat
+          dense
+          label='选择模型'
+          class='bg-gradient-blue border-radius-16px text-white'
+          style='font-size: 12px;'
+          @click.stop='onSelectModelClick'
+        />
+      </q-card-actions>
+    </div>
   </q-card>
   <q-dialog v-model='selectingModel'>
     <div>
@@ -91,7 +93,8 @@
 <script setup lang='ts'>
 import { model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, ref, toRef } from 'vue'
+import { computed, onBeforeUnmount, ref, toRef } from 'vue'
+import { AudioPlayer } from 'src/player'
 
 import ModelSelector from '../selector/ModelSelector.vue'
 
@@ -111,6 +114,9 @@ const _model = computed(() => model.Model.model(participator.value?.modelId))
 const selectingModel = ref(false)
 const selectedModel = ref(undefined as unknown as model._Model)
 
+const playing = defineModel<boolean>('playing')
+const audioPlayer = ref(undefined as unknown as AudioPlayer)
+
 const onSelectModelClick = () => {
   selectingModel.value = true
 }
@@ -123,5 +129,21 @@ const onModelSelected = (_model: model._Model) => {
   selectingModel.value = false
   participator.value.modelId = _model.id
 }
+
+const onPlayClick = async () => {
+  if (!_simulator.value) return
+  playing.value = true
+  audioPlayer.value = await AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
+    playing.value = false
+  }) as AudioPlayer
+}
+
+onBeforeUnmount(() => {
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
+  playing.value = false
+})
 
 </script>

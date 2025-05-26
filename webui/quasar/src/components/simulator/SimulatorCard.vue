@@ -91,7 +91,7 @@
 <script setup lang='ts'>
 import { simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
-import { defineProps, ref, toRef, withDefaults } from 'vue'
+import { defineProps, onBeforeUnmount, ref, toRef, withDefaults } from 'vue'
 
 import LanguageSelector from '../selector/LanguageSelector.vue'
 
@@ -119,12 +119,13 @@ const selectingLanguage = ref(false)
 const selectedLanguage = ref(_simulator.value.language)
 
 const playing = defineModel<boolean>('playing')
+const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
 const onPlayClick = async () => {
   playing.value = true
-  await AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
+  audioPlayer.value = await AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
     playing.value = false
-  })
+  }) as AudioPlayer
 }
 
 const onCancelSelectLanguage = () => {
@@ -147,5 +148,13 @@ const onReviewClick = (state: string) => {
 const onReportClick = () => {
   simulator.Simulator.reportSimulator(_simulator.value)
 }
+
+onBeforeUnmount(() => {
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
+  playing.value = false
+})
 
 </script>

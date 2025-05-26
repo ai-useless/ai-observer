@@ -54,12 +54,14 @@
           <GuestCardVertical
             :participator='host'
             :role='dbModel.Role.HOST'
+            v-model:playing='playing'
           />
         </div>
         <div v-else @click='onParticipatorClick(0)'>
           <GuestCardHorizontal
             :participator='host'
             :role='dbModel.Role.HOST'
+            v-model:playing='playing'
           />
         </div>
       </div>
@@ -80,6 +82,7 @@
             <GuestCardVertical
               :participator='guest'
               :role='dbModel.Role.GUEST'
+              v-model:playing='playing'
             />
           </div>
         </div>
@@ -126,6 +129,8 @@ const selectedSimulatorIds = computed(() => participators.value.filter((el) => e
 const ready = computed(() => {
   return topic.value?.length && participators.value.findIndex((el) => !el) < 0
 })
+
+const playing = ref(false)
 
 onMounted(() => {
   setting.Setting.setCurrentMenu('observer')
