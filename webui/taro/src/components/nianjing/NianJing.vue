@@ -60,7 +60,7 @@
 
 <script setup lang='ts'>
 import { View, Image, Button } from '@tarojs/components'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { dbBridge, entityBridge } from 'src/bridge'
 import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
@@ -122,6 +122,7 @@ const generate = () => {
   waitMessages.value = new Map<string, Message>()
   lastDisplayMessage.value = undefined as unknown as Message
   typingMessage.value = undefined as unknown as Message
+
   if (audioPlayer.value && audioPlayer.value.context) audioPlayer.value.context.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
 

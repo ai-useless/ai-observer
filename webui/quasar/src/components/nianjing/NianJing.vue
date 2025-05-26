@@ -134,7 +134,9 @@ const generate = (_prompt: string) => {
   waitMessages.value = new Map<string, Message>()
   lastDisplayMessage.value = undefined as unknown as Message
   typingMessage.value = undefined as unknown as Message
-  if (audioPlayer.value && audioPlayer.value.context) audioPlayer.value?.stop()
+  typingMessageIndex.value = 0
+
+  if (audioPlayer.value) audioPlayer.value?.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
 
   entityBridge.ENianJing.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
@@ -207,9 +209,19 @@ const typing = () => {
       typingInterval.value = rc.typingInterval
       typingTicker.value = rc.typingTicker as number
     }
-    if (rc.typingMessage) typingMessage.value = rc.typingMessage
+    if (rc.typingMessage) {
+      typingMessage.value = rc.typingMessage
+    }
 
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+
+    if (typingMessage.value && typingMessage.value.last) {
+      for (const _message of displayMessages.value) {
+        waitMessages.value.set(`${_message.message}-${_message.index}`, _message)
+      }
+      displayMessages.value = []
+      typingMessageIndex.value = 0
+    }
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)

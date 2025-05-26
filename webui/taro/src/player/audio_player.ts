@@ -58,7 +58,7 @@ export class AudioPlayer {
   }
 
   stop = () => {
-    this.context.pause()
-    this.context.currentTime = 0
+    this.context.stop()
+    this.context.destroy()
   }
 }
