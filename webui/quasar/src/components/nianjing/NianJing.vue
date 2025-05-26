@@ -184,7 +184,7 @@ const playBgSound = () => {
   })
 }
 
-onMounted(async () => {
+onMounted(() => {
   setting.Setting.setCurrentMenu('nianjing')
 
   model.Model.getModels(() => {
