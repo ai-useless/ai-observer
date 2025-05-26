@@ -60,10 +60,10 @@
 
 <script setup lang='ts'>
 import { View, Image, Button } from '@tarojs/components'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { dbBridge, entityBridge } from 'src/bridge'
-import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import { model, simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
@@ -186,28 +186,34 @@ onMounted(async () => {
   if (Taro.getWindowInfo()) {
     scriptHeight.value = Taro.getWindowInfo().windowHeight - 32
   }
+
+  typingTicker.value = window.setInterval(typing, typingInterval.value)
+  await AudioPlayer.play('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
+    bgPlayer.value = player as AudioPlayer
+  })
+
   model.Model.getModels(() => {
-    _model.value = dbBridge._Model.model(dbBridge._Model.topicModelId()) as model._Model
     simulator.Simulator.getSimulators(undefined, () => {
+      _model.value = dbBridge._Model.model(dbBridge._Model.topicModelId()) as model._Model
       speaker.value = dbBridge._Simulator.randomPeek()
+
+      generate()
     })
   })
 })
 
-useDidShow(async () => {
-  typingTicker.value = window.setInterval(typing, typingInterval.value)
-  bgPlayer.value = await playAudio('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
-  generate()
-})
-
-useDidHide(() => {
+onBeforeUnmount(() => {
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1
   }
-  if (bgPlayer.value && bgPlayer.value.context) {
+  if (bgPlayer.value) {
     bgPlayer.value.stop()
     bgPlayer.value = undefined as unknown as AudioPlayer
+  }
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
   }
 })
 
@@ -234,53 +240,6 @@ const typing = () => {
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)
-  })
-}
-
-const playAudio = (audioUrl: string, loop?: boolean): Promise<AudioPlayer | undefined> => {
-  const context = Taro.createInnerAudioContext()
-  context.src = audioUrl
-
-  const player = {
-    context: context,
-    playing: true,
-    duration: context.duration
-  } as AudioPlayer
-
-  return new Promise((resolve, reject) => {
-    context.onError((e) => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-      reject(`Failed play audio: ${JSON.stringify(e)}`)
-    })
-    context.onCanplay(() => {
-      context.play()
-
-      player.durationTicker = window.setInterval(() => {
-        if (context.duration) {
-          window.clearInterval(player.durationTicker)
-          player.durationTicker = -1
-          player.duration = context.duration
-          resolve(player)
-          return
-        }
-      }, 100)
-    })
-    context.onEnded(() => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-      if (loop) {
-        context.seek(0)
-        context.stop()
-        context.play()
-      }
-    })
   })
 }
 
