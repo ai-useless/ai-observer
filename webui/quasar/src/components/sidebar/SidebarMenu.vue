@@ -214,6 +214,7 @@ const updateWindowHeight = () => {
 }
 
 onMounted(() => {
+  updateWindowHeight()
   window.addEventListener('resize', updateWindowHeight)
   user.User.getUser()
 })

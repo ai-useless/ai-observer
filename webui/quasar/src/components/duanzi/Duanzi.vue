@@ -27,7 +27,7 @@
             <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : ""}'>
               <div v-if='message.isTitle' style='display: flex; line-height: 32px; padding: 16px;'>
                 <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
-                <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
+                <div style='font-weight: 400; font-size: 18px; line-height: 32px;' class='text-grey-6 q-ml-sm flex'>
                   {{ modelName(message.modelId) }}
                 </div>
               </div>
