@@ -66,6 +66,8 @@
         label='听听声音'
         class='border-gradient-bg-white border-radius-16px text-grey-9'
         style='font-size: 12px;'
+        @click.stop='onPlayClick'
+        :disabled='playing || !_simulator'
       />
       <q-btn
         flat
@@ -88,6 +90,7 @@
 import { model, simulator } from 'src/localstores'
 import { dbModel } from 'src/model'
 import { computed, ref, toRef } from 'vue'
+import { AudioPlayer } from 'src/player'
 
 import ModelSelector from '../selector/ModelSelector.vue'
 
@@ -110,8 +113,18 @@ const modelName = computed(() => modelNameLen.value ? _model.value?.name?.split(
 const selectingModel = ref(false)
 const selectedModel = ref(undefined as unknown as model._Model)
 
+const playing = defineModel<boolean>('playing')
+
 const onSelectModelClick = () => {
   selectingModel.value = true
+}
+
+const onPlayClick = () => {
+  if (!_simulator.value) return
+  playing.value = true
+  AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
+    playing.value = false
+  })
 }
 
 const onCancelSelectModel = () => {

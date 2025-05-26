@@ -57,6 +57,7 @@
               <RoleCardVertical
                 :participator='participator'
                 :role='index === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST'
+                v-model:playing='playing'
               />
             </div>
           </div>
@@ -146,6 +147,8 @@ const selectedSimulatorIds = computed(() => participators.value.filter((el) => e
 const ready = computed(() => {
   return topic.value?.length && participators.value.findIndex((el) => el.simulatorId === undefined || el.modelId === undefined) < 0
 })
+
+const playing = ref(false)
 
 const initializeParticipators = async () => {
   const _uid = uuidv4()
