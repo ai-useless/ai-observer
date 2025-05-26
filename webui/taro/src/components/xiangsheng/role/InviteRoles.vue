@@ -186,7 +186,6 @@ const startXiangsheng = (intent: xiangshengWorker.Intent) => {
   const _uid = uuid.newUuid()
   const participators = [host.value, guest.value].map((el, index) => {
     return {
-      id: index,
       simulatorId: el.id,
       seminarUid: _uid,
       role: index === 0 ? dbModel.Role.HOST : dbModel.Role.GUEST,
