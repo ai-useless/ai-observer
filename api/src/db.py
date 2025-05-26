@@ -1,10 +1,10 @@
 import mysql.connector
 import warnings
-from config import config
 import time
 import json
 import threading
 
+from config import config
 
 class Db:
     def __init__(self):
@@ -287,7 +287,7 @@ class Db:
         return count
 
     def get_simulators(self, wechat_openid: str | None, offset: int, limit: int):
-        query = f'SELECT * FROM {self.table_simulators} WHERE disabled=0'
+        query = f'SELECT wechat_username, wechat_avatar, audio_id, audio_file_cid, audio_url, text, simulator, simulator_avatar_cid, origin_personality, timestamp, state, archetype, title, host, reports, disabled FROM {self.table_simulators} WHERE disabled=0'
         query += f' AND wechat_openid="{wechat_openid}"' if wechat_openid is not None else ''
         query += ' ORDER BY timestamp DESC'
         query += f' LIMIT {limit} OFFSET {offset}'
@@ -370,7 +370,7 @@ class Db:
             (wechat_openid,
              wechat_username,
              wechat_avatar,
-             1 if wechat_openid in [] else 0,
+             1 if wechat_openid in config.review_wechat_openids[] else 0,
              int(time.time()))
         )
         self.connection.commit()
