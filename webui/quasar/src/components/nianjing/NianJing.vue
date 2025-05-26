@@ -140,8 +140,6 @@ const generate = (_prompt: string) => {
   audioPlayer.value = undefined as unknown as AudioPlayer
 
   entityBridge.ENianJing.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
-    inputPrompt.value = ''
-
     waitMessages.value.set(`${message}-${index}`, {
       message,
       audio: audio as string,
@@ -166,6 +164,7 @@ watch(audioError, () => {
 })
 
 const onPromptEnter = (_prompt: string) => {
+  if (!_prompt.length) return
   generate(_prompt)
   prompt.value = _prompt
 }
@@ -175,6 +174,14 @@ const initializeNianjing = async () => {
   speaker.value = await dbBridge._Simulator.randomPeek()
 
   generate(prompt.value)
+}
+
+const playBgSound = () => {
+  AudioPlayer.play('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
+    bgPlayer.value = player as AudioPlayer
+  }).catch(() => {
+    window.setTimeout(playBgSound, 1000)
+  })
 }
 
 onMounted(async () => {
@@ -188,7 +195,7 @@ onMounted(async () => {
 
   typingTicker.value = window.setInterval(typing, typingInterval.value)
 
-  bgPlayer.value = await AudioPlayer.play('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true) as AudioPlayer
+  playBgSound()
 })
 
 onBeforeUnmount(() => {
@@ -238,6 +245,7 @@ const typing = () => {
     }
     if (typingMessage.value && typingMessage.value.first) {
       generating.value = false
+      inputPrompt.value = ''
     }
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
