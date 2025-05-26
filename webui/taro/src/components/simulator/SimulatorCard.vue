@@ -12,9 +12,6 @@
         <View v-if='showLanguage' style='margin-left: 4px; font-size: 12px; color: lightblue; line-height: 16px;' @click='onOpenSelectLanguageClick'>
           {{ _simulator.language }}
         </View>
-        <View v-if='showActions' style='display: flex; flex-direction: row-reverse; height: 100%; padding-top: 2px; flex: 1;' @click='onActionClick'>
-          <Image :src='threeDotsVertical' style='width: 16px; height: 16px;' />
-        </View>
       </View>
       <View style='font-size: 12px; color: gray; display: flex; align-items: center;'>{{ _simulator.title }}</View>
       <View v-if='!simple' style='font-size: 12px; color: gray;'>{{ _simulator.origin_personality }}</View>
@@ -38,29 +35,18 @@
       <Button @click='onCancelSelectLanguageClick'>取消</Button>
     </AtModalAction>
   </AtModal>
-  <AtActionSheet
-    v-if='showPopupMenu && showActions'
-    :isOpened='showPopupMenu'
-    cancelText='取消'
-    @close='showPopupMenu = false'
-    @cancel='showPopupMenu = false'
-  >
-    <AtActionSheetItem v-if='enableActionReview'>通过</AtActionSheetItem>
-    <AtActionSheetItem v-if='enableActionReview'>拒绝</AtActionSheetItem>
-    <AtActionSheetItem v-if='enableActionReport'>举报</AtActionSheetItem>
-  </AtActionSheet>
 </template>
 
 <script setup lang='ts'>
 import { ref, toRef } from 'vue'
 import { View, Image, Text, Button } from '@tarojs/components'
-import { AtModal, AtModalHeader, AtModalContent, AtModalAction, AtActionSheet, AtActionSheetItem } from 'taro-ui-vue3'
+import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { simulator } from 'src/localstores'
 import { timestamp } from 'src/utils'
 import { dbBridge } from 'src/bridge'
 import { AudioPlayer } from 'src/player'
 
-import { playCircle, threeDotsVertical } from 'src/assets'
+import { playCircle } from 'src/assets'
 
 // TODO: play audio and report scam
 
@@ -68,10 +54,7 @@ interface Props {
   simulator: simulator._Simulator
   canSetLanguage?: boolean
   simple?: boolean
-  showActions?: boolean
   showLanguage?: boolean
-  enableActionReport?: boolean
-  enableActionReview?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   showLanguage: true
@@ -79,10 +62,7 @@ const props = withDefaults(defineProps<Props>(), {
 const _simulator = toRef(props, 'simulator')
 const canSetLanguage = toRef(props, 'canSetLanguage')
 const simple = toRef(props, 'simple')
-const showActions = toRef(props, 'showActions')
 const showLanguage = toRef(props, 'showLanguage')
-const enableActionReport = toRef(props, 'enableActionReport')
-const enableActionReview = toRef(props, 'enableActionReview')
 
 const _languages = dbBridge._Language.languages()
 const selectingLanguage = ref(false)
