@@ -35,7 +35,8 @@ export async function typing<T extends Message>(
   enablePlay: boolean,
   typingTicker: number,
   resetLastDisplayMessage: () => void,
-  typingFunc: () => void
+  typingFunc: () => void,
+  skipCheck?: (message: T | undefined) => boolean
 ): Promise<TypingMessage<T> | undefined> {
   if (!typingMessage && !waitMessages.size) return Promise.resolve(undefined)
 
@@ -59,8 +60,13 @@ export async function typing<T extends Message>(
   }
 
   if (!waitMessages.size) return Promise.resolve(undefined)
+
+  let shouldSkip = skipCheck ? skipCheck(typingMessage) : false
+
   // If audio is still playing, do nothing
-  if (audioPlayer && audioPlayer.playing) return Promise.resolve(undefined)
+  if (audioPlayer && audioPlayer.playing && !shouldSkip) {
+    return Promise.resolve(undefined)
+  }
 
   let key = undefined as unknown as string
   for (const k of Array.from(waitMessages.keys())) {
@@ -77,11 +83,12 @@ export async function typing<T extends Message>(
   typingMessageIndex += 1
 
   let typingInterval = undefined as unknown as number
+  shouldSkip = skipCheck ? skipCheck(typingMessage) : false
 
-  if (typingMessage.audio && typingMessage.audio.length && enablePlay) {
+  if (audioPlayer) audioPlayer.stop()
+
+  if (typingMessage.audio && typingMessage.audio.length && enablePlay && !shouldSkip) {
     try {
-      if (audioPlayer) audioPlayer.stop()
-
       audioPlayer = await AudioPlayer.play(typingMessage.audio)
       if (audioPlayer && audioPlayer.duration) {
         typingInterval = calculateTypingInterval(typingMessage, audioPlayer.duration) || typingInterval
@@ -100,13 +107,13 @@ export async function typing<T extends Message>(
     el.datetime = timestamp.timestamp2HumanReadable(el.timestamp)
   })
 
-  lastDisplayMessage = {
+  lastDisplayMessage = shouldSkip ? undefined as unknown as T : {
     ...typingMessage,
     message: ''
   }
 
   return {
-    typingMessage,
+    typingMessage: shouldSkip ? undefined as unknown as T : typingMessage,
     lastDisplayMessage,
     audioPlayer,
     typingInterval,

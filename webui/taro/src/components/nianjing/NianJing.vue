@@ -20,7 +20,7 @@
         enhanced={true}
         showsVerticalScrollIndicator={false}
       >
-        <View v-for='(message, index) in displayMessages' :key='index' :style='{borderTop: index > 0 ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center", marginBottom: "4px"}'>
+        <View v-for='(message, index) in displayMessages.filter((el) => el.name === prompt)' :key='index' :style='{borderTop: index > 0 ? "1px solid lightgray" : "", padding: "8px 0", textAlign: "center", marginBottom: "4px"}'>
           <View style='font-size: 14px; color: gray'>{{ message.message }}</View>
         </View>
         <View v-if='lastDisplayMessage' style='padding: 8px 0; text-align: center; border-top: 1px solid lightgray; margin-bottom: 4px;'>
@@ -29,7 +29,7 @@
       </scroll-view>
     </View>
     <View style='display: flex; padding: 0 16px;'>
-      <ComplexInput v-model:prompt='prompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='听一段经文，让心静下来~'>
+      <ComplexInput v-model:prompt='inputPrompt' v-model:audio-input='audioInput' v-model:height='inputHeight' placeholder='听一段经文，让心静下来~'>
         <template #actions>
           <View style='display: flex;'>
             <View style='height: 24px; width: 24px; padding: 3px 0; margin-left: 4px; margin-right: -4px;' @click='onGenerateClick'>
@@ -63,7 +63,7 @@ import { View, Image, Button } from '@tarojs/components'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { dbBridge, entityBridge } from 'src/bridge'
-import Taro, { useDidShow } from '@tarojs/taro'
+import Taro from '@tarojs/taro'
 import { model, simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
@@ -74,6 +74,7 @@ import SimulatorCard from '../simulator/SimulatorCard.vue'
 import { send, personAvatar } from 'src/assets'
 
 const prompt = ref('般若波罗密心经')
+const inputPrompt = ref(prompt.value)
 
 const audioInput = ref(false)
 const audioError = ref('')
@@ -87,6 +88,7 @@ interface Message extends MessageBase {
   name: string
   first: boolean
   last: boolean
+  simulatorId: number
 }
 
 const displayMessages = ref([] as Message[])
@@ -116,19 +118,25 @@ watch(messageCount, async () => {
   scrollTop.value += 1
 })
 
-const generate = () => {
+const generate = (_prompt: string, simulatorId: number) => {
+  if (!_prompt.length && simulatorId === speaker.value.id) return
+
   generating.value = true
 
   displayMessages.value = []
   waitMessages.value = new Map<string, Message>()
   lastDisplayMessage.value = undefined as unknown as Message
   typingMessage.value = undefined as unknown as Message
+  typingMessageIndex.value = 0
 
   if (audioPlayer.value) audioPlayer.value.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
 
-  entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (name: string, message: string, index: number, first: boolean, last: boolean, audio?: string) => {
-    generating.value = false
+  entityBridge.ENianJing.request(_prompt, simulatorId, _model.value.id, (name: string, message: string, index: number, first: boolean, last: boolean, audio?: string) => {
+    if (_prompt !== prompt.value || simulatorId !== speaker.value.id) {
+      return
+    }
+
     waitMessages.value.set(`${message}-${index}`, {
       name,
       message,
@@ -136,16 +144,20 @@ const generate = () => {
       index,
       first,
       last,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      simulatorId
     })
   })
 }
 
-watch(prompt, () => {
-  if (!audioInput.value || !prompt.value || !prompt.value.length) return
+watch(inputPrompt, () => {
+  if (!audioInput.value || !inputPrompt.value || !inputPrompt.value.length) return
 
-  generate()
-  prompt.value = ''
+  if (inputPrompt.value === prompt.value) return
+
+  prompt.value = inputPrompt.value
+  generate(inputPrompt.value, speaker.value.id)
+  inputPrompt.value = ''
 })
 
 watch(audioError, () => {
@@ -155,7 +167,11 @@ watch(audioError, () => {
 })
 
 const onGenerateClick = () => {
-  generate()
+  if (inputPrompt.value === prompt.value) return
+
+  prompt.value = inputPrompt.value
+  generate(inputPrompt.value, speaker.value.id)
+  inputPrompt.value = ''
 }
 
 watch(inputHeight, () => {
@@ -169,6 +185,10 @@ const onOpenSelectSimulatorClick = () => {
 }
 
 const onSelectSimulatorClick = (_simulator: simulator._Simulator) => {
+  if (_simulator.id === speaker.value.id) return
+
+  generate(prompt.value, _simulator.id)
+
   speaker.value = _simulator
   selectingSimulator.value = false
 }
@@ -199,7 +219,7 @@ onMounted(async () => {
       _model.value = dbBridge._Model.model(dbBridge._Model.topicModelId()) as model._Model
       speaker.value = dbBridge._Simulator.randomPeek()
 
-      generate()
+      generate(prompt.value, speaker.value.id)
     })
   })
 })
@@ -225,8 +245,12 @@ const bgPlayer = ref(undefined as unknown as AudioPlayer)
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }, typing).then((rc) => {
+  }, typing, (_message: Message) => {
+    return !_message || _message.name !== prompt.value
+  }).then((rc) => {
     if (!rc) return
+
+    generating.value = false
 
     audioPlayer.value = rc.audioPlayer as unknown as AudioPlayer
     if (rc.lastDisplayMessage) {
