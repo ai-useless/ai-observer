@@ -116,11 +116,11 @@ async def get_simulators(code: Optional[str] = None, token: Optional[str] = None
 
 @app.post('/api/v1/review_simulator')
 async def review_simulator(simulator: str = Body(...), code: str = Body(default=None), token: str=Body(default=None), state: str = Body(...)):
-    return await _review_simulator(simulator_id, code, token, state)
+    return await _review_simulator(simulator, code, token, state)
 
 @app.post('/api/v1/report_simulator')
 async def report_simulator(simulator: str = Body(...), code: str = Body(default=None), token: str=Body(default=None)):
-    return await _report_simulator(simulator_id, code, token)
+    return await _report_simulator(simulator, code, token)
 
 @app.post('/api/v1/chat', response_model=ChatResponse)
 async def chat(
