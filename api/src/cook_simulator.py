@@ -234,7 +234,7 @@ async def cook_user(code: str, username: str | None, avatar: str | None):
 async def review_simulator(simulator: str, code: str | None, jwt_token: str | None, state: str):
     openid = await get_openid_with_code_or_token(code, jwt_token)
 
-    if state != 'REJECT' and state != 'APPROVED':
+    if state != 'REJECTED' and state != 'APPROVED':
         raise Exception('Invalid state')
 
     simulator = db.get_simulator_with_simulator(simulator)
