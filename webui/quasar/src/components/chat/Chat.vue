@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang='ts'>
-import { computed, onMounted, ref, toRef, watch, defineProps } from 'vue'
+import { computed, onMounted, ref, toRef, watch, defineProps, onBeforeUnmount } from 'vue'
 import { model, setting, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { AudioPlayer } from 'src/player'
@@ -144,7 +144,18 @@ const sendToFriend = (_message: string, requestIndex: number) => {
 
   const messages = [...displayMessages.value, ...(typingMessage.value ? [typingMessage.value] : []), ...Array.from(waitMessages.value.values())]
 
-  entityBridge.EChat.chat(friend.value.id, friend.value.simulator, friend.value.origin_personality, username.value, [...messages.map((el) => `${el.send ? friend.value.simulator : username.value}: ${el.message}`), _message], _model.value.id, language.value || '中文', (_message?: string, audio?: string, error?: string) => {
+  entityBridge.EChat.chat(
+    friend.value.id,
+    friend.value.simulator,
+    friend.value.origin_personality,
+    username.value,
+    [
+      ...messages.map((el) => `${el.send ? username.value : friend.value.simulator}说: ${el.message}`),
+      `${friend.value.simulator}说: ${_message}`
+    ],
+    _model.value.id,
+    language.value || '中文',
+    (_message?: string, audio?: string, error?: string) => {
     friendThinking.value = false
     if (error && error.length) {
       waitMessages.value.set(`${error}-${requestIndex}`, {
@@ -317,6 +328,17 @@ const onWindowResize = (size: { width: number }) => {
 const onChatBoxResize = (size: { height: number }) => {
   chatBox.value?.setScrollPosition('vertical', size.height, 300)
 }
+
+onBeforeUnmount(() => {
+  if (typingTicker.value >= 0) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
+})
 
 </script>
 
