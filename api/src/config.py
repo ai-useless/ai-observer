@@ -28,7 +28,7 @@ parser.add_argument('--aws-secret-key', type=str, default='', help='AWS S3 secre
 parser.add_argument('--aws-region', type=str, default='', help='AWS S3 region')
 parser.add_argument('--aws-bucket', type=str, default='', help='AWS S3 bucket')
 parser.add_argument('--jwt-secret', type=str, default='', help='JWT secret for user session')
-parser.add_argument('--review-wechat-openids', type=str, nargs='+', help='Review wechat openids')
+parser.add_argument('--reviewer-wechat-openids', type=str, nargs='+', help='Reviewer wechat openids')
 
 config = parser.parse_args()
 config.aws_s3_base = f'https://{config.aws_bucket}.s3.amazonaws.com'
