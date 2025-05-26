@@ -13,9 +13,9 @@ OUTPUT_DIR=$SCRIPT_DIR/.api.output
 mkdir -p $OUTPUT_DIR
 cd $OUTPUT_DIR
 
-cp -v $SCRIPT_DIR/../api/* .
-cp -v $SCRIPT_DIR/Dockerfile .
-cp -v $SCRIPT_DIR/entrypoint.sh .
+cp -v -rf $SCRIPT_DIR/../api/* .
+cp -v -rf $SCRIPT_DIR/Dockerfile .
+cp -v -rf $SCRIPT_DIR/entrypoint.sh .
 
 docker build . -t meipu-proxy
 
