@@ -54,16 +54,22 @@ export class AudioPlayer {
           player.durationTicker = -1
         }
         if (loop) {
-          player.stop()
+          player.pause()
           void player.context.play()
+        } else {
+          player.stop()
         }
       }
     })
   }
 
-  stop = () => {
+  pause = () => {
     this.context.pause()
     this.context.currentTime = 0
+  }
+
+  stop = () => {
+    this.pause()
     this.context.src = ''
     this.context.load()
     this.context.remove()

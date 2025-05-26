@@ -52,6 +52,8 @@ export class AudioPlayer {
           player.context.seek(0)
           player.context.stop()
           player.context.play()
+        } else {
+          player.stop()
         }
       })
     })
