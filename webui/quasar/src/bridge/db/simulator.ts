@@ -15,17 +15,17 @@ export class _Simulator {
   }
 
   static simulators = async (ids: number[]) => {
-    return (await dbSeminar.simulators.toArray()).filter((el) =>
+    return (await _Simulator.allSimulators()).filter((el) =>
       ids.includes(el.id)
     )
   }
 
   static allSimulators = async () => {
-    return await dbSeminar.simulators.toArray()
+    return (await dbSeminar.simulators.toArray()).filter((el) => el.state === 'APPROVED' && !el.disabled)
   }
 
   static randomPeek = async (host?: boolean) => {
-    const simulators = (await dbSeminar.simulators.toArray()).filter(
+    const simulators = (await _Simulator.allSimulators()).filter(
       (el) => host === undefined || el.host === host
     )
     const index = Math.floor(Math.random() * simulators.length)
@@ -33,7 +33,7 @@ export class _Simulator {
   }
 
   static simulator = async (id: number) => {
-    return (await dbSeminar.simulators.toArray()).find((el) => el.id === id)
+    return (await _Simulator.allSimulators()).find((el) => el.id === id)
   }
 
   static archetype = (simulator?: dbModel.Simulator) => {
@@ -42,7 +42,7 @@ export class _Simulator {
   }
 
   static archetypeWithId = async (simulatorId: number) => {
-    const _simulator = (await dbSeminar.simulators.toArray()).find(
+    const _simulator = (await _Simulator.allSimulators()).find(
       (el) => el.id === simulatorId
     )
     return _Simulator.archetype(_simulator)

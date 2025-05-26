@@ -9,9 +9,6 @@
       transition-show='slide-in-left'
       transition-hide='slide-out-left'
       class='bg-grey-2'
-      swipe-area='50'
-      overlay
-      style='z-index: 9999 !important;'
     >
       <SidebarMenu v-model:collapsed='collapsed' />
     </q-drawer>
