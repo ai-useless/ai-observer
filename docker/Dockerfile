@@ -1,42 +1,29 @@
-FROM rust:1.85.0 AS builder
-
-WORKDIR /tmp
-
-RUN mkdir /root/.cargo
-COPY cargo.config /root/.cargo/config
-
-COPY Cargo.toml Cargo.lock /tmp/
-COPY meme_generator /tmp/meme_generator
-COPY meme_generator_cli /tmp/meme_generator_cli
-COPY meme_generator_core /tmp/meme_generator_core
-COPY meme_generator_memes /tmp/meme_generator_memes
-COPY meme_generator_py /tmp/meme_generator_py
-COPY meme_generator_server /tmp/meme_generator_server
-COPY meme_generator_utils /tmp/meme_generator_utils
-COPY meme_options_derive /tmp/meme_options_derive
-
-RUN export MEME_IMAGES_DIR=/app/resources/images \
-  && cargo build --release --bin server
-
-FROM debian:bookworm-slim AS app
-
-EXPOSE 2233
-
-ENV TZ=Asia/Shanghai \
-  MEME_HOME=/data \
-  RUST_LOG=info
-
-VOLUME /data
+FROM python3.12-slim
 
 WORKDIR /app
 
-COPY --from=builder /tmp/target/release/server /app/server
-COPY resources/images /app/resources/images/
-COPY resources/fonts /usr/share/fonts/meme-fonts/
+ENV CHUTES_API_TOKEN=
+ENV MYSQL_HOST=
+ENV MYSQL_PORT=
+ENV MYSQL_USER=
+ENV MYSQL_PASSWORD=
+ENV KIKAKKZ_WECHAT_OPENID=
+ENV FILE_SERVER=
+ENV CONCURRENT_AUDIO_REQUESTS=30
+ENV AWS_ACCESS_KEY=
+ENV AWS_SECRET_KEY=
+ENV AWS_REGION=
+ENV AWS_BUCKET=
+ENV WEAPP_MINI_ID=
+ENV WEAPP_MINI_SECRET=
+ENV WEAPP_WEB_ID=
+ENV WEAPP_WEB_SECRET=
+ENV REVIEWER_WECHAT_OPENIDS=
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends openssl fontconfig \
-  && fc-cache -fv \
-  && rm -rf /var/lib/apt/lists/*
+COPY . .
+RUN pip install -r requirements.txt
 
-CMD ["/app/server"]
+VOLUME /data
+RUN chmod a+x /app/entrypoint.sh
+
+CMD ["/app/entrypoint.sh"]

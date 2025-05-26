@@ -371,7 +371,7 @@ class Db:
             (wechat_openid,
              wechat_username,
              wechat_avatar,
-             1 if wechat_openid in config.review_wechat_openids else 0,
+             1 if wechat_openid in config.reviewer_wechat_openids else 0,
              int(time.time()))
         )
         self.connection.commit()
