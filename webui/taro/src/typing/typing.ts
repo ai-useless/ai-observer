@@ -80,6 +80,8 @@ export async function typing<T extends Message>(
 
   if (typingMessage.audio && typingMessage.audio.length && enablePlay) {
     try {
+      if (audioPlayer) audioPlayer.stop()
+
       audioPlayer = await AudioPlayer.play(typingMessage.audio)
       if (audioPlayer && audioPlayer.duration) {
         typingInterval = calculateTypingInterval(typingMessage, audioPlayer.duration) || typingInterval

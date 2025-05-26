@@ -2,11 +2,13 @@ import { nianjingWorker, speakWorker } from 'src/worker'
 
 export class ENianJing {
   static speak = (
+    name: string,
     simulatorId: number,
     texts: string[],
     index: number,
     steps: number,
     onMessage: (
+      topic: string,
       message: string,
       index: number,
       first: boolean,
@@ -24,8 +26,9 @@ export class ENianJing {
       noInstruct: false
     }).then((payload1) => {
       if (!payload1 || !payload1.audio || !payload1.audio.length) {
-        ENianJing.speak(simulatorId, texts, index + steps, steps, onMessage)
+        ENianJing.speak(name, simulatorId, texts, index + steps, steps, onMessage)
         onMessage(
+          name,
           text,
           index,
           index === 0,
@@ -34,8 +37,9 @@ export class ENianJing {
         )
         return
       }
-      ENianJing.speak(simulatorId, texts, index + steps, steps, onMessage)
+      ENianJing.speak(name, simulatorId, texts, index + steps, steps, onMessage)
       onMessage(
+        name,
         text,
         index,
         index === 0,
@@ -50,6 +54,7 @@ export class ENianJing {
     simulatorId: number,
     modelId: number,
     onMessage: (
+      name: string,
       message: string,
       index: number,
       first: boolean,
@@ -67,7 +72,7 @@ export class ENianJing {
         }
         const steps = 5
         for (let i = 0; i < steps; i++) {
-          ENianJing.speak(simulatorId, payload.texts, i, steps, onMessage)
+          ENianJing.speak(name, simulatorId, payload.texts, i, steps, onMessage)
         }
       })
       .catch((e) => {

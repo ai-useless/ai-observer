@@ -84,6 +84,7 @@ const scrollHeight = ref(0)
 const scrollTop = ref(999999)
 
 interface Message extends MessageBase {
+  name: string
   first: boolean
   last: boolean
 }
@@ -123,12 +124,13 @@ const generate = () => {
   lastDisplayMessage.value = undefined as unknown as Message
   typingMessage.value = undefined as unknown as Message
 
-  if (audioPlayer.value && audioPlayer.value.context) audioPlayer.value.context.stop()
+  if (audioPlayer.value) audioPlayer.value.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
 
-  entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
+  entityBridge.ENianJing.request(prompt.value, speaker.value.id, _model.value.id, (name: string, message: string, index: number, first: boolean, last: boolean, audio?: string) => {
     generating.value = false
     waitMessages.value.set(`${message}-${index}`, {
+      name,
       message,
       audio: audio as unknown as string,
       index,
@@ -226,7 +228,7 @@ const typing = () => {
   }, typing).then((rc) => {
     if (!rc) return
 
-    if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
+    audioPlayer.value = rc.audioPlayer as unknown as AudioPlayer
     if (rc.lastDisplayMessage) {
       lastDisplayMessage.value = rc.lastDisplayMessage
     }
@@ -235,6 +237,9 @@ const typing = () => {
       typingTicker.value = rc.typingTicker as number
     }
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
+    if (typingMessage.value && typingMessage.value.name !== prompt.value) {
+      typingMessage.value = undefined as unknown as Message
+    }
 
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
   }).catch((e) => {

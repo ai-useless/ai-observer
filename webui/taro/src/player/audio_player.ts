@@ -9,13 +9,12 @@ export class AudioPlayer {
   constructor(url: string) {
     this.context = Taro.createInnerAudioContext()
     this.context.src = url
+    this.playing = true
+    this.duration = this.context.duration
   }
 
   static play = (url: string, loop?: boolean, onEnded?: () => void): Promise<AudioPlayer | undefined> => {
     const player = new AudioPlayer(url)
-
-    player.playing = true
-    player.duration = player.context.duration
 
     return new Promise((resolve, reject) => {
       player.context.onError((e) => {
@@ -40,7 +39,6 @@ export class AudioPlayer {
         }, 100)
       })
       player.context.onEnded(() => {
-        player.playing = false
         if (player.durationTicker >= 0) {
           window.clearInterval(player.durationTicker)
           player.durationTicker = -1
@@ -53,6 +51,7 @@ export class AudioPlayer {
           player.context.stop()
           player.context.play()
         } else {
+          player.playing = false
           player.stop()
         }
       })
@@ -60,6 +59,8 @@ export class AudioPlayer {
   }
 
   stop = () => {
+    if (!this.playing) return
+    this.playing = false
     this.context.stop()
     this.context.destroy()
   }
