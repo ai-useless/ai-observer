@@ -16,4 +16,6 @@ export interface _Simulator {
   host: boolean
   language?: string
   mine: boolean
+  reports: number
+  disabled: boolean
 }

@@ -78,5 +78,5 @@ export class Simulator {
   ) => simulator.getSimulators(code, done)
 
   static mySimulators = () => simulator.simulators.filter((el) => el.mine)
-  static allSimulators = () => simulator.simulators
+  static allSimulators = () => simulator.simulators.filter((el) => el.state === 'APPROVED')
 }
