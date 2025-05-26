@@ -16,6 +16,7 @@
               {{ prompt }}
             </span>
             <q-btn
+              v-if='showSelectingSpeaker'
               flat
               dense
               color='light-blue'
