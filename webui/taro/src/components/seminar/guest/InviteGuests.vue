@@ -23,10 +23,17 @@
     <Button
       @click='onStartDiscussClick'
       size='mini'
-      :style='{ width: "calc(100% - 32px)", marginTop: "16px", borderRadius: "8px", color: ready ? "blue" : "gray", marginBottom: "24px" }'
+      :style='{ width: "calc(100% - 32px)", marginTop: "16px", borderRadius: "8px", color: ready ? "blue" : "gray" }'
       :disabled='!ready'
     >
       开始讨论
+    </Button>
+    <Button
+      @click='onGotoOtherClick'
+      size='mini'
+      :style='{ width: "calc(100% - 32px)", borderRadius: "8px", color: "blue", marginBottom: "24px" }'
+    >
+      去其他栏目看看
     </Button>
   </View>
   <AtModal :is-opened='selectingSimulator' @close='onSimulatorSelectorClose'>
@@ -106,6 +113,10 @@ const startSeminar = () => {
 
 const onStartDiscussClick = () => {
   startSeminar()
+}
+
+const onGotoOtherClick = () => {
+  Taro.switchTab({ url: '/pages/index/IndexPage' })
 }
 
 const randomSelect = () => {
