@@ -55,7 +55,7 @@ export const useSimulatorStore = defineStore('simulator', {
           (el) => el.simulator === simulator.simulator
         )
 
-        if (index >= 0) return
+        if (index >= 0 && simulator.mine === mine) return
 
         simulator.mine = mine
         simulator.language = dbBridge._Language.randomPick()
