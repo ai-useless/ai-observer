@@ -148,7 +148,10 @@ const ready = computed(() => {
 })
 
 const initializeParticipators = async () => {
+  const _uid = uuidv4()
+  xiangsheng.Xiangsheng.setXiangsheng(_uid)
   participators.value = []
+
   for (let i = 0; i < participatorCount.value; i++) {
     participators.value.push({
       seminarUid: _uid,
