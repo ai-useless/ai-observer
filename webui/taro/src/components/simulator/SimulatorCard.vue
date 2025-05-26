@@ -66,7 +66,6 @@ const showLanguage = toRef(props, 'showLanguage')
 
 const _languages = dbBridge._Language.languages()
 const selectingLanguage = ref(false)
-const showPopupMenu = ref(false)
 
 const playing = ref(false)
 
@@ -82,11 +81,6 @@ const onCancelSelectLanguageClick = () => {
 const onOpenSelectLanguageClick = (e: { stopPropagation: () => void }) => {
   e.stopPropagation()
   selectingLanguage.value = true
-}
-
-const onActionClick = (e: { stopPropagation: () => void }) => {
-  e.stopPropagation()
-  showPopupMenu.value = true
 }
 
 const onPlayClick = (e: { stopPropagation: () => void }) => {
