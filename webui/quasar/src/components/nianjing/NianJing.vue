@@ -241,6 +241,7 @@ const typing = () => {
       for (const _message of displayMessages.value) {
         waitMessages.value.set(`${_message.message}-${_message.index}`, _message)
       }
+      waitMessages.value.set(`${typingMessage.value.message}-${typingMessage.value.index}`, typingMessage.value)
       displayMessages.value = []
       typingMessageIndex.value = 0
     }
