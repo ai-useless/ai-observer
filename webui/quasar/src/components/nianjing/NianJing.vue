@@ -121,6 +121,7 @@ const typingMessage = ref(undefined as unknown as Message)
 const typingMessageIndex = ref(0)
 const typingTicker = ref(-1)
 const typingInterval = ref(40)
+const bgPlayerTimer = ref(-1)
 
 const generating = ref(false)
 const selectingSpeaker = ref(false)
@@ -143,6 +144,10 @@ const generate = (_prompt: string, simulatorId: number) => {
   audioPlayer.value = undefined as unknown as AudioPlayer
 
   entityBridge.ENianJing.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
+    if (_prompt !== prompt.value || simulatorId !== speaker.value.id) {
+      return
+    }
+
     waitMessages.value.set(`${message}-${index}`, {
       name: _prompt,
       message,
@@ -170,6 +175,8 @@ watch(audioError, () => {
 
 const onPromptEnter = (_prompt: string) => {
   if (!_prompt.length) return
+  if (_prompt === prompt.value) return
+
   generate(_prompt, speaker.value.id)
   prompt.value = _prompt
 }
@@ -185,7 +192,7 @@ const playBgSound = () => {
   AudioPlayer.play('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
     bgPlayer.value = player as AudioPlayer
   }).catch(() => {
-    window.setTimeout(playBgSound, 1000)
+    bgPlayerTimer.value = window.setTimeout(playBgSound, 1000)
   })
 }
 
@@ -215,6 +222,9 @@ onBeforeUnmount(() => {
   if (bgPlayer.value) {
     bgPlayer.value.stop()
     bgPlayer.value = undefined as unknown as AudioPlayer
+  }
+  if (bgPlayerTimer.value >= 0) {
+    window.clearTimeout(bgPlayerTimer.value)
   }
 })
 
@@ -271,7 +281,13 @@ const onHeadBoxResize = (size: { height: number }) => {
 
 const onSimulatorSelected = (_simulator: simulator._Simulator) => {
   selectingSpeaker.value = false
+
+  if (_simulator.id === speaker.value.id) {
+    return
+  }
+
   speaker.value = _simulator
+  generate(prompt.value, _simulator.id)
 }
 
 const onWindowResize = (size: { width: number }) => {

@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
+    <div :style='{width: "100%" }' class='flex justify-center items-center'>
       <q-resize-observer @resize='onWindowResize' />
       <div style='height: 100%; width: 960px; max-width: 100%;'>
         <q-card class='bg-gradient-blue no-border-radius'>
@@ -42,7 +42,7 @@
           </q-card-actions>
         </q-card>
 
-        <q-list padding class='q-mt-lg'>
+        <q-list padding class='q-mt-lg' style='margin-bottom: 48px;'>
           <div
             v-for='(item, index) in items'
             :key='index'

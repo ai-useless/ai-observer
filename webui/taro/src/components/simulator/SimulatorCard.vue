@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang='ts'>
-import { ref, toRef } from 'vue'
+import { onBeforeUnmount, ref, toRef } from 'vue'
 import { View, Image, Text, Button } from '@tarojs/components'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { simulator } from 'src/localstores'
@@ -67,7 +67,8 @@ const showLanguage = toRef(props, 'showLanguage')
 const _languages = dbBridge._Language.languages()
 const selectingLanguage = ref(false)
 
-const playing = ref(false)
+const playing = defineModel<boolean>('playing')
+const player = ref(undefined as unknown as AudioPlayer)
 
 const onLanguageSelectorClose = () => {
   selectingLanguage.value = false
@@ -83,13 +84,24 @@ const onOpenSelectLanguageClick = (e: { stopPropagation: () => void }) => {
   selectingLanguage.value = true
 }
 
-const onPlayClick = (e: { stopPropagation: () => void }) => {
+const onPlayClick = async (e: { stopPropagation: () => void }) => {
   e.stopPropagation()
+  if (playing.value) {
+    return
+  }
   playing.value = true
-  void AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
+  player.value = await AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
     playing.value = false
-  })
+  }) as AudioPlayer
 }
+
+onBeforeUnmount(() => {
+  if (player.value) {
+    player.value.stop()
+    player.value = undefined as unknown as AudioPlayer
+  }
+  playing.value = false
+})
 
 const onSelectLanguageClick = (_language: string) => {
   selectingLanguage.value = false

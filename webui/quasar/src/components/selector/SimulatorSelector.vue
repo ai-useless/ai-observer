@@ -126,8 +126,8 @@ const emit = defineEmits<{(ev: 'selected', simulator: simulator._Simulator): voi
 }>()
 
 const selectSimulator = (simulator: simulator._Simulator) => {
-  selectedSimulator.value = simulator
   emit('selected', simulator)
+  selectedSimulator.value = simulator
 }
 
 const onCancelClick = () => {

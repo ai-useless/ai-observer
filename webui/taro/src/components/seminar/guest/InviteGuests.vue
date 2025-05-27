@@ -16,7 +16,7 @@
           <View style='font-size: 12px; color: blue; margin-left: 16px;' @click='onSelectGuestClick(index)'>{{ index === 0 ? '点击选择主持人' : '点击选择嘉宾' }}</View>
         </View>
         <View v-else @click='onSelectGuestClick(index)'>
-          <GuestCard :simulator='guest' :role='index === 0 ? "主持人" : ""' :model='_models[index]' />
+          <GuestCard :simulator='guest' :role='index === 0 ? "主持人" : ""' :model='_models[index]' v-model:playing='playing' />
         </View>
       </View>
     </View>
@@ -41,7 +41,7 @@
     <AtModalContent>
       <View>
         <View v-for='(_simulator, index) in simulators' :key='index' style='border-bottom: 1px solid gray;' @click='onSelectSimulatorClick(_simulator)'>
-          <SimulatorCard :simulator='_simulator' />
+          <SimulatorCard :simulator='_simulator' v-model:playing='playing' />
         </View>
       </View>
     </AtModalContent>
@@ -86,6 +86,8 @@ const selectingModel = ref(false)
 const guests = ref([] as simulator._Simulator[])
 const _models = ref([] as model._Model[])
 const ready = computed(() => guests.value.findIndex((el) => !el) < 0 && _models.value.findIndex((el) => !el) < 0 && topic.value && topic.value.length)
+
+const playing = ref(false)
 
 const models = computed(() => model.Model.models())
 const simulators = computed(() => simulator.Simulator.allSimulators().filter((el) => guests.value.findIndex((_el) => _el && _el.simulator === el.simulator) < 0))

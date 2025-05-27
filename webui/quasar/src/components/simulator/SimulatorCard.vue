@@ -95,6 +95,7 @@
 import { simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
 import { defineProps, onBeforeUnmount, ref, toRef, withDefaults } from 'vue'
+import { dbBridge } from 'src/bridge'
 
 import LanguageSelector from '../selector/LanguageSelector.vue'
 
@@ -135,9 +136,10 @@ const onCancelSelectLanguage = () => {
   selectingLanguage.value = false
 }
 
-const onLanguageSelected = (_language: string) => {
+const onLanguageSelected = async (_language: string) => {
   selectingLanguage.value = false
   _simulator.value.language = _language
+  await dbBridge._Simulator.update(_simulator.value)
 }
 
 const onSelectLanguageClick = () => {

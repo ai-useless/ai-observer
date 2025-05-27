@@ -1,4 +1,5 @@
 import { chatWorker, refineWorker, speakWorker } from 'src/worker'
+import { dbBridge } from '..'
 
 export class EChat {
   static chat = (
@@ -29,10 +30,22 @@ export class EChat {
           )
           return
         }
+
+        const _simulator = dbBridge._Simulator.simulator(simulatorId)
+        let instruct = ''
+        if (noInstruct && language === '英语') {
+          instruct = `用${language}说`
+        }
+        if (!noInstruct && _simulator) {
+          instruct = `用${_simulator.language}说`
+        }
+
+        console.log(noInstruct, language, instruct)
+
         speakWorker.SpeakRunner.handleSpeakRequest({
           simulatorId,
           text: payload.text,
-          noInstruct
+          instruct,
         }).then((payload1) => {
           if (!payload1 || !payload1.audio || !payload1.audio.length) {
             onMessage(payload.text, undefined, undefined)

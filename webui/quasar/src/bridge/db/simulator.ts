@@ -14,6 +14,10 @@ export class _Simulator {
     await dbSeminar.simulators.add(simulator)
   }
 
+  static update = async (simulator: dbModel.Simulator) => {
+    await dbSeminar.simulators.update(simulator, simulator)
+  }
+
   static simulators = async (ids: number[]) => {
     return (await _Simulator.allSimulators()).filter((el) =>
       ids.includes(el.id)
