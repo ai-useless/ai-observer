@@ -1,4 +1,5 @@
 import { nianjingWorker, speakWorker } from 'src/worker'
+import { dbBridge } from '..'
 
 export class ENianJing {
   static speak = (
@@ -20,10 +21,13 @@ export class ENianJing {
 
     const text = texts[index]
 
+    const _simulator = dbBridge._Simulator.simulator(simulatorId)
+    const instruct = _simulator ? `用${_simulator.language}说` : '用中文说'
+
     speakWorker.SpeakRunner.handleSpeakRequest({
       simulatorId,
       text,
-      noInstruct: false
+      instruct
     }).then((payload1) => {
       if (!payload1 || !payload1.audio || !payload1.audio.length) {
         ENianJing.speak(name, simulatorId, texts, index + steps, steps, onMessage)

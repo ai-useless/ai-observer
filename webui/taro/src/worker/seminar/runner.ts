@@ -134,13 +134,8 @@ export class SeminarRunner {
     dbBridge._Message.create(seminarId, participatorId, prompt, content, audio)
   }
 
-  static simulator = async (participatorId: number) => {
-    const participator = dbBridge._Participator.participator(participatorId)
-    if (!participator) return
-    const simulator = dbBridge._Simulator.simulator(participator.simulatorId)
-    if (!simulator) return
-
-    return simulator
+  static simulator = async (simulatorId: number) => {
+    return dbBridge._Simulator.simulator(simulatorId)
   }
 
   static prompt = (
@@ -313,7 +308,7 @@ export class SeminarRunner {
       let voice = undefined as unknown as string
 
       if (simulator) {
-        instruct = `用${simulator.language}话说`
+        instruct = `用${simulator.language}说`
         voice = simulator.audio_id
       }
 
