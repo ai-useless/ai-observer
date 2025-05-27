@@ -61,7 +61,7 @@
 <script setup lang='ts'>
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { View, Image, Button } from '@tarojs/components'
-import { computed, onMounted, ref, toRef, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, toRef, watch } from 'vue'
 import Taro from '@tarojs/taro'
 import { model, simulator, user } from 'src/localstores'
 import { dbBridge, entityBridge } from 'src/bridge'
@@ -361,6 +361,17 @@ onMounted(async () => {
   })
 
   typingTicker.value = window.setInterval(typing, 100)
+})
+
+onBeforeUnmount(() => {
+  if (typingTicker.value >= 0) {
+    window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
+  }
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
 })
 
 </script>

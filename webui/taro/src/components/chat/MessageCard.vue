@@ -17,7 +17,7 @@
 
 <script setup lang='ts'>
 import { toRef } from 'vue'
-import { View, RichText, Image } from '@tarojs/components'
+import { View, RichText, Image, Text } from '@tarojs/components'
 
 import { Message } from './Message'
 
