@@ -8,6 +8,7 @@
   "scripts": {
     "start": "quasar dev",
     "build": "quasar build",
+    "build:skip-pkg": "quasar build -m spa --skip-pkg",
     "lint": "eslint --ext .js,.ts,.vue ./",
     "test:unit": "jest --updateSnapshot",
     "test:ci": "yarn run lint && yarn run test:unit",
