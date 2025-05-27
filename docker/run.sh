@@ -77,10 +77,10 @@ nvm install 18
 nvm use 18
 npm install -g yarn
 
-export NODE_OPTIONS=--max-old-space-size=10240
+export NODE_OPTIONS=--max-old-space-size=13550
 
 yarn
-yarn build
+yarn build:skip-pkg
 
 docker stop meipu-agi-webui
 docker rm meipu-agi-webui
