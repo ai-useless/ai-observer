@@ -36,7 +36,8 @@ export async function typing<T extends Message>(
   typingTicker: number,
   resetLastDisplayMessage: () => void,
   typingFunc: () => void,
-  skipCheck?: (message: T | undefined) => boolean
+  skipCheck?: (message: T | undefined) => boolean,
+  maxDisplayMessags?: number
 ): Promise<TypingMessage<T> | undefined> {
   if (!typingMessage && !waitMessages.size) return Promise.resolve(undefined)
 
@@ -57,6 +58,10 @@ export async function typing<T extends Message>(
       displayMessages.push(lastDisplayMessage)
     }
     resetLastDisplayMessage()
+    maxDisplayMessags = maxDisplayMessags || 0
+    if (maxDisplayMessags > 0 && displayMessages.length > maxDisplayMessags) {
+      displayMessages.splice(0, displayMessages.length - maxDisplayMessags)
+    }
   }
 
   if (!waitMessages.size) return Promise.resolve(undefined)

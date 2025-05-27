@@ -45,7 +45,9 @@ export async function typing<T extends Message>(
   enablePlay: boolean,
   typingTicker: number,
   resetLastDisplayMessage: () => void,
-  typingFunc: () => void
+  typingFunc: () => void,
+  skipCheck?: (message: T | undefined) => boolean,
+  maxDisplayMessags?: number
 ): Promise<TypingMessage<T> | undefined> {
   if (!typingMessage && !waitMessages.size) return Promise.resolve(undefined)
 
@@ -86,11 +88,20 @@ export async function typing<T extends Message>(
       displayMessages.push(lastDisplayMessage)
     }
     resetLastDisplayMessage()
+    maxDisplayMessags = maxDisplayMessags || 0
+    if (maxDisplayMessags > 0 && displayMessages.length > maxDisplayMessags) {
+      displayMessages.splice(0, displayMessages.length - maxDisplayMessags)
+    }
   }
 
   if (!waitMessages.size) return Promise.resolve(undefined)
+
+  let shouldSkip = skipCheck ? skipCheck(typingMessage) : false
+
   // If audio is still playing, do nothing
-  if (audioPlayer && audioPlayer.playing) return Promise.resolve(undefined)
+  if (audioPlayer && audioPlayer.playing && !shouldSkip) {
+    return Promise.resolve(undefined)
+  }
 
   let key = undefined as unknown as string
   for (const [k, v] of waitMessages) {
@@ -106,8 +117,9 @@ export async function typing<T extends Message>(
   typingMessageIndex += 1
 
   let typingInterval = undefined as unknown as number
+  shouldSkip = skipCheck ? skipCheck(typingMessage) : false
 
-  if (typingMessage.audio && typingMessage.audio.length && enablePlay) {
+  if (typingMessage.audio && typingMessage.audio.length && enablePlay && !shouldSkip) {
     try {
       audioPlayer = await AudioPlayer.play(typingMessage.audio)
       if (audioPlayer && audioPlayer.duration) {
@@ -135,7 +147,7 @@ export async function typing<T extends Message>(
   }
 
   return {
-    typingMessage,
+    typingMessage: shouldSkip ? undefined as unknown as T : typingMessage,
     lastDisplayMessage,
     audioPlayer,
     typingInterval,

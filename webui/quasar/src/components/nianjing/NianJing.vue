@@ -108,8 +108,10 @@ const chatBox = ref<QScrollArea>()
 const headHeight = ref(0)
 
 interface Message extends MessageBase {
+  name: string
   first: boolean
   last: boolean
+  simulatorId: number
 }
 
 const displayMessages = ref([] as Message[])
@@ -128,7 +130,7 @@ const showSelectingSpeaker = computed(() => Platform.is.mobile || windowWidth.va
 const speaker = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
 
-const generate = (_prompt: string) => {
+const generate = (_prompt: string, simulatorId: number) => {
   generating.value = true
 
   displayMessages.value = []
@@ -142,12 +144,14 @@ const generate = (_prompt: string) => {
 
   entityBridge.ENianJing.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
     waitMessages.value.set(`${message}-${index}`, {
+      name: _prompt,
       message,
       audio: audio as string,
       index,
       first,
       last,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      simulatorId
     })
   })
 }
@@ -155,7 +159,7 @@ const generate = (_prompt: string) => {
 watch(inputPrompt, () => {
   if (!audioInput.value || !prompt.value || !prompt.value.length) return
 
-  generate(prompt.value)
+  generate(prompt.value, speaker.value.id)
 })
 
 watch(audioError, () => {
@@ -166,7 +170,7 @@ watch(audioError, () => {
 
 const onPromptEnter = (_prompt: string) => {
   if (!_prompt.length) return
-  generate(_prompt)
+  generate(_prompt, speaker.value.id)
   prompt.value = _prompt
 }
 
@@ -174,7 +178,7 @@ const initializeNianjing = async () => {
   _model.value = await dbBridge._Model.model(await dbBridge._Model.topicModelId()) as model._Model
   speaker.value = await dbBridge._Simulator.randomPeek()
 
-  generate(prompt.value)
+  generate(prompt.value, speaker.value.id)
 }
 
 const playBgSound = () => {
@@ -220,7 +224,9 @@ const bgPlayer = ref(undefined as unknown as AudioPlayer)
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }, typing).then((rc) => {
+  }, typing, (_message: Message | undefined) => {
+    return !_message || _message.name !== prompt.value
+  }).then((rc) => {
     if (!rc) return
 
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer

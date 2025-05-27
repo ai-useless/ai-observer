@@ -215,7 +215,7 @@ const typing = () => {
     if (enableLaugh.value && lastDisplayMessage.value?.isTitle === false)
       void AudioPlayer.play('http://8.133.205.39:81/download/mp3/laugh.mp3')
     lastDisplayMessage.value = undefined as unknown as Message
-  }, typing).then((rc) => {
+  }, typing, undefined, 20).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
 
     if (!rc) return
