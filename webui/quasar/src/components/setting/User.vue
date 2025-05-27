@@ -12,7 +12,7 @@
     </q-btn>
   </div>
   <div v-else>
-    <q-item dense clickable class='row cursor-pointer flex items-center'>
+    <q-item dense clickable class='row cursor-pointer flex items-center border-radius-8px'>
       <div class='text-grey-8'>
         用户名
       </div>
@@ -21,7 +21,7 @@
         {{ username }}
       </div>
     </q-item>
-    <q-item dense clickable class='row cursor-pointer flex items-center'>
+    <q-item dense clickable class='row cursor-pointer flex items-center border-radius-8px q-py-xs'>
       <div class='text-grey-8'>
         头像
       </div>
@@ -32,7 +32,7 @@
         </q-avatar>
       </div>
     </q-item>
-    <q-item dense clickable class='row cursor-pointer flex items-center'>
+    <q-item dense clickable class='row cursor-pointer flex items-center border-radius-8px'>
       <div class='text-grey-8'>
         订阅计划
       </div>
@@ -41,7 +41,7 @@
         <div>免费会员</div>
       </div>
     </q-item>
-    <q-item dense clickable class='bg-grey-2 flex q-mt-sm q-py-sm' style='border-radius: 8px'>
+    <q-item dense clickable class='bg-grey-2 flex q-mt-sm q-py-sm border-radius-8px'>
       <div class='text-grey-8' style='font-size: 12px'>
         敬请关注：没谱儿AGI将在近期开放订阅套餐，提供高质量内容生成、数字人、视频生成、一键分享、存储计划、栏目预约等高级功能，敬请期待！
       </div>
@@ -64,7 +64,7 @@
 
 <script setup lang='ts'>
 import { Cookies } from 'quasar'
-import { user } from 'src/localstores'
+import { user } from '../../localstores'
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 

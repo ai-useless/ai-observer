@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-item dense clickable class='row cursor-pointer flex items-center' @click='onAudioClick'>
+    <q-item dense clickable class='row cursor-pointer flex items-center border-radius-8px' @click='onAudioClick'>
       <div class='text-grey-8'>
         生成音频
       </div>
@@ -19,8 +19,8 @@
 </template>
 
 <script setup lang='ts'>
-import { dbBridge } from 'src/bridge'
-import { dbModel } from 'src/model'
+import { dbBridge } from '../../bridge'
+import { dbModel } from '../../model'
 import { onMounted, ref } from 'vue'
 
 const generateAudio = ref(true)

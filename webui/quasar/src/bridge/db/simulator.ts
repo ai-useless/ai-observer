@@ -1,5 +1,5 @@
-import { dbSeminar } from 'src/controller'
-import { dbModel } from 'src/model'
+import { dbSeminar } from '../../controller'
+import { dbModel } from '../../model'
 
 export class _Simulator {
   static initialize = async (simulators: dbModel.Simulator[]) => {
@@ -24,13 +24,13 @@ export class _Simulator {
     )
   }
 
-  static allSimulators = async () => {
+  static allSimulators = async (): Promise<dbModel.Simulator[]> => {
     return (await dbSeminar.simulators.toArray()).filter((el) => el.state === 'APPROVED' && !el.disabled)
   }
 
   static randomPeek = async (host?: boolean) => {
     const simulators = (await _Simulator.allSimulators()).filter(
-      (el) => host === undefined || !!el.host === host
+      (el: dbModel.Simulator) => host === undefined || !!el.host === host
     )
     const index = Math.floor(Math.random() * simulators.length)
     return simulators[index]

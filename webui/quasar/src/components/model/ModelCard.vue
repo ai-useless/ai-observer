@@ -1,5 +1,5 @@
 <template>
-  <div class='row q-mb-md'>
+  <q-item dense clickable class='row q-py-sm border-radius-8px'>
     <q-avatar size='56px'>
       <q-img :src='_model.model_logo_url' />
     </q-avatar>
@@ -27,11 +27,11 @@
         </div>
       </div>
     </q-item-label>
-  </div>
+  </q-item>
 </template>
 
 <script setup lang='ts'>
-import { model } from 'src/localstores'
+import { model } from '../../localstores'
 import { defineProps, toRef } from 'vue'
 
 interface Props {

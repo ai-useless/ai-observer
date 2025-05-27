@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang='ts'>
-import { setting } from 'src/localstores'
+import { setting } from '../../localstores'
 import { computed, ref } from 'vue'
 
 import SettingSideBar from '../sidebar/SettingSideBar.vue'

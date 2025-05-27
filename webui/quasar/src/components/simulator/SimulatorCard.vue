@@ -1,5 +1,5 @@
 <template>
-  <div class='row q-pb-md'>
+  <q-item dense clickable class='row q-py-sm border-radius-8px'>
     <q-avatar size='56px'>
       <q-img :src='_simulator.simulator_avatar_url' />
     </q-avatar>
@@ -83,7 +83,7 @@
         {{ _simulator.origin_personality }}
       </div>
     </q-item-label>
-  </div>
+  </q-item>
   <q-dialog v-model='selectingLanguage'>
     <div>
       <LanguageSelector v-model:selected='selectedLanguage' @cancel='onCancelSelectLanguage' @selected='onLanguageSelected' />
@@ -92,10 +92,10 @@
 </template>
 
 <script setup lang='ts'>
-import { simulator } from 'src/localstores'
-import { AudioPlayer } from 'src/player'
-import { defineProps, onBeforeUnmount, ref, toRef, withDefaults } from 'vue'
-import { dbBridge } from 'src/bridge'
+import { simulator } from '../../localstores'
+import { AudioPlayer } from '../../player'
+import { defineProps, onBeforeUnmount, ref, toRef, withDefaults, defineModel } from 'vue'
+import { dbBridge } from '../../bridge'
 
 import LanguageSelector from '../selector/LanguageSelector.vue'
 
@@ -129,7 +129,7 @@ const onPlayClick = async () => {
   playing.value = true
   audioPlayer.value = await AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
     playing.value = false
-  }) as AudioPlayer
+  })
 }
 
 const onCancelSelectLanguage = () => {

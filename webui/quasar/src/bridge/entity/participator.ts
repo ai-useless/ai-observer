@@ -1,6 +1,6 @@
-import { dbModel } from 'src/model'
+import { dbModel } from '../../model'
 import { _Participator, _Simulator } from '../db'
-import { simulator } from 'src/localstores'
+import { simulator } from '../../localstores'
 
 export interface PSimulator {
   participatorId: number
