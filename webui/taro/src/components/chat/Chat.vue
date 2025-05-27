@@ -221,7 +221,7 @@ const initializeMessage = () => {
     avatar: friend.value.simulator_avatar_url,
     index: -1,
     audio: undefined as unknown as string,
-    simulatorId: -1
+    simulatorId: friend.value.id
   }]
 }
 

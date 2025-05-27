@@ -74,7 +74,7 @@ export class SpeakRunner {
       let voice = undefined as unknown as string
 
       if (simulator) {
-        instruct = noInstruct ? `用${simulator.language}说` : ''
+        instruct = noInstruct ? '' : `用${simulator.language}说`
         voice = simulator.audio_id
       }
 

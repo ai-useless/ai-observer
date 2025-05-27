@@ -104,6 +104,7 @@ interface Message extends MessageBase {
   displayName: string
   avatar: string
   hint: boolean
+  simulatorId: number
 }
 
 const contentHeight = computed(() => setting.Setting.contentHeight())
@@ -139,7 +140,7 @@ const typingTicker = ref(-1)
 
 const router = useRouter()
 
-const sendToFriend = (_message: string, requestIndex: number) => {
+const sendToFriend = (_message: string, requestIndex: number, simulatorId: number) => {
   friendThinking.value = true
 
   const messages = [...displayMessages.value, ...(typingMessage.value ? [typingMessage.value] : []), ...Array.from(waitMessages.value.values())]
@@ -166,7 +167,8 @@ const sendToFriend = (_message: string, requestIndex: number) => {
         hint: true,
         avatar: friend.value.simulator_avatar_url,
         index: requestIndex,
-        audio: undefined as unknown as string
+        audio: undefined as unknown as string,
+        simulatorId
       })
       return
     }
@@ -178,7 +180,8 @@ const sendToFriend = (_message: string, requestIndex: number) => {
       hint: false,
       avatar: friend.value.simulator_avatar_url,
       index: requestIndex,
-      audio: audio as unknown as string
+      audio: audio as unknown as string,
+      simulatorId
     })
   })
 }
@@ -194,10 +197,11 @@ watch(message, () => {
     hint: false,
     avatar: userAvatar.value,
     index: -1,
-    audio: undefined as unknown as string
+    audio: undefined as unknown as string,
+    simulatorId: -1
   })
 
-  sendToFriend(message.value, nextRequestIndex.value++)
+  sendToFriend(message.value, nextRequestIndex.value++, friend.value.id)
   message.value = ''
 })
 
@@ -212,7 +216,8 @@ watch(audioError, () => {
     hint: true,
     avatar: userAvatar.value,
     index: -1,
-    audio: undefined as unknown as string
+    audio: undefined as unknown as string,
+    simulatorId: -1
   })
 
   audioError.value = ''
@@ -227,10 +232,11 @@ const onMessageEnter = (_message: string) => {
     hint: false,
     avatar: userAvatar.value,
     index: -1,
-    audio: undefined as unknown as string
+    audio: undefined as unknown as string,
+    simulatorId: -1
   })
 
-  sendToFriend(message.value, nextRequestIndex.value++)
+  sendToFriend(message.value, nextRequestIndex.value++, friend.value.id)
   message.value = ''
 }
 
@@ -257,14 +263,17 @@ const initializeMessage = () => {
     hint: true,
     avatar: friend.value.simulator_avatar_url,
     index: -1,
-    audio: undefined as unknown as string
+    audio: undefined as unknown as string,
+    simulatorId: friend.value.id
   }]
 }
 
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
-  }, typing).then((rc) => {
+  }, typing, (_message: Message | undefined) => {
+    return !_message || _message.simulatorId !== friend.value.id
+  }).then((rc) => {
     if (!rc) return
 
     if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
@@ -284,10 +293,29 @@ const typing = () => {
   })
 }
 
-const initializeChat = async () => {
+const initializeChat = async (_friend: simulator._Simulator) => {
   _model.value = await dbBridge._Model.model(await dbBridge._Model.chatModelId()) as model._Model
-  friend.value = await dbBridge._Simulator.randomPeek(undefined)
+  friend.value = _friend
+  friendThinking.value = false
+
+  waitMessages.value = new Map<string, Message>()
+  displayMessages.value = []
+  typingMessageIndex.value = 0
+  nextRequestIndex.value = 0
+  lastDisplayMessage.value = undefined as unknown as Message
+  typingMessage.value = undefined as unknown as Message
+
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
+
   initializeMessage()
+}
+
+const _initializeChat = async () => {
+  const _friend = await dbBridge._Simulator.randomPeek(undefined)
+  await initializeChat(_friend)
 }
 
 onMounted(() => {
@@ -303,7 +331,7 @@ onMounted(() => {
 
   model.Model.getModels(() => {
     simulator.Simulator.getSimulators(undefined, () => {
-      void initializeChat()
+      void _initializeChat()
     })
   })
 
@@ -311,9 +339,10 @@ onMounted(() => {
 })
 
 const onSimulatorSelected = (_simulator: simulator._Simulator) => {
+  if (_simulator.id === friend.value.id) return
+
   selectingFriend.value = false
-  friend.value = _simulator
-  initializeMessage()
+  initializeChat(_simulator)
 }
 
 const onCancelLogin = () => {
