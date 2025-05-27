@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <q-dialog v-model='processing' persistent>
-      <q-card style='width: 320px; max-width: 100%; height: 400px' class='column'>
+      <q-card style='width: 320px; max-width: 100%; height: 400px' class='column border-radius-16px'>
         <q-card-section>微信扫码登录</q-card-section>
         <q-separator />
         <q-card-section class='q-mt-auto q-pa-none' style='flex-grow: 1; overflow: auto;'>
@@ -24,7 +24,12 @@
             </div>
           </div>
           <div v-if='error?.length' class='text-grey-8 flex justify-center items-center full-height full-width'>
-            {{ error }}
+            <div>
+              <div class='full-width flex justify-center items-center'>
+                <q-icon name='error' color='red-6' size='128px' />
+              </div>
+              <div class='q-mt-sm'>{{ error }}</div>
+            </div>`
           </div>
         </q-card-section>
         <q-card-actions v-if='error?.length' class='q-mb-sm'>

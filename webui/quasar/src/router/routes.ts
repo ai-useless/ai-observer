@@ -60,6 +60,10 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/wechat/login',
         component: () => import('pages/wechat/WechatLoginPage.vue')
+      },
+      {
+        path: '/help',
+        component: () => import('pages/help/HelpPage.vue')
       }
     ]
   },

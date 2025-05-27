@@ -156,31 +156,31 @@ const sendToFriend = (_message: string, requestIndex: number) => {
     _model.value.id,
     language.value || '中文',
     (_message?: string, audio?: string, error?: string) => {
-    friendThinking.value = false
-    if (error && error.length) {
-      waitMessages.value.set(`${error}-${requestIndex}`, {
-        message: error,
+      friendThinking.value = false
+      if (error && error.length) {
+        waitMessages.value.set(`${error}-${requestIndex}`, {
+          message: error,
+          send: false,
+          timestamp: Date.now(),
+          displayName: friend.value.simulator,
+          hint: true,
+          avatar: friend.value.simulator_avatar_url,
+          index: requestIndex,
+          audio: undefined as unknown as string
+        })
+        return
+      }
+      waitMessages.value.set(`${_message || ''}-${requestIndex}`, {
+        message: _message as string,
         send: false,
         timestamp: Date.now(),
         displayName: friend.value.simulator,
-        hint: true,
+        hint: false,
         avatar: friend.value.simulator_avatar_url,
         index: requestIndex,
-        audio: undefined as unknown as string
+        audio: audio as unknown as string
       })
-      return
-    }
-    waitMessages.value.set(`${_message}-${requestIndex}`, {
-      message: _message as string,
-      send: false,
-      timestamp: Date.now(),
-      displayName: friend.value.simulator,
-      hint: false,
-      avatar: friend.value.simulator_avatar_url,
-      index: requestIndex,
-      audio: audio as unknown as string
     })
-  })
 }
 
 watch(message, () => {

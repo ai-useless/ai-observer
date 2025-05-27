@@ -32,6 +32,21 @@
         </q-avatar>
       </div>
     </q-item>
+    <q-item dense clickable class='row cursor-pointer flex items-center'>
+      <div class='text-grey-8'>
+        订阅计划
+      </div>
+      <q-space />
+      <div style='border-radius: 4px;' class='row'>
+        <div>免费会员</div>
+      </div>
+    </q-item>
+    <q-item dense clickable class='bg-grey-2 flex q-mt-sm q-py-sm' style='border-radius: 8px'>
+      <div class='text-grey-8' style='font-size: 12px'>
+        敬请关注：没谱儿AGI将在近期开放订阅套餐，提供高质量内容生成、数字人、视频生成、一键分享、存储计划、栏目预约等高级功能，敬请期待！
+      </div>
+      <q-space />
+    </q-item>
     <div class='q-mx-md q-mt-md'>
       <q-btn
         flat

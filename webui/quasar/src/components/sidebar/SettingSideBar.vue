@@ -52,6 +52,13 @@
         </q-item-section>
         <q-item-section>模型</q-item-section>
       </q-item>
+      <q-separator />
+      <q-item clickable v-ripple @click='onMenuClick("models")' :class='[ settingMenu === "models" ? "selected" : "" ]'>
+        <q-item-section avatar>
+          <q-icon name='contact_page' />
+        </q-item-section>
+        <q-item-section>关注我们</q-item-section>
+      </q-item>
     </q-list>
   </div>
 </template>

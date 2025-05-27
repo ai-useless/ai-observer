@@ -14,6 +14,11 @@
         />
       </div>
     </q-card-section>
+    <q-card-section class='text-center'>
+      <div class='q-mb-md relative'>
+        登录表示您同意没谱儿AGI的<a href=''>用户手册</a>和<a href=''>隐私协议</a>！
+      </div>
+    </q-card-section>
     <q-separator />
     <q-card-actions class='q-pa-none' style='height: 48px'>
       <q-btn flat class='full-width text-grey-8 full-height' @click='onCancelLogin'>
