@@ -73,14 +73,16 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-nvm install 18
-nvm use 18
+nvm install 20.15.1
+nvm use 20.15.1
 npm install -g yarn
 
-export NODE_OPTIONS=--max-old-space-size=13550
+export NODE_OPTIONS=--max-old-space-size=8192
 
-yarn
-yarn build:skip-pkg
+rm yarn.lock -rf
+yarn add global @quasar/cli@latest
+PATH=./node_modules/@quasar/app-vite/bin:$PATH yarn install
+PATH=./node_modules/@quasar/app-vite/bin:$PATH quasar build
 
 docker stop meipu-agi-webui
 docker rm meipu-agi-webui
