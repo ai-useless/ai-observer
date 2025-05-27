@@ -11,7 +11,7 @@
           <View style='font-size: 12px; color: gray; margin-left: 4px;'>{{ _simulator.title }}</View>
         </View>
         <View style='display: flex;'>
-          <View>
+          <View @click='onPlayClick'>
             <Image :src='playCircle' style='width: 16px; height: 16px;' />
           </View>
           <View style="margin-left: 4px;">
@@ -28,6 +28,7 @@
 import { toRef } from 'vue'
 import { View, Image } from '@tarojs/components'
 import { simulator } from 'src/localstores'
+import { AudioPlayer } from 'src/player'
 
 import { threeDotsVertical, playCircle } from 'src/assets'
 
@@ -40,5 +41,18 @@ interface Props {
 const props = defineProps<Props>()
 const _simulator = toRef(props, 'simulator')
 const role = toRef(props, 'role')
+
+const playing = defineModel<boolean>('playing')
+
+const onPlayClick = (e: { stopPropagation: () => void }) => {
+  e.stopPropagation()
+  if (playing.value) {
+    return
+  }
+  playing.value = true
+  void AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
+    playing.value = false
+  })
+}
 
 </script>

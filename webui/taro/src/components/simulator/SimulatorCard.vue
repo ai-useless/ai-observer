@@ -67,7 +67,7 @@ const showLanguage = toRef(props, 'showLanguage')
 const _languages = dbBridge._Language.languages()
 const selectingLanguage = ref(false)
 
-const playing = ref(false)
+const playing = defineModel<boolean>('playing')
 
 const onLanguageSelectorClose = () => {
   selectingLanguage.value = false
@@ -85,6 +85,11 @@ const onOpenSelectLanguageClick = (e: { stopPropagation: () => void }) => {
 
 const onPlayClick = (e: { stopPropagation: () => void }) => {
   e.stopPropagation()
+
+  if (playing.value) {
+    return
+  }
+
   playing.value = true
   void AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
     playing.value = false
