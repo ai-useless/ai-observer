@@ -1,6 +1,6 @@
 {
   // "extends": ["@quasar/app-vite/tsconfig-preset", "@tsconfig/node20/tsconfig.json"],
-  "extends": "@quasar/app-vite/tsconfig-preset",
+  "extends": "./.quasar/tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
     "baseUrl": ".",

@@ -8,10 +8,9 @@
 
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { configure } = require('quasar/wrappers')
-const { nodePolyfills } = require('vite-plugin-node-polyfills')
+import { defineConfig } from '#q-app/wrappers'
 
-module.exports = configure(function (ctx) {
+export default defineConfig((ctx) => {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
     supportTS: {
@@ -72,34 +71,8 @@ module.exports = configure(function (ctx) {
 
       // https://quasar.dev/quasar-cli/handling-webpack
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
-      extendViteConf(viteConf) {
-        viteConf.plugins = viteConf.plugins || []
-        viteConf.plugins.push(nodePolyfills())
-
-        viteConf.resolve = viteConf.resolve || {}
-        viteConf.resolve.alias = viteConf.resolve.alias || {}
-        viteConf.resolve.alias.buffer = 'buffer/'
-
-        return viteConf
-      },
 
       sourcemap: false,
-      chainWebpack (chain) {
-        chain.optimization.splitChunks({
-          chunks: 'all',
-          maxInitialRequests: Infinity,
-          minSize: 0,
-          cacheGroups: {
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name (module) {
-                const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-                return `npm.${packageName.replace('@', '')}`;
-              }
-            }
-          }
-        });
-      },
       analyze: false
     },
 
