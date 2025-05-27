@@ -143,6 +143,10 @@ const generate = (_prompt: string, simulatorId: number) => {
   audioPlayer.value = undefined as unknown as AudioPlayer
 
   entityBridge.ENianJing.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
+    if (_prompt !== prompt.value || simulatorId !== speaker.value.id) {
+      return
+    }
+
     waitMessages.value.set(`${message}-${index}`, {
       name: _prompt,
       message,
@@ -170,6 +174,8 @@ watch(audioError, () => {
 
 const onPromptEnter = (_prompt: string) => {
   if (!_prompt.length) return
+  if (_prompt === prompt.value) return
+
   generate(_prompt, speaker.value.id)
   prompt.value = _prompt
 }
@@ -271,7 +277,13 @@ const onHeadBoxResize = (size: { height: number }) => {
 
 const onSimulatorSelected = (_simulator: simulator._Simulator) => {
   selectingSpeaker.value = false
+
+  if (_simulator.id === speaker.value.id) {
+    return
+  }
+
   speaker.value = _simulator
+  generate(prompt.value, _simulator.id)
 }
 
 const onWindowResize = (size: { width: number }) => {
