@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang='ts'>
-import { toRef } from 'vue'
+import { onBeforeUnmount, ref, toRef } from 'vue'
 import { View, Image } from '@tarojs/components'
 import { simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
@@ -43,16 +43,25 @@ const _simulator = toRef(props, 'simulator')
 const role = toRef(props, 'role')
 
 const playing = defineModel<boolean>('playing')
+const player = ref(undefined as unknown as AudioPlayer)
 
-const onPlayClick = (e: { stopPropagation: () => void }) => {
+const onPlayClick = async (e: { stopPropagation: () => void }) => {
   e.stopPropagation()
   if (playing.value) {
     return
   }
   playing.value = true
-  void AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
+  player.value = await AudioPlayer.play(_simulator.value.audio_url, undefined, () => {
     playing.value = false
-  })
+  }) as AudioPlayer
 }
+
+onBeforeUnmount(() => {
+  if (player.value) {
+    player.value.stop()
+    player.value = undefined as unknown as AudioPlayer
+  }
+  playing.value = false
+})
 
 </script>

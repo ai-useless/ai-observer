@@ -58,7 +58,7 @@
     <AtModalContent>
       <View>
         <View v-for='(_simulator, index) in simulators' :key='index' style='border-bottom: 1px solid lightgray;' @click='onSelectSimulatorClick(_simulator)'>
-          <SimulatorCard :simulator='_simulator' :show-language='language !== "英语"' simple />
+          <SimulatorCard :simulator='_simulator' :show-language='language !== "英语"' simple v-model:playing='rolePlaying' />
         </View>
       </View>
     </AtModalContent>
@@ -125,6 +125,7 @@ const audioInput = ref(false)
 const friendThinking = ref(false)
 const logining = ref(false)
 
+const rolePlaying = ref(false)
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 
 const sendToFriend = (_message: string) => {
