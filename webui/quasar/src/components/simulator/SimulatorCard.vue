@@ -1,5 +1,5 @@
 <template>
-  <q-item dense clickable class='row q-py-sm border-radius-8px'>
+  <q-item dense :clickable='clickable' class='row q-py-sm border-radius-8px'>
     <q-avatar size='56px'>
       <q-img :src='_simulator.simulator_avatar_url' />
     </q-avatar>
@@ -107,9 +107,11 @@ interface Props {
   showLanguage?: boolean
   enableActionReport?: boolean
   enableActionReview?: boolean
+  clickable?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
-  showLanguage: true
+  showLanguage: true,
+  clickable: true
 })
 const _simulator = toRef(props, 'simulator')
 const canSetLanguage = toRef(props, 'canSetLanguage')

@@ -16,7 +16,7 @@
 
 <script setup lang='ts'>
 import { defineModel, defineEmits } from 'vue'
-import { simulator } from 'src/localstores'
+import { simulator } from '../../localstores'
 
 import SimulatorSelector from '../selector/SimulatorSelector.vue'
 

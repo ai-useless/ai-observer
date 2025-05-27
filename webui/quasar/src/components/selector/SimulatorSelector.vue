@@ -23,7 +23,7 @@
         </q-input>
       </q-card-section>
 
-      <q-card-section dense :style='{ height: `${listHeight}px`, maxHeight: "90%" }' class='q-pa-none q-pb-md'>
+      <q-card-section dense :style='{ height: `${listHeight}px`, maxHeight: "90%" }' class='q-pa-none q-pb-xs'>
         <q-scroll-area class='fit'>
           <q-list>
             <q-item
@@ -36,7 +36,7 @@
               class='q-px-lg'
             >
               <q-item-section>
-                <SimulatorCard :simulator='_simulator' :simple='simple' :can-set-language='canSetLanguage' v-model:playing='playing' />
+                <SimulatorCard :simulator='_simulator' :simple='simple' :can-set-language='canSetLanguage' v-model:playing='playing' :clickable='false' />
               </q-item-section>
               <q-item-section side>
                 <q-icon
@@ -65,8 +65,8 @@
 </template>
 
 <script setup lang='ts'>
-import { dbBridge } from 'src/bridge'
-import { simulator } from 'src/localstores'
+import { dbBridge } from '../../bridge'
+import { simulator } from '../../localstores'
 import { computed, onMounted, ref, defineModel, defineEmits, toRef, defineProps, withDefaults } from 'vue'
 
 import SimulatorCard from '../simulator/SimulatorCard.vue'

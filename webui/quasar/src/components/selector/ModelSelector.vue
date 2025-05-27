@@ -36,7 +36,7 @@
               class='q-px-lg'
             >
               <q-item-section>
-                <ModelCard :model='_model' />
+                <ModelCard :model='_model' :clickable='false' />
               </q-item-section>
               <q-item-section side>
                 <q-icon
@@ -65,8 +65,8 @@
 </template>
 
 <script setup lang='ts'>
-import { dbBridge } from 'src/bridge'
-import { model } from 'src/localstores'
+import { dbBridge } from '../../bridge'
+import { model } from '../../localstores'
 import { computed, onMounted, ref, defineModel, defineEmits } from 'vue'
 
 import ModelCard from '../model/ModelCard.vue'

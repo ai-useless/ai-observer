@@ -1,5 +1,5 @@
 <template>
-  <q-item dense clickable class='row q-py-sm border-radius-8px'>
+  <q-item dense :clickable='clickable' class='row q-py-sm border-radius-8px'>
     <q-avatar size='56px'>
       <q-img :src='_model.model_logo_url' />
     </q-avatar>
@@ -32,12 +32,16 @@
 
 <script setup lang='ts'>
 import { model } from '../../localstores'
-import { defineProps, toRef } from 'vue'
+import { defineProps, toRef, withDefaults } from 'vue'
 
 interface Props {
   model: model._Model
+  clickable?: boolean
 }
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  clickable: true
+})
 const _model = toRef(props, 'model')
+const clickable = toRef(props, 'clickable')
 
 </script>
