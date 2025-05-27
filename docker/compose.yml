@@ -1,0 +1,41 @@
+services:
+  meipu-agi-proxy:
+    image: meipu-agi-proxy
+    container_name: meipu_agi_proxy
+    ports:
+      - 8099:8091
+    command: ['/app/entrypoint.sh']
+    environment:
+      CHUTES_API_TOKEN: ${CHUTES_API_TOKEN}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      KIKAKKZ_WECHAT_OPENID: ${KIKAKKZ_WECHAT_OPENID}
+      FILE_SERVER: ${FILE_SERVER}
+      CONCURRENT_AUDIO_REQUESTS: ${CONCURRENT_AUDIO_REQUESTS}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_BUCKET: ${AWS_BUCKET}
+      WEAPP_MINI_ID: ${WEAPP_MINI_ID}
+      WEAPP_MINI_SECRET: ${WEAPP_MINI_SECRET}
+      WEAPP_WEB_ID: ${WEAPP_WEB_ID}
+      WEAPP_WEB_SECRET: ${WEAPP_WEB_SECRET}
+      REVIEWER_WECHAT_OPENIDS: ${REVIEWER_WECHAT_OPENIDS}
+  mysql:
+    image: mysql:8
+    ports:
+      - ${MYSQL_PORT:-3306}:3306
+    command: ["mysqld", "--mysql-native-password=ON"]
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+
+volumes:
+  mysql_data:
+  meipu_agi_data:
