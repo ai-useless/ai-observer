@@ -10,6 +10,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { defineConfig } from '#q-app/wrappers'
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 export default defineConfig((ctx) => {
   return {
     // https://quasar.dev/quasar-cli/supporting-ts
@@ -83,7 +84,8 @@ export default defineConfig((ctx) => {
       https: false,
       port: 80,
       open: false, // opens browser window automatically
-      historyApiFallback: true
+      historyApiFallback: true,
+      allowedHosts: ['meipu-agi.cn']
     },
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
@@ -130,6 +132,7 @@ export default defineConfig((ctx) => {
       },
 
       middlewares: [
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         ctx.prod ? 'compression' : '',
         'render' // keep this as last one
       ]
