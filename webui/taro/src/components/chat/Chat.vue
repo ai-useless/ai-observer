@@ -137,7 +137,7 @@ const sendToFriend = (_message: string, requestIndex: number, simulatorId: numbe
       `${friend.value.simulator}说: ${_message}`
     ],
     _model.value.id,
-    language.value || '中文',
+    language.value === undefined ? '中文' : language.value,
     language.value === '英语',
     (_message?: string, audio?: string, error?: string) => {
     if (error && error.length) {

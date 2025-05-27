@@ -40,6 +40,8 @@ export class EChat {
           instruct = `用${_simulator.language}说`
         }
 
+        console.log(noInstruct, language, instruct)
+
         speakWorker.SpeakRunner.handleSpeakRequest({
           simulatorId,
           text: payload.text,

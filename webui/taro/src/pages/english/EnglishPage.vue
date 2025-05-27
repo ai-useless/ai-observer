@@ -1,6 +1,6 @@
 <template>
   <View style='padding: 0 16px;'>
-    <Chat language='英文' />
+    <Chat language='英语' />
   </View>
 </template>
 
