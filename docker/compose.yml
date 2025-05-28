@@ -40,7 +40,7 @@ services:
     image: meipu-agi-gateway
     container_name: meipu-agi-gateway
     ports:
-      - 81:80
+      - 80:80
     command: ['nginx', '-g', 'daemon off;']
   mysql:
     image: mysql:8
