@@ -22,6 +22,7 @@ WORKDIR /app
 
 EXPOSE 8091
 
+RUN sed -i -E 's/(deb|security).debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
 RUN apt update -y && apt install -y netcat
 
 COPY . .
