@@ -27,7 +27,7 @@
             </q-btn>
           </div>
           <q-img
-            src='http://8.133.205.39:81/download/images/qiaomuyu.gif'
+            src='http://api.meipu-agi.cn/downloads/qiaomuyu.gif'
             style='width: 100%;'
           />
           <q-resize-observer @resize='onHeadBoxResize' />
@@ -191,7 +191,7 @@ const initializeNianjing = async () => {
 }
 
 const playBgSound = () => {
-  AudioPlayer.play('http://8.133.205.39:81/download/mp3/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
+  AudioPlayer.play('http://api.meipu-agi.cn/downloads/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
     bgPlayer.value = player as AudioPlayer
   }).catch(() => {
     bgPlayerTimer.value = window.setTimeout(playBgSound, 1000)
