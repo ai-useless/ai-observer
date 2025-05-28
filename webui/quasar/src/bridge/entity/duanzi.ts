@@ -5,6 +5,7 @@ import {
   speakWorker
 } from 'src/worker'
 import { _Model } from '../db'
+import { dbBridge } from '..'
 
 export class Duanzi {
   private static baseTextIndex = 0
@@ -82,10 +83,12 @@ export class Duanzi {
       await this.refineImagePrompt(text, baseIndex, index, onImage)
     }
 
+    const _simulator = await dbBridge._Simulator.simulator(simulatorId)
+
     speakWorker.SpeakRunner.handleSpeakRequest({
       text,
       simulatorId,
-      noInstruct: false
+      instruct: `用${_simulator.language || "中文"}说`
     })
       .then((payload) => {
         if (!payload) {
