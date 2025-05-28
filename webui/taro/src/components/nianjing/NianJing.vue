@@ -114,6 +114,8 @@ const _model = ref(undefined as unknown as model._Model)
 const simulators = computed(() => simulator.Simulator.allSimulators())
 const selectingSimulator = ref(false)
 
+const eNianjing = ref(undefined as unknown as entityBridge.ENianJing)
+
 watch(scriptHeight, () => {
   scrollHeight.value = scriptHeight.value - 400 - 32
 })
@@ -137,7 +139,13 @@ const generate = (_prompt: string, simulatorId: number) => {
   if (audioPlayer.value) audioPlayer.value.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
 
-  entityBridge.ENianJing.request(_prompt, simulatorId, _model.value.id, (name: string, message: string, index: number, first: boolean, last: boolean, audio?: string) => {
+  if (!eNianjing.value) return
+
+  eNianjing.value.request(
+    _prompt,
+    simulatorId,
+    _model.value.id,
+    (name: string, message: string, index: number, first: boolean, last: boolean, audio?: string) => {
     if (_prompt !== prompt.value || simulatorId !== speaker.value.id) {
       return
     }
@@ -207,6 +215,8 @@ const onCancelSelectSimulatorClick = () => {
 }
 
 onMounted(async () => {
+  eNianjing.value = new entityBridge.ENianJing()
+
   Taro.setNavigationBarTitle({
     title: 'AGI妙音坊'
   })
@@ -230,6 +240,9 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  eNianjing.value.stop()
+  eNianjing.value = undefined as unknown as entityBridge.ENianJing
+
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1
@@ -255,8 +268,6 @@ const typing = () => {
   }).then((rc) => {
     if (!rc) return
 
-    generating.value = false
-
     audioPlayer.value = rc.audioPlayer as unknown as AudioPlayer
     if (rc.lastDisplayMessage) {
       lastDisplayMessage.value = rc.lastDisplayMessage
@@ -271,6 +282,19 @@ const typing = () => {
     }
 
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+
+    if (typingMessage.value && typingMessage.value.last) {
+      for (const _message of displayMessages.value) {
+        waitMessages.value.set(`${_message.message}-${_message.index}`, _message)
+      }
+      waitMessages.value.set(`${typingMessage.value.message}-${typingMessage.value.index}`, typingMessage.value)
+      displayMessages.value = []
+      typingMessageIndex.value = 0
+    }
+    if (typingMessage.value && typingMessage.value.first) {
+      generating.value = false
+      inputPrompt.value = ''
+    }
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)

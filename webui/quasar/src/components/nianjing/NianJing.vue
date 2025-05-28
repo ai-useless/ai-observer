@@ -131,6 +131,8 @@ const showSelectingSpeaker = computed(() => Platform.is.mobile || windowWidth.va
 const speaker = ref(undefined as unknown as simulator._Simulator)
 const _model = ref(undefined as unknown as model._Model)
 
+const eNianjing = ref(undefined as unknown as entityBridge.ENianJing)
+
 const generate = (_prompt: string, simulatorId: number) => {
   generating.value = true
 
@@ -143,7 +145,7 @@ const generate = (_prompt: string, simulatorId: number) => {
   if (audioPlayer.value) audioPlayer.value?.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
 
-  entityBridge.ENianJing.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
+  eNianjing.value?.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
     if (_prompt !== prompt.value || simulatorId !== speaker.value.id) {
       return
     }
@@ -197,6 +199,8 @@ const playBgSound = () => {
 }
 
 onMounted(() => {
+  eNianjing.value = new entityBridge.ENianJing()
+
   setting.Setting.setCurrentMenu('nianjing')
 
   model.Model.getModels(() => {
@@ -211,6 +215,9 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  eNianjing.value.stop()
+  eNianjing.value = undefined as unknown as entityBridge.ENianJing
+
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1
