@@ -156,6 +156,7 @@ const sendToFriend = (_message: string, requestIndex: number, simulatorId: numbe
     ],
     _model.value.id,
     language.value || '中文',
+    language.value === '英语',
     (_message?: string, audio?: string, error?: string) => {
       friendThinking.value = false
       if (error && error.length) {
@@ -180,7 +181,7 @@ const sendToFriend = (_message: string, requestIndex: number, simulatorId: numbe
         hint: false,
         avatar: friend.value.simulator_avatar_url,
         index: requestIndex,
-        audio: undefined as unknown as string,
+        audio: audio as unknown as string,
         simulatorId
       })
     })
