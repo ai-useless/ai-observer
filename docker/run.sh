@@ -14,9 +14,11 @@ mkdir -p $OUTPUT_DIR
 
 API_DIR=$OUTPUT_DIR/api
 WEBUI_DIR=$OUTPUT_DIR/webui
+FILE_SERVER_DIR=$OUTPUT_DIR/file-server
 
 mkdir -p $API_DIR
 mkdir -p $WEBUI_DIR
+mkdir -p $FILE_SERVER_DIR
 
 cd $API_DIR
 
@@ -88,3 +90,12 @@ docker stop meipu-agi-webui
 docker rm meipu-agi-webui
 docker rmi meipu-agi-webui:latest
 docker build . -t meipu-agi-webui
+
+cd $FILE_SERVER_DIR
+cp -v -rf $SCRIPT_DIR/Dockerfile.file-server ./Dockerfile
+cp -v -rf $SCRIPT_DIR/../configuration/observer.nginx.conf .
+
+docker stop file-server
+docker rm file-server
+docker rmi file-server:latest
+docker build . -t file-server

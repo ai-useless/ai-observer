@@ -1,14 +1,12 @@
 services:
   meipu-agi-proxy:
     image: meipu-agi-proxy
-    container_name: meipu_agi_proxy
-    ports:
-      - 8099:8091
+    container_name: meipu-agi-proxy
     command: ['/app/entrypoint.sh']
     environment:
       CHUTES_API_TOKEN: ${CHUTES_API_TOKEN}
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_PORT: ${MYSQL_PORT
+      MYSQL_HOST: mysql
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       KIKAKKZ_WECHAT_OPENID: ${KIKAKKZ_WECHAT_OPENID}
@@ -23,10 +21,24 @@ services:
       WEAPP_WEB_ID: ${WEAPP_WEB_ID}
       WEAPP_WEB_SECRET: ${WEAPP_WEB_SECRET}
       REVIEWER_WECHAT_OPENIDS: ${REVIEWER_WECHAT_OPENIDS}
+    volumes:
+      - meipu_agi_data:/data
+    depends_on:
+      mysql:
+        condition: service_healthy
+  meipu-agi-webui:
+    image: meipu-agi-webui
+    container_name: meipu-agi-webui
+    command: ['nginx', '-g', 'daemon off;']
+  file-server:
+    image: file-server
+    container_name: file-server
+    command: ['nginx', '-g', 'daemon off;']
+    volumes:
+      - meipu_agi_data:/data
   mysql:
     image: mysql:8
-    ports:
-      - ${MYSQL_PORT:-3306}:3306
+    container_name: mysql
     command: ["mysqld", "--mysql-native-password=ON"]
     volumes:
       - mysql_data:/var/lib/mysql
@@ -35,7 +47,14 @@ services:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   mysql_data:
+    name: mysql_data
   meipu_agi_data:
+    name: meipu_agi_data

@@ -1,0 +1,5 @@
+FROM nginx:1.24-alpine
+
+COPY observer.nginx.conf /etc/nginx/site-enabled/
+
+CMD ["nginx", "-g", "daemon off;"]
