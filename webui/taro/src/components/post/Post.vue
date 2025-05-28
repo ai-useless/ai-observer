@@ -352,6 +352,8 @@ const cacheImageUrl = (_prompt: string, _image: string) => {
       images.value.set(_prompt, _images)
       if (_images.images.length >= imageNumber.value) {
         lruPromptCache(_prompt)
+      } else if (_images.responds >= imageNumber.value) {
+        imageGenerating.value = false
       }
     },
     fail: () => {
@@ -371,6 +373,7 @@ const generate = (_prompt: string, style: string) => {
     cacheImageUrl(_prompt, _image)
   }, () => {
     _images.responds += 1
+    imageGenerating.value = _images.responds < imageNumber.value
     _images.errors += 1
     images.value.set(_prompt, _images)
   })
@@ -405,6 +408,7 @@ const refineText = (_prompt: string) => {
   imageGenerating.value = true
 
   entityBridge.EChat.refineText(_prompt, promptStyle.value, letterNumber.value, dbBridge._Model.topicModelId()).then((__prompt) => {
+    generating.value = false
     if (!__prompt) {
       return
     }

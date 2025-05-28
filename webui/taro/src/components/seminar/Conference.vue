@@ -82,9 +82,9 @@
 
 <script setup lang='ts'>
 import { dbBridge, entityBridge } from 'src/bridge'
-import { seminar, model, simulator } from 'src/localstores'
+import { seminar, model, simulator, setting } from 'src/localstores'
 import { dbModel } from 'src/model'
-import { computed, onMounted, ref, watch, nextTick } from 'vue'
+import { computed, onMounted, ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import { AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui-vue3'
 import { timestamp2HumanReadable } from 'src/utils/timestamp'
 import { View, ScrollView, Button, Image } from '@tarojs/components'
@@ -143,6 +143,8 @@ const audioPlayer = ref(undefined as unknown as AudioPlayer)
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
+const tabIndex = computed(() => setting.Setting.tabIndex())
+
 watch(messageCount, () => {
   if (messageCount.value && loading.value) {
     Taro.hideLoading()
@@ -187,8 +189,7 @@ const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing).then((rc) => {
-    if (!typingMessage.value) return
-    if (typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
+    if (typingMessage.value && typingMessage.value.round >= lastRound.value - 1 && !requesting.value && eSeminar.value.shouldNext()) {
       requesting.value = true
       setTimeout(() => {
         void eSeminar.value.nextGuests(lastTopic.value || lastWaitMessage.value ? lastWaitMessage.value.subTopic : typingMessage.value.subTopic, enablePlay.value)
@@ -223,48 +224,6 @@ const typing = () => {
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)
-  })
-}
-
-const playAudio = (audioUrl: string): Promise<AudioPlayer | undefined> => {
-  const context = Taro.createInnerAudioContext()
-  context.src = audioUrl
-
-  const player = {
-    context: context,
-    playing: true,
-    duration: context.duration
-  } as AudioPlayer
-
-  return new Promise((resolve, reject) => {
-    context.onError((e) => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-      reject(`Failed play audio: ${JSON.stringify(e)}`)
-    })
-    context.onCanplay(() => {
-      context.play()
-
-      player.durationTicker = window.setInterval(() => {
-        if (context.duration) {
-          window.clearInterval(player.durationTicker)
-          player.durationTicker = -1
-          player.duration = context.duration
-          resolve(player)
-          return
-        }
-      }, 100)
-    })
-    context.onEnded(() => {
-      player.playing = false
-      if (player.durationTicker >= 0) {
-        window.clearInterval(player.durationTicker)
-        player.durationTicker = -1
-      }
-    })
   })
 }
 
@@ -419,6 +378,8 @@ onMounted(async () => {
 })
 
 useDidShow(() => {
+  setting.Setting.setTabIndex(1)
+
   _seminar.value = dbBridge._Seminar.seminar(_uid.value) as dbModel.Seminar
 
   const participators = dbBridge._Participator.participators(_uid.value)
@@ -429,13 +390,29 @@ useDidShow(() => {
   startSeminar()
 })
 
-useDidHide(() => {
-  if (eSeminar.value) eSeminar.value.stop()
+const stopSeminar = () => {
+  if (eSeminar.value) {
+    eSeminar.value.stop()
+    eSeminar.value = undefined as unknown as entityBridge.ESeminar
+  }
   if (typingTicker.value) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1
   }
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
+}
+
+onBeforeUnmount(() => {
+  stopSeminar()
 })
+
+useDidHide(() => {
+  stopSeminar()
+})
+
 </script>
 
 <style>

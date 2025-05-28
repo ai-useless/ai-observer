@@ -1,7 +1,12 @@
 <template>
   <View>
     <View :style='{ height: scriptHeight + "px", width: "100vw" }'>
-      <View style='font-size: 18px; font-weight: 600; border-bottom: 1px solid lightgray; margin: 8px 16px; color: gray; text-align: center; height: 32px;'>{{ prompt }}</View>
+      <View style='display: flex; justify-content: center; align-items: center; border-bottom: 1px solid lightgray; height: 36px; padding-bottom: 4px;'>
+        <Image v-if='speaker' :src='speaker.simulator_avatar_url' mode='widthFix' style='width: 32px; height: 32px; border-radius: 50%;' />
+        <View v-if='speaker' style='margin-left: 4px;'>{{ speaker.simulator }}</View>
+        <View style='margin-left: 4px; font-size: 12px; color: gray;'>念诵</View>
+        <View style='font-size: 18px; font-weight: 600; margin-left: 4px; text-align: center;'>{{ prompt }}</View>
+      </View>
       <Image
         src='http://8.133.205.39:81/download/images/qiaomuyu.gif'
         mode='widthFix'

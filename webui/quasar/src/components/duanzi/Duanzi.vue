@@ -114,6 +114,8 @@ const chatBox = ref<QScrollArea>()
 const generating = ref(false)
 const images = ref(new Map<number, string>())
 
+const eDuanzi = ref(undefined as unknown as entityBridge.Duanzi)
+
 const modelLogo = (modelId: number) => {
   const model = models.value.find((el) => el.id === modelId)
   return model ? model.model_logo_url : ''
@@ -136,7 +138,7 @@ const generate = async () => {
   for (const model of models.value) {
     const simulator = await dbBridge._Simulator.randomPeek()
     const messages = [...displayMessages.value, ...waitMessages.value.values()]
-    await entityBridge.Duanzi.generate(messages.map((el) => el.message), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
+    await eDuanzi.value?.generate(messages.map((el) => el.message), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
       generating.value = false
 
       waitMessages.value.set(`${text}-${index}`, {
@@ -165,6 +167,8 @@ const onMoreClick = async () => {
 }
 
 onMounted(() => {
+  eDuanzi.value = new entityBridge.Duanzi()
+
   setting.Setting.setCurrentMenu('duanzi')
 
   model.Model.getModels(() => {
@@ -177,6 +181,9 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  eDuanzi.value.stop()
+  eDuanzi.value = undefined as unknown as entityBridge.Duanzi
+
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1
@@ -216,7 +223,9 @@ const typing = () => {
       void AudioPlayer.play('http://8.133.205.39:81/download/mp3/laugh.mp3')
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing, undefined, 20).then((rc) => {
-    if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
+    if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) {
+      void generate()
+    }
 
     if (!rc) return
 

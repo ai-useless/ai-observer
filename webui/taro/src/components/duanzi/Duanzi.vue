@@ -53,11 +53,11 @@
 
 <script setup lang='ts'>
 import { View, Image, ScrollView } from '@tarojs/components'
-import Taro, { useDidHide } from '@tarojs/taro'
+import Taro, { useDidHide, useDidShow } from '@tarojs/taro'
 import { dbBridge, entityBridge } from 'src/bridge'
 import { model, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
-import { computed, onMounted, ref, watch, nextTick, onBeforeUnmount } from 'vue'
+import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
 
@@ -82,6 +82,7 @@ const lastModelId = ref(-1 as unknown as number)
 const duanziContentHeight = ref(0)
 const scrollTop = ref(999999)
 const generating = ref(true)
+const inMyPage = ref(false)
 const images = ref(new Map<number, string>())
 
 const modelLogo = (modelId: number) => {
@@ -100,6 +101,8 @@ const generate = async () => {
   nextTick().then(() => scrollTop.value += 1)
 
   for (const model of models.value) {
+    if (!inMyPage.value) return
+
     const simulator = dbBridge._Simulator.randomPeek()
     const messages = [...displayMessages.value, ...Array.from(waitMessages.value.values())]
     await entityBridge.Duanzi.generate(messages.map((el) => el.message), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
@@ -149,22 +152,15 @@ onMounted(async () => {
   if (Taro.getWindowInfo()) {
     duanziContentHeight.value = Taro.getWindowInfo().windowHeight - 4
   }
+})
 
+useDidShow(() => {
+  inMyPage.value = true
   typingTicker.value = window.setInterval(typing, 100)
 })
 
-onBeforeUnmount(() => {
-  if (typingTicker.value >= 0) {
-    window.clearInterval(typingTicker.value)
-    typingTicker.value = -1
-  }
-  if (audioPlayer.value) {
-    audioPlayer.value.context.stop()
-    audioPlayer.value = undefined as unknown as AudioPlayer
-  }
-})
-
 useDidHide(() => {
+  inMyPage.value = false
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1
@@ -210,7 +206,16 @@ const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing, undefined, 20).then((rc) => {
-    if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) void generate()
+    if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) {
+      if (inMyPage.value) {
+        void generate()
+      } else {
+        if (rc && rc.typingInterval) {
+          window.clearInterval(rc.typingTicker)
+        }
+        return
+      }
+    }
 
     if (!rc) return
 

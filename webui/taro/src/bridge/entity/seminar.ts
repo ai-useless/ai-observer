@@ -39,6 +39,7 @@ export class ESeminar {
   private lastRoundIsHost = false
 
   private nextMessageIndex = 0
+  private stopped = false
 
   constructor(
     seminar: dbModel.Seminar,
@@ -66,6 +67,7 @@ export class ESeminar {
 
   onChatResponse = (message: seminarWorker.ChatResponsePayload) => {
     if (message.seminarId !== this.seminar.id) return
+    if (this.stopped) return
 
     const { intent, subTopic, participatorId, payload, round, subRound, index } =
       message
@@ -353,7 +355,9 @@ export class ESeminar {
       })
   }
 
-  stop = () => {}
+  stop = () => {
+    this.stopped = true
+  }
 
   guestRequest = (
     subTopic: string,
