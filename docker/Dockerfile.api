@@ -22,8 +22,9 @@ WORKDIR /app
 
 EXPOSE 8091
 
-RUN sed -i -E 's/(deb|security).debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
-RUN apt update -y && apt install -y netcat
+RUN mkdir -p /etc/apt/sources.list.d
+COPY debian.sources /etc/apt/sources.list.d/debian.sources
+RUN apt update -y && apt install -y netcat-traditional
 
 COPY . .
 RUN python -m pip install --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/

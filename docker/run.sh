@@ -28,6 +28,7 @@ cp -v -rf $SCRIPT_DIR/../api .
 cp -v -rf $SCRIPT_DIR/../common .
 cp -v -rf $SCRIPT_DIR/Dockerfile.api ./Dockerfile
 cp -v -rf $SCRIPT_DIR/proxy-entrypoint.sh ./entrypoint.sh
+cp -v -rf $SCRIPT_DIR/../configuration/aliyun.debian.sources ./debian.sources
 
 docker stop meipu-agi-proxy
 docker rm meipu-agi-proxy
