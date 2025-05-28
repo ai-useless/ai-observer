@@ -15,10 +15,12 @@ mkdir -p $OUTPUT_DIR
 API_DIR=$OUTPUT_DIR/api
 WEBUI_DIR=$OUTPUT_DIR/webui
 FILE_SERVER_DIR=$OUTPUT_DIR/file-server
+GATEWAY_DIR=$OUTPUT_DIR/gateway
 
 mkdir -p $API_DIR
 mkdir -p $WEBUI_DIR
 mkdir -p $FILE_SERVER_DIR
+mkdir -p $GATEWAY_DIR
 
 cd $API_DIR
 
@@ -99,3 +101,14 @@ docker stop file-server
 docker rm file-server
 docker rmi file-server:latest
 docker build . -t file-server
+
+cd $GATEWAY_DIR
+cp -v -rf $SCRIPT_DIR/Dockerfile.gateway ./Dockerfile
+cp -v -rf $SCRIPT_DIR/../configuration/gateway.nginx.conf .
+
+docker stop meipu-agi-gateway
+docker rm meipu-agi-gateway
+docker rmi meipu-agi-gateway:latest
+docker build . -t meipu-agi-gateway
+
+docker compose up --wait

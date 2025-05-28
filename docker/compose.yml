@@ -36,6 +36,12 @@ services:
     command: ['nginx', '-g', 'daemon off;']
     volumes:
       - meipu_agi_data:/data
+  meipu-agi-gateway:
+    image: meipu-agi-gateway
+    container_name: meipu-agi-gateway
+    ports:
+      - 80:80
+    command: ['nginx', '-g', 'daemon off;']
   mysql:
     image: mysql:8
     container_name: mysql
