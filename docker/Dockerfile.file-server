@@ -1,6 +1,10 @@
 FROM nginx:1.24-alpine
 
-COPY observer.nginx.conf /etc/nginx/conf.d/
-COPY entrypoint.sh .
+RUN apk update && apk add curl
 
-CMD ["/app/entrypoint.sh"]
+COPY observer.nginx.conf /etc/nginx/conf.d/
+COPY entrypoint.sh /
+
+RUN chmod a+x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
