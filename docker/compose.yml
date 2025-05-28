@@ -33,8 +33,7 @@ services:
   file-server:
     image: file-server
     container_name: file-server
-      # command: ['/entrypoint.sh']
-    command: ['sleep', '1000000']
+    command: ['/entrypoint.sh']
     volumes:
       - meipu_agi_data:/data
   meipu-agi-gateway:
