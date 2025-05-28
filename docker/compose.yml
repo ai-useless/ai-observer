@@ -28,7 +28,7 @@ services:
         condition: service_healthy
     restart: always
     healthcheck:
-      test: ["CMD", "sh", "-c", "nc -z localhost 8091"]
+      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 8091"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -38,7 +38,7 @@ services:
     command: ['nginx', '-g', 'daemon off;']
     restart: always
     healthcheck:
-      test: ["CMD", "sh", "-c", "nc -z localhost 80"]
+      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 80"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -50,7 +50,7 @@ services:
       - meipu_agi_data:/data
     restart: always
     healthcheck:
-      test: ["CMD", "sh", "-c", "nc -z localhost 80"]
+      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 80"]
       interval: 10s
       timeout: 5s
       retries: 5

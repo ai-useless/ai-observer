@@ -1,6 +1,6 @@
 FROM nginx:1.24-alpine
 
-RUN apk update && apk add curl
+RUN apk update && apk add curl netcat-openbsd
 
 COPY observer.nginx.conf /etc/nginx/conf.d/
 COPY entrypoint.sh /
