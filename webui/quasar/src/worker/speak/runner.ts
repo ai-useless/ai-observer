@@ -17,7 +17,7 @@ export enum SpeakEventType {
 export interface SpeakRequestPayload {
   text: string
   simulatorId: number
-  noInstruct: boolean
+  instruct: string
 }
 
 export interface SpeakResponsePayload {
@@ -55,7 +55,7 @@ export class SpeakRunner {
     return simulator
   }
 
-  static requestSpeak = async (simulatorId: number, text: string, noInstruct: boolean) => {
+  static requestSpeak = async (simulatorId: number, text: string, instruct: string) => {
     const _generateAudio = (await dbBridge._Setting.get(
       dbModel.SettingKey.GENERATE_AUDIO
     )) as boolean
@@ -72,7 +72,7 @@ export class SpeakRunner {
       const payload = {
         text: speechContent,
         voice: simulator?.audio_id,
-        instruct: noInstruct ? '' : simulator?.language ? `用${simulator.language}说` : '用普通话说'
+        instruct
       } as Record<string, string>
 
       const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V3_API, payload)
@@ -105,9 +105,9 @@ export class SpeakRunner {
   static handleSpeakRequest = async (
     payload: SpeakRequestPayload
   ): Promise<SpeakResponsePayload | undefined> => {
-    const { simulatorId, text, noInstruct } = payload
+    const { simulatorId, text, instruct } = payload
 
-    const response = await SpeakRunner.requestSpeak(simulatorId, text, noInstruct)
+    const response = await SpeakRunner.requestSpeak(simulatorId, text, instruct)
     if (!response || !response.audio) return
 
     return response

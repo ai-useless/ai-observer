@@ -2,7 +2,9 @@ import { nianjingWorker, speakWorker } from 'src/worker'
 import { dbBridge } from '..'
 
 export class ENianJing {
-  static speak = (
+  private stopped = false
+
+  speak = (
     name: string,
     simulatorId: number,
     texts: string[],
@@ -18,6 +20,7 @@ export class ENianJing {
     ) => void
   ) => {
     if (index >= texts.length) return
+    if (this.stopped) return
 
     const text = texts[index]
 
@@ -29,8 +32,10 @@ export class ENianJing {
       text,
       instruct
     }).then((payload1) => {
+      if (this.stopped) return
+
       if (!payload1 || !payload1.audio || !payload1.audio.length) {
-        ENianJing.speak(name, simulatorId, texts, index + steps, steps, onMessage)
+        this.speak(name, simulatorId, texts, index + steps, steps, onMessage)
         onMessage(
           name,
           text,
@@ -41,7 +46,7 @@ export class ENianJing {
         )
         return
       }
-      ENianJing.speak(name, simulatorId, texts, index + steps, steps, onMessage)
+      this.speak(name, simulatorId, texts, index + steps, steps, onMessage)
       onMessage(
         name,
         text,
@@ -53,7 +58,7 @@ export class ENianJing {
     })
   }
 
-  static request = (
+  request = (
     name: string,
     simulatorId: number,
     modelId: number,
@@ -66,21 +71,33 @@ export class ENianJing {
       audio?: string
     ) => void
   ) => {
+    if (this.stopped) return
+
     nianjingWorker.NianJingRunner.handleGenerateRequest({
       name,
       modelId
     })
       .then((payload) => {
         if (!payload || !payload.texts || !payload.texts.length) {
+          setTimeout(() => {
+            this.request(name, simulatorId, modelId, onMessage)
+          }, 1000)
           return
         }
+
+        if (this.stopped) return
+
         const steps = 5
         for (let i = 0; i < steps; i++) {
-          ENianJing.speak(name, simulatorId, payload.texts, i, steps, onMessage)
+          this.speak(name, simulatorId, payload.texts, i, steps, onMessage)
         }
       })
       .catch((e) => {
         console.log(`Failed generate: ${e}`)
       })
+  }
+
+  stop = () => {
+    this.stopped = true
   }
 }
