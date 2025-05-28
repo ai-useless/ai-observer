@@ -34,12 +34,12 @@ docker rm meipu-agi-proxy
 # docker rmi meipu-agi-proxy:latest
 docker build . -t meipu-agi-proxy
 
-VOLUME_NAME=meipu_agi_data
-
-volume=$(docker volume ls -q -f name=^${VOLUME_NAME}$)
-if [ "x$volume" == "x" ]; then
-  docker volume create $VOLUME_NAME
-fi
+# VOLUME_NAME=meipu_agi_data
+# 
+# volume=$(docker volume ls -q -f name=^${VOLUME_NAME}$)
+# if [ "x$volume" == "x" ]; then
+#   docker volume create $VOLUME_NAME
+# fi
 
 # docker run -d -v $VOLUME_NAME:/data \
 #   -e CHUTES_API_TOKEN="$CHUTES_API_TOKEN" \
