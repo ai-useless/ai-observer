@@ -77,7 +77,12 @@ async def main():
 
         avatar_cid = fetch_avatar_then_save(simulator['avatar'], 'simulator')
         (audio_cid, audio_b64, audio_url) = fetch_audio_then_save(simulator['audio'])
-        audio_text = audio_2_text(audio_b64)
+        while True:
+            try:
+                audio_text = audio_2_text(audio_b64)
+                break
+            except:
+                continue
 
         try:
             await generator.audio_request_one('我是尊贵的测试文本！', audio_cid, audio_url, audio_text)

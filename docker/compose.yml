@@ -26,22 +26,48 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 8091"]
+      interval: 10s
+      timeout: 5s
+      retries: 600
   meipu-agi-webui:
     image: meipu-agi-webui
     container_name: meipu-agi-webui
     command: ['nginx', '-g', 'daemon off;']
+    restart: always
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 80"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   file-server:
     image: file-server
     container_name: file-server
-    command: ['nginx', '-g', 'daemon off;']
+    command: ['/entrypoint.sh']
     volumes:
       - meipu_agi_data:/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 80"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   meipu-agi-gateway:
     image: meipu-agi-gateway
     container_name: meipu-agi-gateway
     ports:
-      - 81:80
+      - 80:80
     command: ['nginx', '-g', 'daemon off;']
+    restart: always
+    depends_on:
+      meipu-agi-proxy:
+        condition: service_healthy
+      meipu-agi-webui:
+        condition: service_healthy
+      file-server:
+        condition: service_healthy
   mysql:
     image: mysql:8
     container_name: mysql
@@ -58,6 +84,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always
 
 volumes:
   mysql_data:

@@ -27,19 +27,20 @@ cd $API_DIR
 cp -v -rf $SCRIPT_DIR/../api .
 cp -v -rf $SCRIPT_DIR/../common .
 cp -v -rf $SCRIPT_DIR/Dockerfile.api ./Dockerfile
-cp -v -rf $SCRIPT_DIR/entrypoint.sh .
+cp -v -rf $SCRIPT_DIR/proxy-entrypoint.sh ./entrypoint.sh
+cp -v -rf $SCRIPT_DIR/../configuration/aliyun.debian.sources ./debian.sources
 
 docker stop meipu-agi-proxy
 docker rm meipu-agi-proxy
-docker rmi meipu-agi-proxy:latest
+# docker rmi meipu-agi-proxy:latest
 docker build . -t meipu-agi-proxy
 
-VOLUME_NAME=meipu_agi_data
-
-volume=$(docker volume ls -q -f name=^${VOLUME_NAME}$)
-if [ "x$volume" == "x" ]; then
-  docker volume create $VOLUME_NAME
-fi
+# VOLUME_NAME=meipu_agi_data
+# 
+# volume=$(docker volume ls -q -f name=^${VOLUME_NAME}$)
+# if [ "x$volume" == "x" ]; then
+#   docker volume create $VOLUME_NAME
+# fi
 
 # docker run -d -v $VOLUME_NAME:/data \
 #   -e CHUTES_API_TOKEN="$CHUTES_API_TOKEN" \
@@ -87,20 +88,21 @@ export NODE_OPTIONS=--max-old-space-size=8192
 rm yarn.lock -rf
 yarn add global @quasar/cli@latest
 PATH=./node_modules/@quasar/app-vite/bin:$PATH yarn install
-PATH=./node_modules/@quasar/app-vite/bin:$PATH quasar build
+PATH=./node_modules/@quasar/app-vite/bin:$PATH yarn build
 
 docker stop meipu-agi-webui
 docker rm meipu-agi-webui
-docker rmi meipu-agi-webui:latest
+# docker rmi meipu-agi-webui:latest
 docker build . -t meipu-agi-webui
 
 cd $FILE_SERVER_DIR
 cp -v -rf $SCRIPT_DIR/Dockerfile.file-server ./Dockerfile
 cp -v -rf $SCRIPT_DIR/../configuration/observer.nginx.conf .
+cp -v -rf $SCRIPT_DIR/file-server-entrypoint.sh ./entrypoint.sh
 
 docker stop file-server
 docker rm file-server
-docker rmi file-server:latest
+# docker rmi file-server:latest
 docker build . -t file-server
 
 cd $GATEWAY_DIR
@@ -109,7 +111,18 @@ cp -v -rf $SCRIPT_DIR/../configuration/gateway.nginx.conf .
 
 docker stop meipu-agi-gateway
 docker rm meipu-agi-gateway
-docker rmi meipu-agi-gateway:latest
+# docker rmi meipu-agi-gateway:latest
 docker build . -t meipu-agi-gateway
 
 docker compose up --wait
+if [ $? -eq 0 ]; then
+  exit 0
+fi
+
+docker-compose version
+if [ ! $? -eq 0 ]; then
+  curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+  chmod +x /usr/local/bin/docker-compose
+fi
+
+docker-compose up --wait
