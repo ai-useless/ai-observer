@@ -27,7 +27,7 @@ cd $API_DIR
 cp -v -rf $SCRIPT_DIR/../api .
 cp -v -rf $SCRIPT_DIR/../common .
 cp -v -rf $SCRIPT_DIR/Dockerfile.api ./Dockerfile
-cp -v -rf $SCRIPT_DIR/entrypoint.sh .
+cp -v -rf $SCRIPT_DIR/proxy-entrypoint.sh ./entrypoint.sh
 
 docker stop meipu-agi-proxy
 docker rm meipu-agi-proxy
@@ -97,6 +97,7 @@ docker build . -t meipu-agi-webui
 cd $FILE_SERVER_DIR
 cp -v -rf $SCRIPT_DIR/Dockerfile.file-server ./Dockerfile
 cp -v -rf $SCRIPT_DIR/../configuration/observer.nginx.conf .
+cp -v -rf $SCRIPT_DIR/../file-server-entrypoint.sh ./entrypoint.sh
 
 docker stop file-server
 docker rm file-server
@@ -112,4 +113,7 @@ docker rm meipu-agi-gateway
 docker rmi meipu-agi-gateway:latest
 docker build . -t meipu-agi-gateway
 
-docker compose up --wait
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+docker-compose up --wait

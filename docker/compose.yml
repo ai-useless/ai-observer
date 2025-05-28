@@ -33,7 +33,7 @@ services:
   file-server:
     image: file-server
     container_name: file-server
-    command: ['nginx', '-g', 'daemon off;']
+    command: ['/app/entrypoint.sh']
     volumes:
       - meipu_agi_data:/data
   meipu-agi-gateway:
