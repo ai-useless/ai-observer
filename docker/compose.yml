@@ -31,7 +31,7 @@ services:
       test: ["CMD", "sh", "-c", "nc -z 127.0.0.1 8091"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 600
   meipu-agi-webui:
     image: meipu-agi-webui
     container_name: meipu-agi-webui
