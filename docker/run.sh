@@ -64,44 +64,44 @@ fi
 #   --restart always \
 #   meipu-agi-proxy
 
-cd $WEBUI_DIR
-
-cp -v -rf $SCRIPT_DIR/../webui/quasar/* .
-cp -v -rf $SCRIPT_DIR/Dockerfile.webui ./Dockerfile
-
-apt install nodejs -y
-
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-nvm install 20.15.1
-nvm use 20.15.1
-npm install -g yarn
-
-export NODE_OPTIONS=--max-old-space-size=8192
-
-rm yarn.lock -rf
-yarn add global @quasar/cli@latest
-PATH=./node_modules/@quasar/app-vite/bin:$PATH yarn install
-PATH=./node_modules/@quasar/app-vite/bin:$PATH quasar build
-
-docker stop meipu-agi-webui
-docker rm meipu-agi-webui
-docker rmi meipu-agi-webui:latest
-docker build . -t meipu-agi-webui
-
-cd $FILE_SERVER_DIR
-cp -v -rf $SCRIPT_DIR/Dockerfile.file-server ./Dockerfile
-cp -v -rf $SCRIPT_DIR/../configuration/observer.nginx.conf .
-
-docker stop file-server
-docker rm file-server
-docker rmi file-server:latest
-docker build . -t file-server
-
+# cd $WEBUI_DIR
+# 
+# cp -v -rf $SCRIPT_DIR/../webui/quasar/* .
+# cp -v -rf $SCRIPT_DIR/Dockerfile.webui ./Dockerfile
+# 
+# apt install nodejs -y
+# 
+# curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+# 
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# 
+# nvm install 20.15.1
+# nvm use 20.15.1
+# npm install -g yarn
+# 
+# export NODE_OPTIONS=--max-old-space-size=8192
+# 
+# rm yarn.lock -rf
+# yarn add global @quasar/cli@latest
+# PATH=./node_modules/@quasar/app-vite/bin:$PATH yarn install
+# PATH=./node_modules/@quasar/app-vite/bin:$PATH quasar build
+# 
+# docker stop meipu-agi-webui
+# docker rm meipu-agi-webui
+# docker rmi meipu-agi-webui:latest
+# docker build . -t meipu-agi-webui
+# 
+# cd $FILE_SERVER_DIR
+# cp -v -rf $SCRIPT_DIR/Dockerfile.file-server ./Dockerfile
+# cp -v -rf $SCRIPT_DIR/../configuration/observer.nginx.conf .
+# 
+# docker stop file-server
+# docker rm file-server
+# docker rmi file-server:latest
+# docker build . -t file-server
+# 
 cd $GATEWAY_DIR
 cp -v -rf $SCRIPT_DIR/Dockerfile.gateway ./Dockerfile
 cp -v -rf $SCRIPT_DIR/../configuration/gateway.nginx.conf .

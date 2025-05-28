@@ -168,6 +168,7 @@ async def chat_non_stream(
 ):
     _model = db.get_model_with_name(model)
     if _model is None:
+        logger.error(f'{BOLD}{model} - {RESET} {RED}Invalid model{RESET}')
         raise Exception('Invalid model')
 
     url = 'https://llm.chutes.ai/v1/chat/completions'
@@ -177,6 +178,7 @@ async def chat_non_stream(
 
     max_tokens = max_tokens - sum(len(message.content) for message in messages) - len(prompt)
     if max_tokens <= 512:
+        logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}Too many tokens{RESET}')
         raise Exception('Too many tokens')
 
     payload = {
@@ -210,3 +212,4 @@ async def chat_non_stream(
                 return chat_response.choices[0].message.content
     except Exception as e:
         logger.error(f'{BOLD}{model} - {chat_uid}{RESET} {RED}{repr(e)}{RESET}')
+        raise e
