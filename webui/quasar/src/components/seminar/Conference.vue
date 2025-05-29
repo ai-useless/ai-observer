@@ -101,10 +101,10 @@ import { purify } from 'src/utils'
 import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
 import { useRouter } from 'vue-router'
+import { seminarWorker } from 'src/worker'
 
 import SimulatorCard from './SimulatorCard.vue'
 import Outline from './Outline.vue'
-import { seminarWorker } from 'src/worker'
 
 const contentHeight = computed(() => setting.Setting.contentHeight())
 

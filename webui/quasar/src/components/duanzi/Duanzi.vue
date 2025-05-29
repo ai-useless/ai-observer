@@ -96,6 +96,7 @@ import { gotoBottom, gotoTop, volumeOff, volumeUp, threeDotsVertical, sentimentE
 interface Message extends MessageBase {
   isTitle: boolean
   modelId: number
+  messageUid: string
   image?: string
 }
 
@@ -112,9 +113,10 @@ const lastModelId = ref(-1 as unknown as number)
 
 const chatBox = ref<QScrollArea>()
 const generating = ref(false)
-const images = ref(new Map<number, string>())
+const images = ref(new Map<string, string>())
 
 const eDuanzi = ref(undefined as unknown as entityBridge.Duanzi)
+const nextDuanziIndex = ref(0)
 
 const modelLogo = (modelId: number) => {
   const model = models.value.find((el) => el.id === modelId)
@@ -138,25 +140,40 @@ const generate = async () => {
   for (const model of models.value) {
     const simulator = await dbBridge._Simulator.randomPeek()
     const messages = [...displayMessages.value, ...waitMessages.value.values()]
-    await eDuanzi.value?.generate(messages.map((el) => el.message), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
+    await eDuanzi.value?.generate(messages.map((el) => el.message), model.id, simulator.id, (title: string, content: string, audio?: string, messageUid?: string) => {
       generating.value = false
 
-      waitMessages.value.set(`${text}-${index}`, {
+      const titleIndex = nextDuanziIndex.value++
+      const contentIndex = nextDuanziIndex.value++
+
+       waitMessages.value.set(`${title}-${titleIndex}`, {
         modelId: model.id,
-        message: purify.purifyThink(text),
-        isTitle,
-        audio: audio || '',
-        index,
-        image: images.value.get(index),
-        timestamp: Date.now()
+        message: title,
+        isTitle: true,
+        audio: undefined as unknown as string,
+        index: titleIndex,
+        image: undefined as unknown as string,
+        timestamp: Date.now(),
+        messageUid: undefined as unknown as string
       })
 
-      images.value.delete(index)
-    }, (index: number, image: string) => {
+      waitMessages.value.set(`${content}-${contentIndex}`, {
+        modelId: model.id,
+        message: purify.purifyThink(content),
+        isTitle: false,
+        audio: audio as string,
+        index: contentIndex,
+        image: images.value.get(messageUid),
+        timestamp: Date.now(),
+        messageUid
+      })
+
+      images.value.delete(messageUid)
+    }, (messageUid: string, image: string) => {
       const messages = [...displayMessages.value, ...(lastDisplayMessage.value ? [lastDisplayMessage.value] : []), ...(typingMessage.value ? [typingMessage.value] : []), ...waitMessages.value.values()]
-      const message = messages.find((el) => el.index === index)
+      const message = messages.find((el) => el.messageUid === messageUid)
       if (message) message.image = image
-      else images.value.set(index, image)
+      else images.value.set(messageUid, image)
     }, true)
   }
 }
