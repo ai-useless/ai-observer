@@ -95,7 +95,7 @@ export class ChatRunner {
 
     return {
       text: content,
-      texts: content.match(/[^。.!！?？"”]+[。.!！?？"”]+/g).filter((el) => el.length)
+      texts: content.match(/[^。.!！?？…”]+[。.!！?？…]+["”]?/g).filter((el) => el.length)
     }
   }
 
