@@ -159,7 +159,6 @@ const sendToFriend = async (_message: string, simulatorId: number) => {
     language.value || '中文',
     language.value === '英语',
     (_message?: string, audio?: string, error?: string, index?: number) => {
-      friendThinking.value = false
       if (error && error.length) {
         waitMessages.value.set(`${error}-${index}`, {
           message: error,
@@ -289,6 +288,8 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+
+    friendThinking.value = false
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)
