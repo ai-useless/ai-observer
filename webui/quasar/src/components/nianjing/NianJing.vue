@@ -2,7 +2,7 @@
   <q-page>
     <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
       <q-resize-observer @resize='onWindowResize' />
-      <div style='height: 100%; width: 600px; max-width: 100%;' class='bg-grey-2'>
+      <div style='height: 100%; width: 600px; max-width: 100%;'>
         <div>
           <div style='font-size: 18px; font-weight: 600; margin: 8px 16px; text-align: center; height: 32px; line-height: 32px;'>
             <q-avatar size='32px'>
@@ -26,6 +26,7 @@
               换人
             </q-btn>
           </div>
+          <q-separator />
           <q-img
             src='http://api.meipu-agi.cn/downloads/qiaomuyu.gif'
             style='width: 100%;'
@@ -35,12 +36,12 @@
         <div v-if='generating' class='flex justify-center items-center' style='height: 128px; width: 100%'>
           <div class='text-center'>
             <q-spinner-facebook class='text-red-4' size='64px' />
-            <div>师傅正在准备，请稍候...</div>
+            <div style='font-size: 14px;'>师傅正在准备，请稍候...</div>
           </div>
         </div>
         <q-scroll-area
           v-else
-          :style='{ height: `calc(100% - ${headHeight}px - 68px)`, width: "100%", padding: "8px 16px" }'
+          :style='{ height: `calc(100% - ${headHeight}px - 68px)`, width: "100%", padding: "8px 0" }'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
