@@ -6,7 +6,7 @@ import { _Model } from './types'
 export const useModelStore = defineStore('model', {
   state: () => ({
     models: [] as _Model[],
-    blacklist: ['Qwen/Qwen3-235B-A22B']
+    blacklist: []
   }),
   actions: {
     getModels(done?: (error: boolean, rows?: unknown[]) => void) {
