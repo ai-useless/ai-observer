@@ -67,6 +67,14 @@
                 <q-item-section>拒绝</q-item-section>
               </q-item>
               <q-item
+                v-if='enableActionReview && _simulator.state === "APPROVED"'
+                dense
+                clickable v-close-popup
+                @click='onDisableClick'
+              >
+                <q-item-section>禁用</q-item-section>
+              </q-item>
+              <q-item
                 v-if='enableActionReport'
                 dense
                 clickable
@@ -150,6 +158,10 @@ const onSelectLanguageClick = () => {
 
 const onReviewClick = (state: string) => {
   simulator.Simulator.reviewSimulator(_simulator.value, state)
+}
+
+const onDisableClick = () => {
+  // TODO
 }
 
 const onReportClick = () => {
