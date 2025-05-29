@@ -9,10 +9,15 @@
               <q-img :src='speaker?.simulator_avatar_url' />
             </q-avatar>
             <span class='q-ml-sm'>{{ speaker?.simulator }}</span>
-            <span style='font-size: 12px' class='text-grey-6 q-mx-xs'>
-              念诵
+            <span style='font-size: 12px' class='text-grey-6 q-mx-xs cursor-pointer' @click='singMode = !singMode'>
+              {{ singMode ? '吟唱' : '念诵' }}
             </span>
-            <span>
+            <q-icon name='help' size='16px' class='text-grey-6 cursor-pointer'>
+              <q-tooltip style='font-size: 14px;'>
+                请您了解：念诵模式可以选择角色声音，吟唱模式由吟唱模型决定声音。<br>吟唱模式需要完善的上下文生成连贯的音乐，因此需要等待。
+              </q-tooltip>
+            </q-icon>
+            <span class='q-ml-xs'>
               {{ prompt }}
             </span>
             <q-btn
@@ -104,6 +109,7 @@ const inputPrompt = ref(prompt.value)
 
 const audioInput = ref(false)
 const audioError = ref('')
+const singMode = ref(false)
 
 const chatBox = ref<QScrollArea>()
 const headHeight = ref(0)
@@ -123,6 +129,10 @@ const typingMessageIndex = ref(0)
 const typingTicker = ref(-1)
 const typingInterval = ref(40)
 const bgPlayerTimer = ref(-1)
+
+const music = ref(undefined as unknown as string)
+const musicPlayer = ref(undefined as unknown as AudioPlayer)
+const lrcLetters = ref(0)
 
 const generating = ref(false)
 const selectingSpeaker = ref(false)
@@ -161,6 +171,12 @@ const generate = (_prompt: string, simulatorId: number) => {
       timestamp: Date.now(),
       simulatorId
     })
+  }, (name: string, _music: string, letters: number) => {
+    if (name != prompt.value) {
+      return
+    }
+    music.value = _music
+    lrcLetters.value = letters
   })
 }
 
@@ -233,6 +249,11 @@ onBeforeUnmount(() => {
   }
   if (bgPlayerTimer.value >= 0) {
     window.clearTimeout(bgPlayerTimer.value)
+    bgPlayerTimer.value = -1
+  }
+  if (musicPlayer.value) {
+    musicPlayer.value.stop()
+    musicPlayer.value = undefined as unknown as AudioPlayer
   }
 })
 
@@ -240,43 +261,69 @@ const audioPlayer = ref(undefined as unknown as AudioPlayer)
 const bgPlayer = ref(undefined as unknown as AudioPlayer)
 
 const typing = () => {
-  _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, true, typingTicker.value, () => {
-    lastDisplayMessage.value = undefined as unknown as Message
-  }, typing, (_message: Message | undefined) => {
-    return !_message || _message.name !== prompt.value
-  }).then((rc) => {
-    if (!rc) return
+  const disablePlay = singMode.value && music.value !== undefined && lrcLetters.value > 0
 
-    if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
-    if (rc.lastDisplayMessage) {
-      lastDisplayMessage.value = rc.lastDisplayMessage
-    }
-    if (rc.typingInterval) {
-      typingInterval.value = rc.typingInterval
-      typingTicker.value = rc.typingTicker as number
-    }
-    if (rc.typingMessage) {
-      typingMessage.value = rc.typingMessage
-    }
+  _typing(
+    waitMessages.value,
+    displayMessages.value,
+    typingMessage.value,
+    lastDisplayMessage.value,
+    typingMessageIndex.value,
+    audioPlayer.value,
+    !disablePlay, // If we have music, don't play inside
+    typingTicker.value,
+    () => {
+      lastDisplayMessage.value = undefined as unknown as Message
+    },
+    typing,
+    (_message: Message | undefined) => {
+      return !_message || _message.name !== prompt.value
+    }).then((rc) => {
+      if (!rc) return
 
-    typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
-
-    if (typingMessage.value && typingMessage.value.last) {
-      for (const _message of displayMessages.value) {
-        waitMessages.value.set(`${_message.message}-${_message.index}`, _message)
+      if (rc.audioPlayer) audioPlayer.value = rc.audioPlayer
+      if (rc.lastDisplayMessage) {
+        lastDisplayMessage.value = rc.lastDisplayMessage
       }
-      waitMessages.value.set(`${typingMessage.value.message}-${typingMessage.value.index}`, typingMessage.value)
-      displayMessages.value = []
-      typingMessageIndex.value = 0
-    }
-    if (typingMessage.value && typingMessage.value.first) {
-      generating.value = false
-      inputPrompt.value = ''
-    }
-  }).catch((e) => {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    console.log(`Failed typing: ${e}`)
-  })
+      if (rc.typingInterval) {
+        typingInterval.value = rc.typingInterval
+        typingTicker.value = rc.typingTicker as number
+      }
+      if (rc.typingMessage) {
+        typingMessage.value = rc.typingMessage
+      }
+
+      typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
+
+      if (typingMessage.value && typingMessage.value.last) {
+        for (const _message of displayMessages.value) {
+          waitMessages.value.set(`${_message.message}-${_message.index}`, _message)
+        }
+        waitMessages.value.set(`${typingMessage.value.message}-${typingMessage.value.index}`, typingMessage.value)
+        displayMessages.value = []
+        typingMessageIndex.value = 0
+      }
+      if (typingMessage.value && typingMessage.value.first) {
+        generating.value = false
+        inputPrompt.value = ''
+        if (disablePlay) {
+          window.clearInterval(typingTicker.value)
+          typingTicker.value = -1
+          AudioPlayer.play(music.value).then((player) => {
+            typingInterval.value = Math.ceil(
+              (player.duration * 1000) / lrcLetters.value
+            )
+            typingTicker.value = window.setInterval(typing, typingInterval.value)
+          }).catch((e) => {
+            typingTicker.value = window.setInterval(typing, typingInterval.value)
+            console.log(`Failed play: ${e}`)
+          })
+        }
+      }
+    }).catch((e) => {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      console.log(`Failed typing: ${e}`)
+    })
 }
 
 const onChatBoxResize = (size: { height: number }) => {

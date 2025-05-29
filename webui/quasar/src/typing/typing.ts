@@ -18,7 +18,7 @@ export interface TypingMessage<T extends Message> {
   typingTicker?: number
 }
 
-function calculateTypingInterval<T extends Message>(
+export function calculateTypingInterval<T extends Message>(
   typingMessage: T,
   duration: number
 ): number | undefined {

@@ -39,7 +39,7 @@
         <div style='color: gray;'>
           {{ topicType }}
         </div>
-        <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
+        <q-icon name='help' size='20px' class='text-grey-6 cursor-pointer q-ml-xs'>
           <q-tooltip style='font-size: 14px;'>
             您知道吗：这些话题都是AGI实时生成的。
           </q-tooltip>
