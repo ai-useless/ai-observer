@@ -3,10 +3,17 @@ import { dbModel } from '../../model'
 
 export class _Simulator {
   static initialize = async (simulators: dbModel.Simulator[]) => {
-    try {
-      await dbSeminar.simulators.bulkPut(simulators)
-    } catch {
-      // DO NOTHING
+    for (let i  = 0; i < simulators.length; i++) {
+      const _simulator = simulators[i]
+      try {
+        await dbSeminar.simulators.add(_simulator)
+      } catch {
+        try {
+          await dbSeminar.simulators.update(_simulator, _simulator)
+        } catch {
+          // DO NOTHING
+        }
+      }
     }
   }
 

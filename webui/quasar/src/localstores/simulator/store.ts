@@ -22,9 +22,9 @@ export const useSimulatorStore = defineStore('simulator', {
       axios
         .get(url)
         .then((resp: AxiosResponse<number>) => {
-          if (done) done(false, resp.data)
           if (code) this.mySimulatorsCount = resp.data
           else this.allSimulatorsCount = resp.data
+          if (done) done(false, resp.data)
         })
         .catch((e) => {
           console.log(`Failed count simulators: ${JSON.stringify(e)}`)
@@ -41,8 +41,8 @@ export const useSimulatorStore = defineStore('simulator', {
       axios
         .get(url)
         .then(async (resp: AxiosResponse<_Simulator[]>) => {
-          if (done) done(false, resp.data)
           await this.appendSimulators(resp.data, !!mine)
+          if (done) done(false, resp.data)
         })
         .catch((e) => {
           console.log(`Failed get simulators: ${JSON.stringify(e)}`)

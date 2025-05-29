@@ -1,18 +1,18 @@
 <template>
   <q-page>
     <div :style='{height: `${contentHeight}px`, width: "100%"}' class='flex justify-center items-center'>
-      <div v-if='!displayMessages.length && !lastDisplayMessage' class='flex justify-center items-center bg-grey-2' style='height: calc(100% - 4px); width: 600px; max-width: 100%;'>
+      <div v-if='!displayMessages.length && !lastDisplayMessage' class='flex justify-center items-center' style='height: calc(100% - 4px); width: 600px; max-width: 100%;'>
         <div
           style='margin-top: 16px; font-size: 20px;'
           class='text-center text-grey-8 flex justify-center items-center'
         >
           <div>
-            <q-spinner-facebook class='text-red-4' size='128px' />
-            <div>{{ models.length }}个AGI段子手正在创作，请稍候...</div>
+            <q-spinner-facebook class='text-red-4' size='64px' />
+            <div style='font-size: 14px'>{{ models.length }}个AGI段子手正在创作，请稍候...</div>
           </div>
         </div>
       </div>
-      <div v-else style='height: calc(100% - 4px); width: 600px; max-width: 100%;' class='bg-grey-2'>
+      <div v-else style='height: calc(100% - 4px); width: 600px; max-width: 100%;'>
         <q-scroll-area
           style='height: calc(100% - 4px - 28px); width: 600px; max-width: 100%; overflow-x: hidden;'
           ref='chatBox'
@@ -181,8 +181,10 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  eDuanzi.value.stop()
-  eDuanzi.value = undefined as unknown as entityBridge.Duanzi
+  if (eDuanzi.value) {
+    eDuanzi.value.stop()
+    eDuanzi.value = undefined as unknown as entityBridge.Duanzi
+  }
 
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
