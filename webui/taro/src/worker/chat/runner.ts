@@ -23,6 +23,7 @@ export interface GenerateRequestPayload {
 export interface GenerateResponsePayload {
   modelId: number
   text: string
+  texts: string[]
 }
 
 export interface ChatEvent {
@@ -83,14 +84,19 @@ export class ChatRunner {
       }),
       prompt: purify.purifyText(_prompt || '')
     })
-    if (!(textResp.data as Record<string, string>).content) {
+
+    const content = (textResp.data as Record<string, string>).content
+
+    if (!content || !content.length) {
       return {
-        text: undefined
+        text: undefined,
+        texts: []
       }
     }
 
     return {
-      text: (textResp.data as Record<string, string>).content
+      text: content,
+      texts: (content.match(/[^。.!！?？…”]+[。.!！?？…]+["”]?/g) || [content]).filter((el) => el.length)
     }
   }
 

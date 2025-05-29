@@ -94,7 +94,6 @@ const message = ref('')
 const audioError = ref('')
 
 const displayMessages = ref([] as Message[])
-const nextRequestIndex = ref(0)
 const waitMessages = ref(new Map<string, Message>())
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const typingMessage = ref(undefined as unknown as Message)
@@ -117,19 +116,20 @@ const audioInput = ref(false)
 const friendThinking = ref(false)
 const logining = ref(false)
 
+const eChat = ref(undefined as unknown as entityBridge.EChat)
+
 const rolePlaying = ref(false)
 const audioPlayer = ref(undefined as unknown as AudioPlayer)
 const typingInterval = ref(80)
 const typingTicker = ref(-1)
 
-const sendToFriend = (_message: string, requestIndex: number, simulatorId: number) => {
+const sendToFriend = (_message: string, simulatorId: number) => {
   friendThinking.value = true
 
   const messages = [...displayMessages.value, ...(typingMessage.value ? [typingMessage.value] : []), ...Array.from(waitMessages.value.values())]
 
-  entityBridge.EChat.chat(
+  eChat.value.chat(
     friend.value.id,
-    friend.value.simulator,
     friend.value.origin_personality,
     username.value,
     [
@@ -139,29 +139,29 @@ const sendToFriend = (_message: string, requestIndex: number, simulatorId: numbe
     _model.value.id,
     language.value === undefined ? '中文' : language.value,
     language.value === '英语',
-    (_message?: string, audio?: string, error?: string) => {
+    (_message?: string, audio?: string, error?: string, index?: number) => {
     if (error && error.length) {
-      waitMessages.value.set(`${error}-${requestIndex}`, {
+      waitMessages.value.set(`${error}-${index}`, {
         message: error,
         send: false,
         timestamp: Date.now(),
         displayName: friend.value.simulator,
         hint: true,
         avatar: friend.value.simulator_avatar_url,
-        index: requestIndex,
+        index: index as number,
         audio: undefined as unknown as string,
         simulatorId
       })
       return
     }
-    waitMessages.value.set(`${error}-${requestIndex}`, {
+    waitMessages.value.set(`${error}-${index}`, {
       message: _message as string,
       send: false,
       timestamp: Date.now(),
       displayName: friend.value.simulator,
       hint: false,
       avatar: friend.value.simulator_avatar_url,
-      index: requestIndex,
+      index: index as number,
       audio: audio as string,
       simulatorId
     })
@@ -183,7 +183,7 @@ watch(message, () => {
     simulatorId: -1
   })
 
-  sendToFriend(message.value, nextRequestIndex.value++, friend.value.id)
+  sendToFriend(message.value, friend.value.id)
   message.value = ''
 })
 
@@ -254,7 +254,7 @@ const onSendClick = () => {
     simulatorId: -1
   })
 
-  sendToFriend(message.value, nextRequestIndex.value++, friend.value.id)
+  sendToFriend(message.value, friend.value.id)
   message.value = ''
 }
 
@@ -329,9 +329,11 @@ const initializeChat = (_friend: simulator._Simulator) => {
   waitMessages.value = new Map<string, Message>()
   displayMessages.value = []
   typingMessageIndex.value = 0
-  nextRequestIndex.value = 0
   lastDisplayMessage.value = undefined as unknown as Message
   typingMessage.value = undefined as unknown as Message
+
+  eChat.value.stop()
+  eChat.value = new entityBridge.EChat()
 
   if (audioPlayer.value) {
     audioPlayer.value.stop()
@@ -342,6 +344,8 @@ const initializeChat = (_friend: simulator._Simulator) => {
 }
 
 onMounted(async () => {
+  eChat.value = new entityBridge.EChat()
+
   if (!userAvatar.value || !userAvatar.value.length || !username.value || !username.value.length) {
     Taro.login().then((code) => {
       user.User.getUser(code.code)
@@ -364,6 +368,11 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  if (eChat.value) {
+    eChat.value.stop()
+    eChat.value = undefined as unknown as entityBridge.EChat
+  }
+
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1

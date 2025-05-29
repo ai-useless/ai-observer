@@ -64,7 +64,7 @@ export class EChat {
     })
       .then(async (payload) => {
         const baseIndex = this.curTextIndex
-        this.curTextIndex += payload.texts.length
+        this.curTextIndex += payload ? payload.texts.length : 1
 
         if (!payload || !payload.text || !payload.text.length) {
           onMessage(
