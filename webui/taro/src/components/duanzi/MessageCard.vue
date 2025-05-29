@@ -1,10 +1,10 @@
 <template>
   <View>
     <View style='display: flex; line-height: 32px; padding: 16px 0 0 0;'>
-      <View class='border-gradient-bg-white border-round'>
+      <View>
         <Image :src='modelLogo(_message.modelId)' mode='widthFix' style='height: 32px; width: 32px; border-radius: 50%;' />
       </View>
-      <View style='font-weight: 400; font-size: 18px;' class='text-grey-6 q-ml-sm flex items-center'>
+      <View style='font-weight: 400; font-size: 18px; margin-left: 4px;'>
         {{ modelName(_message.modelId) }}
       </View>
     </View>
