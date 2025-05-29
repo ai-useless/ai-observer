@@ -79,7 +79,7 @@ export class User {
     user.displayAvatar = display as unknown as string
   }
 
-  static getUser = (code: string) => user.getUser(code)
+  static getUser = (code: string, done?: (error: boolean) => void) => user.getUser(code, done)
   static logined = () => user.username && (user.avatar || user.avatarUrl)
   static cookUser = (code: string, done?: (error: boolean) => void) =>
     user.cookUser(code, done)

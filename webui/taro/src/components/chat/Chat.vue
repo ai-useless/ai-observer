@@ -114,7 +114,7 @@ const username = computed(() => user.User.username())
 
 const audioInput = ref(false)
 const friendThinking = ref(false)
-const logining = ref(false)
+const logining = ref(true)
 
 const eChat = ref(undefined as unknown as entityBridge.EChat)
 
@@ -348,7 +348,11 @@ onMounted(async () => {
 
   if (!userAvatar.value || !userAvatar.value.length || !username.value || !username.value.length) {
     Taro.login().then((code) => {
-      user.User.getUser(code.code)
+      user.User.getUser(code.code, () => {
+        if (!userAvatar.value || !userAvatar.value.length || !username.value || !username.value.length) {
+          logining.value = true
+        }
+      })
     }).catch(() => {
       logining.value = true
     })
