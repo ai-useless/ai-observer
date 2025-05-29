@@ -6,25 +6,33 @@ import {
 } from 'src/worker'
 import { _Model } from '../db'
 import { dbBridge } from '..'
+import { v4 as uuidv4 } from 'uuid'
+
+class OneDuanzi {
+  title: string
+  content: string
+}
 
 export class Duanzi {
-  private static baseTextIndex = 0
+  private stopped = false
 
-  static refineImagePrompt = async (
+  refineImagePrompt = async (
     text: string,
-    baseIndex: number,
-    index: number,
-    onImage: (index: number, image: string) => void
+    messageUid: string,
+    onImage: (messageUid: string, image: string) => void
   ) => {
+    if (this.stopped) return
+
     refineWorker.RefineRunner.handleGenerateRequest({
       intent: refineWorker.Intent.REFINE_PROMPT,
       style: '内涵无厘头搞笑',
       prompt: text,
       letters: 0,
-      modelId: _Model.topicModelId()
+      modelId: await _Model.topicModelId()
     })
       .then((payload) => {
         if (!payload || !payload.text || !payload.text.length) return
+        if (this.stopped) return
 
         imageWorker.ImageRunner.handleGenerateRequest({
           prompt: payload.text,
@@ -37,60 +45,58 @@ export class Duanzi {
         })
           .then((_payload) => {
             if (_payload && _payload.image)
-              onImage(baseIndex + index, _payload.image)
+              onImage(messageUid, _payload.image)
           })
           .catch((e) => {
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
             console.log(`Failed generate image: ${e}`)
           })
       })
       .catch((e) => {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         console.log(`Failed refine: ${e}`)
       })
   }
 
-  static generateMedia = (
-    texts: string[],
+  generateMedia = async (
+    duanzis: OneDuanzi[],
     simulatorId: number,
-    baseIndex: number,
     index: number,
     steps: number,
     generateAudio: boolean,
     generateImage: boolean,
     onMessage: (
-      text: string,
-      isTitle: boolean,
-      index: number,
-      audio?: string
+      title: string,
+      content: string,
+      audio?: string,
+      messageUid?: string
     ) => void,
-    onImage: (index: number, image: string) => void
+    onImage: (messageUid: string, image: string) => void
   ) => {
-    if (index >= texts.length) return
+    if (index >= duanzis.length) return
+    if (this.stopped) return
 
-    let text = texts[index]
-    text = text.replace('*', '').replace('#', '').replace(' ', '')
-    const isTitle = text.startsWith('标题')
+    let duanzi = duanzis[index]
 
-    text = text.replace('标题：', '').replace('内容：', '')
+    const messageUid = uuidv4()
 
-    if (!isTitle && generateImage) {
-      Duanzi.refineImagePrompt(text, baseIndex, index, onImage)
+    if (generateImage) {
+      await this.refineImagePrompt(duanzi.content, messageUid, onImage)
     }
 
     const _simulator = dbBridge._Simulator.simulator(simulatorId)
-    const instruct = _simulator ? `用${_simulator.language}说` : '用中文说'
 
     speakWorker.SpeakRunner.handleSpeakRequest({
-      text,
+      text: `${duanzi.title}：${duanzi.content}`,
       simulatorId,
-      instruct
+      instruct: `用${_simulator ? _simulator.language : "中文"}说`
     })
       .then((payload) => {
         if (!payload) {
-          onMessage(text, isTitle, baseIndex + index, undefined)
-          Duanzi.generateMedia(
-            texts,
+          onMessage(duanzi.title, duanzi.content, undefined, messageUid)
+          void this.generateMedia(
+            duanzis,
             simulatorId,
-            baseIndex,
             index + steps,
             steps,
             generateAudio,
@@ -100,11 +106,10 @@ export class Duanzi {
           )
           return
         }
-        onMessage(text, isTitle, baseIndex + index, payload.audio)
-        Duanzi.generateMedia(
-          texts,
+        onMessage(duanzi.title, duanzi.content, payload.audio, messageUid)
+        void this.generateMedia(
+          duanzis,
           simulatorId,
-          baseIndex,
           index + steps,
           steps,
           generateAudio,
@@ -114,12 +119,12 @@ export class Duanzi {
         )
       })
       .catch((e) => {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         console.log(`Failed generate audio: ${e}`)
-        onMessage(text, isTitle, baseIndex + index, undefined)
-        Duanzi.generateMedia(
-          texts,
+        onMessage(duanzi.title, duanzi.content, undefined, messageUid)
+        void this.generateMedia(
+          duanzis,
           simulatorId,
-          baseIndex,
           index + steps,
           steps,
           generateAudio,
@@ -130,19 +135,21 @@ export class Duanzi {
       })
   }
 
-  static generate = async (
+  generate = async (
     historyMessages: string[],
     modelId: number,
     simulatorId: number,
     onMessage: (
-      text: string,
-      isTitle: boolean,
-      index: number,
-      audio?: string
+      title: string,
+      content: string,
+      audio?: string,
+      messageUid?: string
     ) => void,
-    onImage: (index: number, image: string) => void,
+    onImage: (messageUid: string, image: string) => void,
     generateAudio?: boolean
   ) => {
+    if (this.stopped) return
+
     try {
       const payload = await duanziWorker.DuanziRunner.handleGenerateRequest({
         historyMessages,
@@ -150,12 +157,36 @@ export class Duanzi {
       })
       if (!payload) return
 
+      if (this.stopped) return
+
+      const duanzis = [] as OneDuanzi[]
+      let title = ''
+      let content = ''
+
+      for (let text of payload.texts) {
+        text = text.replace('*', '').replace('#', '').replace(' ', '')
+        if (text.startsWith('标题')) {
+          title = text.replace('标题：', '')
+        } else if (text.startsWith('内容')) {
+          content = text.replace('内容：', '')
+        }
+        if (title.length > 0 && content.length > 0) {
+          duanzis.push({
+            title,
+            content
+          })
+          title = ''
+          content = ''
+        }
+      }
+
       const steps = 5
-      for (let i = 0; i < 5; i++) {
-        Duanzi.generateMedia(
-          payload.texts,
+      for (let i = 0; i < steps; i++) {
+        if (this.stopped) return
+
+        void this.generateMedia(
+          duanzis,
           simulatorId,
-          Duanzi.baseTextIndex,
           i,
           steps,
           generateAudio === undefined ? true : generateAudio,
@@ -164,9 +195,13 @@ export class Duanzi {
           onImage
         )
       }
-      Duanzi.baseTextIndex += payload.texts.length
     } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       console.log(`Failed generate: ${e}`)
     }
+  }
+
+  stop = () => {
+    this.stopped = true
   }
 }
