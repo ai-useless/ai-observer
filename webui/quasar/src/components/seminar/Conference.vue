@@ -21,15 +21,15 @@
           </div>
         </q-scroll-area>
       </div>
-      <div style='width: 100%; height: calc(100% - 220px - 4px);' class='bg-grey-2'>
+      <div style='width: 100%; height: calc(100% - 220px - 4px);'>
         <div v-if='!displayMessages.length && !lastDisplayMessage' class='full-width flex justify-center items-center' style='height: 100%; width: 600px; max-width: 100%;'>
           <div
             style='margin-top: 16px; font-size: 20px;'
             class='text-center text-grey-8 flex justify-center items-center'
           >
             <div>
-              <q-spinner-facebook class='text-red-4' size='128px' />
-              <div>主持人正在准备台本，请稍候...</div>
+              <q-spinner-facebook class='text-red-4' size='64px' />
+              <div style='font-size: 14px;'>主持人正在准备台本，请稍候...</div>
             </div>
           </div>
         </div>
@@ -41,10 +41,10 @@
           :thumb-style='{ width: "2px" }'
           @mouseenter='autoScroll = false'
           @mouseleave='autoScroll = true'
-          class='q-mt-xs bg-grey-2'
+          class='q-mt-xs'
         >
           <div style='margin-top: 16px;'>
-            <div v-for='(message, index) in [...displayMessages, ...(lastDisplayMessage ? [lastDisplayMessage] : [])]' :key='index' class='bg-grey-2 q-px-md'>
+            <div v-for='(message, index) in [...displayMessages, ...(lastDisplayMessage ? [lastDisplayMessage] : [])]' :key='index'>
               <q-chat-message
                 v-if='!message.subTopicTitle'
                 :key='index'
@@ -54,7 +54,7 @@
                 :text='[message.message]'
                 text-color='grey-9'
                 bg-color='grey-2'
-                style='line-height: 24px; font-size: 16px; max-width: 100%;'
+                style='line-height: 24px; font-size: 16px; max-width: 100%; margin-bottom: 32px;'
               >
                 <template #name>
                   <div style='padding-bottom: 4px; line-height: 1em;'>
@@ -67,7 +67,7 @@
                     <q-img :src='message.model.vendor_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
                     <q-img :src='message.model.model_logo_url' width='24px' fit='contain' style='margin-left: 8px;' />
                   </div>
-                  <div style='width: 100%; line-height: 1.2em;' class='q-mt-xs'>
+                  <div style='width: 100%; line-height: 1.2em;' class='q-mt-xs q-mb-md'>
                     {{ message.simulator.origin_personality }}
                   </div>
                 </template>
