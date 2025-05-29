@@ -24,33 +24,11 @@
         >
           <div>
             <q-resize-observer @resize='onChatBoxResize' />
-            <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : ""}'>
-              <div v-if='message.isTitle' style='display: flex; line-height: 32px; padding: 16px 0 0 0;'>
-                <div class='border-gradient-bg-white border-round'>
-                  <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
-                </div>
-                <div style='font-weight: 400; font-size: 18px; line-height: 1.2em;' class='text-grey-6 q-ml-sm flex items-center'>
-                  {{ modelName(message.modelId) }}
-                </div>
-              </div>
-              <q-img v-if='message.image' :src='message.image' style='width: 100%; margin-bottom: 4px;'/>
-              <div :style='{fontSize: message.isTitle ? "18px" : "16px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left", padding: "16px 0", lineHeight: "24px"}'>
-                {{ message.message }}
-              </div>
+            <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : index < displayMessages.length - 1 ? "1px solid gray" : ""}'>
+              <MessageCard :message='message' />
             </div>
-            <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : ""}'>
-              <div v-if='lastDisplayMessage.isTitle' style='display: flex; line-height: 32px; padding: 16px 0;'>
-                <div class='border-gradient-bg-white border-round'>
-                  <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
-                </div>
-                <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
-                  {{ modelName(lastDisplayMessage.modelId) }}
-                </div>
-              </div>
-              <q-img v-if='lastDisplayMessage.image' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
-              <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "16px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left", padding: "16px 0", lineHeight: "24px"}'>
-                {{ lastDisplayMessage.message }}
-              </div>
+            <div v-if='lastDisplayMessage' :style='{borderTop: displayMessages.length > 0 ? "1px solid gray" : ""}'>
+              <MessageCard :message='lastDisplayMessage' />
             </div>
           </div>
         </q-scroll-area>
@@ -94,11 +72,12 @@ import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
 
 import BottomFixArea from '../fixed/BottomFixArea.vue'
+import MessageCard from './MessageCard.vue'
 
 import { gotoBottom, gotoTop, volumeOff, volumeUp, threeDotsVertical, sentimentExcited } from 'src/assets'
 
 interface Message extends MessageBase {
-  isTitle: boolean
+  title: string
   modelId: number
   messageUid: string
   image?: string
@@ -122,16 +101,6 @@ const images = ref(new Map<string, string>())
 const eDuanzi = ref(undefined as unknown as entityBridge.Duanzi)
 const nextDuanziIndex = ref(0)
 
-const modelLogo = (modelId: number) => {
-  const model = models.value.find((el) => el.id === modelId)
-  return model ? model.model_logo_url : ''
-}
-
-const modelName = (modelId: number) => {
-  const model = models.value.find((el) => el.id === modelId)
-  return model ? model.name : ''
-}
-
 const onChatBoxResize = (size: { height: number }) => {
   if (autoScroll.value) chatBox.value?.setScrollPosition('vertical', size.height, 300)
 }
@@ -147,24 +116,12 @@ const generate = async () => {
     await eDuanzi.value?.generate(messages.map((el) => el.message), model.id, simulator.id, (title: string, content: string, audio?: string, messageUid?: string) => {
       generating.value = false
 
-      const titleIndex = nextDuanziIndex.value++
       const contentIndex = nextDuanziIndex.value++
 
-       waitMessages.value.set(`${title}-${titleIndex}`, {
-        modelId: model.id,
-        message: title,
-        isTitle: true,
-        audio: undefined as unknown as string,
-        index: titleIndex,
-        image: undefined as unknown as string,
-        timestamp: Date.now(),
-        messageUid: undefined as unknown as string
-      })
-
       waitMessages.value.set(`${content}-${contentIndex}`, {
+        title,
         modelId: model.id,
         message: purify.purifyThink(content),
-        isTitle: false,
         audio: audio as string,
         index: contentIndex,
         image: images.value.get(messageUid),
@@ -242,7 +199,7 @@ const onLaughClick = () => {
 
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
-    if (enableLaugh.value && lastDisplayMessage.value?.isTitle === false)
+    if (enableLaugh.value)
       void AudioPlayer.play('http://api.meipu-agi.cn/downloads/laugh.mp3')
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing, undefined, 20).then((rc) => {
