@@ -95,7 +95,7 @@ export class ChatRunner {
 
     return {
       text: content,
-      texts: content.split(/[？！。?!.]/)
+      texts: content.split(/[？！。?!.]/).filter((el) => el.length)
     }
   }
 
