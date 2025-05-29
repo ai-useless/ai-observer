@@ -70,7 +70,7 @@ export class AudioPlayer {
 
   stop = () => {
     this.pause()
-    this.context.src = ''
+    this.context.removeAttribute('src')
     this.context.load()
     this.context.remove()
     this.playing = false
