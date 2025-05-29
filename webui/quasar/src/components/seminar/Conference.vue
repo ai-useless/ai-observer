@@ -1,8 +1,8 @@
 <template>
   <div class='row full-width flex justify-center'>
     <div :style='{width: "100%", maxWidth: "960px", height: `${contentHeight}px`}'>
-      <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg' style='height: 220px'>
-        <div class='full-width' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
+      <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg q-px-lg' style='height: 220px'>
+        <div class='full-width single-line-nowrap' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}
         </div>
         <q-scroll-area style='height: 128px;' class='full-width'>

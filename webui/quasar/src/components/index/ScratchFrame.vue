@@ -15,6 +15,7 @@
       placeholder='任何你想讨论的话题'
       type='textarea'
       style='width: 100%; max-width: 800px; font-size: 20px;'
+      input-style='line-height: 28px;'
       @keyup.enter.stop='onEnter'
     />
     <q-btn flat class='q-mt-lg full-width action-btn bg-gradient-blue text-white' rounded @click='onEnter'>
