@@ -6,7 +6,7 @@ import {
 } from 'src/worker'
 import { _Model } from '../db'
 import { dbBridge } from '..'
-import { v4 as uuidv4 } from 'uuid'
+import { uuid } from 'src/utils'
 
 class OneDuanzi {
   title: string
@@ -78,7 +78,7 @@ export class Duanzi {
 
     let duanzi = duanzis[index]
 
-    const messageUid = uuidv4()
+    const messageUid = uuid.newUuid()
 
     if (generateImage) {
       await this.refineImagePrompt(duanzi.content, messageUid, onImage)
