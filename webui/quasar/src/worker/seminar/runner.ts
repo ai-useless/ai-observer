@@ -402,6 +402,7 @@ export class SeminarRunner {
         intent,
         prompts
       )
+      console.log(intent, 'SUCCESS')
       if (!response || !response.text) return
 
       const json = await SeminarRunner.postProcess(
@@ -447,6 +448,8 @@ export class SeminarRunner {
       })
       return payload
     } catch (e) {
+      console.log(intent, 'FAIL')
+
       self.postMessage({
         type: SeminarEventType.ERROR,
         payload: {
