@@ -26,7 +26,7 @@ export class ENianJing {
 
     speakWorker.SpeakRunner.handleSpeakRequest({
       simulatorId,
-      text,
+      text: text.replace(/^\[\d+:\d+:\d+\]/, ''),
       instruct: `用${_simulator.language || "中文"}说`
     })
       .then((payload1) => {
