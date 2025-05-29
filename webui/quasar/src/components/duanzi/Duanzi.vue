@@ -25,26 +25,30 @@
           <div>
             <q-resize-observer @resize='onChatBoxResize' />
             <div v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : ""}'>
-              <div v-if='message.isTitle' style='display: flex; line-height: 32px; padding: 16px;'>
-                <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
+              <div v-if='message.isTitle' style='display: flex; line-height: 32px; padding: 16px 0 0 0;'>
+                <div class='border-gradient-bg-white border-round'>
+                  <q-img :src='modelLogo(message.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
+                </div>
                 <div style='font-weight: 400; font-size: 18px; line-height: 1.2em;' class='text-grey-6 q-ml-sm flex items-center'>
                   {{ modelName(message.modelId) }}
                 </div>
               </div>
-              <q-img v-if='message.image' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
-              <div :style='{fontSize: message.isTitle ? "18px" : "16px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left", padding: "16px", lineHeight: "24px"}'>
+              <q-img v-if='message.image' :src='message.image' style='width: 100%; margin-bottom: 4px;'/>
+              <div :style='{fontSize: message.isTitle ? "18px" : "16px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left", padding: "16px 0", lineHeight: "24px"}'>
                 {{ message.message }}
               </div>
             </div>
             <div v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : ""}'>
-              <div v-if='lastDisplayMessage.isTitle' style='display: flex; line-height: 32px; padding: 16px;'>
-                <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
+              <div v-if='lastDisplayMessage.isTitle' style='display: flex; line-height: 32px; padding: 16px 0;'>
+                <div class='border-gradient-bg-white border-round'>
+                  <q-img :src='modelLogo(lastDisplayMessage.modelId)' style='height: 32px; width: 32px; border-radius: 50%;' />
+                </div>
                 <div style='font-weight: 400; font-size: 18px;' class='text-grey-6'>
                   {{ modelName(lastDisplayMessage.modelId) }}
                 </div>
               </div>
               <q-img v-if='lastDisplayMessage.image' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
-              <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "16px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left", padding: "16px", lineHeight: "24px"}'>
+              <div :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "16px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left", padding: "16px 0", lineHeight: "24px"}'>
                 {{ lastDisplayMessage.message }}
               </div>
             </div>
