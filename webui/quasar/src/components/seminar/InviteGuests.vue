@@ -127,7 +127,7 @@ const selectedSimulator = ref(undefined as unknown as simulator._Simulator)
 
 const selectedSimulatorIds = computed(() => participators.value.filter((el) => el).map((el) => el.simulatorId))
 const ready = computed(() => {
-  return topic.value?.length && participators.value.findIndex((el) => !el) < 0
+  return topic.value?.length && participators.value.findIndex((el) => el.simulatorId === undefined) < 0
 })
 
 const playing = ref(false)
