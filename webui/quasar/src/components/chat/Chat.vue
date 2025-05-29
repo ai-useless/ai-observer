@@ -332,7 +332,7 @@ onMounted(() => {
   if (!userAvatar.value || !userAvatar.value.length || !username.value || !username.value.length) {
     user.User.getUser(undefined, (error: boolean) => {
       if (error) {
-        // logining.value = true
+        logining.value = true
       }
     })
   }
