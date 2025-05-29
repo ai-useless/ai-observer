@@ -3,7 +3,7 @@
     <div :style='{ width: "100%", height: `${contentHeight}px` }' class='flex justify-center items-center'>
       <div style='height: 100%; width: 960px; max-width: 100%;'>
         <q-scroll-area
-          style='height: calc(100% - 64px); width: 100%;'
+          style='height: calc(100% - 64px); width: 100%; padding: 0 8px;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'

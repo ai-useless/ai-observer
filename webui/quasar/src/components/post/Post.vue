@@ -4,7 +4,7 @@
       <div style='height: 100%; width: 960px; max-width: 100%;'>
         <q-resize-observer @resize='onContentBoxResize' />
         <q-scroll-area
-          style='height: calc(100% - 64px); width: 100%;'
+          style='height: calc(100% - 64px); width: 100%; padding: 0 8px'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
@@ -104,6 +104,10 @@
             v-model='inputPrompt'
             placeholder='随手写下你此刻的心情~'
             @enter='onPromptEnter'
+            :disabled='generating || imageGenerating'
+            :loading='generating || imageGenerating'
+            width='720px'
+            max-width='calc(100% - 8px)'
           />
         </div>
         <canvas ref='canvas1x1' style='width: 900px; height: 900px; position: fixed; left: 100000px; z-index: -1000; opacity: 0;' />
