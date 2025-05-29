@@ -248,6 +248,9 @@ const onChangeTopicsClick = () => {
 
 const onTopicClick = (_topic: string) => {
   xiangsheng.Xiangsheng.setTopic(_topic)
+  if (ready.value) {
+    onStartXiangshengClick()
+  }
 }
 
 </script>
