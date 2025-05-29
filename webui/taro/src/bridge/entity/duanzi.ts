@@ -28,7 +28,7 @@ export class Duanzi {
       style: '内涵无厘头搞笑',
       prompt: text,
       letters: 0,
-      modelId: await _Model.topicModelId()
+      modelId: _Model.topicModelId()
     })
       .then((payload) => {
         if (!payload || !payload.text || !payload.text.length) return
