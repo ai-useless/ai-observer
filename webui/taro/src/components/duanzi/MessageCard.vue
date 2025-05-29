@@ -12,7 +12,7 @@
       {{ message.title }}
     </View>
     <Image v-if='message.image' mode='widthFix' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
-    <View style='font-size: 16px; font-weight: 400; text-align: left; padding: 16px 0; line-height: 24px;'>
+    <View style='font-size: 16px; font-weight: 400; text-align: left; padding: 8px 0 16px 0; line-height: 24px;'>
       {{ message.message }}
     </View>
   </View>
