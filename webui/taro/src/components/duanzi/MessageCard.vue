@@ -4,7 +4,7 @@
       <View class='border-gradient-bg-white border-round'>
         <Image :src='modelLogo(_message.modelId)' mode='widthFix' style='height: 32px; width: 32px; border-radius: 50%;' />
       </View>
-      <View style='font-weight: 400; font-size: 18px; line-height: 1.2em;' class='text-grey-6 q-ml-sm flex items-center'>
+      <View style='font-weight: 400; font-size: 18px;' class='text-grey-6 q-ml-sm flex items-center'>
         {{ modelName(_message.modelId) }}
       </View>
     </View>
