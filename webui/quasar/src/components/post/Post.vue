@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
-      <div style='height: 100%; width: 960px; max-width: 100%;' class='bg-grey-2'>
+      <div style='height: 100%; width: 960px; max-width: 100%;'>
         <q-resize-observer @resize='onContentBoxResize' />
         <q-scroll-area
           style='height: calc(100% - 64px); width: 100%;'
@@ -52,10 +52,10 @@
                 </div>
               </div>
             </div>
-            <div style='font-size: 16px;' class='text-black q-px-md q-py-lg'>
+            <div style='font-size: 16px;' class='text-black q-py-lg'>
               {{ _prompt }}
             </div>
-            <div style='display: flex; flex-direction: row-reverse; align-items: center;' class='q-px-md q-pb-md'>
+            <div style='display: flex; flex-direction: row-reverse; align-items: center;' class='q-pb-md'>
               <div v-if='false'>
                 <q-btn
                   flat
@@ -67,7 +67,7 @@
                   <q-icon color='grey-9' name='share' size='18px' />
                 </q-btn>
               </div>
-              <div v-if='_images.responds < _images.total' style='width: 128px'>
+              <div v-if='_images.responds < _images.total' style='width: 140px'>
                 <q-btn
                   flat
                   dense
@@ -76,7 +76,7 @@
                   class='full-width q-ml-xs'
                 >
                   <template #loading>
-                    <div class='row full-width flex justify-center items-center'>
+                    <div class='row full-width flex justify-end items-center'>
                       <q-spinner-ball size='20px' class='q-mr-xs' />
                       {{ _images.total - _images.responds }}张美图生成中...
                     </div>
