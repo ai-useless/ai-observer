@@ -39,15 +39,15 @@ class Singer:
                     logger.info(f'{BOLD}{url}{RESET} {GREEN}Request SUCCESS{RESET} ... {BOLD}{sing_uid}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
                     db.update_audio(sing_uid, audio_file_cid, None)
         except Exception as e:
-            logger.error(f'{BOLD}Sing - {sing_uid}{RESET} {GREEN}Request FAIL{RESET} ... {RED}{repr(e)}{RESET}')
+            logger.error(f'{BOLD}Sing - {sing_uid}{RESET} {GREEN}Request FAIL{RESET} ... {RED}{repr(e)}{RESET} elapsed {BOLD}{time.time() - start_time}{RESET}s')
             db.update_audio(sing_uid, None, repr(e))
             raise e
 
-    async def sing_async(self, lrc_text: str, ref_prompt: str):
+    def sing_async(self, lrc_text: str, ref_prompt: str):
         sing_uid = f'{uuid.uuid4()}'
         db.new_audio(sing_uid)
 
-        asyncio.create_task(self.sing(lrc_text, ref_prompt, sing_uid))
+        asyncio.create_task(self.sing_with_uid(lrc_text, ref_prompt, sing_uid))
 
         return sing_uid
 
