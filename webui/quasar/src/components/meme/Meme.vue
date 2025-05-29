@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
-      <div style='height: 100%; width: 960px; max-width: 100%;' class='bg-grey-2'>
+      <div style='height: 100%; width: 800px; max-width: 100%;'>
         <q-scroll-area
           style='height: calc(100% - 64px); width: 100%;'
           ref='chatBox'
@@ -11,18 +11,18 @@
         >
           <div>
             <q-resize-observer @resize='onChatBoxResize' />
-            <div v-for='(image, index) in images' :key='index' :style='{borderBottom: index < images.length - 1 ? "1px solid lightgray" : "", padding: "0 0 16px 0"}'>
+            <div v-for='(image, index) in images' :key='index'>
               <div style='width: 100%'>
                 <q-img :src='image.image' style='width: 100%;' />
               </div>
-              <div style='margin-top: 4px; font-size: 16px; padding: 16px;' class='text-black'>
+              <div style='margin-top: 4px; font-size: 16px; padding: 16px 0;' class='text-black'>
                 {{ image.prompt }}
               </div>
             </div>
             <div v-if='generating' class='flex justify-center items-center' style='height: 128px; width: 100%'>
               <div class='text-center'>
                 <q-spinner-facebook class='text-red-4' size='64px' />
-                <div>AGI正在创作，请稍候...</div>
+                <div style='font-size: 14px;'>AGI正在创作，请稍候...</div>
               </div>
             </div>
           </div>
