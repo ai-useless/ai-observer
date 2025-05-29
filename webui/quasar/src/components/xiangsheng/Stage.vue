@@ -50,8 +50,8 @@
           class='text-center text-grey-8 flex justify-center items-center'
         >
           <div>
-            <q-spinner-facebook class='text-red-4' size='128px' />
-            <div>演员正在候场，请稍候...</div>
+            <q-spinner-facebook class='text-red-4' size='64px' />
+            <div style='font-size: 14px;'>演员正在候场，请稍候...</div>
           </div>
         </div>
       </div>
