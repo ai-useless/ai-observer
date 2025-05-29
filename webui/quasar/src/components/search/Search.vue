@@ -52,7 +52,7 @@ const searchResults = ref([] as search.SearchResult[])
 const searchResultCount = computed(() => searchResults.value.length)
 const searchResultAudios = ref([] as string[])
 const topic = computed(() => search.Search.topic())
-const prompt = ref(topic.value)
+const prompt = ref(topic.value || '鬼畜文化的起源是什么？')
 
 const scrollTop = ref(999999)
 const searching = ref(false)
