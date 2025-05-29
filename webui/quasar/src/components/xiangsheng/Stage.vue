@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    <div style='width: 100%; height: calc(100% - 280px - 4px);' class='bg-grey-2'>
+    <div style='width: 100%; height: calc(100% - 280px - 4px);'>
       <div v-if='!displayMessages.length' class='full-width flex justify-center items-center' style='height: calc(100% - 64px); width: 600px; max-width: 100%;'>
         <div
           style='margin-top: 16px; font-size: 20px;'
@@ -63,7 +63,7 @@
         :thumb-style='{ width: "2px" }'
         @mouseenter='autoScroll = false'
         @mouseleave='autoScroll = true'
-        class='q-mt-xs cursor-pointer q-px-sm'
+        class='q-mt-xs cursor-pointer'
       >
         <div>
           <q-resize-observer @resize='onChatBoxResize' />
