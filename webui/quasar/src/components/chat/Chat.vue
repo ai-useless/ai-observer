@@ -115,7 +115,6 @@ const message = ref('')
 const audioError = ref('')
 
 const displayMessages = ref([] as Message[])
-const nextRequestIndex = ref(0)
 const waitMessages = ref(new Map<string, Message>())
 const lastDisplayMessage = ref(undefined as unknown as Message)
 const typingMessage = ref(undefined as unknown as Message)
@@ -131,6 +130,9 @@ const audioInput = ref(false)
 const friendThinking = ref(false)
 const logining = ref(false)
 const selectingFriend = ref(false)
+
+const eChat = ref(undefined as unknown as entityBridge.EChat)
+
 const windowWidth = ref(0)
 const showSelectingFriend = computed(() => Platform.is.mobile || windowWidth.value < 1280)
 
@@ -140,14 +142,13 @@ const typingTicker = ref(-1)
 
 const router = useRouter()
 
-const sendToFriend = (_message: string, requestIndex: number, simulatorId: number) => {
+const sendToFriend = async (_message: string, simulatorId: number) => {
   friendThinking.value = true
 
   const messages = [...displayMessages.value, ...(typingMessage.value ? [typingMessage.value] : []), ...Array.from(waitMessages.value.values())]
 
-  entityBridge.EChat.chat(
+  await eChat.value?.chat(
     friend.value.id,
-    friend.value.simulator,
     friend.value.origin_personality,
     username.value,
     [
@@ -157,30 +158,30 @@ const sendToFriend = (_message: string, requestIndex: number, simulatorId: numbe
     _model.value.id,
     language.value || '中文',
     language.value === '英语',
-    (_message?: string, audio?: string, error?: string) => {
+    (_message?: string, audio?: string, error?: string, index?: number) => {
       friendThinking.value = false
       if (error && error.length) {
-        waitMessages.value.set(`${error}-${requestIndex}`, {
+        waitMessages.value.set(`${error}-${index}`, {
           message: error,
           send: false,
           timestamp: Date.now(),
           displayName: friend.value.simulator,
           hint: true,
           avatar: friend.value.simulator_avatar_url,
-          index: requestIndex,
+          index: index,
           audio: undefined as unknown as string,
           simulatorId,
         })
         return
       }
-      waitMessages.value.set(`${_message || ''}-${requestIndex}`, {
+      waitMessages.value.set(`${_message || ''}-${index}`, {
         message: _message as string,
         send: false,
         timestamp: Date.now(),
         displayName: friend.value.simulator,
         hint: false,
         avatar: friend.value.simulator_avatar_url,
-        index: requestIndex,
+        index: index,
         audio: audio as unknown as string,
         simulatorId
       })
@@ -202,7 +203,7 @@ watch(message, () => {
     simulatorId: -1
   })
 
-  sendToFriend(message.value, nextRequestIndex.value++, friend.value.id)
+  sendToFriend(message.value, friend.value.id)
   message.value = ''
 })
 
@@ -237,7 +238,7 @@ const onMessageEnter = (_message: string) => {
     simulatorId: -1
   })
 
-  sendToFriend(message.value, nextRequestIndex.value++, friend.value.id)
+  sendToFriend(message.value, friend.value.id)
   message.value = ''
 }
 
@@ -302,7 +303,10 @@ const initializeChat = async (_friend: simulator._Simulator) => {
   waitMessages.value = new Map<string, Message>()
   displayMessages.value = []
   typingMessageIndex.value = 0
-  nextRequestIndex.value = 0
+
+  eChat.value.stop()
+  eChat.value = new entityBridge.EChat()
+
   lastDisplayMessage.value = undefined as unknown as Message
   typingMessage.value = undefined as unknown as Message
 
@@ -320,12 +324,14 @@ const _initializeChat = async () => {
 }
 
 onMounted(() => {
+  eChat.value = new entityBridge.EChat()
+
   setting.Setting.setCurrentMenu(language.value === '中文' ? 'chat' : 'english')
 
   if (!userAvatar.value || !userAvatar.value.length || !username.value || !username.value.length) {
     user.User.getUser(undefined, (error: boolean) => {
       if (error) {
-        logining.value = true
+        // logining.value = true
       }
     })
   }
@@ -360,6 +366,11 @@ const onChatBoxResize = (size: { height: number }) => {
 }
 
 onBeforeUnmount(() => {
+  if (eChat.value) {
+    eChat.value.stop()
+    eChat.value = undefined as unknown as entityBridge.EChat
+  }
+
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1

@@ -23,6 +23,7 @@ export interface GenerateRequestPayload {
 export interface GenerateResponsePayload {
   modelId: number
   text: string
+  texts: string[]
 }
 
 export interface ChatEvent {
@@ -85,12 +86,16 @@ export class ChatRunner {
     })
     if (!(textResp.data as Record<string, string>).content) {
       return {
-        text: undefined
+        text: undefined,
+        texts: []
       }
     }
 
+    const content = (textResp.data as Record<string, string>).content
+
     return {
-      text: (textResp.data as Record<string, string>).content
+      text: content,
+      texts: content.split(/[？！。?!.]/)
     }
   }
 
