@@ -75,16 +75,6 @@ const eDuanzi = ref(undefined as unknown as entityBridge.Duanzi)
 
 const images = ref(new Map<string, string>())
 
-const modelLogo = (modelId: number) => {
-  const model = models.value.find((el) => el.id === modelId)
-  return model ? model.model_logo_url : ''
-}
-
-const modelName = (modelId: number) => {
-  const model = models.value.find((el) => el.id === modelId)
-  return model ? model.name : ''
-}
-
 watch(generating, () => {
   if (generating.value) {
     Taro.showLoading({
@@ -205,6 +195,8 @@ const onPlayClick = () => {
 
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
+    if (enablePlay.value)
+      void AudioPlayer.play('http://api.meipu-agi.cn/downloads/laugh.mp3')
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing, undefined, 20).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) {
