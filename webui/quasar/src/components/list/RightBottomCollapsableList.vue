@@ -45,7 +45,7 @@ const props = withDefaults(defineProps<Props>(), {
   backgroundColor: 'transparent',
   width: 300,
   maxWidth: '20%',
-  titleHeight: 16,
+  titleHeight: 24,
   titleFontSize: 16
 })
 const title = toRef(props, 'title')

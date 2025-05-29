@@ -2,7 +2,7 @@
   <q-page>
     <div :style='{width: "100%", height: `${contentHeight}px`}' class='flex justify-center items-center'>
       <q-resize-observer @resize='onWindowResize' />
-      <div style='height: 100%; width: 600px; max-width: 100%;' class='bg-grey-2'>
+      <div style='height: 100%; width: 600px; max-width: 100%;'>
         <div class='full-width q-py-sm text-bold text-grey-9 flex justify-center items-center'>
           <q-avatar size='36px'>
             <q-img :src='friend?.simulator_avatar_url' />
@@ -21,7 +21,7 @@
         </div>
         <q-separator />
         <q-scroll-area
-          style='height: calc(100% - 56px - 32px - 32px); width: 100%; padding: 8px 16px;'
+          style='height: calc(100% - 56px - 32px - 32px); width: 100%; padding: 8px 0;'
           ref='chatBox'
           :bar-style='{ width: "2px" }'
           :thumb-style='{ width: "2px" }'
