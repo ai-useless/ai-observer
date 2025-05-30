@@ -27,7 +27,7 @@ export class ENianJing {
     speakWorker.SpeakRunner.handleSpeakRequest({
       simulatorId,
       text: text.replace(/^\[\d+:\d+:\d+\]/, ''),
-      instruct: `用${_simulator.language || "中文"}说`
+      instruct: `用${_simulator.language || "中文"}说，念诵佛经风格`
     })
       .then((payload1) => {
         if (this.stopped) return
