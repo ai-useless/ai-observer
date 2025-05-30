@@ -221,7 +221,7 @@ onMounted(async () => {
 
   setting.Setting.setCurrentMenu('nianjing')
 
-  const style = await dbBridge._Setting.get(dbModel.SettingKey.NIANJING_STYPE)
+  const style = await dbBridge._Setting.get(dbModel.SettingKey.NIANJING_STYLE)
   singMode.value = style !== '念诵'
 
   model.Model.getModels(() => {

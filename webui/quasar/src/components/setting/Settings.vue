@@ -44,16 +44,16 @@ const onAudioClick = async () => {
 }
 
 onMounted(async () => {
-  style.value = await dbBridge._Setting.get(dbModel.SettingKey.NIANJING_STYPE) as string
+  style.value = await dbBridge._Setting.get(dbModel.SettingKey.NIANJING_STYLE) as string
   if (!style.value) {
-    await dbBridge._Setting.create(dbModel.SettingKey.NIANJING_STYPE, '念诵')
+    await dbBridge._Setting.create(dbModel.SettingKey.NIANJING_STYLE, '念诵')
     style.value = '吟唱'
   }
   generateAudio.value = await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO) as boolean
 })
 
 const onStyleClick = async (_style: string) => {
-  await dbBridge._Setting.create(dbModel.SettingKey.NIANJING_STYPE, _style)
+  await dbBridge._Setting.create(dbModel.SettingKey.NIANJING_STYLE, _style)
   style.value = _style
 }
 
