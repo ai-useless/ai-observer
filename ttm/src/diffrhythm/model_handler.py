@@ -15,7 +15,7 @@ class DiffRhythmModel:
         self.device = self._get_device()
         self.repo_id = repo_id
         self.model_dir = model_dir
-        
+
         self.max_frames = 2048
         self.cfm, self.tokenizer, self.muq, self.vae = self._load_models()
 
