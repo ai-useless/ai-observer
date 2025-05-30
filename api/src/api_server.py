@@ -206,8 +206,13 @@ async def speech_to_text(audio_b64: str = Body(..., embed=True)):
     return { 'text': text }
 
 @app.post('/api/v1/sing_async', response_model=SpeakAsyncResponse)
-async def sing(lrc_text: str = Body(...), ref_prompt: str = Body(...)):
-    audio_uid = singer.sing_async(lrc_text, ref_prompt)
+async def sing_v1(lrc_text: str = Body(...), ref_prompt: str = Body(...)):
+    audio_uid = singer.sing_async_v1(lrc_text, ref_prompt)
+    return { 'audio_uid': audio_uid }
+
+@app.post('/api/v2/sing_async', response_model=SpeakAsyncResponse)
+async def sing_v2(lrc_text: str = Body(...), ref_prompt: str = Body(...)):
+    audio_uid = singer.sing_async_v2(lrc_text, ref_prompt)
     return { 'audio_uid': audio_uid }
 
 def get_client_host(request: Request) -> str:

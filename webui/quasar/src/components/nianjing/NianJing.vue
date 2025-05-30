@@ -134,6 +134,7 @@ const bgPlayerTimer = ref(-1)
 const music = ref(undefined as unknown as string)
 const musicPlayer = ref(undefined as unknown as AudioPlayer)
 const lrcLetters = ref(0)
+const disablePlay = ref(false)
 
 const generating = ref(false)
 const selectingSpeaker = ref(false)
@@ -268,8 +269,6 @@ const audioPlayer = ref(undefined as unknown as AudioPlayer)
 const bgPlayer = ref(undefined as unknown as AudioPlayer)
 
 const typing = () => {
-  const disablePlay = singMode.value && music.value !== undefined && lrcLetters.value > 0
-
   _typing(
     waitMessages.value,
     displayMessages.value,
@@ -277,7 +276,7 @@ const typing = () => {
     lastDisplayMessage.value,
     typingMessageIndex.value,
     audioPlayer.value,
-    !disablePlay, // If we have music, don't play inside
+    !disablePlay.value, // If we have music, don't play inside
     typingTicker.value,
     () => {
       lastDisplayMessage.value = undefined as unknown as Message
@@ -309,11 +308,15 @@ const typing = () => {
         waitMessages.value.set(`${typingMessage.value.message}-${typingMessage.value.index}`, typingMessage.value)
         displayMessages.value = []
         typingMessageIndex.value = 0
+
+        disablePlay.value = singMode.value && music.value.length && lrcLetters.value > 0
       }
       if (typingMessage.value && typingMessage.value.first) {
         generating.value = false
         inputPrompt.value = ''
-        if (disablePlay) {
+        if (disablePlay.value) {
+          if (musicPlayer.value) musicPlayer.value.stop()
+
           window.clearInterval(typingTicker.value)
           typingTicker.value = -1
           AudioPlayer.play(music.value).then((player) => {

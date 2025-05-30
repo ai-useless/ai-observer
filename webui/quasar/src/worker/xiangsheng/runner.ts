@@ -285,7 +285,7 @@ export class XiangshengRunner {
     const audioResp = await axios.post(constants.TEXT2SPEECH_ASYNC_V3_API, {
       text: speechContent,
       voice: simulator?.audio_id,
-      instruct: simulator?.language ? `用${simulator.language}说` : ''
+      instruct: simulator?.language ? `用${simulator.language}说，说相声的语气` : ''
     })
 
     let audioUrl = undefined as unknown as string
