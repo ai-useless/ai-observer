@@ -23,7 +23,7 @@
       <div style=' height: 18px;'>
         <div class='row'>
           <q-badge @click='onStyleClick("念诵")' :outline='style !== "念诵"' color='blue-6' class='cursor-pointer'>念诵</q-badge>
-          <q-badge @click='onStyleClick("吟唱")' :outline='style !== "吟唱"' color='blue-6' class='q-ml-xs cursor-pointer'>吟唱</q-badge>
+          <q-badge @click='onStyleClick("吟唱")' :outline='style !== "吟唱"' color='blue-6' class='q-ml-xs cursor-pointer'>吟唱(试验)</q-badge>
         </div>
       </div>
     </q-item>

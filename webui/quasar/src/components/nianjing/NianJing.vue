@@ -10,11 +10,11 @@
             </q-avatar>
             <span class='q-ml-sm'>{{ speaker?.simulator }}</span>
             <span style='font-size: 12px' class='text-grey-6 q-mx-xs cursor-pointer' @click='singMode = !singMode'>
-              {{ singMode ? '吟唱' : '念诵' }}
+              {{ singMode ? '吟唱(试验)' : '念诵' }}
             </span>
             <q-icon name='help' size='16px' class='text-grey-6 cursor-pointer'>
               <q-tooltip style='font-size: 14px;'>
-                请您了解：念诵模式可以选择角色声音，吟唱模式由吟唱模型决定声音。<br>吟唱模式需要完善的上下文生成连贯的音乐，因此需要等待。
+                请您了解：念诵模式可以选择角色声音，吟唱模式由吟唱模型决定声音。<br>吟唱模式需要完善的上下文生成连贯的音乐，因此需要等待。<br>吟唱模式当前处于试验阶段，并不能保证生成正确的音乐，请耐心等待稳定版本。
               </q-tooltip>
             </q-icon>
             <span class='q-ml-xs'>
