@@ -46,7 +46,7 @@ const onAudioClick = async () => {
 onMounted(async () => {
   style.value = await dbBridge._Setting.get(dbModel.SettingKey.NIANJING_STYPE) as string
   if (!style.value) {
-    await dbBridge._Setting.create(dbModel.SettingKey.NIANJING_STYPE, '吟唱')
+    await dbBridge._Setting.create(dbModel.SettingKey.NIANJING_STYPE, '念诵')
     style.value = '吟唱'
   }
   generateAudio.value = await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO) as boolean
