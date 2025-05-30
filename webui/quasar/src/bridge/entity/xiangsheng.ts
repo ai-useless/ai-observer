@@ -19,6 +19,7 @@ export class EXiangsheng {
   private subTopicIndex = -1
   private subTopics = [] as string[]
   private generating = false
+  private stopped = false
 
   private onMessage = undefined as unknown as MessageFunc
   private onTopicsGenerated = undefined as unknown as TopicsGeneratedFunc
@@ -43,7 +44,7 @@ export class EXiangsheng {
     index: number,
     steps: number
   ) => {
-    if (index >= texts.length) {
+    if (index >= texts.length || this.stopped) {
       this.generating = false
       return
     }
@@ -136,6 +137,7 @@ export class EXiangsheng {
     const host = (await dbBridge._Participator.host(
       this.xiangsheng.uid
     )) as dbModel.Participator
+    if (this.stopped) return
 
     xiangshengWorker.XiangshengRunner.handleTopicsRequest({
       topic: this.xiangsheng.topic,
@@ -172,6 +174,7 @@ export class EXiangsheng {
 
   start = async () => {
     if (this.generating) return
+    if (this.stopped) return
 
     const host = (await dbBridge._Participator.host(
       this.xiangsheng.uid
@@ -226,6 +229,7 @@ export class EXiangsheng {
 
   startScripts = async () => {
     if (this.generating) return
+    if (this.stopped) return
 
     this.generating = true
 
@@ -256,7 +260,7 @@ export class EXiangsheng {
   }
 
   stop = () => {
-    // DO NOTHING
+    this.stopped = true
   }
 
   static prepareTopics = async (historyTopics: string[]) => {

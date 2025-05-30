@@ -178,8 +178,8 @@ const typing = () => {
   }, typing).then((rc) => {
     if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value && !generating.value) {
       generating.value = true
-      if (playScripts.value) void eXiangsheng.value.startScripts()
-      else void eXiangsheng.value.start()
+      if (playScripts.value) void eXiangsheng.value?.startScripts()
+      else void eXiangsheng.value?.start()
     }
 
     if (!rc) return
@@ -302,8 +302,17 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  if (eXiangsheng.value) {
+    eXiangsheng.value.stop()
+    eXiangsheng.value = undefined as unknown as entityBridge.EXiangsheng
+  }
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
   }
 })
 
