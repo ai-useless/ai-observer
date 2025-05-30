@@ -69,7 +69,7 @@ export class ENianJing {
     singWorker.SingRunner.handleSingRequest({
       simulatorId,
       lrcText: text,
-      refPrompt: '梵呗唱诵，佛经风格，无背景音，男声清唱，慢速节奏60BPM，禅意和声，敲木鱼'
+      refPrompt: '梵呗唱诵，佛经风格，无背景音，男声清唱，人声清晰，慢速节奏60BPM，禅意和声，敲木鱼'
     }).then((payload) => {
       if (!payload || !payload.audio) {
         return
