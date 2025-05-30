@@ -97,6 +97,7 @@ import { model, setting, simulator } from 'src/localstores'
 import { AudioPlayer } from 'src/player'
 import { typing as _typing, Message as MessageBase } from 'src/typing'
 import { Platform, QScrollArea } from 'quasar'
+import { dbModel } from 'src/model'
 
 import BottomFixInput from '../input/BottomFixInput.vue'
 import RightBottomSimulatorList from '../list/RightBottomSimulatorList.vue'
@@ -215,10 +216,13 @@ const playBgSound = () => {
   })
 }
 
-onMounted(() => {
+onMounted(async () => {
   eNianjing.value = new entityBridge.ENianJing()
 
   setting.Setting.setCurrentMenu('nianjing')
+
+  const style = await dbBridge._Setting.get(dbModel.SettingKey.NIANJING_STYPE)
+  singMode.value = style !== '念诵'
 
   model.Model.getModels(() => {
     simulator.Simulator.getSimulators(undefined, () => {
