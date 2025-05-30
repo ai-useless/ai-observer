@@ -219,6 +219,8 @@ const typing = () => {
       currentTopic.value = typingMessage.value.topic
       displayMessages.value = []
     }
+
+    generating.value = false
   }).catch((e) => {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)
@@ -242,7 +244,7 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
   const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
 
-  generating.value = false
+  console.log(topic, text, index)
 
   waitMessages.value.set(`${text}-${index}`, {
     topic,
