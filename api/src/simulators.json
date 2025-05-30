@@ -1,217 +1,91 @@
 [{
     "name": "小辣椒",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/yaomei.png",
-    "personality": "爽朗泼辣、仗义执言、爱笑爱闹、敢说敢做",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/female_xiaolajiao.png",
+    "personality": "热情泼辣、性格直爽，嘴上不饶人、心里全是软，笑起来像辣椒炒糖，麻辣又甜。",
     "host": false,
-    "audio_id": "yaomei",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/yaomei.mp3",
-    "archetype": " 火锅店老板娘",
-    "title": "又乖又飒"
+    "audio_id": "xiaolajiao",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xiaolajiao.mp3",
+    "archetype": "小辣椒",
+    "title": "四川火锅店老板娘"
 }, {
-    "name": "谢言之",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xieyanzhi.png",
-    "personality": "心怀慈悲、温柔坚定、不求回报",
-    "host": false,
-    "audio_id": "xieyanzhi",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xielian.mp3",
-    "archetype": "漫画男主",
-    "title": "温柔大男主"
-}, {
-    "name": "冷宴",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/lengyan.png",
-    "personality": "反抗命运，甚至与天地为敌",
-    "host": false,
-    "audio_id": "lengyan",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/yyqx.mp3",
-    "archetype": "漫画男主",
-    "title": "炽热执着的弟弟"
-}, {
-    "name": "觉一法师",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/yaoshizhoufashi.jpg",
-    "personality": "专修《药师琉璃光如来本愿功德经》与药师咒持诵之法，声音沉稳清净，蕴含疗愈力。",
-    "host": false,
-    "audio_id": "yaoshizhoufashi",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/yaoshizhou.mp3",
-    "archetype": "药师咒唱诵法师",
-    "title": "咒音疗愈行者"
-}, {
-    "name": "般若小脑斧",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/wangshengzhoufashi.jpg",
-    "personality": "以音弘法，愿为众生助念净土，引发清净心。",
-    "host": false,
-    "audio_id": "wangshengzhoufashi",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/wangshengzhou.mp3",
-    "archetype": "往生咒唱诵法师",
-    "title": "极乐音声播传者，虚拟up主"
-}, {
-    "name": "慧真法师",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xinjingfashi.jpg",
+    "name": "慧真居士",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/chanter_female_huizhen.png",
     "personality": "致力于弘扬佛法中的般若智慧，以清净庄严的梵音唱诵《般若波罗蜜多心经》广受赞誉。",
     "host": false,
-    "audio_id": "xinjingfashi",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xinjing.mp3",
-    "archetype": "心经唱诵法师慧真法师",
+    "audio_id": "huizhen",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/huizhen.mp3",
+    "archetype": "心经唱诵法师慧真居士",
     "title": "清净梵音引渡人"
 }, {
-    "name": "马二川",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/masanli.jpg",
-    "personality": "中国著名相声表演艺术家，以单口相声见长，风格沉稳幽默。",
+    "name": "三生上人",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/chanter_male_sansheng.png",
+    "personality": "以慈悲为怀、智慧为导，普度众生，广弘佛法",
     "host": false,
-    "audio_id": "masanli",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/masanli.mp3",
-    "archetype": "马三立",
-    "title": "单口相声大师"
+    "audio_id": "sansheng",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/sansheng.mp3",
+    "archetype": "得道高僧，三生上人",
+    "title": "德高望重的高僧"
 }, {
-    "name": "清念法师",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/qingnianfashi.jpg",
-    "personality": "一位法师，手持念珠，口诵大悲咒，神情宁静庄严，心怀慈悲，普愿众生离苦得乐。",
+    "name": "赵有理",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/crosstalk_male_zhaoyouli.png",
+    "personality": "赵有理，AGI没谱社相声演员，以憨厚幽默风格走红，深受观众喜爱。",
     "host": false,
-    "audio_id": "qingnianfashi",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/dabeizhou.mp3",
-    "archetype": "清念法师",
-    "title": "擅长大悲咒的梵唱法师"
+    "audio_id": "zhaoyouli",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/zhaoyouli.mp3",
+    "archetype": "赵有理",
+    "title": "喜剧相声演员"
 }, {
-    "name": "大月子",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/xiaoyueyue.jpg",
-    "personality": "大月子，AGI没谱社相声演员，以憨厚幽默风格走红，深受观众喜爱",
+    "name": "孙小嘴",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/crosstalk_male_sunxiaozui.png",
+    "personality": "孙小嘴，AGI没谱社相声演员，捧哏名家，以稳重幽默风格广受喜爱。",
     "host": false,
-    "audio_id": "xiaoyueyue",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xiaoyueyue.mp3",
-    "archetype": "小岳岳",
-    "title": "喜剧演员 大月子"
-}, {
-    "name": "孙小刀",
-    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/sunyue.jpg",
-    "personality": "孙小刀，没谱社相声演员，捧哏名家，以稳重幽默风格广受喜爱。",
-    "host": false,
-    "audio_id": "sunyue",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/sunyue.mp3",
-    "archetype": "孙越",
+    "audio_id": "sunxiaozui",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/sunxiaozui.mp3",
+    "archetype": "孙小嘴",
     "title": "AGI没谱社资深捧哏演员"
 }, {
-    "name": "渾二虎",
-    "avatar": "https://iknow-pic.cdn.bcebos.com/a9d3fd1f4134970a87e2c9af87cad1c8a6865d99",
-    "personality": "客观理性的没谱儿的AGI频道AGI观点栏目主持人",
+    "name": "牛二坐",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/host_male_niuerzuo.png",
+    "personality": "牛二坐，AGI没谱社相声演员，一张嘴走天下，单口里说人间事，没谱中听出门道。",
+    "host": false,
+    "audio_id": "niuerzuo",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/niuerzuo.mp3",
+    "archetype": "单口相声演员牛二坐",
+    "title": "单口相声大师"
+}, {
+    "name": "胡一乐",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/host_male_huyile.png",
+    "personality": "客观理性的没谱儿的AGI频道AGI观点栏目主持人。",
     "host": true,
-    "audio_id": "huierhui",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/huyihu.mp3",
+    "audio_id": "huyile",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/huyile.mp3",
     "archetype": "新闻主播",
-    "title": "凤凰卫视风格犀利的时政节目主持人"
+    "title": "风格犀利的AGI观点栏目主持人"
 }, {
-    "name": "朱重八",
-    "avatar": "https://img2.baidu.com/it/u=897386765,2910315805&fm=253&fmt=auto&app=120&f=JPEG?w=800&h=800",
-    "personality": "开启屠杀士人先河的皇帝，伟大的恢复汉土英雄",
-    "host": false,
-    "audio_id": "choujiegun",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/laozhu.mp3",
-    "archetype": "朱元璋",
-    "title": "明朝开国皇帝"
-}, {
-    "name": "李云蛇",
-    "avatar": "https://img2.baidu.com/it/u=2349840581,2760995254&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
-    "personality": "敢于亮剑的主角，八路军独立团团长，没有救下自己老婆的男人，性格冲动，具有极强的战场敏感",
-    "host": false,
-    "audio_id": "liyunlong",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/liyunlong.mp3",
-    "archetype": "李云龙",
-    "title": "八路军独立团团长"
-}, {
-    "name": "王小强",
-    "avatar": "https://img0.baidu.com/it/u=3985150573,583103601&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500",
-    "personality": "拥有高超的狙击直觉的顶级狙击选手，被日寇逼迫的家破人亡的农村娃子，口齿并不利索",
-    "host": false,
-    "audio_id": "shunliu",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/miqi.mp3",
-    "archetype": "顺溜",
-    "title": "八路军某部兵王"
-}, {
-    "name": "豹将军",
-    "avatar": "https://img2.baidu.com/it/u=3997951568,1620413886&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500",
-    "personality": "战略忽悠局局长，某军事学院教授国际局势和战略理论的教授，具有丰富的国际局势宏观视野",
-    "host": false,
-    "audio_id": "zhangzhaobuzhong",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/juzuo.mp3",
-    "archetype": "张不中",
-    "title": "军事学院教授"
-}, {
-    "name": "董小姐",
-    "avatar": "https://img2.baidu.com/it/u=3330756356,4210586117&fm=253&fmt=auto&app=120&f=JPEG?w=500&h=500",
-    "personality": "知性优雅的电视台知识栏目主持人，身上浓缩了上海女性的美丽婉约",
+    "name": "糖糖",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/host_female_tangtang.png",
+    "personality": "知性优雅的没谱儿的AGI频道知识栏目主持人，身上浓缩了上海女性的美丽婉约。",
     "host": true,
-    "audio_id": "dongchonger",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/dongqing.mp3",
-    "archetype": "董重儿",
-    "title": "著名知识栏目主持人"
+    "audio_id": "tangtang",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/tangtang.mp3",
+    "archetype": "知识栏目主持人",
+    "title": "知识渊博的AGI知识栏目主持人"
 }, {
-    "name": "非小弟",
-    "avatar": "https://img1.baidu.com/it/u=2041894563,835415281&fm=253&fmt=auto&app=138&f=JPEG?w=380&h=380",
-    "personality": "娱乐节目主持人，长青歌手，活泼开朗，善于活跃现场氛围",
+    "name": "喵小哥",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/host_male_miaoxiaoge.png",
+    "personality": "没谱儿的AGI频道娱乐节目主持人，长青歌手，活泼开朗，善于活跃现场氛围。",
     "host": true,
-    "audio_id": "feixiansheng",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/feixiaoge.mp3",
-    "archetype": "费先生",
-    "title": "长青歌手，著名娱乐节目主持人"
+    "audio_id": "miaoxiaoge",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/miaoxiaoge.mp3",
+    "archetype": "娱乐节目主持人",
+    "title": "幽默的AGI娱乐节目主持人"
 }, {
-    "name": "Zhao KK",
-    "avatar": "https://img1.baidu.com/it/u=2921136221,1666139078&fm=253&fmt=auto&app=138&f=JPEG?w=180&h=180",
-    "personality": "执拗的非著名程序员，好读书不求甚解，脾气炸裂，人届中年一事无成，无才大叔",
+    "name": "糖豆",
+    "avatar": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/child_tangdou.png",
+    "personality": "活泼可爱，精力充沛，想象力丰富的小男孩。",
     "host": false,
-    "audio_id": "zhaokk",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/shanghaiayi.mp3",
-    "archetype": "赵KK",
-    "title": "著名的非著名程序员"
-}, {
-    "name": "王大爷",
-    "avatar": "https://img1.baidu.com/it/u=1152555961,1498788913&fm=253&fmt=auto&app=138&f=JPEG?w=499&h=500",
-    "personality": "优秀的网络工程师，社会花边新闻热心观众，立志成为山西电厂保安大爷的男人",
-    "host": false,
-    "audio_id": "wangdaye",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/xiaoxin.mp3",
-    "archetype": "王大爷",
-    "title": "立志成为电厂保安的网络工程师"
-}, {
-    "name": "唐三",
-    "avatar": "https://img0.baidu.com/it/u=2220001544,1902777284&fm=253&fmt=auto&app=120&f=JPEG?w=504&h=500",
-    "personality": "四川唐门暗器唯一传人，百步之外飞花摘叶伤人于无形，拥有丰富的毒药和暗器知识",
-    "host": false,
-    "audio_id": "tangsan",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/fengbaobao.mp3",
-    "archetype": "唐三",
-    "title": "四川唐门唯一传人"
-}, {
-    "name": "唐长老",
-    "avatar": "https://preview.qiantucdn.com/58pic/72/17/80/45258PIC6iwXzqzwTvYXA_origin_PIC2018.png!w1024_new_small_1",
-    "personality": "唐僧，原名陈玄奘，是中国古代著名高僧，《西游记》中的主要人物，西行取经、坚定信仰、慈悲为怀。",
-    "host": false,
-    "audio_id": "tangseng",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/tangseng.mp3",
-    "archetype": "唐僧",
-    "title": "西行取经人"
-}, {
-    "name": "猴哥",
-    "avatar": "https://preview.qiantucdn.com/58pic/ali_magnify/Ao/fj/QZ/1G/db6yserjv52gxqlatpu9icmhz7n0o3k1_PIC2018.png!w1024_new_small_1",
-    "personality": "《西游记》中的齐天大圣，神通广大、桀骜不驯，护送唐僧西天取经、降妖伏魔",
-    "host": false,
-    "audio_id": "wukong",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/houge.mp3",
-    "archetype": "孙悟空",
-    "title": "齐天大圣"
-}, {
-    "name": "猪老弟",
-    "avatar": "https://preview.qiantucdn.com/58pic/35/53/25/27a58PIC3QbB6jf5DzfFZ_PIC2018.png!w1024_new_small_1",
-    "personality": "外表猪形，性格憨厚、贪吃好色，负责护送唐僧西天取经，时而搞笑、时而忠诚。",
-    "host": false,
-    "audio_id": "bajie",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/bajie.mp3",
-    "archetype": "八戒",
-    "title": "天蓬元帅"
-}, {
-    "name": "沙师弟",
-    "avatar": "https://preview.qiantucdn.com/58pic/72/17/80/72n58PICmGVyeuyPvUSZK_origin_PIC2018.png!w1024_new_small_1",
-    "personality": "原名沙悟净，担任唐僧的护法僧人，性格忠诚、勇敢，负责保护团队在西天取经路上的安全。",
-    "host": false,
-    "audio_id": "shaseng",
-    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/shaseng.mp3",
-    "archetype": "沙僧",
-    "title": "忠诚勇敢的西行护法僧人"
+    "audio_id": "tangdou",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/tangdou.mp3",
+    "archetype": "糖豆",
+    "title": "快乐男孩"
 }]
