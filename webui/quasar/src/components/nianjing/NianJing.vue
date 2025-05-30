@@ -313,7 +313,7 @@ const typing = () => {
       if (typingMessage.value && typingMessage.value.first) {
         generating.value = false
         inputPrompt.value = ''
-        if (disablePlay && musicPlayer.value) {
+        if (disablePlay && !musicPlayer.value && music.value?.length && lrcLetters.value) {
           window.clearInterval(typingTicker.value)
           typingTicker.value = -1
           AudioPlayer.play(music.value).then((player) => {
