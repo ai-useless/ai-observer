@@ -154,8 +154,11 @@ const generate = (_prompt: string, simulatorId: number) => {
   typingMessage.value = undefined as unknown as Message
   typingMessageIndex.value = 0
 
-  if (audioPlayer.value) audioPlayer.value?.stop()
+  if (audioPlayer.value) audioPlayer.value.stop()
   audioPlayer.value = undefined as unknown as AudioPlayer
+
+  if (musicPlayer.value) musicPlayer.value.stop()
+  musicPlayer.value = undefined as unknown as AudioPlayer
 
   eNianjing.value?.request(_prompt, speaker.value.id, _model.value.id, (message: string, index: number, first: boolean, last: boolean, audio?: string) => {
     if (_prompt !== prompt.value || simulatorId !== speaker.value.id) {
@@ -318,6 +321,7 @@ const typing = () => {
               (player.duration * 1000) / lrcLetters.value
             )
             typingTicker.value = window.setInterval(typing, typingInterval.value)
+            musicPlayer.value = player
           }).catch((e) => {
             typingTicker.value = window.setInterval(typing, typingInterval.value)
             console.log(`Failed play: ${e}`)
