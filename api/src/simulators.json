@@ -49,7 +49,7 @@
     "personality": "牛二坐，AGI没谱社相声演员，一张嘴走天下，单口里说人间事，没谱中听出门道。",
     "host": false,
     "audio_id": "niuerzuo",
-    "audio": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/niuerzuo.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/niuerzuo.mp3",
     "archetype": "单口相声演员牛二坐",
     "title": "单口相声大师"
 }, {
@@ -58,7 +58,7 @@
     "personality": "客观理性的没谱儿的AGI频道AGI观点栏目主持人。",
     "host": true,
     "audio_id": "huyile",
-    "audio": "https://raw.githubusercontent.com/hong-t/avatars/refs/heads/master/huyile.mp3",
+    "audio": "https://raw.githubusercontent.com/hong-t/voices/refs/heads/master/huyile.mp3",
     "archetype": "新闻主播",
     "title": "风格犀利的AGI观点栏目主持人"
 }, {
