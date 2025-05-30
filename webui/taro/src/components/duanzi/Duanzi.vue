@@ -225,6 +225,7 @@ const typing = () => {
 
     if (typingMessage.value) lastModelId.value = typingMessage.value.modelId
   }).catch((e) => {
+    generating.value = false
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)
   })

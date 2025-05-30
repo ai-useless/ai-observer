@@ -1,4 +1,4 @@
-import { nianjingWorker, speakWorker } from 'src/worker'
+import { nianjingWorker, singWorker, speakWorker } from 'src/worker'
 import { dbBridge } from '..'
 
 export class ENianJing {
@@ -26,12 +26,12 @@ export class ENianJing {
 
     speakWorker.SpeakRunner.handleSpeakRequest({
       simulatorId,
-      text,
+      text: text.replace(/^\[\d+:\d+:\d+\]/, ''),
       instruct: `用${_simulator.language || "中文"}说`
     })
       .then((payload1) => {
         if (this.stopped) return
-        
+
         if (!payload1 || !payload1.audio || !payload1.audio.length) {
           this.speak(simulatorId, texts, index + steps, steps, onMessage)
           onMessage(
@@ -65,6 +65,21 @@ export class ENianJing {
       })
   }
 
+  sing = (simulatorId: number, name: string, text: string, onMusic: (name: string, music: string, letters: number) => void) => {
+    singWorker.SingRunner.handleSingRequest({
+      simulatorId,
+      lrcText: text,
+      refPrompt: '梵呗唱诵，佛经风格，无背景音，男声清唱，慢速节奏60BPM，禅意和声，敲木鱼'
+    }).then((payload) => {
+      if (!payload || !payload.audio) {
+        return
+      }
+      onMusic(name, payload.audio, text.length)
+    }).catch((e) => {
+      console.log(`Failed sing: ${e}`)
+    })
+  }
+
   request = (
     name: string,
     simulatorId: number,
@@ -75,7 +90,8 @@ export class ENianJing {
       first: boolean,
       last: boolean,
       audio?: string
-    ) => void
+    ) => void,
+    onMusic: (name: string, music: string, letters: number) => void
   ) => {
     if (this.stopped) return
 
@@ -86,7 +102,7 @@ export class ENianJing {
       .then((payload) => {
         if (!payload || !payload.texts || !payload.texts.length) {
           setTimeout(() => {
-            this.request(name, simulatorId, modelId, onMessage)
+            this.request(name, simulatorId, modelId, onMessage, onMusic)
           }, 1000)
           return
         }
@@ -97,6 +113,7 @@ export class ENianJing {
         for (let i = 0; i < steps; i++) {
           this.speak(simulatorId, payload.texts, i, steps, onMessage)
         }
+        this.sing(simulatorId, name, payload.text, onMusic)
       })
       .catch((e) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions

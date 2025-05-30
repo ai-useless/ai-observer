@@ -8,4 +8,4 @@ bs4
 mysql-connector-python
 boto3
 requests
-jwt
+PyJWT
