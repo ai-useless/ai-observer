@@ -309,7 +309,7 @@ const typing = () => {
         displayMessages.value = []
         typingMessageIndex.value = 0
 
-        disablePlay.value = singMode.value && music.value.length && lrcLetters.value > 0
+        disablePlay.value = singMode.value && music.value?.length && lrcLetters.value > 0
       }
       if (typingMessage.value && typingMessage.value.first) {
         generating.value = false
