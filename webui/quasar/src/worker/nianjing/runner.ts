@@ -18,6 +18,7 @@ export interface GenerateRequestPayload {
 
 export interface GenerateResponsePayload {
   modelId: number
+  text: string
   texts: string[]
 }
 
@@ -50,14 +51,15 @@ export class NianJingRunner {
     })
     if (!(textResp.data as Record<string, string>).content) {
       return {
+        text: undefined as unknown as string,
         texts: []
       }
     }
 
-    const texts = Prompt.postProcess(
-      (textResp.data as Record<string, string>).content
-    )
+    const content = (textResp.data as Record<string, string>).content
+    const texts = Prompt.postProcess(content)
     return {
+      text: content,
       texts: texts
     }
   }

@@ -3,8 +3,8 @@
     <q-card class='bg-gradient-blue no-border-radius'>
       <q-card-section>
         <div class='flex justify-center items-center' style='height: 240px;'>
-          <div class='text-center'>
-            <div class='text-white text-bold' style='font-size: 40px;'>
+          <div class='text-center full-width'>
+            <div class='text-white text-bold single-line-nowrap' style='font-size: 40px;'>
               {{ topic }}
             </div>
             <div class='text-white' style='font-size: 16px;'>

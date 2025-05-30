@@ -24,3 +24,5 @@ export const COOK_USER = 'http://api.meipu-agi.cn/api/v1/cook_user'
 export const GET_MODELS_API = 'http://api.meipu-agi.cn/api/v1/models'
 export const SPEECH_TO_TEXT_API =
   'http://api.meipu-agi.cn/api/v1/speech_to_text'
+export const SING_ASYNC_API =
+  'http://api.meipu-agi.cn/api/v1/sing_async'

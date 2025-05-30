@@ -43,7 +43,8 @@ export interface Xiangsheng {
 }
 
 export enum SettingKey {
-  GENERATE_AUDIO = 'GenerateAudio'
+  GENERATE_AUDIO = 'GenerateAudio',
+  NIANJING_STYLE = '吟唱'
 }
 
 export interface Setting {

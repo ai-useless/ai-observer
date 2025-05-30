@@ -15,6 +15,18 @@
         />
       </div>
     </q-item>
+    <q-item dense class='row flex items-center border-radius-8px'>
+      <div class='text-grey-8'>
+        默认念经风格
+      </div>
+      <q-space />
+      <div style=' height: 18px;'>
+        <div class='row'>
+          <q-badge @click='onStyleClick("念诵")' :outline='style !== "念诵"' color='blue-6' class='cursor-pointer'>念诵</q-badge>
+          <q-badge @click='onStyleClick("吟唱")' :outline='style !== "吟唱"' color='blue-6' class='q-ml-xs cursor-pointer'>吟唱(试验)</q-badge>
+        </div>
+      </div>
+    </q-item>
   </div>
 </template>
 
@@ -24,6 +36,7 @@ import { dbModel } from '../../model'
 import { onMounted, ref } from 'vue'
 
 const generateAudio = ref(true)
+const style = ref('吟唱')
 
 const onAudioClick = async () => {
   generateAudio.value = !generateAudio.value
@@ -31,7 +44,17 @@ const onAudioClick = async () => {
 }
 
 onMounted(async () => {
+  style.value = await dbBridge._Setting.get(dbModel.SettingKey.NIANJING_STYLE) as string
+  if (!style.value) {
+    await dbBridge._Setting.create(dbModel.SettingKey.NIANJING_STYLE, '念诵')
+    style.value = '吟唱'
+  }
   generateAudio.value = await dbBridge._Setting.get(dbModel.SettingKey.GENERATE_AUDIO) as boolean
 })
+
+const onStyleClick = async (_style: string) => {
+  await dbBridge._Setting.create(dbModel.SettingKey.NIANJING_STYLE, _style)
+  style.value = _style
+}
 
 </script>

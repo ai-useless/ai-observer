@@ -18,7 +18,7 @@ export interface TypingMessage<T extends Message> {
   typingTicker?: number
 }
 
-function calculateTypingInterval<T extends Message>(
+export function calculateTypingInterval<T extends Message>(
   typingMessage: T,
   duration: number
 ): number | undefined {
@@ -59,8 +59,9 @@ export async function typing<T extends Message>(
   ) {
     if (
       lastDisplayMessage.message.length > 0 &&
-      audioPlayer &&
-      !audioPlayer.playing
+      (audioPlayer &&
+      !audioPlayer.playing &&
+      enablePlay)
     ) {
       lastDisplayMessage.message = typingMessage.message
       return Promise.resolve(undefined)

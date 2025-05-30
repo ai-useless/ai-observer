@@ -9,21 +9,11 @@
       showsVerticalScrollIndicator={false}
       :scroll-with-animation='true'
     >
-      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : (index < displayMessages.length - 1 && !message.isTitle) ? "1px solid gray" : "", padding: message.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
-        <View v-if='message.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 24px;'>
-          <Image :src='modelLogo(message.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
-          <View style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(message.modelId) }}</View>
-        </View>
-        <Image v-if='message.image' mode='widthFix' :src='message.image' style='width: 100%; margin-bottom: 4px;' />
-        <View :style='{fontSize: message.isTitle ? "18px" : "12px", fontWeight: message.isTitle ? 600 : 400, textAlign: message.isTitle ? "center" : "left"}'>{{ message.message }}</View>
+      <View v-for='(message, index) in displayMessages' :key='index' :style='{borderBottom : index < displayMessages.length - 1 ? "1px solid gray" : ""}'>
+        <MessageCard :message='message' />
       </View>
-      <View v-if='lastDisplayMessage' :style='{borderTop: lastDisplayMessage.isTitle ? "1px solid gray" : "", padding: lastDisplayMessage.isTitle ? "8px 0 4px 0" : "4px 0 8px 0"}'>
-        <View v-if='lastDisplayMessage.isTitle' style='display: flex; padding-bottom: 8px; margin-bottom: 4px; line-height: 24px;'>
-          <Image :src='modelLogo(lastDisplayMessage.modelId)' style='height: 24px; width: 24px; border-radius: 50%;' />
-          <View style='font-weight: 400; color: lightgray; font-size: 12px;'>{{ modelName(lastDisplayMessage.modelId) }}</View>
-        </View>
-        <Image v-if='lastDisplayMessage.image' mode='widthFix' :src='lastDisplayMessage.image' style='width: 100%; margin-bottom: 4px;' />
-        <View :style='{fontSize: lastDisplayMessage.isTitle ? "18px" : "12px", fontWeight: lastDisplayMessage.isTitle ? 600 : 400, textAlign: lastDisplayMessage.isTitle ? "center" : "left"}'>{{ lastDisplayMessage.message }}</View>
+      <View v-if='lastDisplayMessage' :style='{borderTop: displayMessages.length > 0 ? "1px solid gray" : ""}'>
+        <MessageCard :message='lastDisplayMessage' />
       </View>
     </scroll-view>
     <View style='display: flex; flex-direction: row-reverse; align-items: center; width: 100%; height: 24px; margin-top: -24px;'>
@@ -59,15 +49,12 @@ import { model, simulator } from 'src/localstores'
 import { purify } from 'src/utils'
 import { computed, onMounted, ref, watch, nextTick } from 'vue'
 import { AudioPlayer } from 'src/player'
-import { typing as _typing, Message as MessageBase } from 'src/typing'
+import { typing as _typing } from 'src/typing'
+import { Message } from './Message'
+
+import MessageCard from './MessageCard.vue'
 
 import { gotoBottom, gotoTop, manualScrollGray, volumeOff, volumeUp, threeDotsVertical } from 'src/assets'
-
-interface Message extends MessageBase {
-  isTitle: boolean
-  modelId: number
-  image?: string
-}
 
 const models = computed(() => model.Model.models())
 
@@ -81,19 +68,22 @@ const lastModelId = ref(-1 as unknown as number)
 
 const duanziContentHeight = ref(0)
 const scrollTop = ref(999999)
-const generating = ref(true)
-const inMyPage = ref(false)
-const images = ref(new Map<number, string>())
+const generating = ref(false)
+const nextDuanziIndex = ref(0)
 
-const modelLogo = (modelId: number) => {
-  const model = models.value.find((el) => el.id === modelId)
-  return model ? model.model_logo_url : ''
-}
+const eDuanzi = ref(undefined as unknown as entityBridge.Duanzi)
 
-const modelName = (modelId: number) => {
-  const model = models.value.find((el) => el.id === modelId)
-  return model ? model.name : ''
-}
+const images = ref(new Map<string, string>())
+
+watch(generating, () => {
+  if (generating.value) {
+    Taro.showLoading({
+      title: `${models.value.length}个AGI正在创作！`
+    })
+  } else {
+    Taro.hideLoading()
+  }
+})
 
 const generate = async () => {
   generating.value = true
@@ -101,31 +91,32 @@ const generate = async () => {
   nextTick().then(() => scrollTop.value += 1)
 
   for (const model of models.value) {
-    if (!inMyPage.value) return
+    if (!eDuanzi.value) return
 
     const simulator = dbBridge._Simulator.randomPeek()
     const messages = [...displayMessages.value, ...Array.from(waitMessages.value.values())]
-    await entityBridge.Duanzi.generate(messages.map((el) => el.message), model.id, simulator.id, (text: string, isTitle: boolean, index: number, audio?: string) => {
+    await eDuanzi.value.generate(messages.map((el) => el.message), model.id, simulator.id, (title: string, content: string, audio?: string, messageUid?: string) => {
       generating.value = false
 
-      waitMessages.value.set(`${text}-${index}`, {
+      const contentIndex = nextDuanziIndex.value++
+
+      waitMessages.value.set(`${content}-${contentIndex}`, {
+        title,
         modelId: model.id,
-        message: purify.purifyThink(text),
-        isTitle,
-        audio: audio || '',
-        index,
-        image: images.value.get(index),
-        timestamp: Date.now()
+        message: purify.purifyThink(content),
+        audio: audio as string,
+        index: contentIndex,
+        image: images.value.get(messageUid as string),
+        timestamp: Date.now(),
+        messageUid: messageUid as string
       })
 
-      images.value.delete(index)
-
-      Taro.hideLoading()
-    }, (index: number, image: string) => {
+      images.value.delete(messageUid as string)
+    }, (messageUid: string, image: string) => {
       const messages = [...displayMessages.value, ...(lastDisplayMessage.value ? [lastDisplayMessage.value] : []), ...(typingMessage.value ? [typingMessage.value] : []), ...Array.from(waitMessages.value.values())]
-      const message = messages.find((el) => el.index === index)
+      const message = messages.find((el) => el.messageUid === messageUid)
       if (message) message.image = image
-      else images.value.set(index, image)
+      else images.value.set(messageUid, image)
     }, true)
   }
 }
@@ -141,9 +132,6 @@ onMounted(async () => {
   })
 
   model.Model.getModels(() => {
-    Taro.showLoading({
-      title: `${models.value.length}个AGI正在创作！`
-    })
     simulator.Simulator.getSimulators(undefined, async () => {
       await generate()
     })
@@ -155,12 +143,15 @@ onMounted(async () => {
 })
 
 useDidShow(() => {
-  inMyPage.value = true
+  eDuanzi.value = new entityBridge.Duanzi()
   typingTicker.value = window.setInterval(typing, 100)
 })
 
 useDidHide(() => {
-  inMyPage.value = false
+  if (eDuanzi.value) {
+    eDuanzi.value.stop()
+    eDuanzi.value = undefined as unknown as entityBridge.Duanzi
+  }
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
     typingTicker.value = -1
@@ -204,12 +195,13 @@ const onPlayClick = () => {
 
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
+    if (enablePlay.value)
+      void AudioPlayer.play('http://api.meipu-agi.cn/downloads/laugh.mp3')
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing, undefined, 20).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) {
-      if (inMyPage.value) {
-        void generate()
-      } else {
+      void generate()
+      if (!eDuanzi.value) {
         if (rc && rc.typingInterval) {
           window.clearInterval(rc.typingTicker)
         }
@@ -233,6 +225,7 @@ const typing = () => {
 
     if (typingMessage.value) lastModelId.value = typingMessage.value.modelId
   }).catch((e) => {
+    generating.value = false
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     console.log(`Failed typing: ${e}`)
   })

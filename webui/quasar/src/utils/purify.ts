@@ -21,6 +21,7 @@ export const purifyText = (html: string): string => {
     .replace(/`/g, '')
     .replace(/#/g, '')
     .replace(/\*/g, '')
+    .replace(/^\[\d+\]\s.*$/g, '')
     .replace(/<!DOCTYPE html[^>]*>/gi, '')
     .replace(/<html[^>]*>/gi, '')
     .replace(/<\/html>/gi, '')

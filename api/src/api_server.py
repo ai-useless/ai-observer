@@ -18,6 +18,7 @@ from include import *
 from chat import chat_non_stream as _chat, ChatMessage
 from config import config
 from cook_simulator import cook_simulator as _cook_simulator, count_simulators as _count_simulators, get_simulators as _get_simulators, get_user as _get_user, cook_user as _cook_user, audio_2_text, review_simulator as _review_simulator, report_simulator as _report_simulator
+from sing import singer
 from db import db
 
 app = FastAPI()
@@ -203,6 +204,11 @@ async def query_image(image_uid: str):
 async def speech_to_text(audio_b64: str = Body(..., embed=True)):
     text = await audio_2_text(audio_b64)
     return { 'text': text }
+
+@app.post('/api/v1/sing_async', response_model=SpeakAsyncResponse)
+async def sing(lrc_text: str = Body(...), ref_prompt: str = Body(...)):
+    audio_uid = singer.sing_async(lrc_text, ref_prompt)
+    return { 'audio_uid': audio_uid }
 
 def get_client_host(request: Request) -> str:
     x_forwarded_for = request.headers.get("x-forwarded-for")

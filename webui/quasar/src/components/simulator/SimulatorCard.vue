@@ -32,10 +32,10 @@
           {{ _simulator.language }}
         </q-btn>
         <q-space />
-        <div v-if='_simulator.reports > 0' class='text-grey-6' style='font-size: 12px;'>
+        <div v-if='showActions && _simulator.reports > 0' class='text-grey-6' style='font-size: 12px;'>
           {{ _simulator.reports || 0 }}次举报
         </div>
-        <div v-if='_simulator.state !== "CREATED"' class='text-grey-6' style='font-size: 12px;'>
+        <div v-if='showActions && _simulator.state !== "CREATED"' class='text-grey-6' style='font-size: 12px;'>
           {{ _simulator.state === 'APPROVED' ? '已通过' : '已拒绝' }}
         </div>
         <q-btn

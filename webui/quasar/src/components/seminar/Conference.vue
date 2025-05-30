@@ -1,8 +1,8 @@
 <template>
   <div class='row full-width flex justify-center'>
     <div :style='{width: "100%", maxWidth: "960px", height: `${contentHeight}px`}'>
-      <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg' style='height: 220px'>
-        <div class='full-width' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
+      <div class='bg-gradient-blue text-center text-white flex justify-center items-center q-pb-lg q-px-lg' style='height: 220px'>
+        <div class='full-width single-line-nowrap' style='font-size: 32px; font-weight: 600; padding: 32px 0 16px 0; transition: 500ms;'>
           {{ topic }}
         </div>
         <q-scroll-area style='height: 128px;' class='full-width'>
@@ -10,8 +10,8 @@
             <simulator-card v-if='host?.simulator' :simulator='host.simulator' :small='false' :is-host='true' />
             <div class='flex items-end no-wrap' style='margin-left: 24px;'>
               <simulator-card
-                :style='{marginLeft: index === 0 ? "0" : "16px"}'
                 v-for='(guest, index) in guests.filter((el) => el.simulator)'
+                :style='{marginLeft: index === 0 ? "0" : "16px"}'
                 :simulator='guest.simulator'
                 :small='true'
                 :key='index'
@@ -22,11 +22,12 @@
         </q-scroll-area>
       </div>
       <div style='width: 100%; height: calc(100% - 220px - 4px);'>
-        <div v-if='!displayMessages.length && !lastDisplayMessage' class='full-width flex justify-center items-center' style='height: 100%; width: 600px; max-width: 100%;'>
-          <div
-            style='margin-top: 16px; font-size: 20px;'
-            class='text-center text-grey-8 flex justify-center items-center'
-          >
+        <div
+          v-if='!displayMessages.length && !lastDisplayMessage'
+          class='full-width flex justify-center items-center'
+          style='height: 100%; width: 600px; max-width: 100%;'
+        >
+          <div class='text-center text-grey-8 flex justify-center items-center'>
             <div>
               <q-spinner-facebook class='text-red-4' size='64px' />
               <div style='font-size: 14px;'>主持人正在准备台本，请稍候...</div>
@@ -41,23 +42,22 @@
           :thumb-style='{ width: "2px" }'
           @mouseenter='autoScroll = false'
           @mouseleave='autoScroll = true'
-          class='q-mt-xs'
+          class='q-ma-xs'
         >
-          <div style='margin-top: 16px;'>
+          <div>
             <div v-for='(message, index) in [...displayMessages, ...(lastDisplayMessage ? [lastDisplayMessage] : [])]' :key='index'>
               <q-chat-message
                 v-if='!message.subTopicTitle'
-                :key='index'
                 :name='message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name'
                 :avatar='message.simulator.simulator_avatar_url'
                 :stamp='message.datetime'
                 :text='[message.message]'
                 text-color='grey-9'
                 bg-color='grey-2'
-                style='line-height: 24px; font-size: 16px; max-width: 100%; margin-bottom: 32px;'
+                style='line-height: 24px; font-size: 16px; max-width: 100%;'
               >
                 <template #name>
-                  <div style='padding-bottom: 4px; line-height: 1em;'>
+                  <div :style='{paddingBottom: "4px", lineHeight: "1em;", marginTop: index === 0 ? 0 : "32px"}'>
                     <div>
                       {{ message.simulator.simulator + " | " + message.participator.role + " | " + message.model.name }}
                     </div>
@@ -77,7 +77,7 @@
                   </div>
                 </div>
               </q-chat-message>
-              <div v-else class='text-black text-bold text-center' style='font-size: 32px; margin: 32px 0'>
+              <div v-else-if='message.subTopic?.length' class='text-black text-bold text-center' style='font-size: 32px; margin: 32px 0'>
                 {{ message.subTopic }}
               </div>
             </div>

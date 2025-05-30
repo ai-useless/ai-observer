@@ -15,6 +15,7 @@
       placeholder='任何你想讨论的话题'
       type='textarea'
       style='width: 100%; max-width: 800px; font-size: 20px;'
+      input-style='line-height: 28px;'
       @keyup.enter.stop='onEnter'
     />
     <q-btn flat class='q-mt-lg full-width action-btn bg-gradient-blue text-white' rounded @click='onEnter'>
@@ -38,7 +39,7 @@
         <div style='color: gray;'>
           {{ topicType }}
         </div>
-        <q-icon name='help' size='20px' class='text-gray-6 cursor-pointer q-ml-xs'>
+        <q-icon name='help' size='20px' class='text-grey-6 cursor-pointer q-ml-xs'>
           <q-tooltip style='font-size: 14px;'>
             您知道吗：这些话题都是AGI实时生成的。
           </q-tooltip>
