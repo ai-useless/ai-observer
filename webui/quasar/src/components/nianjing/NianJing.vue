@@ -314,7 +314,7 @@ const typing = () => {
       if (typingMessage.value && typingMessage.value.first) {
         generating.value = false
         inputPrompt.value = ''
-        if (disablePlay) {
+        if (disablePlay.value) {
           if (musicPlayer.value) musicPlayer.value.stop()
 
           window.clearInterval(typingTicker.value)
