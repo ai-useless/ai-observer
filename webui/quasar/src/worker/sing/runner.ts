@@ -53,7 +53,7 @@ export class SingRunner {
         ref_prompt: refPrompt
       } as Record<string, string>
 
-      const audioResp = await axios.post(constants.SING_ASYNC_API, payload)
+      const audioResp = await axios.post(constants.SING_ASYNC_V2_API, payload)
 
       let audioUrl = undefined as unknown as string
 
