@@ -41,7 +41,7 @@ class DiffRhythmModel:
             raise ValueError("Cannot provide both ref_prompt and ref_audio_path")
 
     def generate_audio(self, lrc_text, ref_prompt=None, ref_audio_path=None, 
-                      audio_length=95, batch_infer_num=1, edit=False, 
+                      seed=None, audio_length=95, batch_infer_num=1, edit=False, 
                       ref_song=None, edit_segments=None):
 
         self._validate_inputs(ref_prompt, ref_audio_path)
@@ -66,13 +66,13 @@ class DiffRhythmModel:
         )
 
         outputs = self._inference(
-            latent_prompt, lrc_prompt, style_prompt, 
+            latent_prompt, lrc_prompt, style_prompt, seed,
             negative_style_prompt, start_time, pred_frames, batch_infer_num
         )
 
         return random.choice(outputs)
 
-    def _inference(self, latent_prompt, lrc_prompt, style_prompt, 
+    def _inference(self, latent_prompt, lrc_prompt, style_prompt, seed,
                   negative_style_prompt, start_time, pred_frames, batch_infer_num):
         with torch.inference_mode():
             latents, _ = self.cfm.sample(
@@ -82,6 +82,7 @@ class DiffRhythmModel:
                 style_prompt=style_prompt,
                 negative_style_prompt=negative_style_prompt,
                 steps=32,
+                seed=seed,
                 cfg_strength=4.0,
                 start_time=start_time,
                 latent_pred_segments=pred_frames,
