@@ -113,7 +113,7 @@ export class ENianJing {
         for (let i = 0; i < steps; i++) {
           this.speak(simulatorId, payload.texts, i, steps, onMessage)
         }
-        this.sing(simulatorId, name, payload.text.slice(0, 100), onMusic)
+        this.sing(simulatorId, name, payload.text, onMusic)
       })
       .catch((e) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
