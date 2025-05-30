@@ -56,8 +56,8 @@ class Singer:
 
         payload = {
             'lyrics': lrc_text,
-            'tags': ref_prompt
-            'audio_duration': -1,
+            'tags': ref_prompt,
+            'audio_duration': -1
         }
         headers = {
             'Authorization': f'Bearer {config.api_token}',
