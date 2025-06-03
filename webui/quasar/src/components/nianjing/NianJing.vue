@@ -33,7 +33,7 @@
           </div>
           <q-separator />
           <q-img
-            src='http://api.meipu-agi.cn/downloads/qiaomuyu.gif'
+            src='https://api.meipu-agi.cn/downloads/qiaomuyu.gif'
             style='width: 100%;'
           />
           <q-resize-observer @resize='onHeadBoxResize' />
@@ -213,7 +213,7 @@ const initializeNianjing = async () => {
 }
 
 const playBgSound = () => {
-  AudioPlayer.play('http://api.meipu-agi.cn/downloads/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
+  AudioPlayer.play('https://api.meipu-agi.cn/downloads/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
     bgPlayer.value = player as AudioPlayer
   }).catch(() => {
     bgPlayerTimer.value = window.setTimeout(playBgSound, 1000)

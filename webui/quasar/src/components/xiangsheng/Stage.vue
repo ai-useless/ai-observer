@@ -113,7 +113,7 @@ const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
-const backgroundImage = ref('http://api.meipu-agi.cn/downloads/xiangshengwutai.png')
+const backgroundImage = ref('https://api.meipu-agi.cn/downloads/xiangshengwutai.png')
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
@@ -195,7 +195,7 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     if (typingMessage.value?.last) {
-      void AudioPlayer.play('http://api.meipu-agi.cn/downloads/laugh.mp3')
+      void AudioPlayer.play('https://api.meipu-agi.cn/downloads/laugh.mp3')
       typingMessageIndex.value = 0
     } else {
       typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value

@@ -8,7 +8,7 @@
         <View style='font-size: 18px; font-weight: 600; margin-left: 4px; text-align: center;'>{{ prompt }}</View>
       </View>
       <Image
-        src='http://api.meipu-agi.cn/downloads/qiaomuyu.gif'
+        src='https://api.meipu-agi.cn/downloads/qiaomuyu.gif'
         mode='widthFix'
         style='width: 100vw; height: 400px;'
       />
@@ -225,7 +225,7 @@ onMounted(async () => {
   }
 
   typingTicker.value = window.setInterval(typing, typingInterval.value)
-  await AudioPlayer.play('http://api.meipu-agi.cn/downloads/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
+  await AudioPlayer.play('https://api.meipu-agi.cn/downloads/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
     bgPlayer.value = player as AudioPlayer
   })
 
