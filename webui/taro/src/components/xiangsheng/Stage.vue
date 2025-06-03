@@ -104,7 +104,12 @@ const hostParticipator = computed(() => participators.value.find((el) => el.role
 const host = computed(() => simulators.value.find((el) => hostParticipator.value && el.participatorId === hostParticipator.value.id))
 const guests = computed(() => simulators.value.filter((el) => participators.value.find((_el) => _el.id === el.participatorId && _el.role === dbModel.Role.GUEST)))
 
-const topic = ref(xiangsheng.Xiangsheng.topic())
+const topic = computed({
+  get: () => xiangsheng.Xiangsheng.topic(),
+  set: (v: string) => {
+    xiangsheng.Xiangsheng.setTopic(v)
+  }
+})
 const editing = ref(false)
 const audioInput = ref(false)
 const inputError = ref('')
@@ -243,8 +248,6 @@ watch(participators, () => {
 const onMessage = async (topic: string, participatorId: number, text: string, audio: string, index: number, first: boolean, last: boolean) => {
   const participator = dbBridge._Participator.participator(participatorId) as dbModel.Participator
   const timestamp = timestamp2HumanReadable(Date.now())
-
-  console.log(topic, text, index)
 
   waitMessages.value.set(`${text}-${index}`, {
     topic,
