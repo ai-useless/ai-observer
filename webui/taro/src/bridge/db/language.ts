@@ -8,8 +8,7 @@ export class _Language {
     '长沙话',
     '徐州话',
     '粤语',
-    '郑州话',
-    '陕西话'
+    '郑州话'
   ]
 
   static languages = () => {
