@@ -65,6 +65,14 @@ yarn start
 
 没谱儿AGI的目标是构建AGI内容直播社区，音频直播是通向内容直播社区的第一步。
 
+## 社媒
+
+- 官网 https://meipu-agi.cn
+- 关注公众号 https://mp.weixin.qq.com/s/ehG4IUT0Xdmubx5GnSZOAw
+- 关注视频号
+- B站
+- 抖音
+
 ## 捐赠
 
 没谱儿AGI团队接受社会捐赠，支撑没谱儿AGI应用的研发和运营工作。
