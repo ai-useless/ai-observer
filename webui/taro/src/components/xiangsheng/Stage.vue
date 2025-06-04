@@ -197,7 +197,7 @@ const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing).then((rc) => {
-    if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value && !generating.value) {
+    if (waitMessages.value.size < 10 && Array.from(waitMessages.value.values()).findIndex((el) => el.last) >= 0 && autoScroll.value && !generating.value) {
       generating.value = true
       if (playScripts.value) void eXiangsheng.value.startScripts()
       else void eXiangsheng.value.start()
@@ -235,6 +235,7 @@ const typing = () => {
 watch(_uid, () => {
   if (!_uid.value) return
   _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng
+  startXiangsheng()
 })
 
 watch(_xiangsheng, () => {
@@ -266,6 +267,10 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
 }
 
 const startXiangsheng = async () => {
+  if (eXiangsheng.value) {
+    return
+  }
+
   displayMessages.value = []
   waitMessages.value = new Map<string, Message>()
   typingMessage.value = undefined as unknown as Message
@@ -292,6 +297,7 @@ const startXiangsheng = async () => {
 
   if (playScripts.value) eXiangsheng.value.startScripts()
   else eXiangsheng.value.start()
+  generating.value = true
 
   eXiangsheng.value.generateStageBackground().then((image) => {
     backgroundImage.value = image as string
@@ -299,10 +305,6 @@ const startXiangsheng = async () => {
 
   typingTicker.value = window.setInterval(typing, 100)
 }
-
-watch(_uid, () => {
-  startXiangsheng()
-})
 
 onMounted(async () => {
   Taro.setNavigationBarTitle({

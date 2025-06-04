@@ -212,9 +212,10 @@ const typing = () => {
   })
 }
 
-watch(_uid, () => {
+watch(_uid, async () => {
   if (!_uid.value) return
   _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng
+  await startXiangsheng()
 })
 
 watch(_xiangsheng, async () => {
@@ -248,6 +249,10 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
 const router = useRouter()
 
 const startXiangsheng = async () => {
+  if (eXiangsheng.value) {
+    return
+  }
+
   displayMessages.value = []
   waitMessages.value = new Map<string, Message>()
   typingMessage.value = undefined as unknown as Message
@@ -291,10 +296,6 @@ const onTopicEnter = (_topic: string) => {
   xiangsheng.Xiangsheng.setTopic(_topic)
   inputTopic.value = ''
 }
-
-watch(_uid, async () => {
-  await startXiangsheng()
-})
 
 onMounted(async () => {
   await startXiangsheng()
