@@ -1,4 +1,5 @@
 # 没谱儿AGI，可以玩的AGI
+![没谱儿的AGI_125_125](https://github.com/user-attachments/assets/33008d6e-752f-4349-9dc8-cdb2475b0be4)
 
 没谱儿AGI是由没谱儿AGI团队开发的多模态AGI内容直播应用，主打轻松好玩、灵魂自由。没谱儿AGI旨在创建完全由AGI生成内容的直播社区，用户可以在没谱儿AGI社区创建角色，并让角色参加没谱儿AGI的直播栏目表演。
 
@@ -76,3 +77,23 @@ yarn start
 ## 捐赠
 
 没谱儿AGI团队接受社会捐赠，支撑没谱儿AGI应用的研发和运营工作。
+
+- 微信收款码
+
+![微信收款码](https://github.com/user-attachments/assets/a57d97b8-dc87-4b61-84c3-a82500ea649e)
+
+## 关注我们
+- 扫码加我为好友
+  
+![微信号](https://github.com/user-attachments/assets/41022edc-813a-4852-8313-2a5a1ee70719)
+
+
+- 试用没谱儿的AGI小程序
+  
+![小程序](https://github.com/user-attachments/assets/77c27274-db87-4e9d-88bb-ee9eaeff6aa1)
+
+
+- 关注没谱儿的AGI视频号
+  
+![视频号-o](https://github.com/user-attachments/assets/3ff18653-ed6d-4dac-ab23-a180f6e537bb)
+
