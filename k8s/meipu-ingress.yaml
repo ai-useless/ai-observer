@@ -1,0 +1,33 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: meipu-ingress
+  namespace: kube-system
+spec:
+  type: ExternalName
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  externalName: 172.20.166.113
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: meipu-ingress-route
+  namespace: kube-system
+
+spec:
+  tls:
+    secretName: meipu-agi-cn-tls
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: HostRegexp(`meipu-agi.cn`, `{subdomain:[a-z]+}.meipu-agi.cn`)
+      kind: Rule
+      services:
+        - name: meipu-ingress
+          port: 80
+          passHostHeader: true

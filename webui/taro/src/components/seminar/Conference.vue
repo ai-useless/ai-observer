@@ -112,7 +112,7 @@ const autoScroll = ref(true)
 const enablePlay = ref(true)
 const showContentList = ref(false)
 
-const backgroundImage = ref('http://api.meipu-agi.cn/downloads/yuanzhuotaolun.png')
+const backgroundImage = ref('https://api.meipu-agi.cn/downloads/yuanzhuotaolun.png')
 
 const topic = computed(() => _seminar.value ? _seminar.value.topic : undefined)
 const hostParticipator = computed(() => participators.value.find((el) => el.role === dbModel.Role.HOST))

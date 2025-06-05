@@ -200,7 +200,7 @@ const onLaughClick = () => {
 const typing = () => {
   _typing(waitMessages.value, displayMessages.value, typingMessage.value, lastDisplayMessage.value, typingMessageIndex.value, audioPlayer.value, enablePlay.value, typingTicker.value, () => {
     if (enableLaugh.value)
-      void AudioPlayer.play('http://api.meipu-agi.cn/downloads/laugh.mp3')
+      void AudioPlayer.play('https://api.meipu-agi.cn/downloads/laugh.mp3')
     lastDisplayMessage.value = undefined as unknown as Message
   }, typing, undefined, 20).then((rc) => {
     if (waitMessages.value.size <= 3 && displayMessages.value.length > 3) {

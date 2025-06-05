@@ -33,7 +33,7 @@
           </div>
           <q-separator />
           <q-img
-            src='http://api.meipu-agi.cn/downloads/qiaomuyu.gif'
+            src='https://api.meipu-agi.cn/downloads/qiaomuyu.gif'
             style='width: 100%;'
           />
           <q-resize-observer @resize='onHeadBoxResize' />
@@ -213,7 +213,7 @@ const initializeNianjing = async () => {
 }
 
 const playBgSound = () => {
-  AudioPlayer.play('http://api.meipu-agi.cn/downloads/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
+  AudioPlayer.play('https://api.meipu-agi.cn/downloads/qiaomuyu.mp3', true).then((player: AudioPlayer | undefined) => {
     bgPlayer.value = player as AudioPlayer
   }).catch(() => {
     bgPlayerTimer.value = window.setTimeout(playBgSound, 1000)
@@ -306,7 +306,6 @@ const typing = () => {
           waitMessages.value.set(`${_message.message}-${_message.index}`, _message)
         }
         waitMessages.value.set(`${typingMessage.value.message}-${typingMessage.value.index}`, typingMessage.value)
-        displayMessages.value = []
         typingMessageIndex.value = 0
 
         disablePlay.value = singMode.value && music.value?.length && lrcLetters.value > 0
@@ -314,6 +313,8 @@ const typing = () => {
       if (typingMessage.value && typingMessage.value.first) {
         generating.value = false
         inputPrompt.value = ''
+        displayMessages.value = []
+
         if (disablePlay.value) {
           if (musicPlayer.value) musicPlayer.value.stop()
 

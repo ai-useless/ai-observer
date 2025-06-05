@@ -113,7 +113,7 @@ const contentHeight = computed(() => setting.Setting.contentHeight())
 
 const _uid = computed(() => xiangsheng.Xiangsheng.xiangsheng())
 const _xiangsheng = ref(undefined as unknown as dbModel.Xiangsheng)
-const backgroundImage = ref('http://api.meipu-agi.cn/downloads/xiangshengwutai.png')
+const backgroundImage = ref('https://api.meipu-agi.cn/downloads/xiangshengwutai.png')
 const participators = ref([] as dbModel.Participator[])
 const simulators = ref([] as entityBridge.PSimulator[])
 
@@ -178,8 +178,8 @@ const typing = () => {
   }, typing).then((rc) => {
     if (waitMessages.value.size < 10 && /* waitMessages.value.findIndex((el) => el.last) >= 0 && */ autoScroll.value && !generating.value) {
       generating.value = true
-      if (playScripts.value) void eXiangsheng.value.startScripts()
-      else void eXiangsheng.value.start()
+      if (playScripts.value) void eXiangsheng.value?.startScripts()
+      else void eXiangsheng.value?.start()
     }
 
     if (!rc) return
@@ -195,7 +195,7 @@ const typing = () => {
     if (rc.typingMessage) typingMessage.value = rc.typingMessage
 
     if (typingMessage.value?.last) {
-      void AudioPlayer.play('http://api.meipu-agi.cn/downloads/laugh.mp3')
+      void AudioPlayer.play('https://api.meipu-agi.cn/downloads/laugh.mp3')
       typingMessageIndex.value = 0
     } else {
       typingMessageIndex.value = rc.typingMessageIndex || typingMessageIndex.value
@@ -212,9 +212,10 @@ const typing = () => {
   })
 }
 
-watch(_uid, () => {
+watch(_uid, async () => {
   if (!_uid.value) return
   _xiangsheng.value = dbBridge._Xiangsheng.xiangsheng(_uid.value) as dbModel.Xiangsheng
+  await startXiangsheng()
 })
 
 watch(_xiangsheng, async () => {
@@ -248,6 +249,10 @@ const onMessage = async (topic: string, participatorId: number, text: string, au
 const router = useRouter()
 
 const startXiangsheng = async () => {
+  if (eXiangsheng.value) {
+    return
+  }
+
   displayMessages.value = []
   waitMessages.value = new Map<string, Message>()
   typingMessage.value = undefined as unknown as Message
@@ -292,18 +297,23 @@ const onTopicEnter = (_topic: string) => {
   inputTopic.value = ''
 }
 
-watch(_uid, async () => {
-  await startXiangsheng()
-})
-
 onMounted(async () => {
   await startXiangsheng()
   setting.Setting.setCurrentMenu('xiangsheng')
 })
 
 onBeforeUnmount(() => {
+  if (eXiangsheng.value) {
+    eXiangsheng.value.stop()
+    eXiangsheng.value = undefined as unknown as entityBridge.EXiangsheng
+  }
+  if (audioPlayer.value) {
+    audioPlayer.value.stop()
+    audioPlayer.value = undefined as unknown as AudioPlayer
+  }
   if (typingTicker.value >= 0) {
     window.clearInterval(typingTicker.value)
+    typingTicker.value = -1
   }
 })
 

@@ -66,20 +66,15 @@ def fetch_kikakkz_avatar():
     url = 'https://avatars.githubusercontent.com/u/13128505?v=4&size=40'
     return fetch_avatar_then_save(url, 'wechat')
 
-async def main():
-    with open(config.simulators_file, 'r', encoding='utf-8') as f:
-        simulators = json.load(f)
-
-    kikakkz_avatar_cid = fetch_kikakkz_avatar()
-
-    for simulator in simulators:
+async def import_simulator(simulator, kikakkz_avatar_cid, semaphore):
+    async with semaphore:
         print(f'\n\nImporting {BOLD}{simulator["name"]}{RESET} ...')
 
-        avatar_cid = fetch_avatar_then_save(simulator['avatar'], 'simulator')
-        (audio_cid, audio_b64, audio_url) = fetch_audio_then_save(simulator['audio'])
+        avatar_cid = await asyncio.to_thread(fetch_avatar_then_save, simulator['avatar'], 'simulator')
+        (audio_cid, audio_b64, audio_url) = await asyncio.to_thread(fetch_audio_then_save, simulator['audio'])
         while True:
             try:
-                audio_text = audio_2_text(audio_b64)
+                audio_text = await asyncio.to_thread(audio_2_text, audio_b64)
                 break
             except:
                 continue
@@ -105,6 +100,18 @@ async def main():
             simulator['title'],
             True if simulator['host'] is True else False,
             True)
+
+
+async def main():
+    with open(config.simulators_file, 'r', encoding='utf-8') as f:
+        simulators = json.load(f)
+
+    kikakkz_avatar_cid = fetch_kikakkz_avatar()
+
+    semaphore = asyncio.Semaphore(5)
+    tasks = [asyncio.create_task(import_simulator(simulator, kikakkz_avatar_cid, semaphore)) for simulator in simulators]
+
+    await asyncio.gather(*tasks)
 
 if __name__ == '__main__':
     asyncio.run(main())

@@ -40,7 +40,7 @@ const fromLoginPage = toRef(props, 'fromLoginPage')
 const wechatLoginUrl = ref('')
 
 const WECHAT_APPID = 'wxb15d0a9d035f78e1'
-const REDIRECT_URI = encodeURIComponent('http://meipu-agi.cn/wechat/callback')
+const REDIRECT_URI = encodeURIComponent('https://meipu-agi.cn/wechat/callback')
 const SCOPE = 'snsapi_login'
 const STATE = `wechat_login_${Date.now()}${fromLoginPage.value ? '_fromLogin' : ''}`
 

@@ -168,7 +168,6 @@ const onChangeTopicsClick = () => {
 }
 
 const onTopicClick = (_topic: string) => {
-  xiangsheng.Xiangsheng.setTopic(_topic)
   if (!host.value || !guest.value) return
   startXiangsheng(_topic, xiangshengWorker.Intent.GENERATE)
 }
@@ -197,6 +196,7 @@ const startXiangsheng = (_topic: string, intent: xiangshengWorker.Intent) => {
   // TODO: check if it's a valid topic
   dbBridge._Xiangsheng.create(_uid, _topic, participators, intent)
   xiangsheng.Xiangsheng.setXiangsheng(_uid)
+  xiangsheng.Xiangsheng.setTopic(_topic)
   setting.Setting.setTabIndex(2)
   Taro.switchTab({ url: '/pages/xiangsheng/XiangshengPage' })
 }
