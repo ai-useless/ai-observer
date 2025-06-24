@@ -7,9 +7,9 @@ from chutes.chute import Chute, NodeSelector
 image = (
     Image(
         username="kikakkz",
-        name="cogview4-tti",
+        name="cogview4",
         tag="0.0.1",
-        readme="## Text-to-image using ZhipuAI/CogView4-6B",
+        readme="## Text-to-image using THUDM/CogView4-6B",
     )
     .from_base("parachutes/base-python:3.10.17")
     .set_user("root")
@@ -21,17 +21,15 @@ image = (
     .run_command("cd CogView4; git checkout 1f21551ad1a00fec276c01e8bbf98b38d9590108")
     .run_command("pip install --upgrade pip")
     .run_command("cd CogView4; pip install -r inference/requirements.txt")
-    .run_command("pip install modelscope==1.20.0")
-    .run_command("git lfs install")
 )
 
 chute = Chute(
     username="kikakkz",
-    name="cogview4-tti",
-    tagline="Text-to-image with ZhipuAI/CogView4-6B",
+    name="cogview4",
+    tagline="Text-to-image with THUDM/CogView4-6B",
     readme="CogView4 is a text-to-image model with 6 billion parameters.",
     image=image,
-    node_selector=NodeSelector(gpu_count=1, min_vram_gpu_per_gpu=32),
+    node_selector=NodeSelector(gpu_count=1, min_vram_gpu_per_gpu=80),
 )
 
 class V1InputArgs(BaseModel):
@@ -51,10 +49,10 @@ async def initialize(self):
     MODEL_DIR = Path(os.getenv("HF_HOME", "/app")).resolve()
     MODEL_PATH = (Path(MODEL_DIR) / "pretrained_models/CogView4-6B").resolve()
 
-    from modelscope import snapshot_download
-    snapshot_download('ZhipuAI/CogView4-6B', local_dir=str(MODEL_PATH))
+    from huggingface_hub import snapshot_download
+    snapshot_download('THUDM/CogView4-6B', local_dir=str(MODEL_PATH))
 
-    self.pipe = CogView4Pipeline.from_pretrained("pretrained_models/CogView4-6B", torch_dtype=torch.bfloat16).to("cuda")
+    self.pipe = CogView4Pipeline.from_pretrained(str(MODEL_PATH), torch_dtype=torch.bfloat16).to("cuda")
     self.pipe.enable_model_cpu_offload()
     self.pipe.vae.enable_slicing()
     self.pipe.vae.enable_tiling()
